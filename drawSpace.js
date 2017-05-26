@@ -1,0 +1,220 @@
+
+var DRAWSPACE_hoveringOverEditWindow = false;
+
+$(document).on("initializationComplete",function(){
+
+	DRAW_SPACE_addWorkSpaceToBody();
+
+})
+
+function DRAW_SPACE_getMaxTopElement(){
+	var lastOne = [];
+
+	$(".dropped-object").each(function(idx,it){
+		lastOne.push($(this).offset().top + $(this).height());
+	})
+
+	return lastOne.sort().reverse()[0]
+}
+
+function DRAW_SPACE_isEditing(){
+
+	return DRAWSPACE_hoveringOverEditWindow;
+}
+   
+function DRAW_SPACE_deleteWorkspaceFromBody(){
+
+	workspace = $("#workspace");
+
+	removeEditMode();
+
+	$("body").append($("#drawSpace").children())
+
+	$(workspace).remove();
+
+	$("[type=VID],[type=PLUGIN]").each(function(id,div){
+		var vid = $(div).find("video")[0];
+		startVideo(vid);
+	})
+
+	top = DRAW_SPACE_getMaxTopElement();
+
+	$("body").css({height:top})
+
+	return $("body");
+
+
+}
+
+function getHelp(url){
+
+	NOTES_delete();
+
+	SAVE_okToSave = false;
+
+	$("#help-css").remove();
+
+	var tools = {}
+
+	$("#drawSpace > .dropped-object").not(":hidden").addClass("hideMe").hide()
+
+	if(!url){
+		url = "http://cssreference.io/";
+	} 
+
+	if($("#help-css").length > 0){
+
+		tools.frame = $("#help-css")
+
+		tools.frame.attr("src",url)
+
+	} else {
+
+		tools.frame = $('<iframe id="help-css" src="'+url+'" width="100%" height="100%"></iframe>').css({display:"none",position:"absolute",top:"0px",left:"0px","z-index":"10000"})
+
+		tools.close = $('<div id="close-help" class="fa fa-window-close"></div>')
+				.css({display:"none",cursor:"pointer",position:"absolute",top:"10px","right":"10px",
+					"font-size":"40px",color:"red","z-index":"3000000"})
+				.on('click',function(){
+					$("#help-css").remove();
+					$(this).remove();
+					SAVE_okToSave = true;
+					
+					$(".hideMe").removeClass("hideMe").show()
+
+				})
+
+		tools.sponsor = $('<div id="sponsor-help" class="fa fa-bullhorn"></div>')
+				.css({"background-color":"#FFFFFF",width:"200px",height:"60px",display:"none",cursor:"pointer",position:"absolute",top:"10px","left":"20px",
+					"font-size":"80px",color:"green","z-index":"3000000"})
+				.on('click',function(){
+					$("#help-css").remove();
+					
+					$("#sponsor-help").remove();
+					$(this).remove();
+					SAVE_okToSave = true;
+				})
+
+		if($("#drawSpace").length > 0){
+			$("#drawSpace").append($(tools.frame).fadeIn(1000))
+			$("#drawSpace").append(tools.close.fadeIn(1000));
+			//$("#drawSpace").append(tools.sponsor.fadeIn(1000));
+		}
+	} 
+
+	return tools;
+
+}
+
+function DRAW_SPACE_addWorkSpaceToBody(){
+
+	body = $("body")
+
+	var wp = $("<div>",{id:"workspace",type:"workspace"}) ;
+
+	var ds = $("<div>",{id:"drawSpace",class:"dropped-object",type:"canvas"})
+	var es = $("<div>",{id:"editSpace"}).append('<div id="tabs"><ul class="tabul"></ul></div>');
+	
+
+	ds.append(body.children());
+
+	
+
+	wp.append(ds);
+	wp.append(es)
+
+	$(body).append(wp);
+
+
+
+	wp.css({
+		height:window.innerHeight,
+		width:"100%"
+	})
+
+	ds.css({
+		height:$(wp).height() * .75,
+		width:"100%",
+		"overflow-y":"scroll",
+		"overflow-x":"hidden",
+		position:"absolute",
+		"background-image":"url(https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Cartesian_5mm..svg/2000px-Cartesian_5mm..svg.png)",
+		"background-repeat":"repeat"
+	})
+
+	es.css({
+		height:$(wp).height() *.25,
+		width:"100%",
+		top:$(ds).height(),
+		position:"absolute",
+		"z-index": 999999999,
+		border:"3px solid yellow"
+		
+	}).show().on("mouseenter",function(){
+				if($(".active-message").is(":visible")){
+					//alert("visible " + $(".active-message").attr("msg-parent"))
+					$("#" + $(".active-message").attr("msg-parent")).trigger("mouseenter");
+				}
+			})
+
+
+	body = $("body");
+
+	body.id = "body";
+
+	ds.scroll(function(){
+		//Kill any notes
+		NOTES_delete()
+	 })
+
+	$("[type=VID]").each(function(id,div){
+		var vid = $(div).find("video")[0];
+		startVideo(vid);
+	})
+
+	if($(".dropped-object").length == 1){
+		
+		getHelp();
+	}
+
+	top = DRAW_SPACE_getMaxTopElement();
+
+	top = top > $("body").height() ? top *1.25 : $("body").height() ;
+
+	//$("body").css({height:top})
+
+	addEditMode()
+
+
+
+	if(CUSTOM_currentlyMousingOverElementId == null){
+		writeTabs(body)
+	} else {
+		writeTabs($("#"+CUSTOM_currentlyMousingOverElementId));
+	}
+
+	$(".mini-responsive-design-tab").on('click',makeOrBreakpoint)
+
+	$(".rocket-save").on('click',SAVEJS_goInactive);
+
+	drawResponsiveTab()
+
+	//$("#tabs").css("height","100%")
+
+}
+
+/**
+* Needed because some browsers have race conditions
+* http://stackoverflow.com/questions/36803176/how-to-prevent-the-play-request-was-interrupted-by-a-call-to-pause-error
+*/
+function startVideo(vid){
+	setTimeout(function () {      
+	  // Resume play if the element if is paused.
+	  if (vid && vid.paused) {
+	    vid.play();
+	  }
+	}, 150);	
+}
+
+
+

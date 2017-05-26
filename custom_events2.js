@@ -1,0 +1,1946 @@
+var hoverOverNote = false;
+
+var CUSTOM_currentlyMousingOverElementId = null;
+
+
+function CUSTOM_pressEscapeKey(){
+	var e = jQuery.Event("keydown");
+	e.which = 27; // # Some key code value
+	$("input").trigger(e);
+}
+
+
+function CUSTOM_incrementZIndex(){
+
+	var globI = 0;
+
+	$(".dropped-object").each(function(idx,obj){
+
+		obj = $(obj);
+
+		if(obj.css("position") != "fixed"){
+			if(parseFloat(obj.css("z-index")) > parseFloat(globI)){
+
+				globI = parseFloat(obj.css("z-index"));
+			}
+		}
+
+	})
+
+	console.log("Returing global Index globI " + globI)
+	return globI;
+}
+
+CUSTOM_KEYDOWN_LOGIC = function(event){
+
+	log.trace("Pressed Key " + event.which)
+
+	hotObj = $("#"+CUSTOM_currentlyMousingOverElementId);
+	
+
+	//event.preventDefault()
+
+	key = event.which;
+	//Escape Key
+	if(key == 27){
+
+		$(".msg,.peak,.active-message,.active-peak").remove();
+
+		$("[data-action=fulledit]").html("Open Inspector...");
+        $("#drawSpace").css({height:$(document).height()});
+        $("#editSpace").html("").hide()
+        $("*").removeClass("disabledElements").removeClass("submenu_on")
+        SAVE_okToSave=true;
+        return;        
+	}
+
+	//KEY C and Shift Key to COPY
+	if(key == 67 && event.shiftKey && $(hotObj).hasClass("dropped-object")){
+		/*
+		log.trace("The id is " + hotObjId)				
+		log.trace($(hotObjId).find("div.hotspot"))
+		log.trace("Hello")
+		$(hotObjId).find(".toolhotspot").show();
+		log.trace($(hotObjId).find("img")[0].click())
+		log.trace("goodbye")*/
+
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		$("[data-action=copy]").click();
+		$(document).click();
+		//$(document).click();
+
+		//Show Javascript Window
+	}else if(key == 74 && event.shiftKey){
+
+		$(hotObj).find("img")[1].click()
+		NOTES_delete();
+
+	//if delete key
+	} else if(key == 68 && event.shiftKey && $(hotObj).hasClass("dropped-object")){
+		/*
+		console.log("Mousing over "+ CUSTOM_currentlyMousingOverElementId)
+		event.preventDefault();
+		deleteElement($("#"+ CUSTOM_currentlyMousingOverElementId))
+		NOTES_delete()*/
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		$("[data-action=delete]").click();
+		$(document).click();
+
+		
+	} // NO LONGER NEEDED 
+		else if(key == 84 && event.shiftKey){
+			//alert('hi')
+		$(document).trigger("contextmenu")
+		//Shift-R toggles draft mode
+	} else if(key == 82 && event.shiftKey){
+		NOTES_delete();
+		$("#id_toolset").find(".mastertools").find("img").click();
+		
+
+	} else {
+		log(event.which)
+	}
+}
+
+
+
+CUSTOM_MOUSEENTER_LOGIC = function(event){
+
+	//NOTES_delete()
+
+	enableHoverEvents();
+
+	if(DRAW_SPACE_isEditing()){
+
+		event.stopPropagation()
+
+		return;
+	}
+	
+	var theElem = event.target;
+
+	console.log("Up in Here! " + theElem.id + " Is anchor = " + $(theElem).is("[type=anchor]"))
+
+
+	/*
+	if($("#editSpace").is(":hover")){
+
+		window.clearTimeout(NOTES_timer);
+		DRAWSPACE_hoveringOverEditWindow = true;
+		alert("DrawSpace " + DRAWSPACE_hoveringOverEditWindow)
+		event.stopPropagation();
+
+		return;
+	}
+	*/
+
+	if(!editing || $(".custom-menu").is(":visible")){
+		log.error("will not highlight element user hovers over because master tool edit mode if off")
+		return;
+	}
+
+	$("*").removeClass("submenu")
+
+	if(theElem.id){
+		console.log("Entering parent " + theElem.id + " with X, Y " + $(theElem).css("left") + "," + $(theElem).css("top"))
+	
+		if($(theElem).is("[type=MENU]")){
+
+
+			theElem = $(theElem).parent();
+			console.log("Trying to trigger T")
+			console.log(theElem.attr("id"))
+			theElem.id = theElem.attr("id");
+			
+		}
+
+
+
+		if($(theElem).is("[type=anchor]")){
+
+			console.log("Changing target to dropped-object");
+			//theElem = $(theElem).parents(".dropped-object").first();
+			console.log(theElem)
+			$(theElem).parents(".dropped-object").first().trigger('mouseenter')
+			return;
+		}	
+
+		$(theElem).addClass("submenu");		
+			
+		CUSTOM_currentlyMousingOverElementId = theElem.id;	
+
+		console.log("making note for " + CUSTOM_currentlyMousingOverElementId)
+
+		NOTES_delayShowingNote(theElem);
+		//Render popup note above element
+		//NOTES_makeNote(event.target)
+
+	} else {
+		console.log("Entering bad child bad node")
+		$(".dropped-object").not(event.target).removeClass("submenu")
+		$(event.target).parents().first().trigger("mouseenter")
+		return;
+	}
+}
+
+CUSTOM_MOUSELEAVE_LOGIC = function(event){
+
+	event.stopPropagation();
+
+	console.log("Leaving LOGIC ")
+	console.log(event.target)
+	if(!event.target.id){
+		log.error(event.target)
+		$(event.target).removeClass("submenu")
+		$(event.target).parents().removeClass("submenu")
+		$(event.target).parents().first().trigger("mouseleave")
+	} else {
+		$("#"+event.target.id).removeClass("submenu")
+
+		$(event.target).parents("[type]").first().trigger("mouseenter")
+	}
+
+}
+
+
+_DEFAULT_OPEN_CODE = function(event,ui){
+	SAVE_okToSave = false;
+	$(document).unbind("keydown");
+
+}
+
+_DEFAULT_CLOSE_CODE = function(event,ui){
+	SAVE_okToSave = true;
+	log("Closing the window")
+	log($(event.target).data())
+	parent = $(event.target).data().theClickedElement;
+	log(parent)
+
+	if(copiesModified){
+		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
+			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
+		})
+	}
+	copiesModified = false;
+
+	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+
+}
+
+/*
+*  Call back executed when user click JS button
+*  
+*/
+CUSTOM_JS_OPEN_CODE = function(event,ui){
+
+	NOTES_delete();
+
+	userHoveringOverNote = true;
+
+	$(document).unbind("keydown");
+
+	//Add Default Title...Other funcs override this if user clicks on draggable shape
+	$(event.target).dialog("option","title","Global JS");
+
+	$(event.target).find("#error_area").val("")
+	
+	exampleFunc = "//Enter Global JS below";
+
+	//if global window just display empty window
+	if($(this).data().theClickedElement.attr("id") != "id_toolset"){
+
+		exampleFunc = "$(\"#"+$(this).data().theClickedElement.attr("id") + "\").on(\"click\",\n\tfunction(event){\n\t\t\/\/Enter Code Below\n\n\t}\n)";
+	}
+
+	log(exampleFunc)
+
+	
+	log("Length of area is " + $(this).find("#user_area").val().trim().length)
+
+	//Get Persisted JS from Server
+
+	js = getJs($(this).data().theClickedElement);
+
+	if(js == null || js.trim().length == 0){
+
+		$("#user_area").val(exampleFunc)
+
+	} else {
+		$("#user_area").val(js);	
+	}
+
+	enableTextAreaTabs($("#user_area"))
+
+	log("Opener of Dialog is")
+	log($( this ).data())
+
+}
+/*
+*	Custom Event Triggered When User Click [E] in top left corner of any control
+*   Shows Popup which style options
+*/
+
+function calcWindowSize(pos, objs){
+	/*
+	log.trace("Window Size")
+	log.trace(pos)
+	if(pos.left < 0){
+		objs.element.element.left = objs.target.element.left
+		objs.element.width = 600
+	}
+	log.trace(objs)
+	//return po
+	*/
+}
+
+CUSTOM_HOTSPOT_CLICK = function(event){
+
+	event.preventDefault();
+	//event.stopPropagation();
+			
+	var parent = $(event.target).parentsUntil(".ui-draggable").parent().first()
+
+	log("Parent is ")
+	log(parent)
+
+ 	log("me IS " + $(event.target).parent().attr("class"))
+
+ 	var me = $(event.target).parent();
+
+	log("My Editable parent is " +   parent.attr("id"))
+
+	var myParent = "edit_" + parent.attr("id");
+
+	log("The Clicked element is ")
+	log(parent.attr("id"))
+
+	var actionTypeValue = $(me).attr("class").replace(" ","_");
+
+	log("The actionTypeValue is "+ actionTypeValue)
+
+	//Setting up state info in case dialog needs it
+
+	//s$( ".adialog" ).data({"theClickedElement":$("#"+parent.attr("id")),"actionType":actionTypeValue});
+
+	$( ".adialog" ).data({"theClickedElement":$(hotObj),"actionType":actionTypeValue});
+
+
+
+	if(me.hasClass("css")){
+
+				log("Making CSS")
+
+   				log("Parent is " + parent.attr("id") + "parent type is " + parent.attr("type"))
+
+				if(parent.attr("id") == undefined){
+					log("Nothing to do for null element");
+					return;
+				}
+
+   				proto = whichTool(parent.attr("type"));
+
+   				//retain id
+   				id = parent.attr("id").length > 0 ? parent.attr("id") : proto.name;
+
+   				log("ID IS NOW " + id)
+
+				$("#dialog").dialog('option','title',"Settings for : " + id +  "["+proto.friendlyName+ "]")
+				{
+					//reset form
+						
+						$("#csspresets").html("").append('Show Extended Tabs <input class="cssToggle" type="checkbox"> &nbsp;Apply Changes to All Elements Like Me <input class="changesToggle" type="checkbox"><div id="tabs"><ul class="tabul"></ul></div>');
+					
+				}
+
+				//remove submenu class because we don't need it anymore 
+				$( ".adialog" ).data().theClickedElement.removeClass("submenu")
+			
+				if($("body").width() >  600){
+					writeTabs();
+					$( "#dialog" ).dialog({width:($(window).width()),height:$(window).height()}).dialog( "open" );
+					//$("#dialog").dialog('option', 'position', {my:"top", at: "bottom", of:$(hotObj)});
+				} else {
+					//writeSelect(event);
+					
+
+					$( "#smalldialog" ).dialog({width:380,height:220}).dialog( "open" )
+						//.append('Apply Changes to All Elements Like Me <input class="changesToggle" type="checkbox">')
+					//$("#smalldialog").dialog('option', 'position', {my:"left", at: "right", of:$(hotObj)});
+					
+				}
+			 	
+
+		} else if(me.hasClass("js")){ 
+	
+
+				//remove submenu class because we don't need it anymore 
+			$( ".adialog" ).data().theClickedElement.removeClass("submenu")
+
+			//Signal open and set title
+			$( "#jsdialog" ).dialog( "open" ).dialog("option","title","Enter Javascript for element #" + parent.attr("id"));
+
+			 log("JS dialog")
+
+		} else if(me.hasClass("mastercss")){
+
+			alert("Master CSS")
+
+		} else if(me.hasClass("masterjs")){	
+			//Open Dialog.  CUSTOM_JS_OPEN event is also called since we defined event hander during initialize() method
+			$( "#jsdialog" ).dialog( "open" );
+
+			log("Master JS")
+		} else if(me.hasClass("mastertools")){
+			//user exits draft mode
+
+			if($(".mastertools").css("opacity") == 1){
+					$(".toolhotspot").hide();
+					$(".mastertools").css({opacity:.5});
+					$(".dropped-object").not(".tool").removeClass("debug-border-style").removeClass("squarepeg");
+					$(".dropped-object,[class=submenu]").removeClass("submenu")
+					try {$(".dropped-object").resizable("destroy");}catch(e){
+						console.log("object ")
+						console.log(e)
+					}
+					$(".dropped-object").is(function(){
+						log("border is " + $(this).css("border"))
+						hasDefaultBorder = $(this).css("border").indexOf("dashed") != -1
+						if(hasDefaultBorder){
+							$(this).addClass("noborder");
+						}
+						return hasDefaultBorder;
+					})
+					$("#drawSpace").css("background-image","none");
+					editing = false;
+					//hide breakpoint indicator
+					$(".responsive-design-tab").hide();
+
+					//hide extended menu
+					$("#extended-editing").hide();
+					DRAW_SPACE_deleteWorkspaceFromBody();
+					$(".ui-icon").hide();
+
+			}else {
+					$(".toolhotspot").show();
+					$(".mastertools").css({opacity:1})
+					$(".dropped-object").not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg");
+					$(".dropped-object").resizable().on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
+					$(".ui-droppable").resizable({disabled:false})
+					$(".dropped-object").removeClass("noborder")
+					//$("#drawSpace").css("background-image","url(https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Cartesian_5mm..svg/2000px-Cartesian_5mm..svg.png)");
+					$(".responsive-design-tab").show()
+					editing = true;
+
+					$("#extended-editing").show();
+					DRAW_SPACE_addWorkSpaceToBody();
+					$(".ui-icon").show();
+
+			}
+		} else if(me.hasClass("mastersave")){
+
+			//Signal Inactive to Listener and autosave 
+			goInactive();
+
+
+		} else if(me.hasClass("masterautosave")){
+
+
+			if($(me).css("opacity") == 1){
+						$(me).css({opacity:.5});
+						SAVE_okToSave = true;
+				}else {
+						$(me).css({opacity:1});
+						SAVE_okToSave = false;
+			}
+	
+		}
+
+			
+}
+
+CUSTOM_ON_QUICK_INPUT = function(evnt){
+				//evnt.preventDefault();
+				
+
+	var parentId =  "#" + $(evnt.target).attr("parent");
+
+	var parent = $(parentId);
+
+	var label = $(evnt.target).attr("name");
+
+			if(label == "class"){
+				//do nothing.  wait until class is complete
+				$(parent).addClass($(evnt.target).val())
+				$(parent).attr("user-classes",$(event.target).val())	
+			}else if(label == "src" || label == "align"){
+
+				$(parent).find(".content-image").attr(label,$(evnt.target).val())
+				//https://www.uvm.edu/~bnelson/computer/html/wrappingtextaroundimages.html
+				if(label == "align"){
+					$(parent).find("br").attr(clear,$(evnt.target).val())
+				}
+				
+
+			}else if(label.startsWith("font") || label.startsWith("text")){
+				$(parent).css(label,$(evnt.target).val())
+                // $(parent).find("[type]").css(label,$(evnt.target).val())  
+            }else if(label == "color"){
+					$(parent).css("-webkit-text-fill-color",$(evnt.target).val())
+					
+					$(parent).find("[type]").css("-webkit-text-fill-color",$(evnt.target).val())
+
+			}  else if(label == "background-image" && !($(evnt.target).val().startsWith("url(")) ){
+
+                        theValue = "url(" + $(evnt.target).val() + ")"
+
+                        $(parent).css(label,theValue)
+
+                        $(parent).css("background-size","cover")
+
+                    
+				
+			} else {
+
+				//if this is a custom css option. ie how we define components, write as attribute
+				if(!$(parent).css(label)){
+					$(parent).attr(label,$(evnt.target).val())
+				} else {
+				$(parent).css(label,$(evnt.target).val())
+				//if this is a custom css option. ie how we define components, write as attribute
+				}
+			}
+			console.log("Firing : " + label + " ==> " + $(evnt.target).val())
+			console.log("Webkit : " + $(parent).css("-webkit-text-fill-color"))
+
+			if($(".changesToggle").is(":checked")){
+				log.trace("Style is checked ")
+				//myStyle = CONVERT_STYLE_TO_CLASS_OBJECT($(parent))
+				myStyle = {}
+				myStyle[label] = $(evnt.target).val()
+				if(label == "color"){
+					myStyle["-webkit-text-fill-color"] = $(evnt.target).val();
+				}
+				log.trace(myStyle)
+				//delete myStyle.top;
+				//delete myStyle.left;
+				log.trace("I see this many copies of " + $(parent).attr("id") + " : " + $("[extends='"+$(parent).attr("id")+ "']").not($(parent)).length)
+				//Any copies of this parent
+				$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).css(myStyle);
+
+				//Any copies currently being edited
+
+				//copy to others just in case we are editing a copy
+				originalParentId = $(parent).attr("extends");
+
+				$("[extends='"+originalParentId+"']").not($(parent)).css(myStyle);
+
+				//Copy to parent in case we are editing a copy and not the parent directly
+				$("#"+originalParentId).css(myStyle)
+
+				copiesModified = true;
+			}
+		
+	
+}
+
+
+
+CUSTOM_TXT_RESIZE = function(event,ui){
+	
+	if(ui && !ui.element){
+
+		ui = $(ui)
+		log.trace("Resziing and ui " + ui.attr("id") + " : " + ui.height() + " <==> " + ui.weight())
+		log.trace("Up in here today " + ui.css("font-size"))
+		ui.css("font-size",ui.height())
+		
+		w = ui.width() * (100 / document.documentElement.clientWidth);
+		h = ui.height() * (100 / document.documentElement.clientWidth);
+
+
+		ui.find("[resize]").css({height:h+"vw",width:w+"vw"})
+		//CUSTOM_PXTO_VIEWPORT(ui,ui.position().left,ui.position().top)
+		
+
+	} else {
+		ui.element.css("font-size",ui.size.height)/*
+		ui.element.find("[resize]").each(function(idx,child){
+			CUSTOM_PXTO_VIEWPORT(child,$(child).position().left,$(child).position().top)
+		
+		})*/
+		w = ui.element.width() * (100 / document.documentElement.clientWidth);
+		h = ui.element.height() * (100 / document.documentElement.clientWidth);
+
+		ui.element.find("[resize]").css({height:h+"vw",width:w+"vw"})
+	}
+}
+
+CUSTOM_ICON_RESIZE = function(event,ui){
+	log.trace("Showing UI for CUSTOM_ICON_RESIZE")
+	if(ui && !ui.element){
+
+		ui = $(ui)
+		log.trace("Up in here " + ui.css("font-size"))
+		ui.css("font-size",ui.height())
+		//ui.css("line-height",ui.height())
+		ui.css("width",ui.height());
+		CUSTOM_PXTO_VIEWPORT(ui,ui.position().left,ui.position().top)
+
+	} else {
+		ui.element.css("font-size",ui.size.height)
+		//ui.element.css("line-height",ui.size.height)
+		ui.size.width = ui.size.height;
+	}
+}
+
+function figure(elem){
+	log.trace($(elem).width() + " for id " + $(elem).attr("id"))
+	return $(elem).width();
+}
+
+
+
+
+CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
+
+
+	event.stopPropagation()
+	event.preventDefault();
+
+	log.trace("Group Resize Enabled is " + groupResizeEnabled + "ID " + $(event.target).attr("id"))
+
+	groupResizeEnabled = $("#group-resize").is(":checked")
+
+	if(groupResizeEnabled && ui.originalSize){
+		rH = ui.size.height / ui.originalSize.height 
+		rW = ui.size.width / ui.originalSize.width 
+		rL = ui.position.left / ui.originalPosition.left 
+		rT = ui.position.top / ui.originalPosition.top 
+
+		
+		$(event.target).find("[type]").each(function(it,child){
+
+			child = $(child)
+
+		
+
+			if(child.attr("original-height") && child.attr("original-width")){
+
+				var myH = parseFloat(child.attr("original-height"))
+				var myW = parseFloat(child.attr("original-width")) 
+				var myT = parseFloat(child.attr("original-top"))
+				var myL = parseFloat(child.attr("original-left")) 
+				var LRatio = parseFloat(child.attr("left-ratio"))
+				var TRatio = parseFloat(child.attr("top-ratio"))
+
+				child.css(
+					{
+						height:myH * rH,
+						width:myW * rW,
+						left:LRatio * ui.size.width, 
+						top:TRatio * ui.size.height, 
+						"font-size":myH * rH
+					})
+				/*
+				if(child.is("[type=T],[type=BTN]")){
+					child.css("line-height","20px");
+				} else {
+				//	child.css("line-height",myH * rH)
+				}
+				*/
+				log.debug("Line height is " + child.css("line-height"))
+				//setTimeout(function(){console.log("Waiting....")},2000)
+				//do something
+			} else {
+				child.attr("original-height",child.height())
+				child.attr("original-width",child.width())
+				child.attr("original-top",child.position().top)
+				child.attr("original-left",child.position().left)
+				child.attr("left-ratio",child.position().left/ui.originalSize.width)
+				child.attr("top-ratio",child.position().top/ui.originalSize.height)
+			}
+			
+
+		})
+	}
+
+}
+
+CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
+	log.trace("Resizing is stopped " + event.target.id)
+	
+	event.stopPropagation()
+	event.preventDefault();
+
+	$(event.target).removeClass("submenu");
+
+	div = $(event.target);
+
+	//if(div.is("[type=T]")){
+
+	
+
+	//}
+	
+
+	if(groupResizeEnabled){
+		
+	
+		$(event.target).find(".dropped-object").each(function(it,child){
+			child = $(child)
+
+
+			log.trace("Resizing Child is stopped for " + child.attr("id"))
+
+			child.removeAttr("original-height").removeAttr("original-width")
+
+			CUSTOM_PXTO_VIEWPORT(child,$(child).position().left,$(child).position().top)
+			//.trigger("resizestop",[$(child)])
+
+		})
+	}
+
+	//Add border for menu-items. makes it easier for user to click and choose 
+	/*
+	if($(event.target).is("[menu]")){
+		$(event.target).css("height",$(event.target).children("[type=MENU-ITEM]").first().height()*1.2)
+	}*/
+	
+
+//if called from clone/copy cmd
+		log.debug("RESIZE X IS " + $(event.target).css("left") + " Y IS " + $(event.target).css("top"))
+		CUSTOM_PXTO_VIEWPORT(event.target,$(event.target).position().left,$(event.target).position().top)
+
+		$(event.target).addClass("submenu");
+
+		createAnchorFor(div,true)
+
+}
+
+CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
+	log.debug("Triggered Done Dragging parent " + event.target.id)
+
+	NOTES_makeNote(event.target)
+
+	parent = $(event.target)
+
+	$(parent).removeClass("submenu");
+
+	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
+	if(copiesModified){
+		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
+			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
+		})
+	}
+}
+
+CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
+	log.debug("Triggered Done Editing Notes for parent " + $(event.target).attr("parent"))
+
+	var parentId = $(event.target).attr("parent")
+
+	var parent = $("#"+parentId)
+
+	if(parent.attr("href") != "undefined"){
+			var loc = parent.attr("href");
+		
+			if(loc.trim().length  > 0){
+
+				createAnchorFor(parent);
+		
+			}
+	}
+
+
+	
+
+	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
+	if(copiesModified){
+		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
+			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
+		})
+	}
+	copiesModified = false;
+	//bind document listener keydown again
+	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+
+	writeTabs(parent,true)
+
+
+}
+
+CUSTOM_CLOSE_LOGIC = function(event,ui){
+	userHoveringOverNote = false;
+	log("Closing the window")
+	log($(event.target).data())
+	parent = $(event.target).data().theClickedElement;
+	log(parent)
+	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
+	if(copiesModified){
+		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
+			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
+		})
+	}
+	copiesModified = false;
+
+
+	//bind document listener keydown again
+	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+
+
+}
+
+CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
+
+			userHoveringOverNote = true;
+
+			var oldTxtColor = "black";
+			
+			//disable AutoSave Temporarily
+			SAVE_okToSave = false;	
+
+			NOTES_delete()
+
+			$.event.trigger("CUSTOM_userEditing",[])
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			if($(event.target).is("[type=IMG]")){
+				log.debug("starting image upload")
+				$("#fileElem").click();
+
+				log.debug("Done uploading image")
+				return;
+			}
+
+			
+			var myParent = $(event.target);
+
+			//Test if user accidentally dblclicked menu-item or children AND correct if they did so
+			if($(myParent).is("[type=MENU],[type=MENU-ITEM]")){
+
+				console.log("Overwriting event target with new target ")
+				myParent = $(event.target).parents("[type=T]").first();
+				console.log("Making note for " + $(myParent).attr("id"))
+				console.log(myParent)
+				//return;
+			} 
+
+			//Temp Change Txt Color to black so user can edit against white backgrounds
+			oldTxtColor = myParent.css("-webkit-text-fill-color")
+
+			//myParent.css("-webkit-text-fill-color","black")
+
+			$(document).unbind("keydown");
+
+			currentTxt = "";
+
+			console.log("Parent is " + myParent.attr("id") + " parent type is " + myParent.attr("type")+ " color is "
+				+myParent.css("color"))
+
+			proto = whichTool(myParent.attr("type"));
+
+				//retain id
+			id = myParent.attr("id") && myParent.attr("id").length > 0 ? myParent.attr("id") : proto.name;
+			//$(event.target).text('');
+			currentNode = myParent;
+
+			//Get Txt from Menu items so user can modify
+			
+			var menuItemIds = [];
+
+			var menuOptionsIds = [];
+
+			var newMenuItemIds = [];
+
+			var newMenuOptionIds = [];
+
+			var menuItemStyles = {};
+
+			var renderAsMenu = false;
+
+			myParent.find("[type=MENU]").each(function(mendx,aMenu){
+					//Add new line to signal beginning of new menu item
+				aMenu=$(aMenu)
+				currentTxt += (mendx > 0 ? "\n" : "");
+				//Parse Menu Items for Text to populate User Editable Text Area
+				aMenu.find("[type=MENU-ITEM]").each(function(idx,child){
+					menuItem = $(child);
+
+					if(menuItem.attr("id")) {
+						menuItemIds.push(menuItem.attr("id"));
+						menuItemStyles[menuItem.attr("id")]=CONVERT_STYLE_TO_CLASS_OBJECT($("#"+menuItem.attr("id")));
+								
+					}
+
+					currentTxt += (idx > 0 ? ","+ menuItem.attr("edittxt") : menuItem.attr("edittxt"));
+				
+					//write HREF last on line
+					if(menuItem.attr("href") && menuItem.attr("href").trim().length > 0 ){
+						currentTxt += "(" + menuItem.attr("href")+")";
+					}
+					
+					
+
+				})
+			})
+
+			renderAsMenu = myParent.find(".menutext").length > 0;
+			
+			myParent.attr("menuItemIds",menuItemIds);
+			myParent.attr("menuOptionsIds",menuOptionsIds);
+
+			console.log("Current TXT IS NOW " + currentTxt)
+			
+			input = $(proto.editModeHtml).attr('style',proto.editModeStyle).attr('parent-node',id).css("-webkit-text-fill-color","black").val(currentTxt)
+
+			enableTextAreaTabs(input)
+
+
+			console.log("Input color is " + $(myParent).css("color"))
+			console.log("parent color is " + $(myParent).css("background-color"))
+			var pbgcolor = $(myParent).css("background-color")
+			/*
+			if( $(myParent).css("color").indexOf("rgb(255, 255, 255)")> -1){
+				$(input).val(currentTxt).css({"background-color":"#afcaff"})
+			} else {
+				$(input).val(currentTxt).css({"background-color":"white"})
+			}*/
+
+			//Ok, remove kids and old menu because we don't need it from this point forward.  We will create new menu from scratch
+			myParent.children("[type=MENU]").remove();
+
+			$(myParent).append(input);
+
+			
+			//var menu = $("<div>",{id:"menu-for-"+myParent.attr("id"),type:"MENU"}).css({"position":"absolute","display":"inline"})
+
+			
+
+			$(input).focus().on('blur',function(event){
+
+				$.event.trigger("CUSTOM_userDoneEditing",[])
+
+
+				//reenable keydown logic and save input
+				$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+				
+					var tokens = $(input).val().split("\n");
+
+						//if Newlines?  Change Render Text As Menu
+					if( tokens.length > 0){
+
+				
+						console.log("I should not be here")
+						//Loop Over Tokens and write as inline Div Tags
+						for(it = 0; it < tokens.length; it++){
+
+							
+							var menu = $("<div>",{id:"menu-for-"+myParent.attr("id")+"-"+it,type:"MENU"}).css({"position":"relative","display":"inline"})
+							myParent.append(menu);
+							
+							//see if User gave us comma separated line.  If so, treat as images and text in menu item
+							var imgTxtTok = tokens[it].split(",")
+							console.log("SPLITTING ON ,")
+							console.log(imgTxtTok)
+							if(imgTxtTok.length > 0){
+
+							
+						
+
+								var option = "";
+
+								menuItemIds = menuItemIds;
+						
+								for(x=0; x < imgTxtTok.length; x++){
+
+									//var mId = menuItemIds.splice(0,1).toString();
+
+							var mId = menuItemIds.splice(0,1)
+							
+							if(!mId || mId.length ==0){
+								mId = myParent.attr("id") + "-" +it+"-"+x;	
+								
+							} 
+							newMenuItemIds.push(mId);
+							
+
+
+
+							var mi = $("<div>",{type:"MENU-ITEM",id:mId,item:myParent.attr("id")+ "-" +it+"-"+x})
+										.css('display','inline')
+						
+
+							menu.append(mi)
+							
+
+									var oId = menuOptionsIds.splice(0,1).toString();
+
+									if(oId.length == 0){
+										oId = myParent.attr("id") + "-" +it + "-" + x;
+									}
+
+									newMenuOptionIds.push(oId);
+
+									option = $("<div>",{type:"MENU-OPTION",id:oId,item:myParent.attr("id")+"-"+x})
+										.addClass(myParent.attr("id")+"-"+x).css({display:"inline",padding:"5px"});
+
+									var filename = imgTxtTok[x].trim()
+									//did user specify a fontawesome class or an image or plain text for this menu-item
+									ext = (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined;
+									console.log("EXT is " + ext + " and filename is " + filename)
+									if(true){
+										if(filename.startsWith("fa-")) {
+											mi.attr("class","fa" + " " + filename).attr("edittxt",filename).css("padding","5px")
+										}//urls fall in here too because or .com, .org extension etc 
+										
+										else {
+											//test for extensions
+											/*
+											if(filename.startsWith("napkin-")){
+												log.warn("Searching for napkin plugin " + filename);
+												PLUGINS_getPlugin(mi,filename);
+												mi.attr("edittxt",filename)
+
+											}else */{
+												console.log("filename is"+filename)
+												var reg=/(.+)\(([^)]+)\)/g;
+												grp = reg.exec(filename)
+												console.log("group is"+grp)
+												if(grp){
+													mi.attr("edittxt",grp[1]).attr("href",grp[2]).text(grp[1]);
+													createAnchorFor(mi);
+												}else{
+													mi.attr("edittxt",filename).text(filename);
+												}
+											}
+											
+										}
+
+										//mi.append(option)
+
+									} else if(filename.startsWith("href:")){
+
+											 var url = filename.substring(filename.indexOf("href:")+5);
+
+											//Only 1 href per line.  Anything more would be confusing
+											//option.attr("href",url);
+											//Temp include option just to copy href to siblings and then destroy because it is useless
+											//for end user display purposes. ie. HREF aren't seen
+											//mi.append(option)
+											mi.attr("href",url);
+											createAnchorFor(mi);
+											
+
+									}else {
+										//USER IMAGE NEEDS SOME WORK. SHOULD BE SPLIT OUT TO IMG TAG OR SECOND DIV TAG
+										//found image
+											console.log("Appending image " + filename)
+											mi.css({display:"inline-block","vertical-align":"middle","background-image":"url(" + filename + ")","background-size":"cover","background-repeat":"no-repeat"})
+												.attr("edittxt",filename)
+											//mi.append($("<div>",{edittxt:filename, style:"display:inline-block"}).html(filename))			
+											//mi.append(option)
+									}
+
+									
+								}
+								//done editing... copy user requested styles onto element again so we don't lose the style
+								//when done editing this text.
+								style = menuItemStyles[mi.attr("id")]
+
+								if(style){
+									mi.css(style)
+								}
+
+								if(renderAsMenu){
+									if(mi.css("margin-left") == "0px" ){
+										mi.css("margin-left","20px");
+
+									}
+								} else {
+									mi.append("<p>");	
+								}
+
+								
+								CUSTOM_PXTO_VIEWPORT($(mi),mi.offset().left, mi.offset().top)
+								if(renderAsMenu){
+									mi.addClass("menutext")
+								}
+								//determine if img or token
+							}/* else {
+
+								mi.append($("<div>",{type:"MENU-ITEM-TXT",edittxt:tokens[it],style:"display:inline-block"}).html(tokens[it]))
+							}*/
+						}
+						
+					}
+
+				myParent.attr("menuItemIds",newMenuItemIds);
+				myParent.attr("menuOptionsIds",newMenuOptionIds)
+				
+				log.debug(`Current Node is ${$('#'+$(myParent).attr('parent-node')).attr(proto.editModeAttribute)}`);
+				
+				//myParent.css("color",oldTxtColor)
+				CUSTOM_PXTO_VIEWPORT(myParent,myParent.offset().left, myParent.offset().top)
+			
+				$(input).remove();
+
+				userHoveringOverNote = false;
+
+				SAVE_okToSave = true;
+				//enable menu items
+				setUpMenuItems($(myParent))	
+				/*
+				$(myParent).css("height",$(myParent).children("[type=MENU-ITEM]").first().height()*1.2).children("[type=MENU-ITEM]").each(function(it,child){
+					//setUpDiv(child);
+				})*/
+			});
+}
+
+function initDraggableObject(obj){
+
+	
+	$(obj).draggable({snap:false});
+	
+	$(obj).droppable(DROPPER_LOGIC);
+
+}
+
+//Create (or Modify) smart anchor. ie. only triggers when in Live mode. Also positioned correctly since we use absolute positioning inside display:"inline"
+function 	createAnchorFor(parent,overwriteOldAnchor){
+
+
+	var parentId = $(parent).attr("id");
+	var loc = $(parent).attr("href");
+
+	if(!overwriteOldAnchor){
+		anchors = $("<a>",{id:"anchor-"+parentId,href:loc,label:loc,type:"anchor"})
+	} else {
+
+		if($(parent).find("[type=anchor]").length == 0){
+			console.debug("I found no anchors to update");
+			return;
+		}
+
+		anchors = $(parent).find("[type=anchor]");
+	}
+
+
+	anchors.each(function(idx,a){
+		a = $(a);
+
+		immediateParent = overwriteOldAnchor ? a.parent("[href]") : parent;
+
+
+
+		var leftPos = immediateParent.css("display") == "inline-block" ? 0 : "0px";
+		var topPos = immediateParent.css("display") == "inline-block" ? 0 : "0px";
+
+
+		console.log("immediate parent is " + immediateParent.attr("id") + " with offsets " + immediateParent.position().left)
+		console.log({left:leftPos,top:immediateParent.offset().top});
+		
+		a.css({align:"center",display:"inline-block",left:leftPos,width:immediateParent.width(),height:immediateParent.height()
+			,"position":"absolute", top:topPos});				
+		a.on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+		a.on("click",writeTabs)
+
+		CUSTOM_PXTO_VIEWPORT($(a),$(a).position().left, a.position().top)
+
+	})
+
+
+	//The name of the anchor variable is misleading here.  If we get in here, only adding one anchor. So the name could be 'a' 	
+
+	if(!overwriteOldAnchor){
+		$("#anchor-"+parentId).remove();
+
+		$(parent).append(anchors);
+
+		CUSTOM_PXTO_VIEWPORT($(anchors),$(anchors).position().left, anchors.position().top)
+
+		setUpAnchors(parent);
+	}
+
+	return parent;
+}
+
+//Make sure we can only click anchors in Preview/Live mode, ELSE show Ballon for parent MENU-ITEM
+function setUpAnchors(div){
+
+
+	div.find("[type=anchor]").each(function(idx,anchor){
+
+		$(anchor).on("dblclick",function(e){
+				if(editing){
+					$(this).parents("[href]").first().trigger("dblclick")
+					//e.preventDefault();
+					return false;
+				}
+
+		}).on("click",function(){
+			console.log("Editing is " + editing)
+				if(editing){
+					$(this).parent("[href]").first().click();
+					//e.preventDefault();
+					return false;
+				}
+
+		}).on("mouseenter",function(){
+
+			if(editing) {			
+				window.status = $(this).attr("href");
+				$(this).parent("[href]").first().trigger("mouseenter");
+			}
+		})
+
+	})
+
+
+}
+
+//file input field is actually created in stylesTabs2.js dynamically
+//attached it here because it was too much trouble attaching it in normal HTML and hiding/rewriting after autoSave feature enabled
+function CUSTOM_HANDLEFILES(files) {
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    var imageType = /^image\//;
+    
+    if (!imageType.test(file.type)) {
+      continue;
+    }
+    //CUSTOM_currentlyMousingOverElementId
+    var img = $("#"+window.myim);
+    
+    img.file = file;
+    
+    
+    var reader = new FileReader();
+    reader.onload = (function(aImg) { return function(e) { 
+    	 $(aImg).css({"background-image":"url(" + e.target.result + ")","background-size":"cover"})
+    }; })(img);
+    reader.readAsDataURL(file);
+  }
+}
+
+function setUpMenuItems(tParent){
+
+		$(tParent).find("[type=MENU-ITEM]").on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
+					.on("click",writeTabs)
+}
+
+function addEditMode(){
+
+	if(!$("#anchorsAway").is(":checked")){
+		$("body").addClass("editing")
+		$("[type=anchor]").css("border","1px solid red")
+	}
+}
+
+function removeEditMode(){
+	$("body").removeClass("editing")
+	$("[type=anchor]").css("border","none")
+}
+
+function enableHoverEvents(){
+	if(!$("#disableHoverEvents").is(":checked")){
+		$("body").addClass("hover")
+	} 
+}
+
+function disableHoverEvents(){
+
+	$("body").removeClass("hover");
+}
+
+function setUpDiv(div){
+
+	div = $(div)
+
+	var oldPos = div.css("position");
+
+	div.find(".hotspot").css({height:0,width:0}).hide()
+
+	div.not("#drawSpace,body").resizable().on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
+		.not("[type=TXT],[type=ICON],[type=BTN]").on("resize",CUSTOM_ON_RESIZE_LOGIC);
+	
+	div.not("#drawSpace,body").draggable().on("drag",function(){
+		NOTES_makeNote(this);
+		
+		//if($(this).offset().top > $("#drawSpace").height() - 100){
+			console.log("Adding more space....")
+			//$("#drawSpace").css("height",$("#drawSpace").height()+100)	
+		//}
+		
+
+	}).on("dragstart",function(){
+		disableHoverEvents()
+	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("dragstop",function(){
+		enableHoverEvents()
+		//CUSTOM_pressEscapeKey();
+	}).on("resize",function(){
+		NOTES_makeNote(this);
+	});
+
+
+	
+
+	div.filter("[type!=T],[type!=ICON]").droppable(DROPPER_LOGIC);
+	div.find(".hotspot").on("click",CUSTOM_HOTSPOT_CLICK);
+	
+	if(div.is("[type=ICON]")){
+		div.on("resize",CUSTOM_ICON_RESIZE)
+	}
+
+	if(div.is("[type=T],[type=BTN],[type=IMG]")){
+		div.on("resize",CUSTOM_TXT_RESIZE).on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+	}
+
+	if(div.is("[type=LIST]")){
+		log.warn("Triggering list load for list " + div.attr("id") + " and alias " + div.attr("alias"))
+		$.event.trigger("listLoad",[div])
+	}
+
+	if(div.is("[type=T]")){
+		$.event.trigger("translateTxt",[div])
+	}
+
+
+	log.debug("doing Divs")
+	
+	div.not("body,[type=MENU]").on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
+					.on("click",writeTabs)
+					
+
+	//Setup Menu Divs
+	if(div.is("[type=T]")){
+		setUpMenuItems(div);	
+	} 
+
+	setUpAnchors(div)
+	//div.not("#drawSpace").not("body").on("mouseover",CUSTOM_MOUSEENTER_LOGIC);
+
+	//commented out because it swallows Anchor click event and will not allow links to be clicked.
+	//todo: 1. On user choosing slide options, add JS dynamically to call slider click event and save to JS file
+	//div.not("#drawSpace,body,[type=VID]").on("click",genericSlide);
+
+	div.not("body").addClass(div.attr("id")).addClass("dropped-object")
+
+	//fix bug in jquery which forces position to relative on draggable() init
+	div.css("position",oldPos);
+	
+}
+
+
+
+
+function parseStyleClassFromString(theStr){
+
+	var theStyle = {};
+	
+	oldHos = theStr.split(";")
+
+	for(i=0; oldHos && i < oldHos.length; i++){
+		theOldHo = oldHos[i];
+		lilOldHos = theOldHo.split(":")
+		console.log("Do I have old hos!")
+		console.log(lilOldHos);
+		if(lilOldHos.length > 1){
+			
+			theOldLabel = lilOldHos[0];
+			theOldValue = lilOldHos[1];
+
+			theStyle[theOldLabel] = theOldValue;
+
+		} 
+	}
+
+	return theStyle;
+}
+
+
+function initialize(){
+
+	
+	
+ 	$("body").attr("id","body").addClass("body").addClass("hover");
+
+ 	$("#smalldialog").dialog({
+ 		autoOpen: false, 
+ 		modal:true,
+ 		resizable:true,
+ 		open:_DEFAULT_OPEN_CODE,
+ 		close:_DEFAULT_CLOSE_CODE,
+ 	});
+
+ 	$("#dialog").dialog({
+ 		autoOpen: false, 
+ 		modal:true,
+ 		resizable:true,
+ 		open:_DEFAULT_OPEN_CODE,
+ 		close:_DEFAULT_CLOSE_CODE,
+ 	});
+
+ 	$( "#jsdialog" ).dialog({ 
+ 		autoOpen: false, 
+		resizable:false,
+		height:"auto",
+		width:600,
+		modal:true,
+		close:CUSTOM_CLOSE_LOGIC,
+		open: CUSTOM_JS_OPEN_CODE,
+		buttons:{
+			Cancel: function(){
+				log("Ignoring " + $("#jsdialog").find("textarea").val());
+				$(this).dialog("close");
+			},
+			"Save Function": function(){
+				var error = false;
+				try {
+					//disable all events before adding new user events	
+
+					$(this).data().theClickedElement.off("click")
+					//test and add new user events
+					eval($("#jsdialog").find("textarea").val())
+
+					//if we make it to this line, user entered good js
+					//So unbind any duplicated events and eval again to execute any on("x") events where x = event name
+					var myRegexp = /\s*on\(\s*"(\s*\w+)"\s*,.+|on.\("(\w+)"\s*\)\.+/img
+
+					normalizedCopy = $("#jsdialog").find("textarea").val().replace(/\n/g,"");
+
+					log(normalizedCopy)
+
+					match = myRegexp.exec(normalizedCopy);
+
+					log("Match is " + match)
+
+					elemId = $(this).data().theClickedElement.attr("id")
+
+					var recompileCode = false;
+
+					while (match != null) {
+
+					  // matched text: match[0]
+					  // match start: match.index
+					  // capturing group n: match[n]
+					  log("attempting to unbind any events of type ["+match[1] + "] attached to #" + elemId )
+					  $("#"+elemId).unbind(match[1]);
+
+					  if(match[1] == "hover"){
+					  	$("#"+elemId).unbind("mouseleave").unbind("mouseover")
+					  }
+
+					  //rebind our custom events
+					  if(match[1] == "mouseenter" || match[1] == "mouseleave" || match[1] == "click"){
+						  	$("#"+elemId).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+								.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
+								//.on("click",genericSlide);
+					  }
+					  recompileCode = true;
+
+
+					  match = myRegexp.exec(normalizedCopy);
+
+					
+					}
+
+					if(recompileCode){
+						eval($("#jsdialog").find("textarea").val())
+					}
+
+					//Now that we are sure code is good.  Write it to storage
+					saveJs($(this).data().theClickedElement,$("#jsdialog").find("textarea").val());
+
+				}catch(e){
+					log("Writing Error")
+					error = true;
+					$("#jsdialog").find("#error_area").val(e)
+				}
+				if(!error) {
+					$(this).dialog("close");
+				}
+
+				theId = $(this).data().theClickedElement.attr("id")
+				//Always Renable Drag events
+				initDraggableObject($(this).data().theClickedElement);
+			}
+		}
+
+ 	});
+
+   	
+   	//Reinitialize resizable that may have been saved during autosave or manual save process
+   	
+	kids = $(".ui-resizable").children(".ui-resizable-handle").remove();
+
+	$(".ui-resizable").on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
+
+	$(".ui-resizable-disabled").resizable().removeClass(".ui-resizable-disabled")
+
+	try {
+
+	$(".dropped-object").droppable("destroy").resizable("destroy")
+	
+	}catch(e){
+		log.warn("No destroy methods found to clean up.  Continuing")
+	}
+
+	//Enable Tool Hotspots
+	$("#id_toolset").find(".hotspot").on("click",CUSTOM_HOTSPOT_CLICK);
+
+	$(".ui-droppable").resizable().on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
+
+	$(".template").on("click",function(){
+		if($(this).css("opacity") == 1){
+			$(this).css({"opacity":.9,"background-color":"green"})
+			groupResizeEnabled = true;
+		} else {
+			$(this).css({"opacity":1,"background-color":"transparent"})	
+			groupResizeEnabled = false;
+		}
+	})
+
+
+	//Disable resize temporarily if not in draft mode
+	if($(".mastertools").css("opacity") != 1){
+		editing = false;
+		$(".ui-droppable").resizable({disabled:true})
+	} else {
+		editing = true;
+	}
+
+	//Disable resize temporarily if not in draft mode
+	if($(".masterautosave").css("opacity") != 1){
+		editing = false;
+
+	} else {
+		editing = true;
+	}
+
+	$(".dropped-object").each(function(idx,element){
+		setUpDiv($(element));
+	})
+
+
+
+	//$('.ui-draggable').draggable({snap:false});
+	
+	$("#drawSpace").droppable(DROPPER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).find(".hotspot").css({height:0,width:0}).hide()
+	
+	
+   	//Setup edit hotspots
+   	//$("div.hotspot").on("click",CUSTOM_HOTSPOT_CLICK)
+
+   	//Setup up Dblclick event for editing text areas on all components
+   	//$("div.hotspot").parentsUntil(".ui-draggable").parent().not("#id_toolset").on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+   	//.resizable({disable:false})
+
+   	//Show Toolbar and setup options
+   $(".toolset_header").on("dblclick",function(event){
+   		$(".tool_panel").toggle();
+   })
+
+   $(".tool").draggable({
+		helper: "clone"
+	});
+
+   $(".mastercopy").draggable({
+		helper: "clone"
+	});
+
+   	$('.toolset').draggable()
+
+   $( "#dialog" ).dialog({ 
+ 			autoOpen: false,
+ 			close:CUSTOM_CLOSE_LOGIC
+
+ 	});
+
+   $(".trash").resizable("destroy").draggable("destroy")
+
+   $(".dropped-object").addClass("squarepeg")
+
+   
+   
+
+
+   //Signal that all elements are on the page and slider is ready
+    $.event.trigger("genericSliderReady",[])
+
+	//Determine which popup to call based on Key User Pressed
+	//Note: Unbind called while user is entering values on dialog so that we don't
+	//interfere with Shift or Ctrl keys needed while in JS view
+   	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+
+
+   	//setupGhosts
+   	$("[ghost-for]").each(function(i,ghost){
+
+   		GHOST_init(ghost);
+   	})
+	
+
+   	log("all done")
+}
+
+
+function recursiveCpy(obj){
+	var obj = $(obj)
+
+	log.trace("Copying")
+	//temporarily disable dragging on parent
+	//obj.draggable("destroy").find(".ui-droppable").draggable("destroy")
+
+	try {
+
+	obj.draggable("destroy").find(".ui-droppable").draggable("destroy")
+
+	obj.resizable("destroy")
+
+	}catch(e){
+		log.warn(e)
+	}
+
+	clone = obj.clone();
+
+	clone.attr("extends",obj.attr("id"))
+
+	clone.attr("id","ELEM_"+ new Date().getTime())
+
+	log.trace(clone)
+	
+	style = CONVERT_STYLE_TO_CLASS_OBJECT(obj)
+   	
+   	$(clone).css(style)
+
+   	clone.removeClass(obj.attr("id"))  
+
+   	$(obj).find(".dropped-object").each(function(idx,elem){
+   		log.trace("child copy of " + $(elem).attr("id"))
+   		elem = $(elem)
+   		id = elem.attr("id")
+
+   		// find elem on copy
+   		cpy = $(clone).find("#"+id);
+
+   	
+   		mystyle = CONVERT_STYLE_TO_CLASS_OBJECT(elem)
+   		console.log("what was position " + mystyle.position)
+   		//mystyle.position = "absolute";
+   		cpy.css(mystyle)
+   		console.log("what was written " + cpy.css("position"))
+   		log.trace("Height " + elem.css("height") + " widht " + elem.css("width"))
+   		log.trace("Height " + cpy.css("height") + " widht " + cpy.css("width"))
+   		console.log("Back from traje : position " + cpy.css("position"))
+   		cpy.attr("extends",id)
+   		cpy.attr("id","ELEM_" + new Date().getTime());
+   		//trigger write to file
+   		//cpy.trigger("resizestop")
+   		CUSTOM_PXTO_VIEWPORT($(cpy),cpy.position().left,cpy.position().top)
+   		console.log("Copy position is " + cpy.css("position"))
+   		//cpy.css("position",cpy.css("position"))
+   		//cpy.css("position")
+   		cpy.removeClass(id)
+
+   		cpy.off();
+   		
+   		setUpDiv(cpy);
+   	
+   	})
+
+  
+   	
+   	$(obj).find(".ui-droppable").each(function(idx,elem){
+   		setUpDiv(elem);
+   	})
+
+   	//then parent
+   	setUpDiv($(clone))
+
+	setUpDiv($(obj))
+
+   	obj.parent().append(clone)
+
+   	clone.css({top:obj.offset().top + 10, left:obj.offset().left+10})
+
+   	CUSTOM_PXTO_VIEWPORT($(clone),clone.position().left,clone.position().top)
+ 
+
+}
+
+
+
+var hiddenItems = null;
+
+DROPPER_LOGIC = {
+
+		helper:"clone",
+
+		greedy:true,
+		
+        drop: function(event, ui) {
+
+        	//remove class which highlights element when hovering over it in inspect mode
+        	$(ui.draggable).removeClass("submenu")
+
+        	//event.preventDefault();
+        	log.trace("Showing hiddenItems")
+        	$(hiddenItems).show();
+        	$.event.trigger("droppedEvent",[event,ui]);
+        	
+ 
+        	$(event.target).removeClass("over")
+
+        	$(ui.draggable).css("z-index",parseInt($(event.target).css("z-index"))+1)
+
+        	if($(ui.draggable).hasClass("mastercopy")){
+        	
+        		log.trace("Starting Master Copy")
+
+        		clone = recursiveCpy(event.target);
+        		
+        		//clone.css({left:$(event.target).position().left -	10,top:$(event.target).position().top -10})
+        		//$('body').append(clone);
+        		
+				$(clone).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+							.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
+							
+
+        		log("Copy")
+				return;
+				
+			}  
+			
+
+			if($(event.target).attr("type") == "T"){
+				log("Exiting.  Can drop anything on text.  Only Copy is possible")
+				return;
+
+			}
+
+			if($(ui.draggable.id) == "trash"){
+				log("Can not drop trash on droppable components....returning")
+				return;
+			}
+
+        
+	
+			if($(ui.draggable).hasClass("toolset")){
+				log("Can't drop drawing tools")
+				return;		
+			}  	
+
+        	log.trace("Dropping over " + $(event.target).attr("id"));
+
+        	if(event.target.id == "trash"){
+        		myCSSLookupKey = "." + $(ui.draggable).remove().attr("id");
+        		log("My Lookup Key " + myCSSLookupKey)
+        		var re = new RegExp(myCSSLookupKey+'\\s+\\{[^}]+\\}','img')
+				$("style.generated").html($("style").html().replace(re,""))
+
+        		log("take out trash")
+        	} 
+
+        	if(event.target.id == "id_toolset"){
+
+        		log("nothing to do");
+        		return;
+
+        	}else {
+        	
+        			var createdTool = false;
+
+        			parent = "#"+event.target.id;
+
+		        	child = "#"+ $(ui.draggable).attr('id')
+
+		        	var isBTNCntrl = false;
+		        	/*
+		        	if( $(ui.draggable).parents().is(isBTNCntrl = function(){
+		        		return $(this).attr("id") == $(child).attr("slider-container")
+
+		        	}))*/
+		        	if($(event.target).parent().is("[type=LIST]") && $(ui.draggable).parent().is("[type=LIST]")){
+						$(ui.draggable).insertBefore($(event.target));
+
+						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+						return;
+					}
+
+		        	if(isBTNCntrl){
+		        		log.trace("Can't drop button here")
+					
+						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+						return;
+		        	}
+					
+					
+					
+					
+					if( ( $(event.target).width() * $(event.target).height()) <=  ( $(ui.draggable).width() * $(ui.draggable).height() ) ){
+						log.trace("Exiting Target too small to accept the dropped element " + $(event.target).offset().left)
+						
+						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+						return;
+					}
+
+
+
+	        		if($(parent).children(child).length > 0  )
+	        		{
+	        	
+	        			CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+	     
+	        			return;
+	        		} else {
+	        			log.trace ("i REALLY don't know this child")
+	        		}
+
+	        		if( $(ui.draggable).hasClass("dropped-object")){
+	        			aTool = $(ui.draggable)
+
+					} else {
+
+			        	aTool =  whichTool($(ui.draggable).text());
+			        	
+			        	log.warn("UI draggable offset is ")
+						log.warn($(ui.draggable).offset())
+
+			        	aTool = configuredTool(aTool);
+			        	createdTool = true;
+					}
+
+
+					//dropTool Call
+					//dropTool(aTool,{target:event.target,clientX:event.clientX,clientY:event.clientY});
+					dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
+					/*
+		        	log("A tool is ")
+		        	log(aTool)
+
+		        	
+		        	$(aTool).css({position:"absolute"})
+
+						        
+
+					log(`Value of position is ${$(aTool).css('position')}`);
+				
+					log("Offset before append is " + Math.abs($(event.target).offset().top - $(aTool).offset().top))
+
+					//var relativeAppendTop = createdTool ? event.clientY : Math.abs($(event.target).offset().top - $(aTool).offset().top);	
+					$(event.target).append(aTool);	
+
+					yOffset = event.clientY + window.scrollY;
+					xOffset = event.clientX;
+					aTool.offset({left:xOffset,top:yOffset})
+					$(event.target).append(aTool);	
+		        	aTool = CUSTOM_PXTO_VIEWPORT(aTool,aTool.position().left,aTool.position().top)
+		        	$(aTool).addClass("debug-border-style");
+		      		$(aTool).addClass("dropped-object");
+
+		        	log("Handle length is " + aTool.children(".ui-resizable-handle").length)
+		        	
+        	
+
+		        	aTool.resizable({disabled:false}).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
+		        	try {
+		        		aTool.unbind("click",genericSlide).on("click",genericSlide);
+		        	}catch(e){
+		        		log("generic slide is disabled")
+		        	}
+					*/
+        	
+        	}
+        
+        	log.trace("Showing hiddenItems")
+        			$(hiddenItems).show();
+        
+        	$(this).removeClass('over')
+        	//$(ui.draggable).addClass("squarepeg");
+        },
+        start:function(event,ui){
+
+        	$(ui.draggable).css("z-index","80000");
+
+        },
+       
+        over: function(event,ui){
+        
+        	$(this).addClass('over');
+        	
+
+        
+        	//|| parseInt($(this).css("left")) < parseInt($(this).parent().css("left")) )
+        },
+        out : function(event,ui){
+        	$(this).removeClass('over')
+        	$(this).show();
+        	$(hiddenItems).show();
+        	
+        }
+}
+
+function dropTool(aTool,dropInfo){
+
+		var target = dropInfo.target;
+		var yOffset = dropInfo.clientY + window.scrollY;
+		var xOffset = dropInfo.clientX;
+
+
+		log("A tool is ")
+		        	log(aTool)
+
+		        	
+		        	$(aTool).css({position:"absolute"})
+
+						        
+
+					log(`Value of position is ${$(aTool).css('position')}`);
+					log.warn(`Value of offset is ${$(aTool).offset()}`);
+
+				
+					//log("Offset before append is " + Math.abs($(event.target).offset().top - $(aTool).offset().top))
+
+					//var relativeAppendTop = createdTool ? event.clientY : Math.abs($(event.target).offset().top - $(aTool).offset().top);	
+					//$(target).append(aTool);	
+					//log.warn("target is ")
+					//log.warn(target)
+
+					$(target).append(aTool);
+					aTool.offset({left:xOffset,top:yOffset})
+					
+
+
+					//$(target).append(aTool);
+
+
+		        	aTool = CUSTOM_PXTO_VIEWPORT(aTool,aTool.position().left,aTool.position().top)
+		        	$(aTool).addClass("debug-border-style");
+		      		$(aTool).addClass("dropped-object");
+
+		        	log("Handle length is " + aTool.children(".ui-resizable-handle").length)
+		        	
+        	
+
+		        //if(aTool.children(".ui-resizable-handle").length == 0){
+		        	aTool.resizable({disabled:false}).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
+		        	if(aTool.is("[type=VID]")){
+		        		aTool.find("video")[0].play()
+		        	}
+		        	try {
+		        		//aTool.unbind("click",genericSlide).on("click",genericSlide);
+		        	}catch(e){
+		        		log("generic slide is disabled")
+		        	}
+}
+
+log("Loaded CUSTOM_EVENT_PRESET_EDIT_LOGIC and CUSTOM_SETUP_DIALOG_AND_DRAGGABLES")
+	
