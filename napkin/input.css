@@ -1,0 +1,14 @@
+#search-button{
+	display:inline-block;
+	font-size:32px;
+	color:green;
+	position: absolute;
+}
+
+#someid {
+
+	left:50px;
+	position: absolute;
+	display: inline-block;
+}
+

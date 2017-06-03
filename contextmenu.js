@@ -133,6 +133,9 @@ $(document).on("initializationComplete",function(){
             /* Not needed. Called from DELETE case
             case "unghost": GHOST_delete($(currentCtx))
             break;*/
+            case "addoverlay":
+                OVERLAY_setUp($(currentCtx))
+                break;
             case "addsection":
                  var aTool =  whichTool("DIV");
                         aTool = configuredTool(aTool);
@@ -166,7 +169,16 @@ $(document).on("initializationComplete",function(){
                 break;
             case "copy": if(currentCtx.attr("type") != "canvas"){recursiveCpy(currentCtx);} break;
             case "resize": $(".template").click();break;
-            case "javascript": if(currentCtx.attr("type") != "canvas"){ hotObj = $(currentCtx);$(currentCtx).find("img")[1].click();}break;
+            case "javascript": if(currentCtx.attr("type") != "canvas"){         
+                    //remove submenu class because we don't need it anymore
+                $( ".adialog" ).data({"theClickedElement":$(hotObj),"actionType":$(this).attr("data-action")});
+ 
+                    currentCtx.removeClass("submenu")
+                //Signal open and set title
+                $( "#jsdialog" ).dialog( "open" ).dialog("option","title","Enter Javascript for element #" 
+                        + $(hotObj).attr("id"));
+
+                    }break;
            
             case "fulledit": hotObj = $(currentCtx);
                 if($(this).html().indexOf("Open Inspector...") > -1 ){
@@ -183,7 +195,7 @@ $(document).on("initializationComplete",function(){
                 }           
                 break;  
                 // $(currentCtx).find("img")[0].click();break;
-            case "preview": CUSTOM_pressEscapeKey(); $("#id_toolset").find(".mastertools").find("img").click();break;
+            case "preview": CUSTOM_pressEscapeKey(); $("#id_toolset").find(".mastertools").find("img").click();  break;
             case "delete": if(currentCtx.attr("type") != "canvas"){if(currentCtx.is(".ghost")){GHOST_delete(currentCtx)};deleteElement(currentCtx,true); NOTES_delete();} break;
             case "scroller": convertToScroller(); break;
         }

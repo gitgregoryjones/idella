@@ -4,6 +4,7 @@ var commonTabLabel = "common"
 var generatedTabsForId = null;
 var anchorsAway = false;
 var copiesModified = false;
+var showOverlays = true;
 var groupResizeEnabled = false;
 var reWritingEditSpace = true;
 var STYLESTABS_forceRewrite = false;
@@ -418,7 +419,7 @@ function writeTabs(currentCtx,forceWrite){
 		//Write menu
 		$(".tabul").append("<li style='width:10px'>&nbsp;</li>")
 		$(".tabul").append('<li style="50px; padding:5px" class="mini-responsive-design-tab fa fa-desktop"><div class="fa fa-desktop"></div></li>');
-		$(".tabul").append('<li style="50px; padding:5px">&nbsp;&nbsp;Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">&nbsp;&nbsp;Disable Hover <input type="checkbox" name="disableHoverEvents" id="disableHoverEvents">&nbsp;&nbsp;Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">&nbsp;&nbsp;Resize Group <input type="checkbox" name="group-resize" id="group-resize"></li>');
+		$(".tabul").append('<li style="50px; padding:5px">&nbsp;&nbsp;Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">&nbsp;&nbsp;Disable Hover <input type="checkbox" name="disableHoverEvents" id="disableHoverEvents">&nbsp;&nbsp;Show Overlays <input type="checkbox" name="showOverlays" id="showOverlays" class="showOverlays">&nbsp;&nbsp;Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">&nbsp;&nbsp;Resize Group <input type="checkbox" name="group-resize" id="group-resize"></li>');
 
 		$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;Search Styles : <input type="search" id="tags" value=""></div></li>');
 		$(".tabul").append('<li style="50px; padding:5px" class="rocket-save"><div style="display:inline">&nbsp;&nbsp;Save: <div class="fa fa-rocket"></div></li>');
@@ -475,6 +476,15 @@ function writeTabs(currentCtx,forceWrite){
 			copiesModified = $(this).is(":checked") ? true: false;
 		})
 
+		$(".showOverlays").on("click",function(){
+			showOverlays = OVERLAY_areOverlaysEnabled();
+			if(showOverlays){
+				OVERLAY_enableOverlays();
+			} else {
+				OVERLAY_disableOverlays();
+			}
+		})
+
 		$("#disableHoverEvents").on("click",function(){
 			disableEventsFlag = $(this).is(":checked") ? true: false;
 			if(disableEventsFlag){
@@ -488,6 +498,10 @@ function writeTabs(currentCtx,forceWrite){
 		//reset buttons in case page reloaded
 		if(copiesModified){
 			$(".changesToggle").click();
+		}
+
+		if(showOverlays){
+			$(".showOverlays").click();
 		}
 		
 		if(groupResizeEnabled) {

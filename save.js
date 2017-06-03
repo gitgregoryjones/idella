@@ -1,6 +1,4 @@
-var allSitesAsObj = null;
-var website = "default";
-var theSiteObj = null;
+
 var SAVE_okToSave = true;
 
 dialogs = $(".adialog")
@@ -23,7 +21,7 @@ setup();
 function startTimer() {
     // wait 2 seconds before calling goInactive
    	if(!_debug)
-    	timeoutID = window.setTimeout(SAVEJS_goInactive, 50000);
+    	timeoutID = window.setTimeout(SAVEJS_goInactive, 500000);
 }
  
 function resetTimer(e) {

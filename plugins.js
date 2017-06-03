@@ -1,10 +1,11 @@
 var rawHTML = "";
-
+var resizedPlugin = false;
 
 
 function PLUGINS_getPluginList(){
 
-	var fileStr = "JW Player,fa-film,video\nSearch Field,fa-search,input";
+	var fileStr = "JW Player,fa-film,video\nSearch Field,fa-search,input\nText Field,fa-square-o,textfield"
+		+ "\nDialog,fa-window,dialog\nAlt Video,fa-film,altvideo\nTextfield,fa-window,textarea\n";
 
 	lines = fileStr.split("\n");
 
@@ -32,117 +33,154 @@ function PLUGINS_getPluginList(){
 
 }
 
+function UrlExists(url)
+{
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    return http.status!=404;
+}
+
 
 function PLUGINS_getPlugin(parent,pluginName){
+
+	var def = [];
+	var res = "";
+	var js = "";
+
+
 	parent = $(parent);
+
+	tempDiv = $("<div>");
+
 	var dir = pluginName.substring(0,pluginName.indexOf("-"));
 	var plugin = pluginName.substring(pluginName.indexOf("-")+1).trim();
-	
-	log.warn("CLooking for file " + dir + "/" + plugin+ ".html")
-	var file = dir + "/" + plugin+ ".html";
 
-	var idsToReplace = [];
+	var responses = [];
 
-	$(parent).load(dir + "/" + plugin+ ".html",function(response, status, xhr){
-		if(xhr.status != 200){
-			console.log("WHAT!!!")
-			log.error("Failure loading file " + file);
-			log.error("Encountered error : " + xhr.status + " " + xhr.statusText)
+	var fileExtensions = {}
+	fileExtensions[".html"] = {wrapper:null};
+	fileExtensions[".css"] = {wrapper:"<style>"};
+	fileExtensions[".js"] = {wrapper:"<script>"};
+
+	var validFilesExtensions = [];
+
+	for(idx in fileExtensions){
+
+		if(UrlExists(dir + "/" + plugin+ idx)){
+    			fileExtensions[idx].available = true;
+    			
+    			
 		} else {
+			console.log("ignoring file " + dir + "/" + plugin + idx + " because user did not create");
+		}
+	}
 
 
-			console.log("UP IN HERE!")
-			//overwrite ids
-			rawHTML = response;
-			content = $(rawHTML);
-			//overwrite ids
+	//redundant because of WHEN and failure weird logic for jQuery 1.12+.  One day i can put this in a loop
+	//and FileExtensions will have value when method returns.
+	//Promise?
+	
+	if(fileExtensions[".html"].available){
+		def.push($.get(dir + "/" + plugin+ ".html", function(response) {
+					res += response;
+	    			
+			}, 'text').fail(function(){console.log('error retrieving .html for '+ dir + "/" + plugin)}));
+	}
 
-			log.warn("What is ");
-			log.warn(parent);
-			log.warn("Content length is "+content.length)
-			log.warn(content)
+	if(fileExtensions[".css"].available){
+		def.push($.get(dir + "/" + plugin+ ".css", function(response) {
+					res += "<style>" + response + "</style>";
+	    			
+			}, 'text').fail(function(){console.log('error retrieving .css for '+ dir + "/" + plugin)}));
+	}
 
-
-			content.each(function(idx,node){
-
-				node = $(node);
-
-				var oldId = node.attr("id");
-
-				var newId = "ELEM_" + new Date().getTime()+idx;
-
-				node.attr("id",newId); 
-
-				log.warn("Looking for child node on plugin " + oldId)
-
-				
-				var currentObj = parent.find("#"+oldId).first();
-
-				if(currentObj.attr("id")){
-					console.log("COB = " + currentObj)
-					currentObj.attr("id",newId);
-					currentObj.addClass("plugin")
-					idsToReplace[oldId] = newId;
-					currentObj.attr("resize","true").attr("type",plugin);
-					CUSTOM_PXTO_VIEWPORT($(currentObj),$(currentObj).position().left ,$(currentObj).position().top);
-				}
-
-			})
-
-			//parent.resizable('destroy').resizable();
-
-			console.log(content)
-			//$(parent).children("script").appendTo($("head"))
-			//now load JS
+	if(fileExtensions[".js"].available){
+		def.push($.get(dir + "/" + plugin+ ".js", function(response) {
+					js += "<script>" + response + "</script>";
+	    			
+			}, 'text').fail(function(){console.log('error retrieving .js for '+ dir + "/" + plugin)}));
+	}
 	
 
+	
+	var idsToReplace = {};
 
+
+
+	$.when.apply($, def).done(function() {
+
+		parent.find("._container").remove();
+
+    	container = $("<div>").css({width:"100%",height:"100%"}).addClass("_container").append(res)
+
+    	console.log(fileExtensions)
+
+    	parent.append(container);
+
+    	ids = {};
+
+    	//load id array
+    	parent.find("[id]").each(function(idx,child){
+    		child = $(child);
+
+    		newId = "ELEM_" + new Date().getTime() + idx;
+
+    		id[child.attr('id')] = newId;
+
+    		pattern = "\"" + child.attr("id") + "\"|'" + child.attr('id') + "'";
+
+    		js = js.replace(new RegExp(pattern,"g"),"\""+newId+"\"")
+
+    		pattern = "\"#"+child.attr("id") + "\"";
+
+    		//Do # syntax
+    		js = js.replace(new RegExp(pattern,"g"),"\"#"+newId+"\"")
+
+    		var theClassObject = CONVERT_STYLE_TO_CLASS_OBJECT(child);
+
+    		theClassObject.cssRule = theClassObject.cssRule.replace("."+child.attr("id"),"."+newId);
+    		
+    		child.attr("id",newId).addClass(newId)
+    		
+    		
+    		if(idx > 0 && child.attr("noresize") == null){
+    			//Now overwrite id just before save to CSS file
+    			child.addClass("dropped-object")
+    			setUpDiv(child);
+    		}
+
+
+    		CSS_TEXT_saveCss(child, theClassObject)
+
+
+    	})
+
+    
+
+    	parent.find("style").remove();
+
+		//Do Special RESIZE LOGIC;
+		parent.on("resizestart",function(){
+			if(!$("#group-resize").is(":checked")){
+				$("#group-resize").click();
+				resizedPlugin = true;
+			}
+		}).on("resizestop",function(){
+			//uncheck group resize if plugin checked it without user input
+			if(resizedPlugin){
+				$("#group-resize").click();
+			}
+		})
+
+		$("._container").append(js)
+/*
+		setTimeout(function(){
+			parent.append(js);
+		},1000)*/
 		
-			file = dir + "/" + plugin + ".js";
-
-			setTimeout(function(){
-
-				$.get(file,function(response){
-					
-							var lastKeyWritten = 0;
-							for(key in idsToReplace){
-								
-								lastKeyWritten = idsToReplace[key];
-								console.log("lastKeyWritten = " + key)
-								value = idsToReplace[key]
-								reg = new RegExp(key,"g")
-								//var currentJs = getJs($("#"+key));
-
-								response = response.replace(reg,value)
-							}		
-						console.log(response)					
-						console.log(" lastKeyWritten [" + lastKeyWritten + "] and parent is " + parent.attr("id"))
-						if(lastKeyWritten != undefined && lastKeyWritten != "undefined" && lastKeyWritten != 0){
-							//eval(script.html())
-							for(key in idsToReplace){
-								console.log("Writing key " + idsToReplace[key])
-								$("#"+idsToReplace[key]).attr("resize","true").attr("type",plugin);
-							}
-
-							//saveJs($("#"+lastKeyWritten),script.html());
-							
-						}
-						//eval(response)
-						//$("#drawSpace").append($("<div id='plugin-scripts'>").append(script))
-						parent.append($("<script>").append(response))
-					
-
-				},"text")
-			},500)
-
-			parent.resizable('destroy').resizable()
-
-			
-		}
-
-
-
-		
-	})
+		//never gets in here.  Asynch blah blah
+	
+	});
 
 }

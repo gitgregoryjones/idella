@@ -95,7 +95,7 @@ function NOTES_makeNote(element,isActive){
 
 		theMsg.append("<div>Left : " + $(element).offset().left + ", Top: "+ $(element).offset().top + ", Height: "+ $(element).height() + ", Width: "+ $(element).width() +"</div>")
 		
-		if(!element.is("[type=PLUGIN")){
+		if(!element.is("[type=PLUGIN]")){
 
 			color = $(element).css("background-color")
 			image =  $(element).is("[type=VID]") ? $(element).find(".content-image").attr("src") : $(element).css("background-image")

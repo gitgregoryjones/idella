@@ -70,26 +70,32 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$(document).click();
 		//$(document).click();
 
-		//Show Javascript Window
+		//Show Javascript Window SHIFT+J
 	}else if(key == 74 && event.shiftKey){
 
-		$(hotObj).find("img")[1].click()
-		NOTES_delete();
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		$("[data-action=javascript]").click();
+		$(document).click();
 
 	//if delete key
-	} else if(key == 68 && event.shiftKey && $(hotObj).hasClass("dropped-object")){
-		/*
+	} else if(key == 68 && event.shiftKey){
+			/*
 		console.log("Mousing over "+ CUSTOM_currentlyMousingOverElementId)
 		event.preventDefault();
-		deleteElement($("#"+ CUSTOM_currentlyMousingOverElementId))
-		NOTES_delete()*/
+		deleteElement($("#"+ CUSTOM_currentlyMousingOverElementId))*/
+		NOTES_delete()
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
 		$("[data-action=delete]").click();
 		$(document).click();
+		
+
+		//$("#"+CUSTOM_currentlyMousingOverElementId).remove();
+
 
 		
-	} // NO LONGER NEEDED 
+	} // NO LONGER NEEDED SHIFT+T
 		else if(key == 84 && event.shiftKey){
 			//alert('hi')
 		$(document).trigger("contextmenu")
@@ -107,6 +113,14 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 
 CUSTOM_MOUSEENTER_LOGIC = function(event){
+	
+	if($(event.target).hasClass("ui-resizable-handle")){
+		//alert($(event.target).parents(".dropped-object").first().attr("id"))
+		$(event.target).parents(".dropped-object").first().trigger("mouseenter");
+		//$(event.target).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+		
+		return;	
+	}
 
 	//NOTES_delete()
 
@@ -124,6 +138,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	console.log("Up in Here! " + theElem.id + " Is anchor = " + $(theElem).is("[type=anchor]"))
 
 
+	//OVERLAY_showOverlay(theElem);
 	/*
 	if($("#editSpace").is(":hover")){
 
@@ -136,8 +151,14 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	}
 	*/
 
-	if(!editing || $(".custom-menu").is(":visible")){
-		log.error("will not highlight element user hovers over because master tool edit mode if off")
+	if(!editing || $(".custom-menu").is(":visible") ){
+
+
+		OVERLAY_showOverlay(theElem);
+	
+		log.error("will not highlight element user hovers over because master tool edit mode if off ")
+		log.error("theElem is ")
+		log.error(theElem)
 		return;
 	}
 
@@ -172,6 +193,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		CUSTOM_currentlyMousingOverElementId = theElem.id;	
 
 		console.log("making note for " + CUSTOM_currentlyMousingOverElementId)
+
+		
 
 		NOTES_delayShowingNote(theElem);
 		//Render popup note above element
@@ -248,10 +271,12 @@ CUSTOM_JS_OPEN_CODE = function(event,ui){
 	
 	exampleFunc = "//Enter Global JS below";
 
-	//if global window just display empty window
-	if($(this).data().theClickedElement.attr("id") != "id_toolset"){
+	elem = $("#"+CUSTOM_currentlyMousingOverElementId);
 
-		exampleFunc = "$(\"#"+$(this).data().theClickedElement.attr("id") + "\").on(\"click\",\n\tfunction(event){\n\t\t\/\/Enter Code Below\n\n\t}\n)";
+	//if global window just display empty window
+	if(elem.attr("id") != "id_toolset"){
+
+		exampleFunc = "$(\"#"+elem.attr("id") + "\").on(\"click\",\n\tfunction(event){\n\t\t\/\/Enter Code Below\n\n\t}\n)";
 	}
 
 	log(exampleFunc)
@@ -261,7 +286,7 @@ CUSTOM_JS_OPEN_CODE = function(event,ui){
 
 	//Get Persisted JS from Server
 
-	js = getJs($(this).data().theClickedElement);
+	js = getJs(elem);
 
 	if(js == null || js.trim().length == 0){
 
@@ -274,7 +299,7 @@ CUSTOM_JS_OPEN_CODE = function(event,ui){
 	enableTextAreaTabs($("#user_area"))
 
 	log("Opener of Dialog is")
-	log($( this ).data())
+	log(elem)
 
 }
 /*
@@ -375,13 +400,12 @@ CUSTOM_HOTSPOT_CLICK = function(event){
 		} else if(me.hasClass("js")){ 
 	
 
+			var elem = $("#"+CUSTOM_currentlyMousingOverElementId)
 				//remove submenu class because we don't need it anymore 
-			$( ".adialog" ).data().theClickedElement.removeClass("submenu")
+			elem.removeClass("submenu")
 
 			//Signal open and set title
-			$( "#jsdialog" ).dialog( "open" ).dialog("option","title","Enter Javascript for element #" + parent.attr("id"));
-
-			 log("JS dialog")
+			$( "#jsdialog" ).dialog( "open" ).dialog("option","title","Enter Javascript for element #" + elem.attr("id"));
 
 		} else if(me.hasClass("mastercss")){
 
@@ -419,6 +443,7 @@ CUSTOM_HOTSPOT_CLICK = function(event){
 
 					//hide extended menu
 					$("#extended-editing").hide();
+					$("[overlay-for]").hide();
 					DRAW_SPACE_deleteWorkspaceFromBody();
 					$(".ui-icon").hide();
 
@@ -1253,6 +1278,8 @@ function enableHoverEvents(){
 	} 
 }
 
+
+
 function disableHoverEvents(){
 
 	$("body").removeClass("hover");
@@ -1334,6 +1361,8 @@ function setUpDiv(div){
 
 	//fix bug in jquery which forces position to relative on draggable() init
 	div.css("position",oldPos);
+
+
 	
 }
 
@@ -1497,6 +1526,7 @@ function initialize(){
 
 	$(".ui-droppable").resizable().on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 
+	
 	$(".template").on("click",function(){
 		if($(this).css("opacity") == 1){
 			$(this).css({"opacity":.9,"background-color":"green"})
@@ -1523,6 +1553,7 @@ function initialize(){
 	} else {
 		editing = true;
 	}
+	
 
 	$(".dropped-object").each(function(idx,element){
 		setUpDiv($(element));
@@ -1669,10 +1700,11 @@ function recursiveCpy(obj){
 
    	obj.parent().append(clone)
 
-   	clone.css({top:obj.offset().top + 10, left:obj.offset().left+10})
+   	//clone.css({top:obj.offset().top + 10, left:obj.offset().left+10})
 
    	CUSTOM_PXTO_VIEWPORT($(clone),clone.position().left,clone.position().top)
  
+   	return $(clone);
 
 }
 

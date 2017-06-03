@@ -1,4 +1,4 @@
-
+	
 var numberToSlide = 0;
 var howFarLeft = 0;
 
@@ -49,17 +49,51 @@ function resetForRight(container){
 }
 
 
+function getTransitionDuration( element, with_delay )
+{
+	var el       = $( element );
+	var prefixes = 'moz webkit ms o khtml'.split( ' ' );
+	var result   = 0;
+
+	for ( var i = 0; i < prefixes.length; i++ )
+	{
+		var duration = el.css( '-' + prefixes[i] + '-transition-duration' );
+
+		if ( duration )
+		{
+			duration = ( duration.indexOf( 'ms' ) >- 1 ) ? parseFloat( duration ) : parseFloat( duration ) * 1000;
+
+			if ( with_delay )
+			{
+				var delay = el.css( '-' + prefixes[i] + '-transition-delay' );
+				duration += ( delay.indexOf( 'ms' ) >- 1 ) ? parseFloat( delay ) : parseFloat( delay ) * 1000;
+			}
+
+			result = duration;
+
+			break;
+		}
+	}
+
+	return result;
+}
+
+
 
 /*Go right*/
 function goRight(list){
 
 	var options ={}
 
-	options["transition-duration"] =  ".6s";
+	options["transition-duration"] =  $(list.css("transition-duration"));
+
+	speed = getTransitionDuration(list)
+
+	console.log("Speed is " + speed)
 
 	resetForRight(list);
 
-	list.children(".dropped-object").animate({left:"+=" + (numberToSlide * list.children(".dropped-object").first().width()) ,duration:"slow"})
+	list.children(".dropped-object").animate({left:"+=" + (numberToSlide * list.children(".dropped-object").first().width())} ,speed)
 
 	.promise()
 		.done(
@@ -81,13 +115,17 @@ function goLeft(list){
 
 	var options ={}
 
-	options["transition-duration"] =  ".6s";
+	options["transition-duration"] =  $(list.css("transition-duration"));
+
+	speed = getTransitionDuration(list)
+
+	console.log("Speed is " + speed)
 
 	resetForLeft(list);
 
 	head = $(list.children(".dropped-object").first())
 
-	list.children(".dropped-object").animate({left:head.width()*numberToSlide/-1 + "px",duration:"slow"})
+	list.children(".dropped-object").animate({left:head.width()*numberToSlide/-1 + "px"},speed)
 
 	.promise()
 		.done(

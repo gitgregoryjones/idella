@@ -1,10 +1,14 @@
 var _debug = false;
 var lastEditedClass = "";
 global_zIndex = 1000;
-var files = ["ghost.js","plugins.js","notes.js","drawSpace.js","custom_events2.js","translate.js","ingest.js","contextmenu.js","maxmin.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","notify.min.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakPoints.js"]
+var files = ["overlay.js","ghost.js","plugins.js","notes.js","drawSpace.js","custom_events2.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakPoints.js"]
 var hotObj = "";
 var hotObjId = 0;
 var genericClass = {};
+var allSitesAsObj = null;
+var website = "default";
+var theSiteObj = null;
+version = "1.0";
 
 //var autoSaveEnabled = true;
 var editing = false;
@@ -61,64 +65,45 @@ $( document ).ready(function() {
 
 
 	$(files).each(function(index,file){
-			$.getScript( file )
-			.fail(function(jqxhr, settings, exception){
-				log.error("Could not load file " + file)
-				log.error(exception)
-			})
-		  .done(function( script, textStatus ) {
-		    log("loading file " + file)
-		    //init view
-		    if(index == files.length-1) {
-		    	log("Calling Initialization Routine");
-		    	//Get out of local storage
-		    
-
-		       try {
-
-		       		if($("style.generated").length == 0){
-					   			log("Adding Generated Stylesheet")
-					   			$("head").append("<style class='generated'></style>");
-					}
-
-					if($("script.generated").length == 0){
-					   			log("Adding Generated javascript")
-					   			$("head").append("<script class='generated'></script>");
-					}
-					log.debug("Before Current Site")
-					getCurrentSite();
-					log.debug("After Current Site")
-					//load scripts now that body has been written
-					loadAllBreakPoints();
-					loadAllJs();
-					
-							       		
-		       }catch(e){
-					log.error("Unable to retrieve site [" + website + "] " + e)
-					log.error(e)
-		       }
-
-		       		       
-		       $("title").html(website)
-
-		    	initialize();
-		    	$.event.trigger("initializationComplete",[]);
-		    	t = whichTool("div");
-		    	meDiv = $(t.droppedModeHtml)
-		    	$("body").append(meDiv)
-		    	genericClass = CONVERT_STYLE_TO_CLASS_OBJECT(meDiv)
-		    	meDiv.remove();
-
-		    	log.debug("GENERIC IS " + JSON.stringify(genericClass));
-		    	
-		    }
-   			
-		  })
-		  .fail(function( jqxhr, settings, exception ) {
-		    log("Exception is ")
-		    log(exception)
-		});
+		$("head").append($("<script>",{src:file,version:version}))
 	});
+
+	   try {
+
+	   		if($("style.generated").length == 0){
+			   			log("Adding Generated Stylesheet")
+			   			$("head").append("<style class='generated'></style>");
+			}
+
+			if($("script.generated").length == 0){
+			   			log("Adding Generated javascript")
+			   			$("head").append("<script class='generated'></script>");
+			}
+			log.debug("Before Current Site")
+			getCurrentSite();
+			log.debug("After Current Site")
+			//load scripts now that body has been written
+			loadAllBreakPoints();
+			loadAllJs();
+			
+					       		
+	   }catch(e){
+			log.error("Unable to retrieve site [" + website + "] " + e)
+			log.error(e)
+	   }
+
+	   		       
+	   $("title").html(website)
+
+		initialize();
+		$.event.trigger("initializationComplete",[]);
+		t = whichTool("div");
+		meDiv = $(t.droppedModeHtml)
+		$("body").append(meDiv)
+		genericClass = CONVERT_STYLE_TO_CLASS_OBJECT(meDiv)
+		meDiv.remove();
+
+		log.debug("GENERIC IS " + JSON.stringify(genericClass));
 });
 
 
