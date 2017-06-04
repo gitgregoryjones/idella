@@ -58,9 +58,11 @@ function OVERLAY_showOverlay(theElem){
 
 	if(theElem.hasAttribute("overlay") ){
 
-			$($(theElem).attr("overlay")).fadeIn();
+			//$("[type=OVERLAY]").trigger("mouseleave");
 
-			overlay = $($(theElem).attr("overlay"));
+			$($(theElem).children("[type=OVERLAY]")).fadeIn();
+
+			overlay = $(theElem).children("[type=OVERLAY]");
 
 			overlay.on("mouseleave",function(){
 				if(!OVERLAY_areOverlaysEnabled() || !editing){

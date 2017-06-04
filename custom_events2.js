@@ -38,7 +38,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 	hotObj = $("#"+CUSTOM_currentlyMousingOverElementId);
 	
 
-	//event.preventDefault()
+	
 
 	key = event.which;
 	//Escape Key
@@ -77,6 +77,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$(".custom-menu").css("top","-3000px")
 		$("[data-action=javascript]").click();
 		$(document).click();
+		event.preventDefault()
 
 	//if delete key
 	} else if(key == 68 && event.shiftKey){
@@ -108,6 +109,8 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 	} else {
 		log(event.which)
 	}
+
+
 }
 
 
@@ -844,6 +847,8 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 			
 			var myParent = $(event.target);
 
+			myParent.removeClass("submenu")
+
 			//Test if user accidentally dblclicked menu-item or children AND correct if they did so
 			if($(myParent).is("[type=MENU],[type=MENU-ITEM]")){
 
@@ -1089,6 +1094,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 									mi.append("<p>");	
 								}
 
+								mi.removeClass("submenu")
 								
 								CUSTOM_PXTO_VIEWPORT($(mi),mi.offset().left, mi.offset().top)
 								if(renderAsMenu){
@@ -1107,7 +1113,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 				myParent.attr("menuOptionsIds",newMenuOptionIds)
 				
 				log.debug(`Current Node is ${$('#'+$(myParent).attr('parent-node')).attr(proto.editModeAttribute)}`);
-				
+				myParent.removeClass("submenu")
 				//myParent.css("color",oldTxtColor)
 				CUSTOM_PXTO_VIEWPORT(myParent,myParent.offset().left, myParent.offset().top)
 			
@@ -1625,6 +1631,8 @@ function initialize(){
 
 function recursiveCpy(obj){
 	var obj = $(obj)
+
+	obj.removeClass("submenu")
 
 	log.trace("Copying")
 	//temporarily disable dragging on parent
