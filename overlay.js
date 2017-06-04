@@ -12,12 +12,11 @@ function OVERLAY_setUp(element){
 	}
 
 	overlay = recursiveCpy(element)
-	//overlay.appendTo($("#drawSpace"))
-//alert(element.offset().left + " pos = " + element.position().left)
-//alert(element.offset().top + " pos = " + element.position().top)
 
+	overlay.children(".dropped-object").remove();
+	
 	overlay.css({"position":"relative","margin":"0","background-image":"none","background-color":"yellow",left:0 ,top:0 });
-//alert(overlay.offset().left + " top = " + overlay.offset().top)
+
 	overlay.draggable("destroy").resizable("destroy")
 	element.append(overlay);
 
@@ -27,7 +26,7 @@ function OVERLAY_setUp(element){
 	overlay.removeAttr("extends")
 
 
-	//OVERLAY_addEvents(element,overlay)
+	
 
 	if(!OVERLAY_areOverlaysEnabled()){
 		$(".showOverlays").click();
@@ -60,9 +59,9 @@ function OVERLAY_showOverlay(theElem){
 
 			//$("[type=OVERLAY]").trigger("mouseleave");
 
-			$($(theElem).children("[type=OVERLAY]")).fadeIn();
+			$($(theElem).children("[type=OVERLAY]")).first().fadeIn()
 
-			overlay = $(theElem).children("[type=OVERLAY]");
+			overlay = $(theElem).children("[type=OVERLAY]").first();
 
 			overlay.on("mouseleave",function(){
 				if(!OVERLAY_areOverlaysEnabled() || !editing){
@@ -71,28 +70,5 @@ function OVERLAY_showOverlay(theElem){
 			})
 	}
 }
-/*
-function OVERLAY_addEvents(element,overlay){
-
-	element.on("mouseleave",function(evnt){
-		//evnt.stopPropagation();
-		if(!OVERLAY_areOverlaysEnabled() || !editing){
-			alert("Hiding " + evnt.target.id)
-			$($(element).attr("overlay")).fadeOut();
-
-			//$($(this).attr("overlay-for")).css("opacity","1");
-		}
-	})
 
 
-	element.on('mouseenter',function(evnt){
-		
-
-		if(OVERLAY_areOverlaysEnabled() || !editing){
-			alert("Showing " + $(evnt.target).attr("overlay"))
-			$((element).attr("overlay")).fadeIn();
-			//$(this).css("opacity", ".5");
-		}
-	})
-
-}*/

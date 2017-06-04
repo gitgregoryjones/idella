@@ -151,8 +151,7 @@ function NOTES_makeNote(element,isActive){
 							element.removeClass("gallery");
 							element.css("white-space","normal");
 							element.css({overflow:"auto","transition-duration":"0s"})
-							element.off("click",goLeft)
-
+							SLIDER_deInit(element);
 
 						} else {
 							element.addClass("gallery")
@@ -161,8 +160,18 @@ function NOTES_makeNote(element,isActive){
 							
 							duration = parseFloat(duration) == 0 ? "0.6s" : duration;
 							element.css({overflow:"hidden","transition-duration":duration})
-							element.on("click",goLeft)
+	
+							SLIDER_init(element);
 
+							/*
+							if(element.children("[alias^=cntrl]").length == 0){
+								element.on("click",goLeft)
+							} else {
+								element.children("[alias^=cntrl]").each(function(idx,button){
+									SLIDER_setUpButton(button,element,true);
+								})
+							}*/
+							
 							//:not(:last)
 						}
 						element.find("[type=MENU-ITEM]").css("white-space","normal")

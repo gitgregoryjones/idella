@@ -361,6 +361,12 @@ function writeTabs(currentCtx,forceWrite){
 				})
 			}
 
+			if(label.startsWith("transition-cntrl-")){
+
+				SLIDER_setUpButton(evnt,parent);
+
+			}
+
 			
 			STYLESTABS_forceRewrite = true;
 			NOTES_makeNote($(parent));

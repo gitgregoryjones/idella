@@ -14,7 +14,7 @@ function CUSTOM_incrementZIndex(){
 
 	var globI = 0;
 
-	$(".dropped-object").each(function(idx,obj){
+	$(".dropped-object").not("[alias^=cntrl],[alias^=header]").each(function(idx,obj){
 
 		obj = $(obj);
 
@@ -1803,16 +1803,40 @@ DROPPER_LOGIC = {
 		        	child = "#"+ $(ui.draggable).attr('id')
 
 		        	var isBTNCntrl = false;
-		        	/*
-		        	if( $(ui.draggable).parents().is(isBTNCntrl = function(){
-		        		return $(this).attr("id") == $(child).attr("slider-container")
+		        	
 
-		        	}))*/
+		        	theElem = $(ui.draggable);
+		        	theTarget = $(event.target);
+
+		        
+
+		      
+
+		        	if(theElem.is("[alias^=cntrl]")){
+		        		
+		        		if(!theTarget.is("[type=LIST]")){
+		        			theTarget = $(event.target).parents("[type=LIST]");
+		        		}
+		        		if(theTarget){
+			        		/*
+			        		theTarget.append(theElem);
+			        		theElem.css({top:0,left:theTarget.width()-theElem.width()});*/
+			        		SLIDER_setUpButton(theElem,theTarget);
+
+			        		CUSTOM_PXTO_VIEWPORT($(theElem),$(theElem).position().left,$(theElem).position().top)
+			        		return;
+
+		        		}
+
+		        	} else
+
+
 		        	if($(event.target).parent().is("[type=LIST]") && $(ui.draggable).parent().is("[type=LIST]")){
-						$(ui.draggable).insertBefore($(event.target));
-
-						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
-						return;
+		        		 
+							$(ui.draggable).insertBefore($(event.target));
+							CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+							return;
+					
 					}
 
 		        	if(isBTNCntrl){

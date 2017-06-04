@@ -144,20 +144,25 @@ function computeDimensions(theClassObj){
   	theClassObjParent = $("#"+theClassObj["id"]).parent();
   	//theClassObj["line-height"] = theClassObj["type"] == "ICON" ||  theClassObj["type"] == "BTN" ? theClassObj["height"] : ( adjuster * parsePx(theClassObj["line-height"]));
   	//any last minute overrides
-  	if($("#"+theClassObj["id"]).not(["[type=T],[type=BTN],[type=MENU-ITEM]"]).parent().is("[type=LIST]")){
-		//moveMe.css({top:0,left:0,position:"relative"})
-		console.log("I am a LIST and i am overwriting position " + theClassObj.position)
-		theClassObj["top"] = 0;
-		theClassObj["left"] = 0;
-		console.log("Inside the list")
-		//$("#"+theClassObj["id"]).parent().css("line-height","0")
-		//$("#"+theClassObj["id"]).parent().css("font-size","20")
-		//theClassObj["line-height"] = "20px";
-		//theClassObj["font-size"] = "20px";
-		theClassObj["position"] = "relative";
-		//theClassObj["float"] = "left"
-		//theClassObj["width"] = "20px"
-		theClassObj["display"] = "inline-block";
+  	if($("#"+theClassObj["id"]).parent().is("[type=LIST]")){
+
+  		obj = $("#"+theClassObj.id);
+
+  		if(!obj.is("[type=T],[type=BTN],[type=MENU-ITEM],[alias^=cntrl]") ) {
+			//moveMe.css({top:0,left:0,position:"relative"})
+			console.log("I am a LIST and i am overwriting position " + theClassObj.position + " alias is " + theClassObj.alias)
+			theClassObj["top"] = 0;
+			theClassObj["left"] = 0;
+			console.log("Inside the list")
+			//$("#"+theClassObj["id"]).parent().css("line-height","0")
+			//$("#"+theClassObj["id"]).parent().css("font-size","20")
+			//theClassObj["line-height"] = "20px";
+			//theClassObj["font-size"] = "20px";
+			theClassObj["position"] = "relative";
+			//theClassObj["float"] = "left"
+			//theClassObj["width"] = "20px"
+			theClassObj["display"] = "inline-block";
+		}
 		
 	} 
 
