@@ -144,7 +144,7 @@ function computeDimensions(theClassObj){
   	theClassObjParent = $("#"+theClassObj["id"]).parent();
   	//theClassObj["line-height"] = theClassObj["type"] == "ICON" ||  theClassObj["type"] == "BTN" ? theClassObj["height"] : ( adjuster * parsePx(theClassObj["line-height"]));
   	//any last minute overrides
-  	if($("#"+theClassObj["id"]).parent().is("[type=LIST]")){
+  	if($("#"+theClassObj["id"]).parent(".dropped-object").is("[type=LIST]")){
 
   		obj = $("#"+theClassObj.id);
 
@@ -154,6 +154,11 @@ function computeDimensions(theClassObj){
 			theClassObj["top"] = 0;
 			theClassObj["left"] = 0;
 			console.log("Inside the list")
+			if(parseFloat(theClassObj["font-size"]) > 400 ){
+				//error
+				theClassObj["font-size"] = "16px";
+				$("#"+theClassObj["id"]).parent().css("font-size","16px")
+			}
 			//$("#"+theClassObj["id"]).parent().css("line-height","0")
 			//$("#"+theClassObj["id"]).parent().css("font-size","20")
 			//theClassObj["line-height"] = "20px";
@@ -161,7 +166,7 @@ function computeDimensions(theClassObj){
 			theClassObj["position"] = "relative";
 			//theClassObj["float"] = "left"
 			//theClassObj["width"] = "20px"
-			theClassObj["display"] = "inline-block";
+			 theClassObj["display"] = "inline-block";
 		}
 		
 	} 
