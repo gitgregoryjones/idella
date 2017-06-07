@@ -14,6 +14,7 @@ var customListFields = ["transition-number-items","transition-cntrl-left","trans
 //var parent = currentCtx;
 
 
+
 function writeTabs(currentCtx,forceWrite){
 
 
@@ -424,11 +425,13 @@ function writeTabs(currentCtx,forceWrite){
 		//write non-standard shorthand fields
 		//Write menu
 		$(".tabul").append("<li style='width:10px'>&nbsp;</li>")
+		$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;More Styles : <input type="search" id="tags" value=""></div></li>');
 		$(".tabul").append('<li style="50px; padding:5px" class="mini-responsive-design-tab fa fa-desktop"><div class="fa fa-desktop"></div></li>');
 		$(".tabul").append('<li style="50px; padding:5px">&nbsp;&nbsp;Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">&nbsp;&nbsp;Disable Hover <input type="checkbox" name="disableHoverEvents" id="disableHoverEvents">&nbsp;&nbsp;Show Overlays <input type="checkbox" name="showOverlays" id="showOverlays" class="showOverlays">&nbsp;&nbsp;Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">&nbsp;&nbsp;Resize Group <input type="checkbox" name="group-resize" id="group-resize"></li>');
 
-		$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;Search Styles : <input type="search" id="tags" value=""></div></li>');
+		//$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;Search Styles : <input type="search" id="tags" value=""></div></li>');
 		$(".tabul").append('<li style="50px; padding:5px" class="rocket-save"><div style="display:inline">&nbsp;&nbsp;Save: <div class="fa fa-rocket"></div></li>');
+		$(".tabul").append('<li style="50px; padding:5px" class="rocket-settings"><div style="display:inline">&nbsp;&nbsp;Settings: <div class=" fa fa-gear"></div></li>');
 		
 		$(".tabul").append('<div class="ui-widget">')
 
@@ -460,6 +463,20 @@ function writeTabs(currentCtx,forceWrite){
 
 
 	if(reWritingEditSpace){
+
+		$(".rocket-settings").on("click",function(){
+			if(DRAW_SPACE_advancedShowing){
+				DRAW_SPACE_hideSettings();
+				DRAW_SPACE_advancedShowing = false;
+				SAVE_okToSave = false;
+			} else{
+				DRAW_SPACE_showSettings();
+				DRAW_SPACE_advancedShowing = true;
+				SAVE_okToSave = true;
+			}
+
+		})
+		
 
 		$("#anchorsAway").on("click",function(){
 			anchorsAway = $(this).is(":checked") ? true: false;

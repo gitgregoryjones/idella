@@ -136,10 +136,27 @@ function CSS_TEXT_saveCss(div, theClassObj) {
 			console.log(theClassObj.cssRule)
 
 			writeClassToMasterCSSFile(div,"body.hover "+myCSSLookupKey+":hover",theClassObj);	
+
+				
+
+
 		} else {
 			theClassObj.cssRule = "";
 			writeClassToMasterCSSFile(div,"body.hover " + myCSSLookupKey + ":hover",theClassObj);		
 		}
+
+		/*
+		//Do overlay
+			var outStr = "body.hover ." + div.attr("id") + ":hover [type=OVERLAY] {\n";
+
+			outStr += "\t" + "visibility:visible;opacity:1" + "\n";
+			
+			outStr += "}";
+			theClassObj.cssRule = outStr;
+			console.log("OVERLAY rule")
+			console.log(theClassObj.cssRule)
+
+			writeClassToMasterCSSFile(div,"body.hover "+myCSSLookupKey+":hover [type=OVERLAY]",theClassObj);*/
 	}
 
 	console.log("Style before is " + div.attr("style"))

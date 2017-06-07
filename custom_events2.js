@@ -37,7 +37,10 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 	hotObj = $("#"+CUSTOM_currentlyMousingOverElementId);
 	
-
+	if(DRAW_SPACE_advancedShowing){
+		console.log("Ignoring Hot Key because advanced settings are showing")
+		return;
+	}
 	
 
 	key = event.which;
@@ -446,7 +449,21 @@ CUSTOM_HOTSPOT_CLICK = function(event){
 
 					//hide extended menu
 					$("#extended-editing").hide();
+					//Make Div hoverable but hide it until user hovers
 					$("[overlay-for]").hide();
+					//Anything with an overlay can not be resized in review mode
+					//existence of resize anchors make onhover logic not work correctly
+					$("[overlay]").resizable("destroy")
+					/*
+					$("[overlay-for]").css("visibility","hidden");
+					$("[overlay-for]").each(function(id,overlay){
+
+						overlay = $(overlay).css("opacity","0");
+
+						CUSTOM_PXTO_VIEWPORT(overlay,0,0)
+
+					})*/
+
 					DRAW_SPACE_deleteWorkspaceFromBody();
 					$(".ui-icon").hide();
 
@@ -822,6 +839,11 @@ CUSTOM_CLOSE_LOGIC = function(event,ui){
 
 CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 
+
+		
+
+			
+
 			userHoveringOverNote = true;
 
 			var oldTxtColor = "black";
@@ -858,6 +880,16 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 				console.log(myParent)
 				//return;
 			} 
+
+			attr = $(myParent).attr("type");
+
+
+			if(attr != "T" && attr != "BTN" &&  attr != "IMG" ){
+
+					console.log("DOUBLE_CLICK cancelled " + attr )
+					return;
+
+			}
 
 			//Temp Change Txt Color to black so user can edit against white backgrounds
 			oldTxtColor = myParent.css("-webkit-text-fill-color")
@@ -1295,6 +1327,13 @@ function setUpDiv(div){
 
 	div = $(div)
 
+	try {
+		div.off("click",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy").draggable("destroy");
+	} catch(destroy){
+		log.debug("ignoring warning while destroying system generated events tied to div " + div.attr("id"));
+	}
+
 	var oldPos = div.css("position");
 
 	div.find(".hotspot").css({height:0,width:0}).hide()
@@ -1330,8 +1369,12 @@ function setUpDiv(div){
 		div.on("resize",CUSTOM_ICON_RESIZE)
 	}
 
-	if(div.is("[type=T],[type=BTN],[type=IMG]")){
-		div.on("resize",CUSTOM_TXT_RESIZE).on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+
+	attr = div.attr("type");
+
+	if(attr == "T" || attr == "BTN"){
+		$.event.trigger("translateTxt",[div])
+		div.on("resize",CUSTOM_TXT_RESIZE).on("click",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 	}
 
 	if(div.is("[type=LIST]")){
@@ -1339,8 +1382,10 @@ function setUpDiv(div){
 		$.event.trigger("listLoad",[div])
 	}
 
-	if(div.is("[type=T]")){
-		$.event.trigger("translateTxt",[div])
+	
+	if(div.is("[type=IMG]")){
+		//$.event.trigger("translateTxt",[div])
+		div.on("click",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 	}
 
 

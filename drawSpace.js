@@ -1,11 +1,59 @@
 
 var DRAWSPACE_hoveringOverEditWindow = false;
+var DRAW_SPACE_advancedShowing = false;
+
+var editSpaceCoords = {}
 
 $(document).on("initializationComplete",function(){
+
+	//$(document).on("scroll",function(){ if(!editing){$("[type=OVERLAY]").hide();}})
 
 	DRAW_SPACE_addWorkSpaceToBody();
 
 })
+
+function DRAW_SPACE_showSettings(){
+
+	NOTES_delete();
+
+	editSpaceCoords = {top:$("#editSpace").offset().top, height:$("#editSpace").height()}
+
+	$("#editSpace > a, #editSpace  [id^=t_]").hide();
+	
+	left = $(".rocket-settings").offset().left
+
+	$(".tabul > li").not(".rocket-settings").hide();
+
+	
+
+	$(".setarea").load("settings.html");
+
+	$("#editSpace").animate({height:$(document).height(),top:10},function(){
+		//$("#drawSpace").hide();
+		$(".rocket-settings").css({left:left})
+	})
+
+	
+
+
+
+
+
+}
+
+function DRAW_SPACE_hideSettings(){
+
+	$("#editSpace > #settings").remove();
+
+	DRAW_SPACE_deleteWorkspaceFromBody();
+
+	DRAW_SPACE_addWorkSpaceToBody()
+
+
+
+	
+}
+
 
 function DRAW_SPACE_getMaxTopElement(){
 	var lastOne = [];
@@ -108,6 +156,8 @@ function getHelp(url){
 
 function DRAW_SPACE_addWorkSpaceToBody(){
 
+	NOTES_delete();
+
 	body = $("body")
 
 	var wp = $("<div>",{id:"workspace",type:"workspace"}) ;
@@ -185,13 +235,20 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	addEditMode()
 
+	
 
 
 	if(CUSTOM_currentlyMousingOverElementId == null){
 		writeTabs(body)
 	} else {
 		writeTabs($("#"+CUSTOM_currentlyMousingOverElementId));
+		STYLESTABS_forceRewrite = true;
+		NOTES_makeNote($("#drawSpace").children(".dropped-object").first())
 	}
+
+	$("#tabs").append('<div class="setarea"></div>')
+
+
 
 	$(".mini-responsive-design-tab").on('click',makeOrBreakpoint)
 

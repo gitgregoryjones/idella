@@ -59,6 +59,7 @@ function NOTES_makeNote(element,isActive){
 	if(!editing  ||  userHoveringOverNote || $(element).attr("id") == "undefined" || CUSTOM_currentlyMousingOverElementId != $(element).attr("id") ){
 
 		if(STYLESTABS_forceRewrite){
+			STYLESTABS_forceRewrite = false
 			//continue processing
 		} else {
 			return msgcoords;

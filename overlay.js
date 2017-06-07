@@ -1,3 +1,4 @@
+//https://stackoverflow.com/questions/9144560/jquery-scroll-detect-when-user-stops-scrolling
 function OVERLAY_setUp(element){
 
 	var adjuster = (100 / document.documentElement.clientWidth);
@@ -25,13 +26,9 @@ function OVERLAY_setUp(element){
 	overlay.attr("type","OVERLAY")
 	overlay.removeAttr("extends")
 
-
-	
-
 	if(!OVERLAY_areOverlaysEnabled()){
 		$(".showOverlays").click();
 	}
-
 
 	coords = NOTES_makeNote(overlay);
 	//alert(JSON.stringify(coords))
@@ -39,7 +36,8 @@ function OVERLAY_setUp(element){
 }
 
 function OVERLAY_enableOverlays(){
-	$("[overlay-for]").show();
+	$("[overlay-for]").show()
+	//.css("visibility","visible");
 }
 
 function OVERLAY_disableOverlays(){
@@ -58,6 +56,7 @@ function OVERLAY_showOverlay(theElem){
 	if(theElem.hasAttribute("overlay") ){
 
 			//$("[type=OVERLAY]").trigger("mouseleave");
+			
 
 			$($(theElem).children("[type=OVERLAY]")).first().fadeIn()
 

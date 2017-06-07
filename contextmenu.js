@@ -31,6 +31,10 @@ $(document).on("initializationComplete",function(){
     $(document).bind("contextmenu", function (event) {
 
 
+        if(DRAW_SPACE_advancedShowing ){
+            console.log("Hiding menu because user is modifying advanced settings")
+            return;
+        }
     
         currentCtx = CUSTOM_currentlyMousingOverElementId ? $("#"+CUSTOM_currentlyMousingOverElementId) : $(event.target)
         currentX = event.clientX;
