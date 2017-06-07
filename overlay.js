@@ -62,7 +62,9 @@ function OVERLAY_showOverlay(theElem){
 
 			overlay = $(theElem).children("[type=OVERLAY]").first();
 
-			overlay.on("mouseleave",function(){
+			//overlay.off()
+
+			overlay.one("mouseleave",function(){
 				if(!OVERLAY_areOverlaysEnabled() || !editing){
 					$(this).fadeOut();
 				}
