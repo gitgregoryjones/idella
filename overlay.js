@@ -16,7 +16,12 @@ function OVERLAY_setUp(element){
 
 	overlay.children(".dropped-object").remove();
 	
-	overlay.css({"position":"relative","margin":"0","background-image":"none","background-color":"yellow",left:0 ,top:0 });
+	overlay.css({"position":"absolute","margin":"0","background-image":"none","background-color":"yellow",left:0,top:0 });
+
+	//overlay.css({width:"190px"})
+	//overlay.css({height:"190px"})
+	//overlay.css({top:"3px"})
+	//overlay.css({left:"3px"})
 
 	overlay.draggable("destroy").resizable("destroy")
 	element.append(overlay);
