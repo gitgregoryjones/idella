@@ -1,0 +1,59 @@
+<div class="adialog" style="display:hidden" id="smalldialog" title="Dialog Title">
+	<form >
+		<!-- Popup Form //-->
+		<label for="autocomplete">Select a css style: </label>
+		<input id="pautocomplete">
+		<div id="answer" style="display: none">
+			<div style="width:200px; display:inline;"><label class="user-entry-label"  for="userEntry">&nbsp;</label></div>
+			<div style="width:50px; display:inline"><input class="user-entry-content"  id="userEntry"></div>
+		</div>
+	</form>
+</div>
+
+<div class="responsive-design-tab"></div>
+<div class="drawingTools adialog" style="display:hidden" id="dialog" title="Dialog Title">
+	<form id="csspresets">
+		<!-- Popup Form //-->		
+	</form>
+</div>
+<div class="adialog" id="jsdialog" style="display:hidden" title="Dialog Title">
+	<form id="jspresets">
+	<div style="vertical-align: : top"><textarea id="user_area"></textarea></div>
+	<div><textarea id="error_area" disabled></textarea></div>	
+	</form>
+</div>
+
+<ul class='custom-menu'>
+	  
+	  <li  class="editonly shapes">
+	  	<div data-action="drop" type="DIV" class="fa fa-square-o">&nbsp;</div>
+	  	<div data-action="drop" type="CIR" class="fa fa-circle-o">&nbsp;</div>
+	  	<div data-action="drop" type="T"><div class="fa fa-magic"></div><div class="fa fa-font"></div></div>
+	  	
+	  	<!-- <div data-action="drop" type="T" class="fa fa-film"  style="margin-left:5px;transform:rotate(90deg);"></div>//-->
+	  </li>
+	    <li  class="editonly shapes">
+	   
+	  	<div data-action="drop" type="VID" class="fa fa-file-video-o" ></div>
+	  	<div data-action="drop" type="IMG" style="background-image:none" class="fa fa-image"></div>
+	  	<!-- <div data-action="drop" type="BTN" class="fa fa-toggle-on"></div>//-->
+	  	<!-- <div data-action="drop" type="ICON" class="fa fa-twitter"></div>//-->
+	  	 <div data-action="drop" type="LIST" class="fa fa-list-ol"></div>
+	  	 <div data-action="drop" type="PLUGIN" class="fa fa-puzzle-piece"></div>
+	  </li>
+	  
+	  <li class="editonly"><hr></li>
+	 
+	  <li data-action="scroller" class="editonly">Convert to Scroller</li>
+	  <!--<li data-action="edit" class="editonly">Quick Edit</li>
+	  <li data-action="fulledit" class="editonly">Open Inspector...</li>//-->
+	  <li data-action="ghost" class="editonly">Hide</li>
+	 <!-- <li data-action="unghost" class="editonly">Show</li>//-->
+	  <li data-action="copy" class="editonly">Duplicate [Shift+C]</li>
+	  <li data-action="delete" class="editonly ghostok">Remove..[Shift+D]</li>
+	   <li data-action="preview" class="ghostok">Review [Shift+R]</li>
+	   <!-- <li data-action="addsection" class="editonly">Add Section</li>//-->
+	    <li data-action="addoverlay" class="editonly">Add Overlay</li>
+	  <!-- <li data-action="resize" class="editonly">Toggle Group Resize</li>//-->
+	  <li data-action="javascript" class="editonly">Edit JS [Shift+J]</li>
+</ul>
