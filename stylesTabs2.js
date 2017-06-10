@@ -4,7 +4,7 @@ var commonTabLabel = "common"
 var generatedTabsForId = null;
 var anchorsAway = false;
 var copiesModified = false;
-var showOverlays = true;
+var showOverlays = false;
 var groupResizeEnabled = false;
 var reWritingEditSpace = true;
 var STYLESTABS_forceRewrite = false;
@@ -22,10 +22,12 @@ function writeTabs(currentCtx,forceWrite){
 	currentCtx = currentCtx.target ? currentCtx.target : currentCtx;
 
 
+
 	if(generatedTabsForId ==currentCtx.id){
 
 		if(forceWrite){
 			//continue;
+		
 		} else {
 			return;
 		}
@@ -430,8 +432,8 @@ function writeTabs(currentCtx,forceWrite){
 		$(".tabul").append('<li style="50px; padding:5px">&nbsp;&nbsp;Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">&nbsp;&nbsp;Disable Hover <input type="checkbox" name="disableHoverEvents" id="disableHoverEvents">&nbsp;&nbsp;Show Overlays <input type="checkbox" name="showOverlays" id="showOverlays" class="showOverlays">&nbsp;&nbsp;Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">&nbsp;&nbsp;Resize Group <input type="checkbox" name="group-resize" id="group-resize"></li>');
 
 		//$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;Search Styles : <input type="search" id="tags" value=""></div></li>');
-		$(".tabul").append('<li style="50px; padding:5px" class="rocket-save"><div style="display:inline">&nbsp;&nbsp;Save: <div class="fa fa-rocket"></div></li>');
-		$(".tabul").append('<li style="50px; padding:5px" class="rocket-settings"><div style="display:inline">&nbsp;&nbsp;Settings: <div class=" fa fa-gear"></div></li>');
+		$(".tabul").append('<li style="50px; padding:5px" class="rocket-save"><div style="display:inline">&nbsp;&nbsp;Save: <div class="fa fa-save"></div></li>');
+		$(".tabul").append('<li style="50px; padding:5px" class="rocket-settings"><div style="display:inline">&nbsp;&nbsp;Config: <div class="settings-icon fa fa-angle-double-up"></div></li>');
 		
 		$(".tabul").append('<div class="ui-widget">')
 
@@ -464,13 +466,17 @@ function writeTabs(currentCtx,forceWrite){
 
 	if(reWritingEditSpace){
 
+		DRAW_SPACE_advancedShowing ? $(".settings-icon").addClass("fa-angle-double-down").removeClass("fa-angle-double-up") : $(".settings-icon").addClass("fa-angle-double-up").removeClass("fa-angle-double-down")
+
 		$(".rocket-settings").on("click",function(){
 			if(DRAW_SPACE_advancedShowing){
 				DRAW_SPACE_hideSettings();
+				$(".settings-icon").addClass("fa-angle-double-up").removeClass("fa-angle-double-down")
 				DRAW_SPACE_advancedShowing = false;
 				SAVE_okToSave = false;
 			} else{
 				DRAW_SPACE_showSettings();
+				$(".settings-icon").addClass("fa-angle-double-down").removeClass("fa-angle-double-up")
 				DRAW_SPACE_advancedShowing = true;
 				SAVE_okToSave = true;
 			}

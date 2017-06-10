@@ -73,6 +73,8 @@ function getCurrentSite(){
 		allSitesAsObj.default["style"] = "";
 		allSitesAsObj.default["bp"] = []
 		website = "default"
+		allSitesAsObj.default.name = website;
+		allSitesAsObj.default.currentPage = location.pathname;
 
 		theSiteObj = allSitesAsObj.default;
 
@@ -102,7 +104,13 @@ function getCurrentSite(){
 			allSitesAsObj[website]["style"] = "";
 			allSitesAsObj[website]["bp"] = []
 			
+
+			
 		}
+
+		allSitesAsObj[website].name = website;
+		allSitesAsObj[website].currentPage = location.pathname;
+
 		theSiteObj = allSitesAsObj[website];
 
 		theStyle = $("style.generated").html(theSiteObj.style)

@@ -1,12 +1,30 @@
+<style>
+	.fa-window-close {
+		color:red;
+		font-size:20px;
+	}
+
+	.fa-pencil-square-o {
+		color:yellow;
+		font-size:20px;
+	}
+
+	.fa-arrow-right {
+		color:green;
+		font-size:20px;
+	}
+</style>
 <div id="settings" class="ui-widget ui-widget-content">
+	
 	<div class="styleRow" id="row-height">
-		<h1>Preview Date</h1>
+		<h1>Your Site</h1>
 		<div class="styleLabel"><div>
 			
-		</div>from</div>
+		</div>name</div>
 
 		<div class="styleValue">
-			<input id="misc-from" value="today">
+			<input id="misc-sitename" value="">
+
 		</div>
 	</div>
 
@@ -14,13 +32,48 @@
 		
 		<div class="styleLabel"><div>
 			
-		</div>to</div>
+		</div>pages</div>
 
 		<div class="styleValue">
-			<input id="misc-to" value="12/25/2017 11:59 PM EST">
+			<select id="misc-pages"><option value="index.html">index.html</option></select>
+			
+			<div class="fa fa-window-close"></div>
+			<div class="fa fa-pencil-square-o"></div>
+			
+			
+			
+			
 		</div>
 		
 	</div>
+	<p></p>
+	<hr>
+
+	<p></p>
+	<div class="styleRow" id="row-height">
+		<h1>Publish to Site</h1>
+		<div class="styleLabel"><div>
+			
+		</div>on</div>
+
+		<div class="styleValue">
+			<input id="misc-from" value="12/25/2017">
+		</div>
+	</div>
+	
+	<div class="styleRow" id="row-height">
+		
+		<div class="styleLabel"><div>
+			
+		</div>alias</div>
+
+		<div class="styleValue">
+			<input id="misc-to" value="Christmas Release">
+		</div>
+		
+	</div>
+	<p></p>
+	<hr>
 	<p></p>
 	<div class="styleRow" id="row-height">
 		<h1>GitHub</h1>
@@ -68,7 +121,15 @@
 		
 	</div>
 </div>
+<!-- Set data //-->
+<script>
+$("#misc-sitename").attr("value",$("title").html())
+$("[type=anchor]").each(function(idx,anchor){
+	 anchor = $(anchor);
+	 $("#misc-pages").append(new Option(anchor.attr("href"),anchor.attr("href")))
 
+})
+</script>
 
 
 

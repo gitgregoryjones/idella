@@ -37,15 +37,15 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 	hotObj = $("#"+CUSTOM_currentlyMousingOverElementId);
 	
-	if(DRAW_SPACE_advancedShowing){
-		console.log("Ignoring Hot Key because advanced settings are showing")
+	if(DRAW_SPACE_advancedShowing && event.which != 27){
+		console.log("Ignoring Hot Key because advanced settings are showing " + event.which)
 		return;
 	}
 	
 
 	key = event.which;
 	//Escape Key
-	if(key == 27){
+	if(key == 27 && !DRAW_SPACE_advancedShowing){
 
 		$(".msg,.peak,.active-message,.active-peak").remove();
 
@@ -55,6 +55,9 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
         $("*").removeClass("disabledElements").removeClass("submenu_on")
         SAVE_okToSave=true;
         return;        
+	} else if(DRAW_SPACE_advancedShowing){
+
+		$(".rocket-settings").click();
 	}
 
 	//KEY C and Shift Key to COPY
@@ -838,11 +841,7 @@ CUSTOM_CLOSE_LOGIC = function(event,ui){
 }
 
 CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
-
-
-		
-
-			
+	
 
 			userHoveringOverNote = true;
 
@@ -863,6 +862,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 				$("#fileElem").click();
 
 				log.debug("Done uploading image")
+				userHoveringOverNote = false;
 				return;
 			}
 

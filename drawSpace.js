@@ -18,41 +18,47 @@ function DRAW_SPACE_showSettings(){
 
 	editSpaceCoords = {top:$("#editSpace").offset().top, height:$("#editSpace").height()}
 
-	$("#editSpace > a, #editSpace  [id^=t_]").hide();
+	$("#editSpace > a").hide();
+
+	$("#editSpace [aria-hidden=false] ").addClass("showme").hide()
 	
 	left = $(".rocket-settings").offset().left
 
 	$(".tabul > li").not(".rocket-settings").hide();
 
-	
+	$(".rocket-settings").css({left:left})
 
 	$(".setarea").load("settings.html");
 
 	$("#editSpace").animate({height:$(document).height(),top:10},function(){
 		//$("#drawSpace").hide();
-		$(".rocket-settings").css({left:left})
+		
 	})
-
-	
-
-
-
-
 
 }
 
 function DRAW_SPACE_hideSettings(){
+
+	$("#editSpace").animate(editSpaceCoords,function(){
+			$(".rocket-settings").css({left:0})
+			$(".setarea").html("");
+			$(".tabul > li").show();
+			$("#editSpace > a").show();
+			$(".tabul > li.extendedTabs").hide();
+			$(".showme").removeClass("showme").show()
+	})
+	
+}
+/*
+function DRAW_SPACE_hideSettings2(){
 
 	$("#editSpace > #settings").remove();
 
 	DRAW_SPACE_deleteWorkspaceFromBody();
 
 	DRAW_SPACE_addWorkSpaceToBody()
-
-
-
 	
-}
+}*/
 
 
 function DRAW_SPACE_getMaxTopElement(){
