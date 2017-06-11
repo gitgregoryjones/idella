@@ -1,7 +1,7 @@
 var _debug = false;
 var lastEditedClass = "";
 global_zIndex = 1000;
-var files = ["http://localhost:8080/css/jquery-ui-1.12.1.custom/jquery-ui.css","http://localhost:8080/css/jquery-ui-1.12.1.custom/jquery-ui.min.js","font-awesome-4.7.0/css/font-awesome.min.css","idella.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","notes.js","drawSpace.js","custom_events2.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakPoints.js"]
+var files = ["jquery-ui-1.12.1.custom/jquery-ui.css","jquery-ui-1.12.1.custom/jquery-ui.min.js","font-awesome-4.7.0/css/font-awesome.min.css","idella.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","notes.js","drawSpace.js","custom_events2.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakPoints.js"]
 var hotObj = "";
 var hotObjId = 0;
 var genericClass = {};
@@ -67,26 +67,31 @@ $( document ).ready(function() {
 
 	$(files).each(function(index,file){
 
+
 		
 		if(!file.startsWith("http://") && !file.startsWith("https://")){
 
 			if(file.endsWith(".css")){
 				file = "/css/" + file;
+				$("head").append($("<link>",{rel:"stylesheet",href:file,version:version}))
 			} else {
 				file = "/js/" + file;
+				$("head").append($("<script>",{src:file,version:version}))
 			}
 
-			file = location.origin + file;
+
 		} else {
 
+			//just wrap in script tag
+			if(file.endsWith(".css")){
+				$("head").append($("<link>",{rel:"stylesheet",href:file,version:version}))
+			} else {
+				$("head").append($("<script>",{src:file,version:version}))
+			}
 			//do nothing
 		}
 
-		if(file.endsWith(".css")){
-			$("head").append($("<link>",{rel:"stylesheet",href:file,version:version}))
-		} else {
-			$("head").append($("<script>",{src:file,version:version}))
-		}
+		
 
 
 		
@@ -95,7 +100,9 @@ $( document ).ready(function() {
 
 	   if(editing) {
 
-		   	$("body").load("edit-body.html",function(){
+	   		containerDiv = $("<div>")
+
+		   	$(containerDiv).load("edit-body.html",function(){
 
 
 			   try {
@@ -110,12 +117,22 @@ $( document ).ready(function() {
 					   			$("head").append("<script class='generated'></script>");
 					}
 					log.debug("Before Current Site")
-					getCurrentSite();
-					log.debug("After Current Site")
-					//load scripts now that body has been written
-					loadAllBreakPoints();
-					loadAllJs();
-					
+
+					if($('body').find('.dropped-object').length == 0){
+						getCurrentSite();
+						log.debug("After Current Site")
+						//load scripts now that body has been written
+						loadAllBreakPoints();
+						loadAllJs();
+					} else {
+						website = $('title').text();
+						theSiteObj = {};
+						theSiteObj.bp = [];
+						theSiteObj.name = website;
+						theSiteObj.currentPage = location.pathname;
+					}
+
+					$('body').append(containerDiv);
 							       		
 			   }catch(e){
 					log.error("Unable to retrieve site [" + website + "] " + e)

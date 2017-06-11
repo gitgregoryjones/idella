@@ -89,7 +89,7 @@ function getCurrentSite(){
 
 		allSites = LZString.decompress(localStorage.getItem("sites"))
 		allSitesAsObj = JSON.parse(allSites);
-		website = prompt("Which Site Would You Like to Load?")
+		//website = prompt("Which Site Would You Like to Load?")
 		website = website != null && website.trim().length > 0 ? website : "default"
 
 		log.debug("User want to load site " + website)

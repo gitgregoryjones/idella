@@ -9,21 +9,28 @@
 		font-size:20px;
 	}
 
-	.fa-arrow-right {
+	.fa-arrow-right, [type=create-site], .fa-calendar {
 		color:green;
 		font-size:20px;
+		cursor: pointer;
+	}
+
+	.fa-spinner {
+		visibility: :hidden;
 	}
 </style>
+<form id="settings">
+
 <div id="settings" class="ui-widget ui-widget-content">
 	
 	<div class="styleRow" id="row-height">
-		<h1>Your Site</h1>
+		<h1>My Sites:</h1>
 		<div class="styleLabel"><div>
 			
 		</div>name</div>
 
 		<div class="styleValue">
-			<input id="misc-sitename" value="">
+			<input name="sitename" id="misc-sitename" readonly value="">
 
 		</div>
 	</div>
@@ -35,7 +42,7 @@
 		</div>pages</div>
 
 		<div class="styleValue">
-			<select id="misc-pages"><option value="index.html">index.html</option></select>
+			<select name="page" id="misc-pages"><option value="index.html">index.html</option></select>
 			
 			<div class="fa fa-window-close"></div>
 			<div class="fa fa-pencil-square-o"></div>
@@ -50,15 +57,17 @@
 	<hr>
 
 	<p></p>
+	
 	<div class="styleRow" id="row-height">
-		<h1>Publish to Site</h1>
+		<h1>What will my site look like in the future?</h1>
 		<div class="styleLabel"><div>
 			
 		</div>on</div>
 
 		<div class="styleValue">
-			<input id="misc-from" value="12/25/2017">
+			<input name="revision-date" id="misc-from" value="12/25/2017">
 		</div>
+		<div  class="fa fa-calendar"></div>
 	</div>
 	
 	<div class="styleRow" id="row-height">
@@ -68,12 +77,29 @@
 		</div>alias</div>
 
 		<div class="styleValue">
-			<input id="misc-to" value="Christmas Release">
+			<input name="package-name" id="misc-to" value="Christmas Release">
 		</div>
 		
 	</div>
 	<p></p>
 	<hr>
+	<div class="styleRow" id="row-height">
+		<h1>Create a new Site</h1>
+		<div class="styleLabel"><div>
+			
+		</div></div>
+
+		<div class="styleValue">
+			<input name="new-site-name" id="misc-sitename" value="Enter New Name">
+
+		</div>
+		<div  type="create-site" class="fa fa-plus-square"></div>
+	</div>
+
+	
+	<p></p>
+	<hr>
+
 	<p></p>
 	<div class="styleRow" id="row-height">
 		<h1>GitHub</h1>
@@ -82,7 +108,7 @@
 		</div>username</div>
 
 		<div class="styleValue">
-			<input id="misc-username" value="idella">
+			<input name="git-username" id="misc-username" value="idella">
 		</div>
 	</div>
 
@@ -93,7 +119,7 @@
 		</div>password</div>
 
 		<div class="styleValue">
-			<input id="misc-password" type="password" value="abcdefg">
+			<input name="git-password" id="misc-password" type="password" value="abcdefg">
 		</div>
 		
 	</div>
@@ -105,7 +131,7 @@
 		</div>License Key</div>
 
 		<div class="styleValue">
-			<input id="misc-license" value="QW@9181$POP48">
+			<input name="account-license" id="misc-license" value="QW@9181$POP48">
 		</div>
 	</div>
 
@@ -116,11 +142,13 @@
 		</div>expiration</div>
 
 		<div class="styleValue">
-			<input id="misc-username" readonly value="01/23/2018">
+			<input name="account-expiration" id="misc-username" readonly value="01/23/2018">
 		</div>
 		
 	</div>
 </div>
+<div class="fa fa-spin fa-spinner"></div>
+</form>
 <!-- Set data //-->
 <script>
 $("#misc-sitename").attr("value",$("title").html())
@@ -128,6 +156,18 @@ $("[type=anchor]").each(function(idx,anchor){
 	 anchor = $(anchor);
 	 $("#misc-pages").append(new Option(anchor.attr("href"),anchor.attr("href")))
 
+})
+
+$("[type=create-site]").on("click",function(){
+	
+	$(".fa-spinner").css({"visibility":"visible","font-size":"80px","color":"white",left:$(document).width()/2 - $(".fa-spinner").width()/2,top:$(document).height()/2 - $(".fa-spinner").height()/2,position:"absolute"})
+
+	REVISION_createNewSite($("#settings").serialize(),function(){
+		$(".fa-spinner").css({"visibility":"hidden"})
+		if(confirm("Visit your new site created at " + $("[name=new-site-name]").val())){
+			window.location = "/"+ $("[name=new-site-name]").val();
+		}
+	});
 })
 </script>
 

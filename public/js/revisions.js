@@ -184,16 +184,58 @@ var LocalStorageRepo = class extends Repo {
 		this.website.currentRevision = revision;
 
 		console.log(this.website)
-
 		//this.website.pages[theSiteObj.currentPage].revisions.push(revision)
-
-
 		localStorage.setItem("repo_"+ theSiteObj.currentPage,JSON.stringify(this.website))
 
-		return JSON.stringify(this.website);
+		return (this.website);
 
 	}
 }
+
+
+function REVISION_createNewSite(settings,callback) {
+
+	console.log(settings)
+
+	site = {};
+
+	params = settings.split("&")
+
+	for(i=0; i < params.length; i++){
+		argAndVal = params[i].split("=");
+		site[argAndVal[0]] = argAndVal[1];
+	}
+
+	console.log(settings);
+	console.log(site)
+	console.log("oops")
+	console.log(JSON.stringify(site))
+
+	str = JSON.stringify(site);
+
+
+	$.ajax({
+	    type: "POST",
+	    url: "/site",
+	    // The key needs to match your method's input parameter (case-sensitive).
+	    data: str,
+	    contentType: "application/json; charset=utf-8"
+	   
+	
+	}).done(function(){
+		callback(true)
+	}).fail(function(x,t,e){
+		alert("Error creating site. Encountered error : " + t)
+		alert(e);
+		console.log("Error creating site :" + t)
+		console.log(e);
+	});
+
+
+	
+
+}
+
 
 $(document).on("REVISION_NEEDED_EVENT",function(evt){
 
@@ -201,12 +243,29 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt){
 
 	repo = new LocalStorageRepo(theSiteObj);
 
-	json = repo.writeRevision(theSiteObj,new Date(),"Tuesday")
-	
-	$.post(location.protocol   + "/test.php", json, function(response) {
-    	// Do something with the response
-    	alert(response.responseText)
-	}, 'json');
+	object = repo.writeRevision(theSiteObj,new Date(),"Tuesday")
+	/*
+	$.post(location.protocol   + "/revisions", object, function(response) {
+    	
+	}, 'json');*/
+
+
+	$.ajax({
+	    type: "POST",
+	    url: location.protocol   + "/revisions",
+	    // The key needs to match your method's input parameter (case-sensitive).
+	    data: JSON.stringify(object),
+	    contentType: "application/json; charset=utf-8",
+	    dataType: "json"
+    
+	}).done(function(){
+		callback(true)
+	}).fail(function(x,t,e){
+		
+		alert(e);
+		console.log("Error revising site :" + t)
+		console.log(e);
+	});
 
 
 })
