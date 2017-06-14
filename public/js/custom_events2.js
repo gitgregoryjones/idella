@@ -993,6 +993,11 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 
 	if(!overwriteOldAnchor){
 		anchors = $("<a>",{id:"anchor-"+parentId,href:loc,label:loc,type:"anchor"})
+
+		if(!loc.trim().startsWith("http") && !loc.trim().startsWith("javascript:") ){
+			REVISION_createPage(loc.trim());
+		}
+
 	} else {
 
 		if($(parent).find("[type=anchor]").length == 0){
@@ -1140,7 +1145,7 @@ function setUpDiv(div){
 	div = $(div)
 
 	try {
-		div.off("click",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+		div.off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy").draggable("destroy");
 	} catch(destroy){
 		log.debug("ignoring warning while destroying system generated events tied to div " + div.attr("id"));
@@ -1186,7 +1191,7 @@ function setUpDiv(div){
 
 	if(attr == "T" || attr == "BTN"){
 		$.event.trigger("translateTxt",[div])
-		div.on("resize",CUSTOM_TXT_RESIZE).on("click",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+		div.on("resize",CUSTOM_TXT_RESIZE).on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 	}
 
 	if(div.is("[type=LIST]")){
@@ -1197,7 +1202,7 @@ function setUpDiv(div){
 	
 	if(div.is("[type=IMG]")){
 		//$.event.trigger("translateTxt",[div])
-		div.on("click",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+		div.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 	}
 
 
@@ -1270,6 +1275,7 @@ function initialize(){
  		open:_DEFAULT_OPEN_CODE,
  		close:_DEFAULT_CLOSE_CODE,
  	});
+
 
  	$("#dialog").dialog({
  		autoOpen: false, 
@@ -1366,6 +1372,7 @@ function initialize(){
 		}
 
  	});
+
 
    	
    	//Reinitialize resizable that may have been saved during autosave or manual save process

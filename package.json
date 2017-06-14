@@ -11,10 +11,14 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "express": "~4.15.2",
+    "express-modify-response": "^1.0.2",
     "fs-symlink": "^1.2.1",
     "jade": "~1.11.0",
     "mkdir-recursive": "^0.3.0",
     "morgan": "~1.8.1",
-    "serve-favicon": "~2.4.2"
+    "path": "^0.12.7",
+    "response-distort": "^1.0.0",
+    "serve-favicon": "~2.4.2",
+    "url": "^0.11.0"
   }
 }

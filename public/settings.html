@@ -30,7 +30,7 @@
 		</div>name</div>
 
 		<div class="styleValue">
-			<input name="sitename" id="misc-sitename" readonly value="">
+			<select name="sitename" id="misc-sitename"></select>
 
 		</div>
 	</div>
@@ -42,7 +42,7 @@
 		</div>pages</div>
 
 		<div class="styleValue">
-			<select name="page" id="misc-pages"><option value="index.html">index.html</option></select>
+			<select name="page" id="misc-pages"></select>
 			
 			<div class="fa fa-window-close"></div>
 			<div class="fa fa-pencil-square-o"></div>
@@ -147,28 +147,65 @@
 		
 	</div>
 </div>
-<div class="fa fa-spin fa-spinner"></div>
+<div class="fa fa-spin fa-spinner"></div> 
 </form>
 <!-- Set data //-->
 <script>
 $("#misc-sitename").attr("value",$("title").html())
-$("[type=anchor]").each(function(idx,anchor){
-	 anchor = $(anchor);
-	 $("#misc-pages").append(new Option(anchor.attr("href"),anchor.attr("href")))
 
+$("#misc-sitename").on("change",function(){
+	window.location = "/" +$("#misc-sitename").find(":selected").attr("value") + "/";
 })
 
+$("#misc-pages").on("change",function(){
+	window.location = "/" +$("#misc-sitename").find(":selected").attr("value") + "/" + $("#misc-pages").find(":selected").attr("value");
+})
+
+REVISION_getAllSites(function(ok,payload){
+
+	for(i=0;i< payload.length; i++){
+		$("#misc-sitename").append($(new Option(payload[i].name,payload[i].name)))
+	}
+
+	opt = $('#misc-sitename option:contains("' + $("title").val() + '")').prop('selected', true);
+
+	payload.filter(function(siteInDropDown){
+
+		if(siteInDropDown.name.trim() == opt.val().trim()){
+			
+			for(i=0; i < siteInDropDown.files.length;i++){
+				
+				$("#misc-pages").append(new Option(siteInDropDown.files[i],siteInDropDown.files[i]))
+			}
+			return true;
+		} 
+	})
+
+	$('#misc-pages option:contains("' + theSiteObj.currentPage.replace("/","") + '")').prop('selected', true);
+
+});
+
+
 $("[type=create-site]").on("click",function(){
-	
+
 	$(".fa-spinner").css({"visibility":"visible","font-size":"80px","color":"white",left:$(document).width()/2 - $(".fa-spinner").width()/2,top:$(document).height()/2 - $(".fa-spinner").height()/2,position:"absolute"})
 
-	REVISION_createNewSite($("#settings").serialize(),function(){
+	copy = Object.assign({},theSiteObj)
+	copy.name = $("[name=new-site-name]").val().replace(" ","-").replace("/","-");
+
+	REVISION_createNewSite(copy,function(){
 		$(".fa-spinner").css({"visibility":"hidden"})
-		if(confirm("Visit your new site created at " + $("[name=new-site-name]").val())){
-			window.location = "/"+ $("[name=new-site-name]").val();
+		if(confirm("Visit your new site created at " + copy.name)){
+			window.location = "/"+ copy.name;
 		}
 	});
 })
+
+$("[name=new-site-name]").on('focusin', function() {
+	
+    this.value = '';
+});
+
 </script>
 
 

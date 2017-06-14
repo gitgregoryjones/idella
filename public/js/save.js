@@ -125,41 +125,32 @@ function getCurrentSite(){
 
 	   	log.debug("Retrieving Body for site [" + website + "]")
 
-	   	$("body").html("")
-    	$("body").append(theSiteObj.html);
+	   	//$("body").html("")
+    	//$("body").append(theSiteObj.html);
     	//get most recent tool
+    	$(document).on("initializationComplete",function(){
+alert('what')
+    		dialogs = $(".adialog")
+	    	//$(".adialog").remove()
+	    	//$(".custom-menu").remove();
+	    	//$(".responsive-design-tab").remove();
+	    	//$("#id_toolset").remove();
+	    	//$("#autodiv").remove();
+	    		
+	    	//$("body").append(dialogs)
+	    	//$("body").append(tools)
+	    	//$("body").append(rd)
+	    	//$("body").append(ctxmenu);
+	    	
+	    	$("head").append(theStyle)
+    	})
 
-    	$(".adialog").remove()
-    	 $(".custom-menu").remove();
-    	$(".responsive-design-tab").remove();
-    	$("#id_toolset").remove();
-    	$("#autodiv").remove();
-    		
-    	$("body").append(dialogs)
-    	$("body").append(tools)
-    	$("body").append(rd)
-    	$("body").append(ctxmenu);
     	
-
-    	
-
-
-
-    	
-    	$("head").append(theStyle)
     
 
     	
 	}
 	
-
-	$(".responsive-design-tab").on("click",makeOrBreakpoint)
-
-	$(window).on('resize',drawResponsiveTab)
-
-	drawResponsiveTab()
-
-
 	return theSiteObj;
 
 }

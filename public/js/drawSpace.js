@@ -241,8 +241,10 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	addEditMode()
 
-	
 
+	$(".responsive-design-tab").on("click",makeOrBreakpoint)
+
+	$(window).on('resize',drawResponsiveTab)
 
 	if(CUSTOM_currentlyMousingOverElementId == null){
 		writeTabs(body)
@@ -258,7 +260,21 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	$(".mini-responsive-design-tab").on('click',makeOrBreakpoint)
 
-	$(".rocket-save").on('click',SAVEJS_goInactive);
+	$(".rocket-save").on('click',function(){
+
+		if(website == "default"){
+			text = prompt("Please enter a name for your new site")
+			if(text && text.trim().length > 0){
+				$('title').text(text);
+				theSiteObj.name = text;
+				SAVEJS_goInactive()
+			}
+		} else {
+			SAVEJS_goInactive()
+		}
+	});
+
+
 
 	drawResponsiveTab()
 

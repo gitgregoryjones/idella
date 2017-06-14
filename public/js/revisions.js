@@ -105,6 +105,14 @@ var LocalStorageRepo = class extends Repo {
 
 	constructor(theSiteObj){
 
+
+	$.ajaxSetup({
+    	beforeSend: function(xhr) {
+        	xhr.setRequestHeader('x-site-name', theSiteObj.name);
+    	}
+	})
+
+
 		super(theSiteObj)
 
 		var title = theSiteObj.name;
@@ -192,50 +200,79 @@ var LocalStorageRepo = class extends Repo {
 	}
 }
 
+function REVISION_getAllSites(callback){
+
+	$.ajax({
+		    type: "GET",
+		    url: "/site/all",
+		    contentType: "application/json; charset=utf-8",
+		    dataType:"json"
+		   
+		
+		}).done(function(data){
+		
+			callback(true,data)
+		}).fail(function(x,t,e){
+			console.log("Error getting all sites :" + t)
+			console.log(e);
+			callback(false,e);
+		});
+}
+
 
 function REVISION_createNewSite(settings,callback) {
 
 	console.log(settings)
+	console.log(JSON.stringify(settings))
 
-	site = {};
+	str = JSON.stringify(settings);
 
-	params = settings.split("&")
+	$.get("/site/lookup/"+settings.name).fail(function(){
 
-	for(i=0; i < params.length; i++){
-		argAndVal = params[i].split("=");
-		site[argAndVal[0]] = argAndVal[1];
-	}
-
-	console.log(settings);
-	console.log(site)
-	console.log("oops")
-	console.log(JSON.stringify(site))
-
-	str = JSON.stringify(site);
-
-
-	$.ajax({
-	    type: "POST",
-	    url: "/site",
-	    // The key needs to match your method's input parameter (case-sensitive).
-	    data: str,
-	    contentType: "application/json; charset=utf-8"
-	   
-	
-	}).done(function(){
-		callback(true)
-	}).fail(function(x,t,e){
-		alert("Error creating site. Encountered error : " + t)
-		alert(e);
-		console.log("Error creating site :" + t)
-		console.log(e);
-	});
-
-
-	
-
+		$.ajax({
+		    type: "POST",
+		    url: "/site",
+		    // The key needs to match your method's input parameter (case-sensitive).
+		    data: str,
+		    contentType: "application/json; charset=utf-8"
+		   
+		
+		}).done(function(){
+			callback(true)
+		}).fail(function(x,t,e){
+			alert("Error creating site. Encountered error : " + t)
+			alert(e);
+			console.log("Error creating site :" + t)
+			console.log(e);
+			callback(false,e);
+		});
+	}).done(function(x,t,c){
+		console.log("Not creating site " + settings.name + " because it already exists");
+		callback(true);
+	})
 }
 
+function REVISION_createPage(pagename){
+
+	$.ajax({
+		    type: "POST",
+		    url: "/site/page/" + pagename,
+		    // The key needs to match your method's input parameter (case-sensitive).
+		    data: JSON.stringify(theSiteObj),
+		    contentType: "application/json; charset=utf-8"
+		   
+		
+		}).done(function(){
+			//callback(true)
+		}).fail(function(x,t,e){
+			alert("Error creating site. Encountered error : " + t)
+			alert(e);
+			console.log("Error creating site :" + t)
+			console.log(e);
+			//callback(false,e);
+		});
+
+}
 
 $(document).on("REVISION_NEEDED_EVENT",function(evt){
 
@@ -244,30 +281,38 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt){
 	repo = new LocalStorageRepo(theSiteObj);
 
 	object = repo.writeRevision(theSiteObj,new Date(),"Tuesday")
-	/*
-	$.post(location.protocol   + "/revisions", object, function(response) {
-    	
-	}, 'json');*/
+	
+
+	REVISION_createNewSite(theSiteObj,function(ok,err){
+
+		if(ok){
+			console.log("Sending a new revision")
+			$.ajax({
+			    type: "POST",
+			    url:  "/revisions",
+			    // The key needs to match your method's input parameter (case-sensitive).
+			    data: JSON.stringify(object),
+			    contentType: "application/json; charset=utf-8"
+		    	
+			}).done(function(){
+				console.log("Revision created");
+				window.location = "/" + theSiteObj.name
+			}).fail(function(x,t,e){
+				
+				alert(e);
+				console.log("Error revising site :" + t)
+				console.log(e);
+			});
 
 
-	$.ajax({
-	    type: "POST",
-	    url: location.protocol   + "/revisions",
-	    // The key needs to match your method's input parameter (case-sensitive).
-	    data: JSON.stringify(object),
-	    contentType: "application/json; charset=utf-8",
-	    dataType: "json"
-    
-	}).done(function(){
-		callback(true)
-	}).fail(function(x,t,e){
-		
-		alert(e);
-		console.log("Error revising site :" + t)
-		console.log(e);
-	});
+		} 
+
+	})
 
 
 })
+
+
+
 
 

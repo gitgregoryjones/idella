@@ -45,6 +45,7 @@ $(document).on("initializationComplete",function(){
        // $(document).unbind("keydown")
         // Avoid the real one
         event.preventDefault();
+        event.stopPropagation();
 
        
         if(!editing || currentCtx.id == "body" ){
@@ -116,7 +117,7 @@ $(document).on("initializationComplete",function(){
     })
 
 
-
+alert($("[data-action]").length)
     // If the menu element is clicked
     $("[data-action]").click(function(event){
        // $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
@@ -176,7 +177,6 @@ $(document).on("initializationComplete",function(){
             case "javascript": if(currentCtx.attr("type") != "canvas"){         
                     //remove submenu class because we don't need it anymore
                 $( ".adialog" ).data({"theClickedElement":$(hotObj),"actionType":$(this).attr("data-action")});
- 
                     currentCtx.removeClass("submenu")
                 //Signal open and set title
                 $( "#jsdialog" ).dialog( "open" ).dialog("option","title","Enter Javascript for element #" 
@@ -384,7 +384,7 @@ console.log("I am writing fields of length " + fields.length)
                 }
         }).on("change",function(evnt){
 
-            $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+            $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC,alert(3))
             //only used to write class info here.  Everything else should use on.input
             if(label == "class" && $(currentCtx.attr("user-classes") && $(currentCtx).attr("user-classes").trim().length > 0)){
                 //$(currentCtx).attr("class",$(currentCtx).attr("user-classes"))

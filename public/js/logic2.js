@@ -1,13 +1,14 @@
 var _debug = false;
 var lastEditedClass = "";
 global_zIndex = 1000;
-var files = ["jquery-ui-1.12.1.custom/jquery-ui.css","jquery-ui-1.12.1.custom/jquery-ui.min.js","font-awesome-4.7.0/css/font-awesome.min.css","idella.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","notes.js","drawSpace.js","custom_events2.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakPoints.js"]
+var files = ["idella.css","jquery-ui-1.12.1.custom/jquery-ui.css","jquery-ui-1.12.1.custom/jquery-ui.min.js","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","notes.js","drawSpace.js","custom_events2.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakPoints.js"]
 var hotObj = "";
 var hotObjId = 0;
 var genericClass = {};
 var allSitesAsObj = null;
 var website = "default";
 var theSiteObj = null;
+var theSiteConfig = {};
 version = "1.0";
 
 //var autoSaveEnabled = true;
@@ -73,10 +74,10 @@ $( document ).ready(function() {
 
 			if(file.endsWith(".css")){
 				file = "/css/" + file;
-				$("head").append($("<link>",{rel:"stylesheet",href:file,version:version}))
+				$("head").children().first().before($("<link>",{rel:"stylesheet",href:file,version:version}))
 			} else {
 				file = "/js/" + file;
-				$("head").append($("<script>",{src:file,version:version}))
+				$("head").children().first().before($("<script>",{src:file,version:version}))
 			}
 
 
@@ -100,10 +101,9 @@ $( document ).ready(function() {
 
 	   if(editing) {
 
-	   		containerDiv = $("<div>")
+	   		containerDiv = $('<div id="misc-controls">')
 
 		   	$(containerDiv).load("edit-body.html",function(){
-
 
 			   try {
 
@@ -119,6 +119,8 @@ $( document ).ready(function() {
 					log.debug("Before Current Site")
 
 					if($('body').find('.dropped-object').length == 0){
+
+						$('body').append(containerDiv);
 						getCurrentSite();
 						log.debug("After Current Site")
 						//load scripts now that body has been written
@@ -129,10 +131,15 @@ $( document ).ready(function() {
 						theSiteObj = {};
 						theSiteObj.bp = [];
 						theSiteObj.name = website;
-						theSiteObj.currentPage = location.pathname;
+						theSiteObj.currentPage = location.pathname.replace("/"+website,"");
+						$('body').append(containerDiv);
 					}
 
-					$('body').append(containerDiv);
+					if(theSiteObj.currentPage == "/" || theSiteObj.currentPage == ""){
+						theSiteObj.currentPage = "index.html";
+					}
+
+					
 							       		
 			   }catch(e){
 					log.error("Unable to retrieve site [" + website + "] " + e)
