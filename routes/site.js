@@ -102,7 +102,41 @@ router.post('/', function(req, res, next) {
 function addPage(site,page,callback){
 
 
-	writeDefaultSiteContents(site,page,callback);
+	fullPath = path.join(process.env.HOMEDIR ,'/public/',site,page);
+
+	fullPathDirectory = fullPath.substring(0,fullPath.lastIndexOf("/"));
+
+	fx.mkdir(fullPathDirectory, function(err){
+
+		if(err){
+			callback(false,err);
+		}
+
+		writeDefaultSiteContents(site,page,function(ok,err){
+
+		revDir = path.join(process.env.HOMEDIR ,'/public/',site,page+".revisions");
+
+		if(ok){
+			console.log("AddPage:Creating revision directory " + revDir);
+
+			fx.mkdir(revDir,function(err){
+				console.log("AddPage:Revision dir err value should be null. It is  "+err);
+				if(err){
+					callback(!ok,err);
+				}else {
+					callback(ok);
+				}
+			})
+
+		}else {
+			callback(ok,err);
+		}
+
+		});
+
+	})
+
+	
 
 
 }
@@ -140,15 +174,18 @@ function writeDefaultSiteContents(site,pagename,callback){
 
 		//http://www.britishsarcomagroup.org.uk/wp-content/uploads/2016/09/new-website.jpg
 		$('body').append(img);
+		$('title').html(site);
 
-		var createDir = process.env.HOMEDIR + '/public/' + site;
 
-		console.log("Making page " + createDir)
+		var createDir = path.join(process.env.HOMEDIR,'/public/',site);
 
-		if(!fs.exists(createDir+ "/"+pagename)){
+		console.log("Making page " + createDir + " pagename = " + pagename)
 
-			fs.writeFile(createDir+ "/"+pagename,$.html(),function(err){
-				console.log("Wrote File " + " ok is " + ok)
+
+		if(!fs.exists(path.join(createDir,pagename))){
+
+			fs.writeFile(path.join(createDir,pagename),$.html(),function(err){
+				console.log("Wrote File " + " ok is " + err)
 				if(err){
 					callback(!ok,err);
 				} else {
@@ -171,7 +208,7 @@ function createSite(body,callback){
 
 	
 
-	var createDir = process.env.HOMEDIR + '/public/' + body["name"];
+	var createDir = path.join(process.env.HOMEDIR,'/public/',body["name"]);
 
 	fx.mkdirSync(createDir);
 
@@ -179,15 +216,15 @@ function createSite(body,callback){
 
 		console.log("Linking " + createDir+'js' + " to " + __dirname + '/../public/js' + " ok is " + ok)
 
-		link(process.env.HOMEDIR +'/public/js', createDir+'/js', 'junction')
+		link(path.join(process.env.HOMEDIR,'/public/js'), path.join(createDir,'/js'), 'junction')
 			.then(function () {})
-		link(process.env.HOMEDIR +'/public/css',  createDir+ '/css', 'junction')
+		link(path.join(process.env.HOMEDIR,'/public/css'),  path.join(createDir,'/css'), 'junction')
 			.then(function () {})
-		link(process.env.HOMEDIR + '/public/napkin', createDir+'/napkin', 'junction')
+		link(path.join(process.env.HOMEDIR,'/public/napkin'), path.join(createDir,'/napkin'), 'junction')
 			.then(function () {})
-		link(process.env.HOMEDIR + '/public/settings.html', createDir + '/settings.html', 'junction')
+		link(path.join(process.env.HOMEDIR,'/public/settings.html'), path.join(createDir,'/settings.html'), 'junction')
 			.then(function () {})
-		link(process.env.HOMEDIR + '/public/edit-body.html', createDir+'/edit-body.html', 'junction')
+		link(path.join(process.env.HOMEDIR,'/public/edit-body.html'), path.join(createDir,'/edit-body.html'), 'junction')
 			.then(function () {})
 
 
@@ -199,4 +236,5 @@ function createSite(body,callback){
 }
 
 module.exports = router;
+module.exports.addPage = addPage;
 

@@ -117,7 +117,7 @@ $(document).on("initializationComplete",function(){
     })
 
 
-alert($("[data-action]").length)
+
     // If the menu element is clicked
     $("[data-action]").click(function(event){
        // $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)

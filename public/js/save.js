@@ -129,7 +129,6 @@ function getCurrentSite(){
     	//$("body").append(theSiteObj.html);
     	//get most recent tool
     	$(document).on("initializationComplete",function(){
-alert('what')
     		dialogs = $(".adialog")
 	    	//$(".adialog").remove()
 	    	//$(".custom-menu").remove();

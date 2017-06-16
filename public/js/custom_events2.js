@@ -995,7 +995,14 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 		anchors = $("<a>",{id:"anchor-"+parentId,href:loc,label:loc,type:"anchor"})
 
 		if(!loc.trim().startsWith("http") && !loc.trim().startsWith("javascript:") ){
-			REVISION_createPage(loc.trim());
+			//alert(loc)
+			if(loc.trim().length > 0){
+				if(loc.startsWith("/")){
+					loc = loc.replace("/","");
+				}
+				
+				REVISION_anchors.push(loc.trim())
+			}
 		}
 
 	} else {

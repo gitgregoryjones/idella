@@ -149,6 +149,13 @@ $( document ).ready(function() {
 	   		       
 	  		 $("title").html(website)
 
+	  		 $.ajaxSetup({
+    				beforeSend: function(xhr) {
+        			xhr.setRequestHeader('x-site-name', theSiteObj.name);
+        			xhr.setRequestHeader('x-current-page-name', theSiteObj.currentPage);
+    			}
+			})
+
 
 		   		initialize();
 				$.event.trigger("initializationComplete",[]);

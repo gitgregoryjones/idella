@@ -4,8 +4,9 @@ var fs = require('fs')
 var cheerio = require('cheerio')
 var fx = require('mkdir-recursive');
 url = require('url');
+var addPage = require('./site').addPage;
 const path = require('path')
-
+const dateformat = require('dateformat');
 //var $ = require('jquery')
 
 /* GET home page. */
@@ -16,19 +17,40 @@ router.post('/', function(req, res, next) {
 
 	console.log("Home Dir is " + process.env.HOMEDIR)
 
-	console.log("Site name is " + req.body.name)
+	console.log("Site name is " + req.get('x-site-name'))
+
+	console.log("Site name is " + req.get('x-current-page-name'))
+
+	//console.log("Path is " + url.parse(req.url).pathname)
+
+	var file = req.get('x-current-page-name');
+
+	//remove /context from path if found
+	//file = file.replace("/"+req.get('x-site-name'),"");
+
+	file += file.endsWith("/") ? "index.html" : "";
 	
-	var dir =process.env.HOMEDIR + '/public/' + req.body.name  + req.body.currentPage.name + ".revisions";
+	var dir =path.join(process.env.HOMEDIR,'/public/',req.get('x-site-name'), req.get('x-current-page-name')+ ".revisions");
 
 	console.log("dir is " + dir);
 
-	write(dir,req.body.currentPage,req.body.currentRevision);
+	write(dir,req.body.currentPage,req.body.currentRevision,function(ok,err){
+
+		if(err){
+			res.sendStatus(404)
+			console.log(err);
+		}else {
+			res.sendStatus(200);
+		}
+	});
 	
-	res.sendStatus(200);
+	
 });
 
 
-function write(revisionDirectory,currentPage, currentRevision){
+function write(revisionDirectory,currentPage, currentRevision,callback){
+
+	ok = true;
 
 	console.log("Revision Directory is " + revisionDirectory)
 
@@ -37,7 +59,7 @@ function write(revisionDirectory,currentPage, currentRevision){
 		if(err){
 			console.log("Mkdir Error is ")
 			console.log(err)
-			return false;
+			callback(!ok,err);
 		} 
 		$ = cheerio.load('<body>\n' + currentRevision.html.trim() + '\n</body');
 
@@ -47,7 +69,7 @@ function write(revisionDirectory,currentPage, currentRevision){
 	 		if(err){
 	 			console.log("ERROR")
 	 			console.log(err)
-	 			return false;
+	 			callback(!ok,err);
 	 		}
 
 	 		$ = cheerio.load(template);
@@ -55,6 +77,7 @@ function write(revisionDirectory,currentPage, currentRevision){
 
 	 		$('head').append($('<style class="generated">').append(currentRevision.css))
 	 		$('body').append(currentRevision.html);
+	 		$('title').html(currentRevision.siteName)
 	 		//Delete Controls
 	 		$('body').find('#misc-controls').remove();
 	 		$('body').find("[role=dialog]").remove()
@@ -71,10 +94,31 @@ function write(revisionDirectory,currentPage, currentRevision){
 			d = new Date(currentRevision.date);
 
 
-			fs.writeFileSync(revisionDirectory+ "/"+d.getMonth()+""+d.getDate()+""+d.getFullYear()+d.getHours()+""+d.getMinutes(),$.html())
+			fname = dateformat(d, 'mmddyyyyhhMM');
 
+			fname = path.join(revisionDirectory,fname)
+			console.log("Revision file is " + fname);
 
-			return true;
+			fs.writeFile(fname,$.html(),function(err){
+
+				if(err){
+					callback(!ok,err);
+				} else {
+
+					//Do Revision Anchors
+					for(i=0; i < currentRevision.anchors.length; i++){
+						addPage(currentRevision.siteName,currentRevision.anchors[i],function(ok,err){
+							if(!ok){
+								console.log(err)
+								callback(!ok,err);
+							}
+						})
+					}
+
+					callback(ok);
+				}
+			})
+
 		});
 
 	});
@@ -86,15 +130,28 @@ function getCorrectRevision(fpath,dateGMTString,callback){
 		
 	today = new Date(dateGMTString)
 
-	todayAsNumber = parseFloat(today.getMonth()+""+today.getDate()+""+today.getFullYear()+today.getHours()+""+today.getMinutes())
+	//todayAsNumber = parseFloat(today.getMonth()+""+today.getDate()+""+today.getFullYear()+today.getHours()+""+today.getMinutes())
+	//todayAsNumber = parseFloat(dateformat(today, 'mmddyyyyhhMM'));
+	todayAsNumber = (dateformat(today, 'mmddyyyyhhMM'));
 
 	console.log("Today " + today.toString() + " as number " + todayAsNumber )
 
-	console.log("Today " + today.toString() + " as number " + todayAsNumber )
+	//console.log("Today " + today.toString() + " as number " + todayAsNumber )
 
 	console.log("Fpath is " + fpath)
 
 	fs.readdir(fpath,function(err,list){
+
+		//console.log("List is  " + list )
+
+		/*
+		list = list.map(function(item){
+			return parseFloat(item);
+		})*/
+
+		list = list.sort()
+
+		//list = list.reverse();
 
 		console.log("List is  " + list )
 
@@ -103,7 +160,7 @@ function getCorrectRevision(fpath,dateGMTString,callback){
 			callback(!ok,"");
 		}
 
-		//list.sort().reverse();
+		list.reverse();
 
 		fileName = "";
 
@@ -111,8 +168,9 @@ function getCorrectRevision(fpath,dateGMTString,callback){
 
 		for(i=0; i < list.length; i++){
 			fileName = list[i];
-			console.log("comparing todayAsNumber > list[i] : " + todayAsNumber + " > " + parseFloat(list[i]))
+			console.log("comparing todayAsNumber > list[i] : " + todayAsNumber + " > " + (list[i]))
 			if(todayAsNumber >= parseFloat(list[i])){
+			//if(todayAsNumber >= list[i]){
 
 				break;
 			} 
@@ -131,9 +189,12 @@ function getRevision(req,res,next){
 
 	var file = url.parse(req.url).pathname;
 
+	//remove /context from path if found
+	file = file.replace("/"+req.get('x-site-name'),"");
+
 	file += file.endsWith("/") ? "index.html" : "";
 
-	console.log("THE PATH IS " + url.parse(req.url).pathname)		
+	console.log("THE PATH IS " + file)		
 	if(!file.endsWith(".html") && !file.endsWith(".htm")) {
 
 		next();
@@ -156,24 +217,32 @@ function getRevision(req,res,next){
 			 	getCorrectRevision(revDir,new Date(),function(ok,revision){
 
 			 		console.log("Got revision " + revision)
-			 		if(!ok){
+
+
+
+			 		if(!ok ){
 			 			console.log("Unable to retrieve revision")
 				 		console.log(err)
 				 		next();
-			 		}
+			 		} else if(revision.length == 0){
 
-			 		fs.readFile(path.join(revDir,revision.toString()),function(err,contents){
-				 		if(err){
-				 			console.log("ERROR")
-				 			console.log(err)
-				 			next();
-				 		} else {
-				 		//$ = cheerio.load(contents);
-				 		//$('body').remove();
-				 		res.set('Content-Type','text/html')
-				 		res.end(contents);
-				 		}
-			 		})
+			 			next();
+			 		} else {
+
+				 		fs.readFile(path.join(revDir,revision.toString()),function(err,contents){
+					 		if(err){
+					 			console.log("ERROR")
+					 			console.log(err)
+					 			next();
+					 		} else {
+					 		$ = cheerio.load(contents);
+					 		$('title').html(req.get('x-site-name'));
+					 		//$('body').remove();
+					 		res.set('Content-Type','text/html')
+					 		res.end($.html());
+					 		}
+				 		})
+			 		}
 			 	});
 
 			 	

@@ -167,7 +167,7 @@ REVISION_getAllSites(function(ok,payload){
 		$("#misc-sitename").append($(new Option(payload[i].name,payload[i].name)))
 	}
 
-	opt = $('#misc-sitename option:contains("' + $("title").val() + '")').prop('selected', true);
+	opt = $('#misc-sitename option:contains("' + $("title").html() + '")').prop('selected', true);
 
 	payload.filter(function(siteInDropDown){
 
@@ -198,7 +198,7 @@ $("[type=create-site]").on("click",function(){
 		if(confirm("Visit your new site created at " + copy.name)){
 			window.location = "/"+ copy.name;
 		}
-	});
+	}); 
 })
 
 $("[name=new-site-name]").on('focusin', function() {

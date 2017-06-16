@@ -1,6 +1,8 @@
 //.*(BEGIN\sELEM_1482071966106)(.+)(END\sELEM_1482071966106).*
 //Get All Revisions > date
 
+var REVISION_anchors = [];
+
 function revisionSort(a,b){
 
 	return new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -106,12 +108,7 @@ var LocalStorageRepo = class extends Repo {
 	constructor(theSiteObj){
 
 
-	$.ajaxSetup({
-    	beforeSend: function(xhr) {
-        	xhr.setRequestHeader('x-site-name', theSiteObj.name);
-    	}
-	})
-
+	
 
 		super(theSiteObj)
 
@@ -168,6 +165,8 @@ var LocalStorageRepo = class extends Repo {
 
 		revision.setHtml(theSiteObj.html);
 		revision.setCss(theSiteObj.style);
+		revision.siteName = theSiteObj.name;
+		revision.anchors = REVISION_anchors;
 		
 		for(var x = 0; x <  theSiteObj.bp.length; x++){
 			//mediaQueryCSS = getBreakpoint(bp[idx])
@@ -193,7 +192,7 @@ var LocalStorageRepo = class extends Repo {
 
 		console.log(this.website)
 		//this.website.pages[theSiteObj.currentPage].revisions.push(revision)
-		localStorage.setItem("repo_"+ theSiteObj.currentPage,JSON.stringify(this.website))
+		//localStorage.setItem("repo_"+ theSiteObj.currentPage,JSON.stringify(this.website))
 
 		return (this.website);
 
@@ -240,8 +239,8 @@ function REVISION_createNewSite(settings,callback) {
 		}).done(function(){
 			callback(true)
 		}).fail(function(x,t,e){
-			alert("Error creating site. Encountered error : " + t)
-			alert(e);
+			//alert("Error creating site. Encountered error : " + t)
+			//alert(e);
 			console.log("Error creating site :" + t)
 			console.log(e);
 			callback(false,e);
@@ -251,6 +250,7 @@ function REVISION_createNewSite(settings,callback) {
 		callback(true);
 	})
 }
+
 
 function REVISION_createPage(pagename){
 
@@ -264,9 +264,10 @@ function REVISION_createPage(pagename){
 		
 		}).done(function(){
 			//callback(true)
+			$(document).trigger("REVISION_NEEDED_EVENT",[]);
 		}).fail(function(x,t,e){
-			alert("Error creating site. Encountered error : " + t)
-			alert(e);
+			//alert("Error creating site. Encountered error : " + t)
+			//alert(e);
 			console.log("Error creating site :" + t)
 			console.log(e);
 			//callback(false,e);
@@ -276,11 +277,12 @@ function REVISION_createPage(pagename){
 
 $(document).on("REVISION_NEEDED_EVENT",function(evt){
 
-	alert("revision needed")
+	//alert("revision needed")
 
 	repo = new LocalStorageRepo(theSiteObj);
 
 	object = repo.writeRevision(theSiteObj,new Date(),"Tuesday")
+
 	
 
 	REVISION_createNewSite(theSiteObj,function(ok,err){
@@ -296,9 +298,10 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt){
 		    	
 			}).done(function(){
 				console.log("Revision created");
-				window.location = "/" + theSiteObj.name
+				REVISION_anchors = [];
+				//window.location = "/" + theSiteObj.name + theSiteObj.currentPage;
 			}).fail(function(x,t,e){
-				
+				alert("Failure is here:")
 				alert(e);
 				console.log("Error revising site :" + t)
 				console.log(e);

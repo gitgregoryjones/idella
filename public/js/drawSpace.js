@@ -28,7 +28,7 @@ function DRAW_SPACE_showSettings(){
 
 	$(".rocket-settings").css({left:left})
 
-	$(".setarea").load("settings.html");
+	$(".setarea").load("/settings.html");
 
 	$("#editSpace").animate({height:$(document).height(),top:10},function(){
 		//$("#drawSpace").hide();
