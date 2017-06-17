@@ -185,9 +185,90 @@ function getCorrectRevision(fpath,dateGMTString,callback){
 	
 }
 
+/*
+* If dynamic page. Find base template and render.  Else next();
+*/
+function SEOUrlFilter(req,res,next){
+
+
+	mappings = [{from:"\\/(\\w+)\/+((?:\\w+)(?:-?\\w+)+).html",to:"/games.html?seriesname=$2"}];
+
+
+	myUrl = "not-found";
+
+	mappings.forEach((map, idx) => {
+
+		str = url.parse(req.url).pathname;
+       
+       console.log("Testing " + map.from + " against " + str)
+
+       	var regex = new RegExp(map.from,"g") 
+
+       	m = regex.exec(str);
+
+
+       	console.log("M is " + m)
+
+
+		if(m != null && m.length > 1 && req.url.indexOf("edit-body.html") == -1){
+
+			for(i=1;i< m.length; i++){
+
+				console.log("Testing " + m[i])
+
+				re = new RegExp("\\$"+i,"g")
+
+				console.log("Regex is now " + re)
+
+				map.to = map.to.replace(re,m[i]);
+			}
+
+			//req.params["x-current-page-name"] = m[1]+".html";
+			//req.params["x-dynamic-lookup"] = m[2];
+
+			console.log("Overwrote req params")
+			console.log(req.params)
+			myUrl = map.to;
+			req.url = req.url.replace(m[0],map.to)
+			console.log(req.url)
+		} 
+
+    })
+
+	console.log(" New Path is " + myUrl)
+	
+	next();
+/*
+	mappings.forEach((match, groupIndex) => {
+        console.log(`Found match, group ${groupIndex}: ${match}`);
+
+    });
+
+	var regex = /(\w+)\/+((?:\w+)(?:-?\w+)+).html/g;
+	var str = `/people/games/car-boat-sails.html`;
+	let m;
+
+	if((m = regex.exec(str)) != null){
+
+		req.params["x-current-page-name"] = m[1]+".html";
+		req.params["x-dynamic-lookup"] = m[2];
+
+		console.log("Overwrote req params")
+		console.log(req.params)
+	} 
+
+	next();
+
+*/
+}
+
+
+
 function getRevision(req,res,next){
 
 	var file = url.parse(req.url).pathname;
+
+	//file = path.join(req.get('x-site-name'),req.get('x-current-page-name'))
 
 	//remove /context from path if found
 	file = file.replace("/"+req.get('x-site-name'),"");
@@ -201,11 +282,11 @@ function getRevision(req,res,next){
 		
 	} else {
 
-		filepart = file.substring(file.lastIndexOf("/")+1)
+		//filepart = file.substring(file.lastIndexOf("/")+1)
 		
 		//filepart =filepart.substring(0,filepart.lastIndexOf("."));
 
-		console.log("File part is " + filepart)
+		//console.log("File part is " + filepart)
 		
 		var revDir = path.join(process.env.HOMEDIR ,"public",file + ".revisions");
 		console.log("Looking for " + revDir)
@@ -248,7 +329,7 @@ function getRevision(req,res,next){
 			 	
 					
 		} else {
-			console.log("revision " + filepart + " not found...continuing");
+			console.log("revision " + file + " not found...continuing");
 			next();
 		}
 	}
@@ -258,3 +339,4 @@ function getRevision(req,res,next){
 
 module.exports = router;
 module.exports.getRevision = getRevision;
+module.exports.SEOUrlFilter = SEOUrlFilter;

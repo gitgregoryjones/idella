@@ -41,7 +41,10 @@ app.use('/revisions', revisions);
 app.use('/site', site);
 
 process.env.HOMEDIR = __dirname;
-//Put after regular routes so they don't interfere
+
+app.use(revisions.SEOUrlFilter)
+
+//Put before regular routes so they don't interfere
 app.use(revisions.getRevision);
 
 
