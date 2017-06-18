@@ -7,6 +7,7 @@ url = require('url');
 var addPage = require('./site').addPage;
 const path = require('path')
 const dateformat = require('dateformat');
+var mappings = require("./mappings");
 //var $ = require('jquery')
 
 /* GET home page. */
@@ -64,7 +65,7 @@ function write(revisionDirectory,currentPage, currentRevision,callback){
 		$ = cheerio.load('<body>\n' + currentRevision.html.trim() + '\n</body');
 
 		$('head').append($('<style class="generated">').append(currentRevision.css))
-		fs.readFile(process.env.HOMEDIR + "/public/index.html",function(err,template){
+		fs.readFile(process.env.HOMEDIR + "/public/template.html",function(err,template){
 
 	 		if(err){
 	 			console.log("ERROR")
@@ -110,7 +111,7 @@ function write(revisionDirectory,currentPage, currentRevision,callback){
 						addPage(currentRevision.siteName,currentRevision.anchors[i],function(ok,err){
 							if(!ok){
 								console.log(err)
-								callback(!ok,err);
+								//callback(!ok,err);
 							}
 						})
 					}
@@ -141,13 +142,6 @@ function getCorrectRevision(fpath,dateGMTString,callback){
 	console.log("Fpath is " + fpath)
 
 	fs.readdir(fpath,function(err,list){
-
-		//console.log("List is  " + list )
-
-		/*
-		list = list.map(function(item){
-			return parseFloat(item);
-		})*/
 
 		list = list.sort()
 
@@ -190,13 +184,17 @@ function getCorrectRevision(fpath,dateGMTString,callback){
 */
 function SEOUrlFilter(req,res,next){
 
+	str = url.parse(req.url).pathname;
 
-	mappings = [{from:"\\/(\\w+)\/+((?:\\w+)(?:-?\\w+)+).html",to:"/games.html?seriesname=$2"}];
-
-
+	//console.log("Mappings ");
+	//console.log(mappings)
+	
 	myUrl = "not-found";
 
-	mappings.forEach((map, idx) => {
+	for(x=0;x < mappings.length && str.endsWith(".html"); x++){
+	//mappings.forEach((map, idx) => {
+
+		map = mappings[x];
 
 		str = url.parse(req.url).pathname;
        
@@ -206,11 +204,9 @@ function SEOUrlFilter(req,res,next){
 
        	m = regex.exec(str);
 
+       	console.log("Mapping for file " + str  +" is  " + m)
 
-       	console.log("M is " + m)
-
-
-		if(m != null && m.length > 1 && req.url.indexOf("edit-body.html") == -1){
+		if(m != null && m.length > 0 && req.url.indexOf("edit-body.html") == -1 ){
 
 			for(i=1;i< m.length; i++){
 
@@ -225,70 +221,89 @@ function SEOUrlFilter(req,res,next){
 
 			//req.params["x-current-page-name"] = m[1]+".html";
 			//req.params["x-dynamic-lookup"] = m[2];
-
+			res.set("x-orig-site",str);
 			console.log("Overwrote req params")
 			console.log(req.params)
 			myUrl = map.to;
 			req.url = req.url.replace(m[0],map.to)
 			console.log(req.url)
+			break;
 		} 
 
-    })
+    }
 
-	console.log(" New Path is " + myUrl)
+	//console.log(" New Path is " + myUrl)
 	
 	next();
-/*
-	mappings.forEach((match, groupIndex) => {
-        console.log(`Found match, group ${groupIndex}: ${match}`);
 
-    });
-
-	var regex = /(\w+)\/+((?:\w+)(?:-?\w+)+).html/g;
-	var str = `/people/games/car-boat-sails.html`;
-	let m;
-
-	if((m = regex.exec(str)) != null){
-
-		req.params["x-current-page-name"] = m[1]+".html";
-		req.params["x-dynamic-lookup"] = m[2];
-
-		console.log("Overwrote req params")
-		console.log(req.params)
-	} 
-
-	next();
-
-*/
 }
 
 
 
 function getRevision(req,res,next){
 
+	
 	var file = url.parse(req.url).pathname;
 
-	//file = path.join(req.get('x-site-name'),req.get('x-current-page-name'))
+	file += file.endsWith("/") ? "index.html" : ""
 
-	//remove /context from path if found
-	file = file.replace("/"+req.get('x-site-name'),"");
-
-	file += file.endsWith("/") ? "index.html" : "";
-
-	console.log("THE PATH IS " + file)		
+	
 	if(!file.endsWith(".html") && !file.endsWith(".htm")) {
 
 		next();
 		
-	} else {
+	} else if(file.endsWith("edit-body.html") || file.endsWith("settings.html")){ 
 
+		next();
+
+	}else {
+
+	console.log("SEO Friendly name was passed is " + res.get("x-orig-site"))
+
+
+	computedSite = file.substring(0,file.lastIndexOf("/"));
+
+	var site = res.get('x-site-name') && res.get('x-site-name') != undefined ? res.get('x-site-name') : computedSite;
+
+	if(site.startsWith("/")){
+		site = site.substring(1);
+	}
+/*
+	if(site.length == 0){
+		site = "default"
+	}*/
+
+	console.log("File Path before is " + file)
+
+	console.log("Computed site as " + site)
+
+	//file = path.join(req.get('x-site-name'),req.get('x-current-page-name'))
+
+	//remove /context from path if found
+	file = file.replace("/"+site,"");
+
+
+		console.log("req.url.query is ")
+		console.log(url.parse(req.url).query)
+
+		res.set('x-query',url.parse(req.url).query);
+
+		console.log("THE PATH IS [" + file + "]")	
+
+		
 		//filepart = file.substring(file.lastIndexOf("/")+1)
 		
 		//filepart =filepart.substring(0,filepart.lastIndexOf("."));
 
 		//console.log("File part is " + filepart)
 		
-		var revDir = path.join(process.env.HOMEDIR ,"public",file + ".revisions");
+		var revDir = path.join(process.env.HOMEDIR ,"public",site,file + ".revisions");
+
+		if(res.get("x-orig-site") && fs.existsSync(path.join(process.env.HOMEDIR ,"public",res.get("x-orig-site") + ".revisions"))){
+			revDir = path.join(process.env.HOMEDIR ,"public",res.get("x-orig-site") + ".revisions")
+			console.log("Really Looking for " + revDir)
+		}
+
 		console.log("Looking for " + revDir)
 		//if revisions?
 		if(fs.existsSync(revDir)){
@@ -299,6 +314,8 @@ function getRevision(req,res,next){
 
 			 		console.log("Got revision " + revision)
 
+			 		parseU = url.parse(req.url);
+			 		parseU.params = {};
 
 
 			 		if(!ok ){
@@ -306,9 +323,14 @@ function getRevision(req,res,next){
 				 		console.log(err)
 				 		next();
 			 		} else if(revision.length == 0){
+			 			revDir = path.join(process.env.HOMEDIR ,"public",site);
+			 			revision = "index.html"
+			 			console.log("No Revision found going to backup ")
 
-			 			next();
-			 		} else {
+			 			//next();
+			 		} 
+
+			 		 {
 
 				 		fs.readFile(path.join(revDir,revision.toString()),function(err,contents){
 					 		if(err){
@@ -317,6 +339,32 @@ function getRevision(req,res,next){
 					 			next();
 					 		} else {
 					 		$ = cheerio.load(contents);
+
+					 		params = {}
+
+					 		q = (url.parse(req.url).query)
+
+					 		if(q){
+					 				console.log("Q is ")
+					 		console.log(q);
+					 		qArr = q.split("?")
+					 		console.log(qArr)
+					 		qArr.forEach(function(qStr){
+					 			
+					 				console.log("Splitting " + qStr)
+						 			args= qStr.split("&");
+						 			args.forEach(function(arg){
+						 				argV = arg.split("=")
+						 				params[argV[0]] = argV[1];
+						 			})
+					 			
+
+					 		})
+					 		
+					 		parseU.params = params;
+					 		}
+
+					 		$("<script id='pstate'>var pageState = "+JSON.stringify(parseU)  + "</script>").insertBefore($('head'))
 					 		$('title').html(req.get('x-site-name'));
 					 		//$('body').remove();
 					 		res.set('Content-Type','text/html')
@@ -330,7 +378,13 @@ function getRevision(req,res,next){
 					
 		} else {
 			console.log("revision " + file + " not found...continuing");
-			next();
+			addPage(site,"index.html",function(ok,err){
+				fs.readFile(path.join(process.env.HOMEDIR ,"public",site,"index.html"),function(err,contents){
+							res.set('Content-Type','text/html')
+					 		res.end(contents);
+				})
+				
+			})
 		}
 	}
 

@@ -103,7 +103,7 @@ $( document ).ready(function() {
 
 	   		containerDiv = $('<div id="misc-controls">')
 
-		   	$(containerDiv).load("edit-body.html",function(){
+		   	$(containerDiv).load("/edit-body.html",function(){
 
 			   try {
 
@@ -132,7 +132,8 @@ $( document ).ready(function() {
 						theSiteObj.bp = [];
 						theSiteObj.name = website;
 						theSiteObj.currentPage = location.pathname.replace("/"+website,"");
-						$('body').append(containerDiv);
+						$('body').append(containerDiv)
+						loadAllJs();
 					}
 
 					if(theSiteObj.currentPage == "/" || theSiteObj.currentPage == ""){
@@ -158,6 +159,7 @@ $( document ).ready(function() {
 
 
 		   		initialize();
+		   		$(document).trigger("pageReloaded",pageState,currentBreakPoint);
 				$.event.trigger("initializationComplete",[]);
 				t = whichTool("div");
 				meDiv = $(t.droppedModeHtml)

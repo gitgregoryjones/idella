@@ -237,6 +237,7 @@ function REVISION_createNewSite(settings,callback) {
 		   
 		
 		}).done(function(){
+			window.location = "/" + settings.name;
 			callback(true)
 		}).fail(function(x,t,e){
 			//alert("Error creating site. Encountered error : " + t)
@@ -298,6 +299,7 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt){
 		    	
 			}).done(function(){
 				console.log("Revision created");
+				alert("Revision created")
 				REVISION_anchors = [];
 				//window.location = "/" + theSiteObj.name + theSiteObj.currentPage;
 			}).fail(function(x,t,e){

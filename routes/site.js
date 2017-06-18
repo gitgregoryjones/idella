@@ -67,10 +67,11 @@ router.post('/page/:pagename', function(req, res, next) {
 
 		createSite(req.body,function(ok){
 			if(ok){
-				addPage(req.body.name,req.params.pagename,function(ok,err){
+				res.sendStatus(200)
+				/*addPage(req.body.name,req.params.pagename,function(ok,err){
 
 					res.sendStatus(200);
-				})
+				})*/
 				
 			} else {
 				res.sendStatus(404);
@@ -102,9 +103,9 @@ router.post('/', function(req, res, next) {
 function addPage(site,page,callback){
 
 
-	fullPath = path.join(process.env.HOMEDIR ,'/public/',site,page);
+	var fullPath = path.join(process.env.HOMEDIR ,'/public/',site,page);
 
-	fullPathDirectory = fullPath.substring(0,fullPath.lastIndexOf("/"));
+	var fullPathDirectory = fullPath.substring(0,fullPath.lastIndexOf("/"));
 
 	fx.mkdir(fullPathDirectory, function(err){
 
@@ -114,21 +115,32 @@ function addPage(site,page,callback){
 
 		writeDefaultSiteContents(site,page,function(ok,err){
 
-		revDir = path.join(process.env.HOMEDIR ,'/public/',site,page+".revisions");
+		var revDir = path.join(process.env.HOMEDIR ,'/public/',site,page+".revisions");
 
 		if(ok){
-			console.log("AddPage:Creating revision directory " + revDir);
 
-			fx.mkdir(revDir,function(err){
-				console.log("AddPage:Revision dir err value should be null. It is  "+err);
-				if(err){
-					callback(!ok,err);
-				}else {
-					callback(ok);
-				}
-			})
+			if(!fs.existsSync(revDir)){
+
+				console.log("File exists is " + fs.existsSync(revDir))
+
+				console.log("AddPage:Creating revision directory " + revDir);
+
+				fx.mkdir(revDir,function(err){
+					console.log("AddPage:Revision dir err value should be null. It is  "+err);
+					if(err){
+						callback(!ok,err);
+					}else {
+						callback(ok);
+					}
+				})
+
+			} else {
+				callback(ok)
+			}
 
 		}else {
+			console.log("Error writing writeDefaultSiteContents ")
+			console.log(err)
 			callback(ok,err);
 		}
 
@@ -173,8 +185,12 @@ function writeDefaultSiteContents(site,pagename,callback){
 		img = $('<div class="squarepeg dropped-object" id="begin" type="IMG" style="background-image:url(http://www.britishsarcomagroup.org.uk/wp-content/uploads/2016/09/new-website.jpg)"></div>')
 
 		//http://www.britishsarcomagroup.org.uk/wp-content/uploads/2016/09/new-website.jpg
-		$('body').append(img);
+		if(site != "default"){
+			//$('body').append(img);
+		}
 		$('title').html(site);
+
+		$("<script id='pstate'>var pageState = {}</script>").insertBefore($('head'))
 
 
 		var createDir = path.join(process.env.HOMEDIR,'/public/',site);
@@ -212,7 +228,8 @@ function createSite(body,callback){
 
 	fx.mkdirSync(createDir);
 
-	writeDefaultSiteContents(body["name"],"index.html",function(ok,err){
+
+	addPage(body["name"],"index.html",function(ok,err){
 
 		console.log("Linking " + createDir+'js' + " to " + __dirname + '/../public/js' + " ok is " + ok)
 

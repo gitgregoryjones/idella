@@ -9,10 +9,14 @@
 		font-size:20px;
 	}
 
-	.fa-arrow-right, [type=create-site], .fa-calendar {
+	.fa-arrow-right, [type=create-site], .fa-calendar, .fa-plus-square {
 		color:green;
 		font-size:20px;
 		cursor: pointer;
+	}
+
+	.fa-gears {
+		color:green;
 	}
 
 	.fa-spinner {
@@ -53,11 +57,77 @@
 		</div>
 		
 	</div>
+
+<div id="settings" class="ui-widget ui-widget-content">
+	
+	<div class="styleRow" id="row-height">
+		<h1>More Options <div class="fa fa-gears"></div></h1>
+		<div class="styleLabel"><div>
+			
+		</div></div>
+
+	</div>
+
+	
+		
+	</div>
+
+<div id="Advanced" style="display:none">
 	<p></p>
 	<hr>
+	<div class="seo-rows">
+		<div class="styleRow" id="row-height">
+			<h1>SEO Mappings for</h1>
+			<div class="styleLabel"><div>
+				
+			</div>from:</div>
 
+			<div class="styleValue">
+				<input type="text" name="from">
+			</div>
+			
+		</div>
+		<div class="styleRow" id="row-height">
+			<h1 id="misc-sitename-h1"></h1>
+			<div class="styleLabel"><div>
+				
+			</div>to:</div>
+
+			<div class="styleValue">
+				<input type="text" name="from">
+			</div>
+			
+		</div>
+		<div class="fa fa-plus-square"></div>
+<!-- New Row //-->
+		<p>
+		<div class="styleRow" id="row-height">
+			
+			<div class="styleLabel"><div>
+				
+			</div>from:</div>
+
+			<div class="styleValue">
+				<input type="text" name="from">
+			</div>
+			
+		</div>
+		<div class="styleRow" id="row-height">
+			
+			<div class="styleLabel"><div>
+				
+			</div>to:</div>
+
+			<div class="styleValue">
+				<input type="text" name="from">
+			</div>
+			
+		</div>
+		<div class="fa fa-plus-square"></div>
+	</div>
 	<p></p>
-	
+	<hr>
+	<p></p>
 	<div class="styleRow" id="row-height">
 		<h1>What will my site look like in the future?</h1>
 		<div class="styleLabel"><div>
@@ -69,19 +139,7 @@
 		</div>
 		<div  class="fa fa-calendar"></div>
 	</div>
-	
-	<div class="styleRow" id="row-height">
-		
-		<div class="styleLabel"><div>
-			
-		</div>alias</div>
-
-		<div class="styleValue">
-			<input name="package-name" id="misc-to" value="Christmas Release">
-		</div>
-		
-	</div>
-	<p></p>
+		<p></p>
 	<hr>
 	<div class="styleRow" id="row-height">
 		<h1>Create a new Site</h1>
@@ -96,14 +154,24 @@
 		<div  type="create-site" class="fa fa-plus-square"></div>
 	</div>
 
-	
+	<div class="styleRow" id="row-height">
+		
+		<div class="styleLabel"><div>
+			
+		</div>alias</div>
+
+		<div class="styleValue">
+			<input name="package-name" id="misc-to" value="Christmas Release">
+		</div>
+		
+	</div>
 	<p></p>
 	<hr>
 
 	<p></p>
 	<div class="styleRow" id="row-height">
 		<h1>GitHub</h1>
-		<div class="styleLabel"><div>
+	<div class="styleLabel"><div>
 			
 		</div>username</div>
 
@@ -147,6 +215,7 @@
 		
 	</div>
 </div>
+</div>
 <div class="fa fa-spin fa-spinner"></div> 
 </form>
 <!-- Set data //-->
@@ -168,6 +237,8 @@ REVISION_getAllSites(function(ok,payload){
 	}
 
 	opt = $('#misc-sitename option:contains("' + $("title").html() + '")').prop('selected', true);
+
+	$("#misc-sitename-h1").html($("title").html());
 
 	payload.filter(function(siteInDropDown){
 
@@ -205,6 +276,11 @@ $("[name=new-site-name]").on('focusin', function() {
 	
     this.value = '';
 });
+
+$("h1 div.fa-gears").on('click',function(){
+
+	$("#Advanced").toggle();
+}).css("cursor","pointer")
 
 </script>
 
