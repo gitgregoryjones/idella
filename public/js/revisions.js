@@ -282,7 +282,7 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt){
 
 	repo = new LocalStorageRepo(theSiteObj);
 
-	object = repo.writeRevision(theSiteObj,new Date(),"Tuesday")
+	object = repo.writeRevision(theSiteObj,$('meta').first().attr('x-current-date'),"Standard Release")
 
 	
 

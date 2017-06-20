@@ -1,0 +1,88 @@
+<!DOCTYPE html><html><head>
+<meta name="viewport" content="width=device-width">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<script src="/css/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
+<script src="/js/logic2.js"></script>
+<title>www.holidays.com</title>
+<style class="generated">
+
+
+
+
+
+
+
+
+.ELEM_1497909817041 {
+	id:ELEM_1497909817041;
+	height:13.611111111111112vw;
+	width:47.361111111111114vw;
+	color:rgb(0, 0, 0);
+	z-index:0;
+	class:generictext ui-resizable ui-draggable ui-draggable-handle ui-droppable ELEM_1497909817041 dropped-object debug-border-style ui-draggable-dragging;
+	src:undefined;
+	position:absolute;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgba(0, 0, 0, 0);
+	border:0vw;
+	bottom:28.680555555555557vw;
+	display:block;
+	font-size:13.611111111111112vw;
+	font-weight:400;
+	left:23.055555555555557vw;
+	letter-spacing:0;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	right:32.708333333333336vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	top:6.458333333333334vw;
+	touch-action:none;
+	align-items:normal;
+	align-self:normal;
+	perspective-origin:5.208333333333334vw 0.6944444444444444vw;
+	transform-origin:5.208333333333334vw 0.6944444444444444vw;
+	type:T;
+}
+
+
+
+
+
+.ELEM_1497909817041-0-1 {
+	id:ELEM_1497909817041-0-1;
+	height:inherit;
+	width:inherit;
+	color:rgb(0, 0, 0);
+	src:undefined;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgba(0, 0, 0, 0);
+	border:0vw;
+	display:inline;
+	font-size:inherit;
+	font-weight:400;
+	letter-spacing:0;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	align-items:normal;
+	align-self:normal;
+	perspective-origin:0vw 0vw;
+	transform-origin:0vw 0vw;
+	text:HOME;
+	type:MENU-ITEM;
+	position:relative;
+}
+
+
+
+
+
+</style></head>
+<body>
+
+
+<div class="generictext ui-resizable ui-draggable ui-draggable-handle ui-droppable ELEM_1497909817041 dropped-object debug-border-style" id="ELEM_1497909817041" type="T" menuitemids="ELEM_1497909817041-0-0,ELEM_1497909817041-0-1" menuoptionsids="ELEM_1497909817041-0-0,ELEM_1497909817041-0-1" style=""><div class="toolhotspot"><div class="hotspot css" style="height: 0px; width: 0px; display: none;"><img src="http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png"></div><div class="hotspot js" style="height: 0px; width: 0px; display: none;"><img src="http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png"></div></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div id="menu-for-ELEM_1497909817041-0" type="MENU" style="position: relative; display: inline;"><div type="MENU-ITEM" id="ELEM_1497909817041-0-0" item="ELEM_1497909817041-0-0" class="fa fa-home" edittxt="fa-home" style="display: inline; padding: 5px;"></div><div type="MENU-ITEM" id="ELEM_1497909817041-0-1" item="ELEM_1497909817041-0-1" edittxt="HOME" class="ELEM_1497909817041-0-1 submenu" style="">HOME<p></p></div></div></div></body></html>

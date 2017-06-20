@@ -186,6 +186,9 @@ function SEOUrlFilter(req,res,next){
 
 	str = url.parse(req.url).pathname;
 
+	console.log("Cooyah")
+
+	console.log("Lookie " + req.query.xcurrentdate)
 	//console.log("Mappings ");
 	//console.log(mappings)
 	
@@ -242,6 +245,26 @@ function SEOUrlFilter(req,res,next){
 
 function getRevision(req,res,next){
 
+	console.log("Dooyah")
+
+	revDate = req.query.xcurrentdate
+
+	console.log("Revison Date is " + revDate + " if null. will default to new Date()");
+
+	try {
+
+		revDate = new Date(revDate).toString();
+		console.log("Date is converted revision [" + revDate + "]")
+		if(revDate == "Invalid Date"){
+			revDate = new Date();
+		}
+	}catch(except){
+		console.log("Exception was " + except);
+		console.log(new Date())
+		revDate = new Date().toString();
+	}
+
+	console.log("New Revison Date is " + revDate);
 	
 	var file = url.parse(req.url).pathname;
 
@@ -310,7 +333,7 @@ function getRevision(req,res,next){
 			
 			 	console.log("File Found " + revDir);
 			 	
-			 	getCorrectRevision(revDir,new Date(),function(ok,revision){
+			 	getCorrectRevision(revDir,revDate,function(ok,revision){
 
 			 		console.log("Got revision " + revision)
 
@@ -366,6 +389,8 @@ function getRevision(req,res,next){
 
 					 		$("<script id='pstate'>var pageState = "+JSON.stringify(parseU)  + "</script>").insertBefore($('head'))
 					 		$('title').html(req.get('x-site-name'));
+					 		res.set('x-current-date',revDate);
+					 		$('meta').first().attr('x-current-date',revDate);
 					 		//$('body').remove();
 					 		res.set('Content-Type','text/html')
 					 		res.end($.html());

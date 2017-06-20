@@ -57,7 +57,20 @@
 		</div>
 		
 	</div>
+<p></p>
+	<hr>
+	<p></p>
+	<div class="styleRow" id="row-height">
+		<h1>Time travel to:</h1>
+		<div class="styleLabel"><div>
+			
+		</div>date</div>
 
+		<div class="styleValue">
+			<input name="revision-date" id="misc-from" value="today">
+		</div>
+		<div  class="fa fa-calendar"></div>
+	</div>
 <div id="settings" class="ui-widget ui-widget-content">
 	
 	<div class="styleRow" id="row-height">
@@ -125,20 +138,7 @@
 		</div>
 		<div class="fa fa-plus-square"></div>
 	</div>
-	<p></p>
-	<hr>
-	<p></p>
-	<div class="styleRow" id="row-height">
-		<h1>What will my site look like in the future?</h1>
-		<div class="styleLabel"><div>
-			
-		</div>on</div>
-
-		<div class="styleValue">
-			<input name="revision-date" id="misc-from" value="12/25/2017">
-		</div>
-		<div  class="fa fa-calendar"></div>
-	</div>
+	
 		<p></p>
 	<hr>
 	<div class="styleRow" id="row-height">
@@ -272,6 +272,11 @@ $("[type=create-site]").on("click",function(){
 	}); 
 })
 
+vardateOn = new Date($('meta').first().attr('x-current-date'));
+
+var previewDateStr = vardateOn.getMonth()+1 + "/" + vardateOn.getDate() + "/" + vardateOn.getFullYear();
+
+
 $("[name=new-site-name]").on('focusin', function() {
 	
     this.value = '';
@@ -281,7 +286,21 @@ $("h1 div.fa-gears").on('click',function(){
 
 	$("#Advanced").toggle();
 }).css("cursor","pointer")
+<script>
+  $( function() {
+    $( "#misc-from" ).datepicker({
+      showButtonPanel: true
+    });
+  } );
 
+  $("#misc-from").on("change",function(){
+  	//alert($(this).val())
+  	//theSiteObj.date = $(this).val();
+  	$('meta').first().attr('x-current-date',$( "#misc-from" ).datepicker( "getDate" ))
+  	window.location = "/" +$("#misc-sitename").find(":selected").attr("value") + "/" + $("#misc-pages").find(":selected").attr("value")
+  	+ "?xcurrentdate="+$( "#misc-from" ).datepicker( "getDate" );
+  }).val(previewDateStr )
+  </script>
 </script>
 
 

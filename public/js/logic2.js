@@ -154,6 +154,8 @@ $( document ).ready(function() {
     				beforeSend: function(xhr) {
         			xhr.setRequestHeader('x-site-name', theSiteObj.name);
         			xhr.setRequestHeader('x-current-page-name', theSiteObj.currentPage);
+        			xhr.setRequestHeader('x-current-date', $('meta').first().attr('x-current-date'));
+
     			}
 			})
 
@@ -172,7 +174,8 @@ $( document ).ready(function() {
 		   	})
 		 } else {
 
-		   
+		   $("*").removeClass("submenu").not("[type=anchor]").css("cursor","default")
+		   $('body').show().addClass("hover");
 		 }
 
 

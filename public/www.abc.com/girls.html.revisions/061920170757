@@ -1,0 +1,582 @@
+<!DOCTYPE html><html><head>
+<meta name="viewport" content="width=device-width">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<script src="/css/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
+<script src="/js/logic2.js"></script>
+<title>www.abc.com</title>
+<style class="generated">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.ELEM_1497913612372-0-0 {
+	id:ELEM_1497913612372-0-0;
+	height:inherit;
+	width:inherit;
+	color:rgb(0, 0, 0);
+	class:fa fa-caret-left;
+	src:undefined;
+	position:relative;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgba(0, 0, 0, 0);
+	border:0vw;
+	bottom:0vw;
+	display:inline;
+	font-family:FontAwesome;
+	font-size:inherit;
+	font-weight:400;
+	left:0vw;
+	letter-spacing:0;
+	line-height:2.986111111111111vw;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	padding-bottom:0.3472222222222222vw;
+	padding-left:0.3472222222222222vw;
+	padding-right:0.3472222222222222vw;
+	padding-top:0.3472222222222222vw;
+	right:0vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	top:0vw;
+	align-items:normal;
+	align-self:normal;
+	-webkit-font-smoothing:antialiased;
+	perspective-origin:0vw 0vw;
+	transform-origin:0vw 0vw;
+	type:MENU-ITEM;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.ELEM_1497916716773 {
+	id:ELEM_1497916716773;
+	height:17.291666666666668vw;
+	width:57.56944444444445vw;
+	color:rgb(0, 0, 0);
+	z-index:0;
+	class:squarepeg list ui-resizable ui-draggable ui-draggable-handle ui-droppable ELEM_1497916716773 dropped-object debug-border-style gallery;
+	src:undefined;
+	position:absolute;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgba(0, 0, 0, 0);
+	border:0.20833333333333334vw;
+	border-bottom-style:dashed;
+	border-bottom-width:0.20833333333333334vw;
+	border-left-style:dashed;
+	border-left-width:0.20833333333333334vw;
+	border-right-style:dashed;
+	border-right-width:0.20833333333333334vw;
+	border-top-style:dashed;
+	border-top-width:0.20833333333333334vw;
+	bottom:14.166666666666668vw;
+	display:block;
+	font-weight:400;
+	left:11.180555555555555vw;
+	letter-spacing:0;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	overflow-x:hidden;
+	overflow-y:hidden;
+	right:28.055555555555557vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	top:7.708333333333334vw;
+	touch-action:none;
+	transition-duration:0.6s;
+	white-space:nowrap;
+	align-items:normal;
+	align-self:normal;
+	perspective-origin:7.152777777777778vw 7.5vw;
+	transform-origin:7.152777777777778vw 7.5vw;
+	type:LIST;
+}
+
+
+
+
+
+.ELEM_1497916722445 {
+	id:ELEM_1497916722445;
+	alias:cntrl-right;
+	height:14.583333333333334vw;
+	width:3.3333333333333335vw;
+	color:rgb(0, 0, 0);
+	z-index:800;
+	class:squarepeg ui-droppable ELEM_1497916722445 dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle;
+	src:undefined;
+	position:absolute;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgb(0, 128, 0);
+	border:0.20833333333333334vw;
+	border-bottom-style:dashed;
+	border-bottom-width:0.20833333333333334vw;
+	border-left-style:dashed;
+	border-left-width:0.20833333333333334vw;
+	border-right-style:dashed;
+	border-right-width:0.20833333333333334vw;
+	border-top-style:dashed;
+	border-top-width:0.20833333333333334vw;
+	bottom:8.958333333333334vw;
+	display:block;
+	font-weight:400;
+	left:0vw;
+	letter-spacing:0;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	right:51.18055555555556vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	top:0vw;
+	touch-action:none;
+	align-items:normal;
+	align-self:normal;
+	perspective-origin:7.152777777777778vw 7.152777777777778vw;
+	transform-origin:7.152777777777778vw 7.152777777777778vw;
+	type:DIV;
+}
+
+
+
+
+
+
+
+
+.ELEM_1497916753950 {
+	id:ELEM_1497916753950;
+	alias:cntrl-left;
+	height:14.583333333333334vw;
+	width:3.3333333333333335vw;
+	color:rgb(0, 0, 0);
+	z-index:800;
+	class:squarepeg ui-droppable dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle ELEM_1497916753950 ui-draggable-dragging;
+	src:undefined;
+	position:absolute;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgb(0, 0, 0);
+	border:0.20833333333333334vw;
+	border-bottom-style:dashed;
+	border-bottom-width:0.20833333333333334vw;
+	border-left-style:dashed;
+	border-left-width:0.20833333333333334vw;
+	border-right-style:dashed;
+	border-right-width:0.20833333333333334vw;
+	border-top-style:dashed;
+	border-top-width:0.20833333333333334vw;
+	bottom:8.958333333333334vw;
+	display:block;
+	font-weight:400;
+	left:0vw;
+	letter-spacing:0;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	right:51.18055555555556vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	top:0vw;
+	touch-action:none;
+	white-space:nowrap;
+	align-items:normal;
+	align-self:normal;
+	perspective-origin:7.152777777777778vw 7.152777777777778vw;
+	transform-origin:7.152777777777778vw 7.152777777777778vw;
+	extends:ELEM_1497916722445;
+	type:DIV;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.ELEM_1497916790323 {
+	id:ELEM_1497916790323;
+	height:14.652777777777779vw;
+	width:15.625vw;
+	color:rgb(0, 0, 0);
+	z-index:1;
+	class:squarepeg ui-resizable ui-draggable ui-draggable-handle ui-droppable ELEM_1497916790323 dropped-object debug-border-style;
+	src:undefined;
+	position:relative;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgba(0, 0, 0, 0);
+	background-image:url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif");
+	background-size:cover;
+	border:0.20833333333333334vw;
+	border-bottom-style:dashed;
+	border-bottom-width:0.20833333333333334vw;
+	border-left-style:dashed;
+	border-left-width:0.20833333333333334vw;
+	border-right-style:dashed;
+	border-right-width:0.20833333333333334vw;
+	border-top-style:dashed;
+	border-top-width:0.20833333333333334vw;
+	bottom:9.791666666666668vw;
+	display:inline-block;
+	font-weight:400;
+	left:0;
+	letter-spacing:0;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	right:56.52777777777778vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	top:0;
+	touch-action:none;
+	align-items:normal;
+	align-self:normal;
+	perspective-origin:7.152777777777778vw 7.152777777777778vw;
+	transform-origin:7.152777777777778vw 7.152777777777778vw;
+	type:IMG;
+}
+
+
+
+
+
+
+
+.ELEM_1497916796676 {
+	id:ELEM_1497916796676;
+	height:14.652777777777779vw;
+	width:15.625vw;
+	color:rgb(0, 0, 0);
+	z-index:1;
+	class:squarepeg ui-droppable dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle ELEM_1497916796676;
+	src:undefined;
+	position:relative;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgba(0, 0, 0, 0);
+	background-image:url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif");
+	background-size:cover;
+	border:0.20833333333333334vw;
+	border-bottom-style:dashed;
+	border-bottom-width:0.20833333333333334vw;
+	border-left-style:dashed;
+	border-left-width:0.20833333333333334vw;
+	border-right-style:dashed;
+	border-right-width:0.20833333333333334vw;
+	border-top-style:dashed;
+	border-top-width:0.20833333333333334vw;
+	bottom:9.791666666666668vw;
+	display:inline-block;
+	font-weight:400;
+	left:0;
+	letter-spacing:0;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	right:56.52777777777778vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	top:0;
+	touch-action:none;
+	align-items:normal;
+	align-self:normal;
+	perspective-origin:7.152777777777778vw 7.152777777777778vw;
+	transform-origin:7.152777777777778vw 7.152777777777778vw;
+	extends:ELEM_1497916790323;
+	type:IMG;
+}
+
+.ELEM_1497916797397 {
+	id:ELEM_1497916797397;
+	height:14.652777777777779vw;
+	width:15.625vw;
+	color:rgb(0, 0, 0);
+	z-index:1;
+	class:squarepeg ui-droppable dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle ELEM_1497916797397;
+	src:undefined;
+	position:relative;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgba(0, 0, 0, 0);
+	background-image:url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif");
+	background-size:cover;
+	border:0.20833333333333334vw;
+	border-bottom-style:dashed;
+	border-bottom-width:0.20833333333333334vw;
+	border-left-style:dashed;
+	border-left-width:0.20833333333333334vw;
+	border-right-style:dashed;
+	border-right-width:0.20833333333333334vw;
+	border-top-style:dashed;
+	border-top-width:0.20833333333333334vw;
+	bottom:9.791666666666668vw;
+	display:inline-block;
+	font-weight:400;
+	left:0;
+	letter-spacing:0;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	right:56.52777777777778vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	top:0;
+	touch-action:none;
+	align-items:normal;
+	align-self:normal;
+	perspective-origin:7.152777777777778vw 7.152777777777778vw;
+	transform-origin:7.152777777777778vw 7.152777777777778vw;
+	extends:ELEM_1497916790323;
+	type:IMG;
+}
+
+.ELEM_1497916798515 {
+	id:ELEM_1497916798515;
+	height:14.652777777777779vw;
+	width:15.625vw;
+	color:rgb(0, 0, 0);
+	z-index:1;
+	class:squarepeg ui-droppable dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle ELEM_1497916798515;
+	src:undefined;
+	position:relative;
+	cursor:url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), auto;
+	background-color:rgba(0, 0, 0, 0);
+	background-image:url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif");
+	background-size:cover;
+	border:0.20833333333333334vw;
+	border-bottom-style:dashed;
+	border-bottom-width:0.20833333333333334vw;
+	border-left-style:dashed;
+	border-left-width:0.20833333333333334vw;
+	border-right-style:dashed;
+	border-right-width:0.20833333333333334vw;
+	border-top-style:dashed;
+	border-top-width:0.20833333333333334vw;
+	bottom:9.791666666666668vw;
+	display:inline-block;
+	font-weight:400;
+	left:0;
+	letter-spacing:0;
+	margin-bottom:0vw;
+	margin-left:0vw;
+	margin-right:0vw;
+	margin-top:0vw;
+	right:56.52777777777778vw;
+	text-decoration:none solid rgb(0, 0, 0);
+	top:0;
+	touch-action:none;
+	align-items:normal;
+	align-self:normal;
+	perspective-origin:7.152777777777778vw 7.152777777777778vw;
+	transform-origin:7.152777777777778vw 7.152777777777778vw;
+	extends:ELEM_1497916790323;
+	type:IMG;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</style></head>
+<body>
+
+
+
+
+
+<div class="squarepeg list ui-resizable ui-draggable ui-draggable-handle ui-droppable ELEM_1497916716773 dropped-object debug-border-style gallery ui-droppable-hover over" id="ELEM_1497916716773" type="LIST" style=""><div class="toolhotspot"><div class="hotspot css" style="height: 0px; width: 0px; display: none;"><img src="http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png"></div><div class="hotspot js" style="height: 0px; width: 0px; display: none;"><img src="http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png"></div></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="squarepeg ui-droppable ELEM_1497916790323 dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle" id="ELEM_1497916790323" type="IMG" style="position: relative; left: 0px;"><div class="toolhotspot"><div class="hotspot css" style="height: 0px; width: 0px; display: none;"><img src="http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png"></div><div class="hotspot js" style="height: 0px; width: 0px; display: none;"><img src="http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png"></div></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div></div><div class="squarepeg ui-droppable dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle ELEM_1497916796676" id="ELEM_1497916796676" type="IMG" extends="ELEM_1497916790323" style="left: 0px;"><div class="toolhotspot"><div class="hotspot css" style="height: 0px; width: 0px; display: none;"><img src="http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png"></div><div class="hotspot js" style="height: 0px; width: 0px; display: none;"><img src="http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png"></div></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div></div><div class="squarepeg ui-droppable dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle ELEM_1497916797397" id="ELEM_1497916797397" type="IMG" extends="ELEM_1497916790323" style="left: 0px;"><div class="toolhotspot"><div class="hotspot css" style="height: 0px; width: 0px; display: none;"><img src="http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png"></div><div class="hotspot js" style="height: 0px; width: 0px; display: none;"><img src="http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png"></div></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div></div><div class="squarepeg ui-droppable dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle ELEM_1497916798515" id="ELEM_1497916798515" type="IMG" extends="ELEM_1497916790323" style="left: 0px;"><div class="toolhotspot"><div class="hotspot css" style="height: 0px; width: 0px; display: none;"><img src="http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png"></div><div class="hotspot js" style="height: 0px; width: 0px; display: none;"><img src="http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png"></div></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div></div><div class="squarepeg ui-droppable ELEM_1497916722445 dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle submenu" id="ELEM_1497916722445" type="DIV" alias="cntrl-right" style="background-color: rgb(0, 128, 0); top: 0px; left: 781px; z-index: 800;"><div class="toolhotspot"><div class="hotspot css" style="height: 0px; width: 0px; display: none;"><img src="http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png"></div><div class="hotspot js" style="height: 0px; width: 0px; display: none;"><img src="http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png"></div></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div></div><div class="squarepeg ui-droppable dropped-object debug-border-style ui-resizable ui-draggable ui-draggable-handle ELEM_1497916753950" id="ELEM_1497916753950" type="DIV" alias="cntrl-left" extends="ELEM_1497916722445" style=""><div class="toolhotspot"><div class="hotspot css" style="height: 0px; width: 0px; display: none;"><img src="http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png"></div><div class="hotspot js" style="height: 0px; width: 0px; display: none;"><img src="http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png"></div></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div></div></div></body></html>
