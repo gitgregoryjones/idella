@@ -1204,6 +1204,16 @@ function setUpDiv(div){
 	if(div.is("[type=LIST]")){
 		log.warn("Triggering list load for list " + div.attr("id") + " and alias " + div.attr("alias"))
 		$.event.trigger("listLoad",[div])
+		if(div.hasClass("gallery")){
+			div.css("white-space","nowrap");
+			duration = (div.css("transition-duration"))
+			
+			duration = parseFloat(duration) == 0 ? "0.6s" : duration;
+			div.css({overflow:"hidden","transition-duration":duration})
+
+			SLIDER_init(div);
+		}
+
 	}
 
 	

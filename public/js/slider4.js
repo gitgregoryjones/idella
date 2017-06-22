@@ -131,6 +131,12 @@ function SLIDER_init(list){
 			SLIDER_setUpButton(button,list,true);
 		})
 	}
+
+	list.on("dragstart resizestart",function(){
+		$(this).css({"transition-duration":"0s"})
+	}).on("dragstop resizestop",function(){
+		$(this).css({"transition-duration":"0.6s"})
+	})
 }
 
 function SLIDER_deInit(list){

@@ -9,14 +9,16 @@ function PREVIEW_togglePreview(showPreview){
 			console.log("object ")
 			console.log(e)
 		}
+		
 		$(".dropped-object").is(function(){
 			log("border is " + $(this).css("border"))
-			hasDefaultBorder = $(this).css("border").indexOf("dashed") != -1
+			hasDefaultBorder = $(this).css("border-top-style").indexOf("dashed") != -1
 			if(hasDefaultBorder){
 				$(this).addClass("noborder");
 			}
 			return hasDefaultBorder;
 		})
+
 		$("#drawSpace").css("background-image","none");
 		editing = false;
 		//hide breakpoint indicator
@@ -34,10 +36,14 @@ function PREVIEW_togglePreview(showPreview){
 		$(".ui-icon").hide();
 
 	}else {
-		$(".dropped-object").not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg");
+		$(".dropped-object").not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg").removeClass("noborder");
 		$(".dropped-object").resizable().on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
 		$(".ui-droppable").resizable({disabled:false})
-		$(".dropped-object").removeClass("noborder")
+		$(".dropped-object").is(function(){
+			$(this).css("border-top-width") == "0" ? $(this).css({"border":"3px dashed black"}) : "";
+			return true;
+		})
+		//$(".dropped-object").removeClass("noborder")
 		$(".responsive-design-tab").show()
 		editing = true;
 		DRAW_SPACE_addWorkSpaceToBody();

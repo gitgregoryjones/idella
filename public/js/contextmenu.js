@@ -129,7 +129,45 @@ $(document).on("initializationComplete",function(){
             case "drop": 
                         var aTool =  whichTool($(this).attr("type"));
                         aTool = configuredTool(aTool);
-                         dropTool(aTool,{target:$("#drawSpace"),clientX:currentX,clientY:currentY});
+                        dropTool(aTool,{target:$("#drawSpace"),clientX:currentX,clientY:currentY});
+                        //add helpers
+                        if(aTool.is("[type=LIST]")){
+
+                            //add cntrl-s
+                            aTool.css("width",aTool.width()*2)
+
+                            var left = whichTool("DIV");
+                            left = configuredTool(left);
+                            left.css({"width":"25px","background-color":"black",opacity:".3"}).attr('alias',"cntrl-left")
+                                .attr("onhover","opacity:1")
+                             dropTool(left,{target:aTool,clientX:currentX,clientY:currentY});
+                 
+
+                            var right = whichTool("DIV");
+                            right = configuredTool(right);
+                            right.css({"width":"25px","background-color":"black",opacity:".3"}).attr('alias',"cntrl-right")
+                                .attr("onhover","opacity:1")
+                            dropTool(right,{target:aTool,clientX:currentX,clientY:currentY});
+                           
+
+                            for(i=0; i < 4; i++){
+                                var bImg = whichTool("IMG")
+                                bImg = configuredTool(bImg);
+                                aTool.append(bImg);
+                                CUSTOM_PXTO_VIEWPORT(bImg,bImg.offset().left,bImg.offset().top)
+                            }
+                        
+                            aTool.addClass("gallery");
+                            aTool.css("height",aTool.height() * 1.25);
+                            aTool.css("white-space","nowrap");
+                            duration = (aTool.css("transition-duration"))
+                
+                            duration = parseFloat(duration) == 0 ? "0.6s" : duration;
+                            aTool.css({overflow:"hidden","transition-duration":duration})
+                            
+                            SLIDER_init(aTool);
+                           
+                        }
                         break;
                         
                     
