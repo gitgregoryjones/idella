@@ -3,6 +3,8 @@ var SAVE_okToSave = true;
 
 dialogs = $(".adialog")
 
+var timeoutID = null;
+
 function setup() {
     this.addEventListener("mousemove", resetTimer, false);
     this.addEventListener("mousedown", resetTimer, false);
@@ -20,7 +22,7 @@ setup();
 
 function startTimer() {
     // wait 2 seconds before calling goInactive
-   	if(!_debug)
+  
     	timeoutID = window.setTimeout(SAVEJS_goInactive, 500000);
 }
  
@@ -135,16 +137,6 @@ function getCurrentSite(){
     	//get most recent tool
     	$(document).on("initializationComplete",function(){
     		dialogs = $(".adialog")
-	    	//$(".adialog").remove()
-	    	//$(".custom-menu").remove();
-	    	//$(".responsive-design-tab").remove();
-	    	//$("#id_toolset").remove();
-	    	//$("#autodiv").remove();
-	    		
-	    	//$("body").append(dialogs)
-	    	//$("body").append(tools)
-	    	//$("body").append(rd)
-	    	//$("body").append(ctxmenu);
 	    	
 	    	$("head").append(theStyle)
     	})
@@ -245,7 +237,7 @@ function SAVEJS_goInactive() {
 
 		saveCurrentSite(theSiteObj)
 
-		$(document).trigger("REVISION_NEEDED_EVENT",[]);
+		$(document).trigger("REVISION_NEEDED_EVENT",[theSiteObj.redirect]);
 
 		setTimeout(function(){$(saveImage).remove()},2500)
 

@@ -237,7 +237,7 @@ function REVISION_createNewSite(settings,callback) {
 		   
 		
 		}).done(function(){
-			window.location = "/" + settings.name;
+			//window.location = "/" + settings.name + "/index.html";
 			callback(true)
 		}).fail(function(x,t,e){
 			//alert("Error creating site. Encountered error : " + t)
@@ -276,7 +276,7 @@ function REVISION_createPage(pagename){
 
 }
 
-$(document).on("REVISION_NEEDED_EVENT",function(evt){
+$(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 
 	//alert("revision needed")
 
@@ -287,6 +287,10 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt){
 	tempH = $('<html>').append($('html').html())
 
 	tempH.find('.saveImage').remove();
+	//tempH.find('script').remove();
+	//tempH.find('style').remove()
+	//tempH.find('head').append($('<script>',{src:"/css/jquery-ui-1.12.1.custom/external/jquery/jquery.js"}))
+	//tempH.find('head').append($('<script>',{src:"/js/logic.js"}))
 
 
 	object = {html:tempH.html(),css:"",pageName:theSiteObj.currentPage}
@@ -306,6 +310,9 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt){
 				console.log("Revision created");
 				alert("Revision created")
 				REVISION_anchors = [];
+				if(redirect){
+					window.location = "/" + theSiteObj.name + theSiteObj.currentPage;
+				}
 				//window.location = "/" + theSiteObj.name + theSiteObj.currentPage;
 			}).fail(function(x,t,e){
 				alert("Failure is here:")

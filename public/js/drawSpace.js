@@ -4,7 +4,7 @@ var DRAW_SPACE_advancedShowing = false;
 
 var editSpaceCoords = {}
 
-$(document).on("initializationComplete",function(){
+$(document).ready(function(){
 
 	//$(document).on("scroll",function(){ if(!editing){$("[type=OVERLAY]").hide();}})
 
@@ -237,6 +237,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		//create starter template
 		theExpandableArea = configuredTool(whichTool("LIST"));
 		theExpandableArea.css({"width":"100%",height:"1000px","background-color":"transparent","font-family":"avenir-next-rounded-std-med"}).attr('alias',"theCanvas")
+		
 		dropTool(theExpandableArea,{target:ds,clientX:0,clientY:0});
 
 		theNotice = configuredTool(whichTool("DIV"));
@@ -263,8 +264,9 @@ function DRAW_SPACE_addWorkSpaceToBody(){
         theImage = configuredTool(whichTool("IMG"));
                      
         theImage.css({"width":"550px",height:"350px"}).attr('alias',"bigPicture")
+
                                
-        dropTool(theImage,{target:theBody,clientX:50,clientY:50});
+        dropTool(theImage,{target:theBody,clientX:theBody.offset().left + 50,clientY:theBody.offset().top + 50});
 
         theFooter = configuredTool(whichTool("DIV"));
                      
@@ -309,9 +311,12 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 			if(text && text.trim().length > 0){
 				$('title').text(text);
 				theSiteObj.name = text;
+				theSiteObj.redirect = true;
 				SAVEJS_goInactive()
 			}
 		} else {
+			console.log("Pressed Key for saving ")
+			SAVE_okToSave = true;
 			SAVEJS_goInactive()
 		}
 	});

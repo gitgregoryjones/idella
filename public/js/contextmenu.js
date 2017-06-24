@@ -8,7 +8,6 @@ var currentCtx = {};
 <!-- language: lang-js -->
 $(document).on("initializationComplete",function(){
 
-
     $("[data-action=drop]").css("opacity",".50")
 
    
@@ -421,8 +420,8 @@ console.log("I am writing fields of length " + fields.length)
                     copiesModified = true;
                 }
         }).on("change",function(evnt){
-
-            $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC,alert(3))
+            $(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
+            $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
             //only used to write class info here.  Everything else should use on.input
             if(label == "class" && $(currentCtx.attr("user-classes") && $(currentCtx).attr("user-classes").trim().length > 0)){
                 //$(currentCtx).attr("class",$(currentCtx).attr("user-classes"))

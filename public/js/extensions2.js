@@ -188,15 +188,7 @@ function computeDimensions(theClassObj){
 
 }
 
-  function doItCool(moveMe,X,  Y , width, height){
 
-  	if($(moveMe).attr("type") == "ICON"){
-  		log.debug("Proxy overwrite width is " + width)
-  		 moveMe.css("width",width)
- 		log.error("PROXY AFTER Width size is " + moveMe.css("width"))
- 	}
-  	CUSTOM_PXTO_VIEWPORT(moveMe,X,Y)
-  }
 
 
   var CUSTOM_PXTO_VIEWPORT = function( moveMe,X,  Y ) {
@@ -218,38 +210,7 @@ function computeDimensions(theClassObj){
 
 	CSS_TEXT_saveCss(moveMe, theClassObj)
 	
-	/*
-	var myId = $(moveMe).attr("id");
-
-	var myCSSLookupKey = "\\." + $(moveMe).attr("id")
-
-	var re = new RegExp(myCSSLookupKey+'\\s+\\{[^}]+\\}','img')
-
-	var thescript = "";
 	
-
-	if(isBreakPoint()){
-		
-		saveBreakPoint($(moveMe),theClassObj)
-
-	} else {
-
-		log.debug("My Class should be persisted as")
-		log.debug(theClassObj.cssRule)
-
-		thescript = $("style.generated");
-
-		styleCss = thescript.html();
-		//test to see if style is not found, add it.  If found, replace it
-		if(!thescript.html().match(re)){
-			log.error("Appending RULE for " + myId)
-			thescript.append(theClassObj.cssRule + "\n");
-		}else {
-			log.error("I found  RULE for " + myId)
-			thescript.html(thescript.html().replace(re,theClassObj.cssRule))
-		}
-	}
-	*/
 	if(theClassObj.type == "DIV"){
 		log.error("Foxy")
 		log.error(theClassObj.cssRule)
@@ -265,86 +226,6 @@ function computeDimensions(theClassObj){
 	return moveMe;
 }
 
-;(function( $ ) {
-
-	$.fn.aeImageResize = function( params ) {
-
-		params.height = params.height -20;
-		params.width = params.width - 20;
-
-		var aspectRatio = 0;
-
-		// We cannot do much unless we have one of these
-		if ( !params.height && !params.width ) {
-			return this;
-		}
-
-
-		// Calculate aspect ratio now, if possible
-		if ( params.height && params.width ) {
-			aspectRatio = params.width / params.height;
-		}
-
-		log("Resizer called with params ")
-		log({params:params})
-
-		// Attach handler to load
-		// Handler is executed just once per element
-		// Load event required for Webkit browsers
-		return this.one( "load", function() {
-
-			log("Running image Resizer")
-
-			// Remove all attributes and CSS rules
-			this.removeAttribute( "height" );
-			this.removeAttribute( "width" );
-			this.style.height = this.style.width = "";
-
-			var imgHeight = this.height
-				, imgWidth = this.width
-				, imgAspectRatio = imgWidth / imgHeight
-				, bxHeight = params.height
-				, bxWidth = params.width
-				, bxAspectRatio = aspectRatio;
-
-			// Work the magic!
-			// If one parameter is missing, we just force calculate it
-			if ( !bxAspectRatio ) {
-				if ( bxHeight ) {
-					bxAspectRatio = imgAspectRatio + 1;
-				} else {
-					bxAspectRatio = imgAspectRatio - 1;
-				}
-			}
-
-			// Only resize the images that need resizing
-			//if ( (bxHeight && imgHeight > bxHeight) || (bxWidth && imgWidth > bxWidth) ) {
-
-				if ( imgAspectRatio > bxAspectRatio ) {
-					bxHeight = ~~ ( imgHeight / imgWidth * bxWidth );
-				} else {
-					bxWidth = ~~ ( imgWidth / imgHeight * bxHeight );
-				}
-
-				this.height = bxHeight;
-				this.width = bxWidth;
-
-				log({rH:this.height,rW:this.width})
-			//}
-		})
-		.each(function() {
-
-			// Trigger load event (for Gecko and MSIE)
-			if ( this.complete ) {
-				$( this ).trigger( "load" );
-			}
-
-			// This fixes IE9 issue
-			this.src = this.src;
-		});
-	};
-
-})( jQuery );
 
 
 

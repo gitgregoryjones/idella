@@ -1,7 +1,8 @@
 var _debug = false;
 var lastEditedClass = "";
 global_zIndex = 1000;
-var files = ["idella.css","jquery-ui-1.12.1.custom/jquery-ui.css","jquery-ui-1.12.1.custom/jquery-ui.min.js","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","notes.js","drawSpace.js","custom_events2.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakPoints.js"]
+
+
 var hotObj = "";
 var hotObjId = 0;
 var genericClass = {};
@@ -10,6 +11,7 @@ var website = "default";
 var theSiteObj = null;
 var theSiteConfig = {};
 version = "1.0";
+
 
 //var autoSaveEnabled = true;
 var editing = true;
@@ -54,8 +56,7 @@ log["error"] = function(msg){
 }
 
 
-
-$( document ).ready(function() {
+$(document).ready(function() {
 
 	$("body").hide();
 
@@ -66,39 +67,6 @@ $( document ).ready(function() {
 	}
 
 
-	$(files).each(function(index,file){
-
-
-		
-		if(!file.startsWith("http://") && !file.startsWith("https://")){
-
-			if(file.endsWith(".css")){
-				file = "/css/" + file;
-				$("head").children().first().before($("<link>",{rel:"stylesheet",href:file,version:version}))
-			} else {
-				file = "/js/" + file;
-				$("head").children().first().before($("<script>",{src:file,version:version}))
-			}
-
-
-		} else {
-
-			//just wrap in script tag
-			if(file.endsWith(".css")){
-				$("head").append($("<link>",{rel:"stylesheet",href:file,version:version}))
-			} else {
-				$("head").append($("<script>",{src:file,version:version}))
-			}
-			//do nothing
-		}
-
-		
-
-
-		
-	});
-
-
 	   if(editing) {
 
 	   		containerDiv = $('<div id="misc-controls">')
@@ -107,15 +75,7 @@ $( document ).ready(function() {
 
 			   try {
 
-			   		if($("style.generated").length == 0){
-					   			log("Adding Generated Stylesheet")
-					   			$("head").append("<style class='generated'></style>");
-					}
-
-					if($("script.generated").length == 0){
-					   			log("Adding Generated javascript")
-					   			$("head").append("<script class='generated'></script>");
-					}
+			   		
 					log.debug("Before Current Site")
 
 					if($('body').find('.dropped-object').length == 0){
@@ -166,6 +126,7 @@ $( document ).ready(function() {
 
     			}
 			})
+
 
 
 		   		initialize();
@@ -365,6 +326,8 @@ function configuredTool(options){
 	}
 	
 }
+
+
 
 
 

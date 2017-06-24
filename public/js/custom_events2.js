@@ -246,6 +246,7 @@ _DEFAULT_CLOSE_CODE = function(event,ui){
 	}
 	copiesModified = false;
 
+	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
 	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 }
@@ -635,6 +636,7 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 	}
 	copiesModified = false;
 	//bind document listener keydown again
+	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
 	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 	writeTabs(parent,true)
@@ -658,6 +660,7 @@ CUSTOM_CLOSE_LOGIC = function(event,ui){
 
 
 	//bind document listener keydown again
+	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
 	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 
@@ -811,6 +814,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 
 
 				//reenable keydown logic and save input
+				$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
 				$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
 				
 					var tokens = $(input).val().split("\n");
@@ -1490,6 +1494,7 @@ function initialize(){
 	//Determine which popup to call based on Key User Pressed
 	//Note: Unbind called while user is entering values on dialog so that we don't
 	//interfere with Shift or Ctrl keys needed while in JS view
+	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
    	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 
@@ -1881,5 +1886,5 @@ function dropTool(aTool,dropInfo){
 		        	}
 }
 
-log("Loaded CUSTOM_EVENT_PRESET_EDIT_LOGIC and CUSTOM_SETUP_DIALOG_AND_DRAGGABLES")
+
 	

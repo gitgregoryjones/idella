@@ -8,6 +8,8 @@ url = require('url');
 const path = require('path')
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
+var files = ["jquery.js","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakPoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","idella.css","logic2.js"]
+var version = 1;
 //var $ = require('jquery')
 function writeRevision(revisionDirectory,currentRevision,revDate,callback){
 
@@ -355,6 +357,82 @@ function getRevision(req,res,next){
 
 }
 
+function loadFiles($){
+
+	var total = files.length;
+
+	var ok = true;
+
+	$("head").find('style').not(".generated").remove();
+	$("head").find('script').not(".generated").remove();
+
+	files.forEach(function(file){
+
+  		///file = file.endsWith(".css") ? "/css/" + file : file;
+  		//file = file.endsWith(".js") ? "/js/" + file : file;
+
+  		var ext = ".js";
+  		var selectAttrValue = null;
+  		var selectorTag = null;
+  		var selectAttrName = null;
+  		var srcLocation = null;
+  		var linkRel = null;
+  		var async = null;
+  		var tag = null;
+  		if(file.endsWith(".js")){
+  			ext = ".js";
+  			selectAttrValue = "[src='/js/"+file +"']";
+  			selectorTag = "<script>";
+  			selectAttrName = "src";
+  			srcLocation = "/js/" + file;
+  			async = "false";
+
+  		} else {
+  			ext = ".css";
+  			selectAttrValue = "[href='/css/"+file +"']";
+  			selectorTag = "<link>";
+  			selectAttrName = "href";
+  			srcLocation = "/css/" + file;
+  			linkRel = "stylesheet";
+  		}
+
+
+  		if(file.endsWith(ext)){
+
+  			$('head').find(selectAttrValue).remove();
+
+	  		tag = $(selectorTag);
+	  		tag.attr(selectAttrName,srcLocation);
+	  		
+	  		if(linkRel != null){
+	  			tag.attr("rel",linkRel)
+	  		}
+	  		tag.attr("version",version);
+	  		//console.log("Wrote file")
+	  		tag.appendTo($('head'));
+	  		
+  		} 
+  	})
+
+	if($("style.generated").length == 0){
+		
+		$("head").append("<style class='generated'></style>");
+	}
+
+	if($("script.generated").length == 0){
+		
+		$("head").append("<script class='generated'></script>");
+	}
+
+	//make sure these are always last
+	$("style.generated").appendTo($('head'))
+	$("script.generated").appendTo($('head'))
+
+	
+
+}
+
+
 function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,originalUrl,callback){
 	ok = true;
 //Now that we have correct revision file location, read and send to front end
@@ -390,6 +468,10 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 			})
 			parseU.params = params;
 		}
+
+		loadFiles($)
+
+		console.log("Length of scripts is " + $('head').find('script').length);
 
 		$("<script id='pstate'>var pageState = "+JSON.stringify(parseU)  + "</script>").insertBefore($('head'))
 		

@@ -5,7 +5,7 @@ $(document).on("translateTxt",function(event,txtElem){
 
 
 	//////////DISABLED FOR NOW!!!! MAYBE RENABLE WHEN I WANT TO PAY FOR THIS SERVICE
-	return;
+	//return;
 
 	translateTxt(txtElem,function(serverContent){
 		if(serverContent){

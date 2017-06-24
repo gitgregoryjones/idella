@@ -15,6 +15,8 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj){
 	thescript.html(thescript.html().substring(0,thescript.html().lastIndexOf("}") ) );
 
 	styleCss = thescript.html();
+
+
 	//test to see if style is not found, add it.  If found, replace it
 	if(!thescript.html().match(re)){
 
@@ -50,6 +52,8 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj){
 	log.debug(theClassObj.cssRule)
 
 	thescript = $("style.generated");
+
+	
 
 	styleCss = thescript.html();
 	//test to see if style is not found, add it.  If found, replace it

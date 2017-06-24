@@ -3,7 +3,7 @@ var commonTabLabel = "common"
 
 var data = [];
 
-$(document).on("initializationComplete",function(){
+$(document).ready(function(){
 
 
 	console.log($("#autocomplete"))
