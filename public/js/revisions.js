@@ -293,7 +293,7 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 	//tempH.find('head').append($('<script>',{src:"/js/logic.js"}))
 
 
-	object = {html:tempH.html(),css:"",pageName:theSiteObj.currentPage}
+	object = {siteName:theSiteObj.name,html:tempH.html(),css:"",pageName:theSiteObj.currentPage, anchors:REVISION_anchors}
 
 	REVISION_createNewSite(theSiteObj,function(ok,err){
 

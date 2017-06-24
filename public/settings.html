@@ -267,7 +267,7 @@ $("[type=create-site]").on("click",function(){
 	REVISION_createNewSite(copy,function(){
 		$(".fa-spinner").css({"visibility":"hidden"})
 		if(confirm("Visit your new site created at " + copy.name)){
-			window.location = "/"+ copy.name;
+			window.location = "/"+ copy.name + "/";
 		}
 	}); 
 })
