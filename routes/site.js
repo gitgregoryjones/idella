@@ -107,6 +107,9 @@ router.post('/', function(req, res, next) {
 
 function addPage(site,page,callback){
 
+	var ok = true;
+
+	console.log("Attempting to create a new page ["+page + "] for site ["+site+"]")
 
 	var fullPath = path.join(process.env.SITEDIR,site,page);
 
@@ -114,25 +117,30 @@ function addPage(site,page,callback){
 
 	var dirPath = path.join(process.env.SITEDIR,site,revisionDir+ "-revisions");
 
-	fx.mkdir(dirPath, function(err){
+	if(!fs.existsSync(dirPath)){
 
-		if(err){
-			console.log("Encoutered Error " + err)
-			callback(false,err);
-		}
+		fx.mkdir(dirPath, function(err){
 
-		console.log("Error from mkdir is " + err)
+			if(err){
+				console.log("Encoutered Error " + err)
+				callback(false,err);
+			}
 
-		writeDefaultSiteContents(site,page,dirPath,function(ok,err){
+			console.log("Error from mkdir is " + err)
 
-				console.log("Back from writing contents " + ok)
-				console.log(err)
+			writeDefaultSiteContents(site,page,dirPath,function(ok,err){
 
-				callback(ok,err);
+					console.log("Back from writing contents " + ok)
+					console.log(err)
 
-		});
+					callback(ok,err);
 
-	})
+			});
+
+		})
+	} else {
+		callback(ok)
+	}
 
 	
 
