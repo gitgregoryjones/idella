@@ -86,7 +86,7 @@ function getTransitionDuration( element, with_delay )
 function goRight(list){
 	//alert("right here")
 
-	list = list.target ? $(list.target).parents("[type=LIST]") : $(list);
+	list = list.target ? $(list.target).parents("[type=LIST]").first() : $(list);
 
 	var options ={}
 
@@ -191,7 +191,7 @@ function SLIDER_setUpButton(button,list,blockClick){
 function goLeft(list){
 
 	//In case, this was a onClick event on List
-	list = list.target ? $(list.target).parents("[type=LIST]") : $(list);
+	list = list.target ? $(list.target).parents("[type=LIST]").first() : $(list);
 
 	var options ={}
 

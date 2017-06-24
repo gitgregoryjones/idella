@@ -58,8 +58,11 @@ function saveCurrentSite(site){
 
 	log.warn("Length after compression " + out.length)
 
-
+	try {
 	localStorage.setItem("sites",out);
+	}catch(e){
+		console.log(e)
+	}
 
 }
 
