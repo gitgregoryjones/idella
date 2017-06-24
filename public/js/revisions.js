@@ -308,7 +308,7 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 		    	
 			}).done(function(){
 				console.log("Revision created");
-				alert("Revision created")
+				$(".saveImage").hide();
 				REVISION_anchors = [];
 				if(redirect){
 					window.location = "/" + theSiteObj.name + theSiteObj.currentPage;

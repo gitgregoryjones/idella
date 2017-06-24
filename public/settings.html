@@ -25,7 +25,7 @@
 </style>
 <form id="settings">
 
-<div id="settings" class="ui-widget ui-widget-content">
+<div id="settings">
 	
 	<div class="styleRow" id="row-height">
 		<h1>My Sites:</h1>
@@ -71,7 +71,7 @@
 		</div>
 		<div  class="fa fa-calendar"></div>
 	</div>
-<div id="settings" class="ui-widget ui-widget-content">
+<div id="settings" pclass="ui-widget ui-widget-content">
 	
 	<div class="styleRow" id="row-height">
 		<h1>More Options <div class="fa fa-gears"></div></h1>
@@ -85,7 +85,7 @@
 		
 	</div>
 
-<div id="Advanced" style="display">
+<div id="Advanced" style="display:none;background-color: rebeccapurple; background-color: #047100">
 	<p></p>
 	<hr>
 	<div class="seo-rows">
@@ -111,7 +111,7 @@
 			</div>
 			
 		</div>
-		<div class="fa fa-plus-square"></div>	
+		<div class="fa fa-plus-square"></div>
 <!-- New Row //-->
 		<p>
 		<div class="styleRow" id="row-height">
@@ -171,7 +171,7 @@
 	<p></p>
 	<div class="styleRow" id="row-height">
 		<h1>GitHub</h1>
-		<div class="styleLabel"><div>
+	<div class="styleLabel"><div>
 			
 		</div>username</div>
 
@@ -215,18 +215,13 @@
 		
 	</div>
 </div>
-
+</div>
 <div class="fa fa-spin fa-spinner"></div> 
-
-</p>
-</div>
-</div>
-</div>
 </form>
-
-
 <!-- Set data //-->
 <script>
+$(".fa-spinner").css({"visibility":"hidden"})
+
 $("#misc-sitename").attr("value",$("title").html())
 
 $("#misc-sitename").on("change",function(){
@@ -292,7 +287,12 @@ $("[name=new-site-name]").on('focusin', function() {
 $("h1 div.fa-gears").on('click',function(){
 
 	$("#Advanced").toggle();
-}).css("cursor","pointer")
+}).css("cursor","pointer").on("mouseenter",function(){
+	$(this).parent().css("color","yellow")
+	$(this).css("color","inherit")
+}).on("mouseleave",function(){
+	$(this).parent().css("color","#047100")
+})
 
   $( function() {
     $( "#misc-from" ).datepicker({
@@ -309,6 +309,7 @@ $("h1 div.fa-gears").on('click',function(){
   }).val(previewDateStr )
  
 </script>
+
 
 
 

@@ -37,6 +37,7 @@ function saveCurrentSite(site){
 
 	
 	var allSites = LZString.decompress(localStorage.getItem("sites"))
+	var allSites  = false;
 
 	if(!allSites){
 		allSites = "{}";
@@ -172,23 +173,13 @@ function SAVEJS_goInactive() {
    //if(autoSaveEnabled && !userHoveringOverNote && !$("#jsdialog").dialog("isOpen") && !$("#dialog").dialog("isOpen") && !$("#smalldialog").dialog("isOpen")){
    if(SAVE_okToSave){	
 
-	var degrees = 1;
-
-	$(".masterautosave").css("background-color","yellow")
-
 	
-	var interval = setInterval(function(){
-		
-		if(degrees < 360){
-			degrees = degrees + 60;
-		$(".masterautosave").css("transform","rotate("+ (degrees)  + "deg");
-		log.debug(" degrees is "+degrees)
-		} else {
-			log.debug("resetting degrees")
-			clearInterval(interval)
-			$(".masterautosave").css("background-color","transparent")
-		}
-	},300)	
+
+	var saveImage = $("<div>",{class:"saveImage"})
+	$("body").append(saveImage);
+	$(saveImage).css("left",$(document).width()/2 - $(".saveImage").width());
+	$(saveImage).css("top",$(document).height()/8 - $(".saveImage").height()/2);
+	$(saveImage).show();
 	
 
 	log.debug(escape($("body").html()).replace("\n",""));
@@ -219,6 +210,10 @@ function SAVEJS_goInactive() {
 	log.debug("website is " + website)
 	
 	if(website.length > 0){
+
+
+		
+
 		
 		log.debug("Setting website html for " + website)
 
@@ -232,17 +227,12 @@ function SAVEJS_goInactive() {
 		log.debug("Seting style for website " + website)
 		log.debug(theSiteObj)
 
-		var saveImage = $("<div>",{class:"saveImage"})
-		$("body").append(saveImage);
-		$(saveImage).css("left",$(document).width()/2 - $(".saveImage").width());
-		$(saveImage).css("top",$(document).height()/8 - $(".saveImage").height()/2);
-		$(saveImage).show();
 
 		saveCurrentSite(theSiteObj)
 
 		$(document).trigger("REVISION_NEEDED_EVENT",[theSiteObj.redirect]);
 
-		setTimeout(function(){$(saveImage).remove()},2500)
+		//setTimeout(function(){$(saveImage).remove()},2500)
 
 		//Redraw dspace
 		if(editing)
