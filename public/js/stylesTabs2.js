@@ -319,7 +319,7 @@ function writeTabs(currentCtx,forceWrite){
 					}
 					copiesModified = true;
 				}
-		}).on("blur",function(evnt){
+		}).on("change",function(evnt){
 
 			//only used to write class info here.  Everything else should use on.input
 			if(label == "class" &&  $(parent).attr("user-classes").trim().length > 0){
@@ -372,7 +372,7 @@ function writeTabs(currentCtx,forceWrite){
 
 			
 			STYLESTABS_forceRewrite = true;
-			NOTES_makeNote($(parent));
+			//NOTES_makeNote($(parent));
 			STYLESTABS_forceRewrite = false;
 
 

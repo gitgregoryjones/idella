@@ -195,6 +195,10 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		"overflow-x":"hidden",
 		position:"absolute",
 		"background-image":"url(https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Cartesian_5mm..svg/2000px-Cartesian_5mm..svg.png)",
+		"background-image":"url(https://1.bp.blogspot.com/-J2JBT--3ssc/T6GusOoFtJI/AAAAAAAAAdg/bjmtYbAP6oE/s1600/pattern-dots-square-grid-01_xxl.png)",
+		"background-image":"url(http://udel.edu/~spfefer/website/dotgrid.png)",
+		
+		
 		"background-repeat":"repeat"
 	})
 
@@ -228,9 +232,47 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		startVideo(vid);
 	})
 
-	if($(".dropped-object").length == 1){
+	if($(".dropped-object").length <= 1){
+
+		//create starter template
+		theExpandableArea = configuredTool(whichTool("LIST"));
+		theExpandableArea.css({"width":"100%",height:"1000px","background-color":"transparent","font-family":"avenir-next-rounded-std-med"}).attr('alias',"theCanvas")
+		dropTool(theExpandableArea,{target:ds,clientX:0,clientY:0});
+
+		theNotice = configuredTool(whichTool("DIV"));
+                     
+        theNotice.css({"width":"100%",height:"50px","background-color":"yellow"}).attr('alias',"notification")
+                               
+        dropTool(theNotice,{target:theExpandableArea,clientX:0,clientY:0});
+
+		//Make empty page
+		theHead = configuredTool(whichTool("DIV"));
+                     
+        theHead.css({"width":"100%",height:"100px","background-color":"white"}).attr('alias',"header")
+                               
+        dropTool(theHead,{target:theExpandableArea,clientX:0,clientY:theNotice.height()});
+
+        //#F2F6F9
+
+        theBody = configuredTool(whichTool("DIV"));
+                     
+        theBody.css({"width":"100%",height:"750px","background-color":"#F2F6F9"}).attr('alias',"body")
+                               
+        dropTool(theBody,{target:theExpandableArea,clientX:0,clientY:parseFloat(theHead.offset().top) + parseFloat(theHead.height())});
+
+        theImage = configuredTool(whichTool("IMG"));
+                     
+        theImage.css({"width":"550px",height:"350px"}).attr('alias',"bigPicture")
+                               
+        dropTool(theImage,{target:theBody,clientX:50,clientY:50});
+
+        theFooter = configuredTool(whichTool("DIV"));
+                     
+        theFooter.css({"width":"100%",height:"350px","background-color":"grey"}).attr('alias',"footer")
+                               
+        dropTool(theFooter,{target:theExpandableArea,clientX:0,clientY:parseFloat(theHead.offset().top) + parseFloat(theHead.height())});
 		
-		getHelp();
+		//getHelp();
 	}
 
 	top = DRAW_SPACE_getMaxTopElement();

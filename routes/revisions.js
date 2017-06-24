@@ -4,38 +4,92 @@ var fs = require('fs')
 var cheerio = require('cheerio')
 var fx = require('mkdir-recursive');
 url = require('url');
-var addPage = require('./site').addPage;
+//var addPage = require('./site').addPage;
 const path = require('path')
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
 //var $ = require('jquery')
+function writeRevision(revisionDirectory,currentRevision,revDate,callback){
+
+	ok = true;
+
+	console.log("Revision Directory is " + revisionDirectory)
+
+	$ = cheerio.load(currentRevision.html.trim());
+	$('body').find('#misc-controls').remove();
+	$('body').find("[role=dialog]").remove()
+	$('body').find('ul.custom-menu').remove();
+	$('body').find('.responsive-design-tab').remove();
+
+	try {
+
+		revDate = new Date(revDate)
+		console.log("Date is converted revision [" + revDate.toString() + "]")
+		if(revDate == "Invalid Date"){
+			revDate = new Date();
+		}
+	}catch(except){
+		console.log("Exception was " + except);
+		console.log("Converting to today " + new Date())
+		revDate = new Date();
+	}
+
+	fname = dateformat(revDate, 'mmddyyyyhhMM');
+
+	fname = path.join(revisionDirectory,fname)
+
+	fs.writeFile(fname,$.html(),function(err){
+
+		if(err){
+			callback(!ok,err);
+		} else {
+
+			//Do Revision Anchors
+			for(i=0; currentRevision.anchors && i < currentRevision.anchors.length; i++){
+				require('./site').addPage(currentRevision.siteName,currentRevision.anchors[i],function(ok,err){
+					if(!ok){
+						console.log(err)
+						//callback(!ok,err);
+					}
+				})
+			}
+
+			callback(ok);
+		}
+	})
+	
+}
+
 
 /* GET home page. */
 router.post('/', function(req, res, next) {
 
 		
-	console.log(" I am in revisions " + req.headers['content-type']);
+	console.log("Entering Revisions");
 
-	console.log("Home Dir is " + process.env.HOMEDIR)
+	console.log("Site Dir is " + process.env.SITEDIR)
 
-	console.log("Site name is " + req.get('x-site-name'))
+	console.log("x-site-name" + req.get('x-site-name'))
 
-	console.log("Site name is " + req.get('x-current-page-name'))
+	console.log("x-current-page-name" + req.get('x-current-page-name'))
 
-	//console.log("Path is " + url.parse(req.url).pathname)
+//console.log("Path is " + url.parse(req.url).pathname)
 
 	var file = req.get('x-current-page-name');
 
-	//remove /context from path if found
-	//file = file.replace("/"+req.get('x-site-name'),"");
-
 	file += file.endsWith("/") ? "index.html" : "";
+
+	computedFile = file.lastIndexOf(".") != -1 ? file.substring(0,file.lastIndexOf(".")) : file;
 	
-	var dir =path.join(process.env.HOMEDIR,'/public/',req.get('x-site-name'), req.get('x-current-page-name')+ ".revisions");
+	var dir = path.join(process.env.SITEDIR,req.get('x-site-name'), computedFile+ "-revisions");
 
-	console.log("dir is " + dir);
+	console.log("Computed Revision dir is " + dir);
 
-	write(dir,req.body.currentPage,req.body.currentRevision,function(ok,err){
+	console.log("Revision body is ")
+
+	console.log(req.body)
+
+	writeRevision(dir,req.body,req.get('x-current-date'),function(ok,err){
 
 		if(err){
 			res.sendStatus(404)
@@ -49,83 +103,9 @@ router.post('/', function(req, res, next) {
 });
 
 
-function write(revisionDirectory,currentPage, currentRevision,callback){
-
-	ok = true;
-
-	console.log("Revision Directory is " + revisionDirectory)
-
-	fx.mkdir(revisionDirectory,function(err){
-
-		if(err){
-			console.log("Mkdir Error is ")
-			console.log(err)
-			callback(!ok,err);
-		} 
-		$ = cheerio.load('<body>\n' + currentRevision.html.trim() + '\n</body');
-
-		$('head').append($('<style class="generated">').append(currentRevision.css))
-		fs.readFile(process.env.HOMEDIR + "/public/template.html",function(err,template){
-
-	 		if(err){
-	 			console.log("ERROR")
-	 			console.log(err)
-	 			callback(!ok,err);
-	 		}
-
-	 		$ = cheerio.load(template);
-	 		$('body').find('.dropped-object').remove();
-
-	 		$('head').append($('<style class="generated">').append(currentRevision.css))
-	 		$('body').append(currentRevision.html);
-	 		$('title').html(currentRevision.siteName)
-	 		//Delete Controls
-	 		$('body').find('#misc-controls').remove();
-	 		$('body').find("[role=dialog]").remove()
-	 		$('body').find('ul.custom-menu').remove();
-			$('body').find('.responsive-design-tab').remove();
 
 
-
-			for(i=0; i < currentRevision.bps.length; i++){
-					//$('body').append($('<style>',{class:"generated"}).append(currentRevision.css))
-					console.log(currentRevision.bps[i])
-			}
-
-			d = new Date(currentRevision.date);
-
-
-			fname = dateformat(d, 'mmddyyyyhhMM');
-
-			fname = path.join(revisionDirectory,fname)
-			console.log("Revision file is " + fname);
-
-			fs.writeFile(fname,$.html(),function(err){
-
-				if(err){
-					callback(!ok,err);
-				} else {
-
-					//Do Revision Anchors
-					for(i=0; i < currentRevision.anchors.length; i++){
-						addPage(currentRevision.siteName,currentRevision.anchors[i],function(ok,err){
-							if(!ok){
-								console.log(err)
-								//callback(!ok,err);
-							}
-						})
-					}
-
-					callback(ok);
-				}
-			})
-
-		});
-
-	});
-}
-
-function getCorrectRevision(fpath,dateGMTString,callback){
+function getRevisionFileName(fpath,dateGMTString,callback){
 
 	ok = true;
 		
@@ -224,7 +204,7 @@ function SEOUrlFilter(req,res,next){
 
 			//req.params["x-current-page-name"] = m[1]+".html";
 			//req.params["x-dynamic-lookup"] = m[2];
-			res.set("x-orig-site",str);
+			res.set("x-orig-page",str);
 			console.log("Overwrote req params")
 			console.log(req.params)
 			myUrl = map.to;
@@ -234,8 +214,6 @@ function SEOUrlFilter(req,res,next){
 		} 
 
     }
-
-	//console.log(" New Path is " + myUrl)
 	
 	next();
 
@@ -283,139 +261,147 @@ function getRevision(req,res,next){
 
 	console.log("SEO Friendly name was passed is " + res.get("x-orig-site"))
 
+	if(file.startsWith("/")){
 
-	computedSite = file.substring(0,file.lastIndexOf("/"));
-
-	var site = res.get('x-site-name') && res.get('x-site-name') != undefined ? res.get('x-site-name') : computedSite;
-
-	if(site.startsWith("/")){
-		site = site.substring(1);
+		file = file.substring(1);
 	}
-/*
+
+
+	computedSite = file.substring(0,file.indexOf("/"));
+
+	computedFile = file.replace(computedSite,"");
+
+	//strip extension from page name and later concat -revisons to help find directory where revisions kept
+	computedFile = computedFile.lastIndexOf(".") != -1 ? computedFile.substring(0,computedFile.lastIndexOf(".")) : computedFile;
+
+	var site = res.get('x-site-name') != undefined ? res.get('x-site-name') : computedSite;
+
+	console.log("THE PATH IS [" + site + "] and computedFile is " + computedFile)
+
 	if(site.length == 0){
-		site = "default"
-	}*/
-
-	console.log("File Path before is " + file)
-
-	console.log("Computed site as " + site)
-
-	//file = path.join(req.get('x-site-name'),req.get('x-current-page-name'))
-
-	//remove /context from path if found
-	file = file.replace("/"+site,"");
-
-
-		console.log("req.url.query is ")
-		console.log(url.parse(req.url).query)
-
-		res.set('x-query',url.parse(req.url).query);
-
-		console.log("THE PATH IS [" + file + "]")	
-
-		
-		//filepart = file.substring(file.lastIndexOf("/")+1)
-		
-		//filepart =filepart.substring(0,filepart.lastIndexOf("."));
-
-		//console.log("File part is " + filepart)
-		
-		var revDir = path.join(process.env.HOMEDIR ,"public",site,file + ".revisions");
-
-		if(res.get("x-orig-site") && fs.existsSync(path.join(process.env.HOMEDIR ,"public",res.get("x-orig-site") + ".revisions"))){
-			revDir = path.join(process.env.HOMEDIR ,"public",res.get("x-orig-site") + ".revisions")
-			console.log("Really Looking for " + revDir)
-		}
-
-		console.log("Looking for " + revDir)
-		//if revisions?
-		if(fs.existsSync(revDir)){
-			
-			 	console.log("File Found " + revDir);
-			 	
-			 	getCorrectRevision(revDir,revDate,function(ok,revision){
-
-			 		console.log("Got revision " + revision)
-
-			 		parseU = url.parse(req.url);
-			 		parseU.params = {};
-
-
-			 		if(!ok ){
-			 			console.log("Unable to retrieve revision")
-				 		console.log(err)
-				 		next();
-			 		} else if(revision.length == 0){
-			 			revDir = path.join(process.env.HOMEDIR ,"public",site);
-			 			revision = "index.html"
-			 			console.log("No Revision found going to backup ")
-
-			 			//next();
-			 		} 
-
-			 		 {
-
-				 		fs.readFile(path.join(revDir,revision.toString()),function(err,contents){
-					 		if(err){
-					 			console.log("ERROR")
-					 			console.log(err)
-					 			next();
-					 		} else {
-					 		$ = cheerio.load(contents);
-
-					 		params = {}
-
-					 		q = (url.parse(req.url).query)
-
-					 		if(q){
-					 				console.log("Q is ")
-					 		console.log(q);
-					 		qArr = q.split("?")
-					 		console.log(qArr)
-					 		qArr.forEach(function(qStr){
-					 			
-					 				console.log("Splitting " + qStr)
-						 			args= qStr.split("&");
-						 			args.forEach(function(arg){
-						 				argV = arg.split("=")
-						 				params[argV[0]] = argV[1];
-						 			})
-					 			
-
-					 		})
-					 		
-					 		parseU.params = params;
-					 		}
-
-					 		$("<script id='pstate'>var pageState = "+JSON.stringify(parseU)  + "</script>").insertBefore($('head'))
-					 		$('title').html(req.get('x-site-name'));
-					 		res.set('x-current-date',revDate);
-					 		$('meta').first().attr('x-current-date',revDate);
-					 		//$('body').remove();
-					 		res.set('Content-Type','text/html')
-					 		res.end($.html());
-					 		}
-				 		})
-			 		}
-			 	});
-
-			 	
-					
-		} else {
-			console.log("revision " + file + " not found...continuing");
-			addPage(site,"index.html",function(ok,err){
-				fs.readFile(path.join(process.env.HOMEDIR ,"public",site,"index.html"),function(err,contents){
-							res.set('Content-Type','text/html')
-					 		res.end(contents);
-				})
+		console.log("User needs default revision")
+		revDir =process.env.HOMEDIR;
+		var template = "template.html";
+		console.log("Default Revision dir is " + revDir + " and template is " + template);
+		//Show the default workspace html
+		getRevisionFileContents("default",new Date().toString(),revDir,template,req.url,function(ok,htmlOrError){
+			if(!ok){
+				res.sendStatus(404);
+				console.log(htmlOrError);
+			} else {
+				res.setHeader('Content-type','text/html');
+				res.set('x-site-name',site)
+				res.end(htmlOrError);
 				
-			})
+			}
+		});
+
+	} else {
+
+			console.log("req.url.query is ")
+			console.log(url.parse(req.url).query)
+
+			res.set('x-query',url.parse(req.url).query);
+
+				
+
+			var revDir = path.join(process.env.SITEDIR,site,computedFile + "-revisions");
+
+			if(res.get("x-orig-page") && fs.existsSync(path.join(process.env.SITEDIR,site,res.get("x-orig-page") + "-revisions"))){
+				revDir = path.join(process.env.SITEDIR,site,res.get("x-orig-page") + "-revisions")
+				console.log("Really Looking for " + revDir)
+			}
+
+			console.log("Looking for " + revDir)
+			//if revisions?
+			if(fs.existsSync(revDir)){
+								 	
+				 	getRevisionFileName(revDir,revDate,function(ok,revision){
+
+				 		console.log("Got revision " + revision)
+
+				 		parseU = url.parse(req.url);
+
+				 		parseU.params = {};
+
+				 		if(!ok ){
+				 			console.log("Unable to retrieve revision for " + revDir)
+					 		console.log(err)
+					 		res.sendStatus(404);
+							
+
+				 		} else {
+				 			getRevisionFileContents(site,revDate,revDir,revision,req.url,function(ok, htmlOrError){
+				 				if(!ok){
+				 					res.sendStatus(404);
+				 					console.log(htmlOrError);
+				 				} else {
+				 					res.setHeader('Content-type','text/html');
+				 					res.set('x-site-name',site)
+				 					res.end(htmlOrError);
+				 					
+				 				}
+				 			})
+				 		}
+				 	});					
+			} else {
+				console.log("Revison directory not found at --> " + revDir)
+				res.sendStatus(404);
+				
+			}
+
 		}
 	}
 
 }
 
+function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,originalUrl,callback){
+	ok = true;
+//Now that we have correct revision file location, read and send to front end
+	fs.readFile(path.join(revDir,revisionFileName.toString()),function(err,contents){
+		if(err){
+			console.log("ERROR")
+			console.log(err)
+			callback(!ok,err);
+		} else {
+		$ = cheerio.load(contents);
+
+		parseU = url.parse(originalUrl);
+		params = {}
+
+		$('html').attr('x-site-name',site)
+		$('html').attr('x-current-date',dateGMTString)
+
+		q = (url.parse(originalUrl).query)
+
+		if(q){
+			console.log("Q is ")
+			console.log(q);
+			qArr = q.split("?")
+			console.log(qArr)
+
+			qArr.forEach(function(qStr){
+				console.log("Splitting " + qStr)
+				args= qStr.split("&");
+				args.forEach(function(arg){
+					argV = arg.split("=")
+					params[argV[0]] = argV[1];
+	 			})	
+			})
+			parseU.params = params;
+		}
+
+		$("<script id='pstate'>var pageState = "+JSON.stringify(parseU)  + "</script>").insertBefore($('head'))
+		
+		callback(ok,$.html())
+
+		}
+	})
+}
+
 
 module.exports = router;
 module.exports.getRevision = getRevision;
+module.exports.writeRevision = writeRevision;
+module.exports.getRevisionFileContents = getRevisionFileContents;
 module.exports.SEOUrlFilter = SEOUrlFilter;

@@ -215,9 +215,7 @@ function NOTES_makeNote(element,isActive){
 		
 		theMsg.on('mouseenter',function(){
 			userHoveringOverNote = true;
-		}).on('mouseleave',function(){
-			userHoveringOverNote = false;
-		})
+		}).on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);
 
 	
 		$("body").append(theMsg);
@@ -305,8 +303,8 @@ function NOTES_makeNote(element,isActive){
 
 						.on("click",function(et){$(et.target).attr("value","")})
 						.on("mouseenter",function(et){$(et.target).addClass("quick-edit")})
-						.on("mouseleave",function(et){$(et.target).removeClass("quick-edit")}).on("blur",CUSTOM_DONE_NOTE_EDITING_LOGIC);
-
+						.on("mouseleave",function(et){$(et.target).removeClass("quick-edit")})
+						
 	} 
 
 	return msgcoords;

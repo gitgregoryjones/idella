@@ -40,7 +40,9 @@ app.use('/users', users);
 app.use('/revisions', revisions);
 app.use('/site', site);
 
-process.env.HOMEDIR = __dirname;
+process.env.HOMEDIR = path.join(__dirname);
+
+process.env.SITEDIR = path.join(__dirname,"public","sites");
 
 app.use(revisions.SEOUrlFilter)
 

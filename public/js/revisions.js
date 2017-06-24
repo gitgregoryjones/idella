@@ -282,9 +282,14 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt){
 
 	repo = new LocalStorageRepo(theSiteObj);
 
-	object = repo.writeRevision(theSiteObj,$('meta').first().attr('x-current-date'),"Standard Release")
+	object = repo.writeRevision(theSiteObj,$('html').first().attr('x-current-date'),"Standard Release")
 
-	
+	tempH = $('<html>').append($('html').html())
+
+	tempH.find('.saveImage').remove();
+
+
+	object = {html:tempH.html(),css:"",pageName:theSiteObj.currentPage}
 
 	REVISION_createNewSite(theSiteObj,function(ok,err){
 

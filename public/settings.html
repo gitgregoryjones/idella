@@ -236,9 +236,9 @@ REVISION_getAllSites(function(ok,payload){
 		$("#misc-sitename").append($(new Option(payload[i].name,payload[i].name)))
 	}
 
-	opt = $('#misc-sitename option:contains("' + $("title").html() + '")').prop('selected', true);
+	opt = $('#misc-sitename option:contains("' + website + '")').prop('selected', true);
 
-	$("#misc-sitename-h1").html($("title").html());
+	$("#misc-sitename-h1").html(website);
 
 	payload.filter(function(siteInDropDown){
 
@@ -272,7 +272,7 @@ $("[type=create-site]").on("click",function(){
 	}); 
 })
 
-vardateOn = new Date($('meta').first().attr('x-current-date'));
+vardateOn = new Date($('html').first().attr('x-current-date'));
 
 var previewDateStr = vardateOn.getMonth()+1 + "/" + vardateOn.getDate() + "/" + vardateOn.getFullYear();
 
@@ -286,7 +286,7 @@ $("h1 div.fa-gears").on('click',function(){
 
 	$("#Advanced").toggle();
 }).css("cursor","pointer")
-<script>
+
   $( function() {
     $( "#misc-from" ).datepicker({
       showButtonPanel: true
@@ -300,7 +300,7 @@ $("h1 div.fa-gears").on('click',function(){
   	window.location = "/" +$("#misc-sitename").find(":selected").attr("value") + "/" + $("#misc-pages").find(":selected").attr("value")
   	+ "?xcurrentdate="+$( "#misc-from" ).datepicker( "getDate" );
   }).val(previewDateStr )
-  </script>
+ 
 </script>
 
 

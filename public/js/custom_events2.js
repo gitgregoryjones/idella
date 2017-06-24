@@ -597,13 +597,23 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 }
 
 CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
-	log.debug("Triggered Done Editing Notes for parent " + $(event.target).attr("parent"))
+
+	userHoveringOverNote = false;
+
+	//console.log("Triggered Done Editing Notes for parent " + $(event.target).attr("parent"))
 
 	var parentId = $(event.target).attr("parent")
 
+	if(!parentId){
+		//alert('nothing to do ' + $(event.target).attr("parent"))
+		return;
+	}
+
+
 	var parent = $("#"+parentId)
 
-	if(parent.attr("href") != "undefined"){
+	if(parent.attr("href") != undefined){
+		//alert('hrefs is ' + parent.attr('href'))
 			var loc = parent.attr("href");
 		
 			if(loc.trim().length  > 0){
@@ -614,6 +624,7 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 	}
 
 
+   
 	
 
 	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);

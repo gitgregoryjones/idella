@@ -7,13 +7,15 @@ var link = require('fs-symlink')
 var link = require('fs-symlink')
 const path = require('path')
 var  url = require('url');
+var writeRevision = require("./revisions").writeRevision;
+var getRevisionFileContents = require("./revisions").getRevisionFileContents;
 //var $ = require('jquery')
 
 /* Create direectory and home page. */
 router.get('/lookup/:sitename', function(req, res, next) {
 
 		
-	if(siteExist(process.env.HOMEDIR + '/public/' + req.params.sitename)){
+	if(siteExist(path.join(process.env.SITEDIR,req.params.sitename))){
 		res.sendStatus(200);
 	} else {
 		res.sendStatus(404);
@@ -33,7 +35,7 @@ function getFiles (srcpath) {
 /* Create direectory and home page. */
 router.get('/all', function(req, res, next) {
 
-	dirs = getDirectories(process.env.HOMEDIR + '/public/')
+	dirs = getDirectories(process.env.SITEDIR)
 
 	dirList = []
 
@@ -45,9 +47,18 @@ router.get('/all', function(req, res, next) {
 
 	dirsList = dirList.filter(function(directory){
 		console.log("Testing ["+directory.name + "]")
-		directory.files = (getFiles(process.env.HOMEDIR + "/public/"+directory.name));
-	 	return directory.name != "js" && directory.name != "css" && directory.name != "napkin" 
-	 		&& directory.name != "images";
+		console.log("Looking for files in directory " + path.join(process.env.SITEDIR,directory.name))
+		directory.files = (getDirectories(path.join(process.env.SITEDIR,directory.name)));
+
+		clean = [];
+		directory.files.forEach(function(f){
+			if(f.endsWith("-revisions")){
+				clean.push(f.substring(0,f.indexOf("-revisions"))+".html");
+			}
+		})
+		directory.files = clean;
+		return true;
+
 	})
  
 
@@ -56,16 +67,9 @@ router.get('/all', function(req, res, next) {
 
 /* Create direectory and home page. */
 router.post('/page/:pagename', function(req, res, next) {
-		
-	if(siteExist(process.env.HOMEDIR + '/public/' + req.body.name)){
-			addPage(req.body.name,req.params.pagename,function(ok,err){
 
-					res.sendStatus(200);
-				})
-		
-	} else {
 
-		createSite(req.body,function(ok){
+	createSite(req.get("x-site-name"),function(ok){
 			if(ok){
 				res.sendStatus(200)
 				/*addPage(req.body.name,req.params.pagename,function(ok,err){
@@ -76,24 +80,25 @@ router.post('/page/:pagename', function(req, res, next) {
 			} else {
 				res.sendStatus(404);
 			}
-		})
-	}
+	})
+
 });
 
 
 /* Create direectory and home page. */
 router.post('/', function(req, res, next) {
-
-		
+	
 	console.log(req.headers['content-type']);
 	
-	console.log(req.body);
+	console.log(" Site Log " + req.get('x-site-name'));
 
-	createSite(req.body,function(ok){
+	createSite(req.get('x-site-name'),function(ok){
 		if(ok){
 			res.sendStatus(200);
+			res.end();
 		} else {
 			res.sendStatus(404);
+			res.end();
 		}
 	})
 	
@@ -103,46 +108,27 @@ router.post('/', function(req, res, next) {
 function addPage(site,page,callback){
 
 
-	var fullPath = path.join(process.env.HOMEDIR ,'/public/',site,page);
+	var fullPath = path.join(process.env.SITEDIR,site,page);
 
-	var fullPathDirectory = fullPath.substring(0,fullPath.lastIndexOf("/"));
+	var revisionDir = page.lastIndexOf(".") != -1 ? page.substring(0,page.lastIndexOf(".")) : page;
 
-	fx.mkdir(fullPathDirectory, function(err){
+	var dirPath = path.join(process.env.SITEDIR,site,revisionDir+ "-revisions");
+
+	fx.mkdir(dirPath, function(err){
 
 		if(err){
+			console.log("Encoutered Error " + err)
 			callback(false,err);
 		}
 
-		writeDefaultSiteContents(site,page,function(ok,err){
+		console.log("Error from mkdir is " + err)
 
-		var revDir = path.join(process.env.HOMEDIR ,'/public/',site,page+".revisions");
+		writeDefaultSiteContents(site,page,dirPath,function(ok,err){
 
-		if(ok){
+				console.log("Back from writing contents " + ok)
+				console.log(err)
 
-			if(!fs.existsSync(revDir)){
-
-				console.log("File exists is " + fs.existsSync(revDir))
-
-				console.log("AddPage:Creating revision directory " + revDir);
-
-				fx.mkdir(revDir,function(err){
-					console.log("AddPage:Revision dir err value should be null. It is  "+err);
-					if(err){
-						callback(!ok,err);
-					}else {
-						callback(ok);
-					}
-				})
-
-			} else {
-				callback(ok)
-			}
-
-		}else {
-			console.log("Error writing writeDefaultSiteContents ")
-			console.log(err)
-			callback(ok,err);
-		}
+				callback(ok,err);
 
 		});
 
@@ -160,76 +146,38 @@ function siteExist(directoryAndName){
 	return fs.existsSync(directoryAndName);
 }
 
-function writeDefaultSiteContents(site,pagename,callback){
+function writeDefaultSiteContents(site,page,revisionDir,callback){
 
 	var ok = true;
 
-	fs.readFile(process.env.HOMEDIR +'/public/index.html', 'utf8', function(err, template){
-
-		if(err){
-			console.log(err)
-			callback(!ok,err);
-		}
-		
-		console.log("Template is " + template)
-
-		$ = cheerio.load(template);
-		$('head').find('title').text(site);
-		$('body').html($('body').html().trim())
-		
-
-		//$('body').append(req.body.currentRevision.html)
-		$('body').find('ul.custom-menu').remove();
-		$('body').find('.responsive-design-tab').remove();
-
-		img = $('<div class="squarepeg dropped-object" id="begin" type="IMG" style="background-image:url(http://www.britishsarcomagroup.org.uk/wp-content/uploads/2016/09/new-website.jpg)"></div>')
-
-		//http://www.britishsarcomagroup.org.uk/wp-content/uploads/2016/09/new-website.jpg
-		if(site != "default"){
-			//$('body').append(img);
-		}
-		$('title').html(site);
-
-		$("<script id='pstate'>var pageState = {}</script>").insertBefore($('head'))
-
-
-		var createDir = path.join(process.env.HOMEDIR,'/public/',site);
-
-		console.log("Making page " + createDir + " pagename = " + pagename)
-
-
-		if(!fs.exists(path.join(createDir,pagename))){
-
-			fs.writeFile(path.join(createDir,pagename),$.html(),function(err){
-				console.log("Wrote File " + " ok is " + err)
-				if(err){
-					callback(!ok,err);
-				} else {
-			
-					callback(ok);
-				}
-			})
-		} else {
-			callback(ok);
-		}
-
-		console.log($.html())
-
-	})
-
-
-}
-
-function createSite(body,callback){
+	fs.re
 
 	
 
-	var createDir = path.join(process.env.HOMEDIR,'/public/',body["name"]);
+	getRevisionFileContents(site,new Date().toString(),process.env.HOMEDIR,"template.html","/",function(ok,contents){
+		var version = {html:contents,css:"",currentPage:page, date:new Date().toString(),bps:[]}
+		writeRevision(revisionDir,version,new Date().toString(),callback);
+	});
+
+	//writeRevision(revisionDir,version,new Date().toString(),callback);
+
+}
+
+function createSite(name,callback){
+
+
+	console.log("Site Dir is " + process.env.SITEDIR);	
+
+	console.log("Name is " + name)
+
+	var createDir = path.join(process.env.SITEDIR,name);
+
+	console.log("Creating new site at location " + createDir)
 
 	fx.mkdirSync(createDir);
 
 
-	addPage(body["name"],"index.html",function(ok,err){
+	addPage(name,"index.html",function(ok,err){
 
 		console.log("Linking " + createDir+'js' + " to " + __dirname + '/../public/js' + " ok is " + ok)
 
@@ -243,8 +191,6 @@ function createSite(body,callback){
 			.then(function () {})
 		link(path.join(process.env.HOMEDIR,'/public/edit-body.html'), path.join(createDir,'/edit-body.html'), 'junction')
 			.then(function () {})
-
-
 
 		callback(ok);
 	});

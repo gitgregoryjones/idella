@@ -119,7 +119,8 @@ $( document ).ready(function() {
 					log.debug("Before Current Site")
 
 					if($('body').find('.dropped-object').length == 0){
-
+						
+						website = $('html').attr('x-site-name');
 						$('body').append(containerDiv);
 						getCurrentSite();
 						log.debug("After Current Site")
@@ -127,19 +128,26 @@ $( document ).ready(function() {
 						loadAllBreakPoints();
 						loadAllJs();
 					} else {
-						website = $('title').text();
+
+						
+						website = $('html').attr('x-site-name');
+
 						theSiteObj = {};
 						theSiteObj.bp = [];
 						theSiteObj.name = website;
 						theSiteObj.currentPage = location.pathname.replace("/"+website,"");
+
 						$('body').append(containerDiv)
 						loadAllJs();
 					}
 
+					theSiteObj.currentPage = location.pathname.replace("/"+website,"");
+
+
 					if(theSiteObj.currentPage == "/" || theSiteObj.currentPage == ""){
 						theSiteObj.currentPage = "index.html";
 					}
-
+					//alert(theSiteObj.currentPage)
 					
 							       		
 			   }catch(e){
@@ -154,7 +162,7 @@ $( document ).ready(function() {
     				beforeSend: function(xhr) {
         			xhr.setRequestHeader('x-site-name', theSiteObj.name);
         			xhr.setRequestHeader('x-current-page-name', theSiteObj.currentPage);
-        			xhr.setRequestHeader('x-current-date', $('meta').first().attr('x-current-date'));
+        			xhr.setRequestHeader('x-current-date', $('html').first().attr('x-current-date'));
 
     			}
 			})

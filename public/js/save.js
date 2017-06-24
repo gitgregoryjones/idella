@@ -34,20 +34,25 @@ function resetTimer(e) {
 function saveCurrentSite(site){
 
 	
-	allSites = LZString.decompress(localStorage.getItem("sites"))
+	var allSites = LZString.decompress(localStorage.getItem("sites"))
+
+	if(!allSites){
+		allSites = "{}";
+	}
+
 	allSitesAsObj = JSON.parse(allSites);
 	allSitesAsObj[website] = site;
 
 	log.warn("Saving website... " + website)
 	log.debug(site)
 
-var siteAsStr = JSON.stringify(allSitesAsObj);
+	var siteAsStr = JSON.stringify(allSitesAsObj);
 
 	log.warn("Site as str length before compression " + siteAsStr.length)
 
 
-// out will be a JavaScript Array of bytes
-var out = LZString.compress(JSON.stringify(allSitesAsObj));
+	// out will be a JavaScript Array of bytes
+	var out = LZString.compress(JSON.stringify(allSitesAsObj));
 
 	log.warn("Length after compression " + out.length)
 
@@ -61,11 +66,11 @@ function getCurrentSite(){
 	//allSites = localStorage.getItem("sites");
 
 // out will be a JavaScript Array of bytes
-	allSites = localStorage.getItem("sites")
+	var allSites = localStorage.getItem("sites")
 
 	//allSites = localStorage.getItem("sites");
 
-	if(allSites == null){
+	if(!allSites){
 		
 		allSitesAsObj = {}
 		allSitesAsObj["default"] = {}
