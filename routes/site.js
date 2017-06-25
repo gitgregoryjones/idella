@@ -107,7 +107,14 @@ router.post('/', function(req, res, next) {
 
 function addPage(site,page,callback){
 
+
+
 	var ok = true;
+
+	if(page.startsWith("http:") || page.startsWith("https:")){
+		console.log("User linking to external page.  Nothing to do.  Returning")
+		callback(ok)
+	}
 
 	console.log("Attempting to create a new page ["+page + "] for site ["+site+"]")
 

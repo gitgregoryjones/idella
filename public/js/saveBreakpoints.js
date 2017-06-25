@@ -1,6 +1,3 @@
-//.*(BEGIN\sELEM_1482071966106)(.+)(END\sELEM_1482071966106).*
-//var breakPointRegex = /(@media\s+\(max-width:\s\d+px\)\s+\{)([^]+)(\})/img;
-//var breakPointRegex = /(@media\s+\(min-width:\s\d+px\) and \(max-width:\s\d+px\)\s+\{)([^]+)(\})|(@media\s+\(max-width:\s\d+px\)\s+\{)([^]+)(\})/img;
 var breakPointRegex = /(@media\s+\(min-width:\s*\d+px\) and \(max-width:\s*\d+px\)\s*\{)([^]+)(\})|(@media\s+\(max-width:\s*\d+px\)\s*\{)([^]+)(\})/;
 var BREAKPOINTS = []
 
