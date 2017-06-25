@@ -322,7 +322,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	});
 
 
-
+	userHoveringOverNote = false;
 	drawResponsiveTab()
 
 	//$("#tabs").css("height","100%")

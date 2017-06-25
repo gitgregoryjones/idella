@@ -122,7 +122,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 	//NOTES_delete()
 
-	enableHoverEvents();
+	//enableHoverEvents();
 
 	if(DRAW_SPACE_isEditing()){
 
@@ -583,6 +583,9 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 	log.debug("Triggered Done Dragging parent " + event.target.id)
 
+	event.stopPropagation();
+	
+
 	NOTES_makeNote(event.target)
 
 	parent = $(event.target)
@@ -595,6 +598,9 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
 		})
 	}
+	//alert("enable");
+	enableHoverEvents();
+	//
 }
 
 CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
@@ -1168,7 +1174,7 @@ function setUpDiv(div){
 
 	try {
 		div.off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
-			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy").draggable("destroy");
+			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy");
 	} catch(destroy){
 		log.debug("ignoring warning while destroying system generated events tied to div " + div.attr("id"));
 	}
@@ -1179,24 +1185,21 @@ function setUpDiv(div){
 
 	div.not("#drawSpace,body").resizable().on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 		.not("[type=TXT],[type=ICON],[type=BTN]").on("resize",CUSTOM_ON_RESIZE_LOGIC);
-	
-	div.not("#drawSpace,body").draggable().on("drag",function(){
-		NOTES_makeNote(this);
-		
-		//if($(this).offset().top > $("#drawSpace").height() - 100){
-			console.log("Adding more space....")
-			//$("#drawSpace").css("height",$("#drawSpace").height()+100)	
-		//}
-		
 
-	}).on("dragstart",function(){
+
+	
+	$("#"+div.attr("id")).draggable().on("drag",function(e){
+		
+		e.stopPropagation()
+		NOTES_makeNote(this);
+
+	}).on("dragstart resizestart",function(e){
+	
 		disableHoverEvents()
-	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("dragstop",function(){
-		enableHoverEvents()
-		//CUSTOM_pressEscapeKey();
-	}).on("resize",function(){
+	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("resize",function(){
 		NOTES_makeNote(this);
 	});
+
 
 
 	
@@ -1296,7 +1299,6 @@ function parseStyleClassFromString(theStr){
 
 function initialize(){
 
-	
 	
  	$("body").attr("id","body").addClass("body").addClass("hover");
 
@@ -1437,14 +1439,9 @@ function initialize(){
 		}
 	})
 
-
-
-
 	$(".dropped-object").each(function(idx,element){
 		setUpDiv($(element));
 	})
-
-
 
 	//$('.ui-draggable').draggable({snap:false});
 	
@@ -1571,7 +1568,7 @@ function recursiveCpy(obj){
 
    		cpy.off();
    		
-   		setUpDiv(cpy);
+   		//setUpDiv(cpy);
    	
    	})
 
@@ -1582,9 +1579,9 @@ function recursiveCpy(obj){
    	})
 
    	//then parent
-   	setUpDiv($(clone))
+   	//setUpDiv($(clone))
 
-	setUpDiv($(obj))
+	//setUpDiv($(obj))
 
    	obj.parent().append(clone)
 

@@ -63,7 +63,9 @@ function OVERLAY_showOverlay(theElem){
 			//$("[type=OVERLAY]").trigger("mouseleave");
 			
 
-			$($(theElem).children("[type=OVERLAY]")).first().fadeIn()
+			obj = $($(theElem).children("[type=OVERLAY]")).first().fadeIn()
+
+			$("[type=OVERLAY]").not(obj).fadeOut();
 
 			overlay = $(theElem).children("[type=OVERLAY]").first();
 

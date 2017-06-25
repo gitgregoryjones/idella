@@ -173,7 +173,7 @@ function whichTool (tool){
 		theTool =  new GenericTool({
 			type:type,
 			droppedModeStyle:"",
-			droppedModeHtml:"<div><div type=\"MENU\"><div type=\"MENU-ITEM\"  style=\"display: inline-block; padding-left: 20px;\" edittxt=\"Enter Text\nHere\">Enter Text Here</div></div><div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
+			droppedModeHtml:"<div><div type=\"MENU-ITEM\"  style=\"display: inline-block; padding-left: 20px;\" edittxt=\"Enter Text\nHere\">Enter Text Here</div></div></div>",
 			droppable:true,
 			editModeHtml:"<input>",
 			droppable:true,
@@ -218,7 +218,7 @@ function whichTool (tool){
 		case "LIST":
 		theTool = new GenericTool({
 			type:type,
-			droppedModeHtml:"<div><div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
+			droppedModeHtml:"<div></div>",
 			droppable:true,
 			class:"squarepeg list"
 		});
@@ -227,7 +227,7 @@ function whichTool (tool){
 		theTool = new GenericTool({
 			type:type,
 			droppedModeStyle:"",
-			droppedModeHtml:'<div><video preload="auto" autoplay><source class="content-image" src="http://brown-sugar.bouncemediallc.netdna-cdn.com/video/featured.mp4" type="video/mp4"/></video><div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>&nbsp;</div>',
+			droppedModeHtml:'<div><video preload="auto" autoplay><source class="content-image" src="http://brown-sugar.bouncemediallc.netdna-cdn.com/video/featured.mp4" type="video/mp4"/></video></div>',
 			droppable:true,
 			class:"squarepeg"
 		});
@@ -246,7 +246,7 @@ function whichTool (tool){
 			type:type,
 			droppable:true,
 			editModeHtml:"",
-			droppedModeHtml:"<div class=\"fa fa-youtube icon\">&nbsp;<div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
+			droppedModeHtml:"<div class=\"fa fa-youtube icon\"></div>",
 			droppable:false
 		});
 		break;
@@ -260,7 +260,7 @@ function whichTool (tool){
 			class:"texttool",
 			friendlyName : "Text Field",
 			//droppedModeHtml:"<div>Enter Text Here<div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
-			droppedModeHtml:"<div><div type=\"MENU\"><div type=\"MENU-ITEM\"  style=\"display: inline-block; padding-left: 0px;\" edittxt=\"Enter Text Here\">Enter Text Here</div></div><div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
+			droppedModeHtml:"<div><div type=\"MENU-ITEM\"  style=\"display: inline-block; padding-left: 0px;\" edittxt=\"Enter Text Here\">Enter Text Here</div></div>",
 			class:"generictext"
 
 		});
@@ -279,7 +279,7 @@ function GenericTool(options){
 	this.id = this.name;
 	this.droppedModeStyle = "";
 	//this.droppedModeHtml = "<div>&nbsp;<div class='hotspot'>E</div><div>&nbsp;</div></div>";
-	this.droppedModeHtml="<div><div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>";
+	this.droppedModeHtml="<div></div>";
 	this.editModeHtml = "<textarea>";
 	this.editModeStyle = "";
 	this.editModeAttribute = "value";
@@ -314,7 +314,6 @@ function configuredTool(options){
 		this.node = $(options.droppedModeHtml).addClass(options.class).attr('id',this.name)
 
 			.css({zIndex: options.zIndex,display:"block"}).attr('type',options.type);
-	
 
 		setUpDiv(this.node)
 

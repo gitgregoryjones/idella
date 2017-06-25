@@ -6,7 +6,9 @@ var userEditing = false;
 
 function NOTES_delayShowingNote(target){ 
 
-	NOTES_timer = setTimeout(function() { NOTES_makeNote(target,true); }, 1000) 
+	NOTES_timer = setTimeout(function() {
+	 NOTES_makeNote(target,true); 
+	}, 1000) 
 } 
 
 $(this).on("CUSTOM_userEditing",function(){userEditing = true})
