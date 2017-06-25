@@ -1188,9 +1188,9 @@ function setUpDiv(div){
 
 
 	
-	$("#"+div.attr("id")).draggable().on("drag",function(e){
+	div.draggable().on("drag",function(e){
 		
-		e.stopPropagation()
+		//e.stopPropagation()
 		NOTES_makeNote(this);
 
 	}).on("dragstart resizestart",function(e){
@@ -1568,7 +1568,7 @@ function recursiveCpy(obj){
 
    		cpy.off();
    		
-   		//setUpDiv(cpy);
+   		setUpDiv(cpy);
    	
    	})
 
@@ -1579,9 +1579,9 @@ function recursiveCpy(obj){
    	})
 
    	//then parent
-   	//setUpDiv($(clone))
+   	setUpDiv($(clone))
 
-	//setUpDiv($(obj))
+	setUpDiv($(obj))
 
    	obj.parent().append(clone)
 
