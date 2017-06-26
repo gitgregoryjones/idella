@@ -161,65 +161,6 @@ function getRevisionFileName(fpath,dateGMTString,callback){
 	
 }
 
-/*
-* If dynamic page. Find base template and render.  Else next();
-*/
-function SEOUrlFilter(req,res,next){
-
-	str = url.parse(req.url).pathname;
-
-	console.log("Cooyah")
-
-	console.log("Lookie " + req.query.xcurrentdate)
-	//console.log("Mappings ");
-	//console.log(mappings)
-	
-	myUrl = "not-found";
-
-	for(x=0;x < mappings.length && str.endsWith(".html"); x++){
-	//mappings.forEach((map, idx) => {
-
-		map = mappings[x];
-
-		str = url.parse(req.url).pathname;
-       
-       console.log("Testing " + map.from + " against " + str)
-
-       	var regex = new RegExp(map.from,"g") 
-
-       	m = regex.exec(str);
-
-       	console.log("Mapping for file " + str  +" is  " + m)
-
-		if(m != null && m.length > 0 && req.url.indexOf("edit-body.html") == -1 ){
-
-			for(i=1;i< m.length; i++){
-
-				console.log("Testing " + m[i])
-
-				re = new RegExp("\\$"+i,"g")
-
-				console.log("Regex is now " + re)
-
-				map.to = map.to.replace(re,m[i]);
-			}
-
-			//req.params["x-current-page-name"] = m[1]+".html";
-			//req.params["x-dynamic-lookup"] = m[2];
-			res.set("x-orig-page",str);
-			console.log("Overwrote req params")
-			console.log(req.params)
-			myUrl = map.to;
-			req.url = req.url.replace(m[0],map.to)
-			console.log(req.url)
-			break;
-		} 
-
-    }
-	
-	next();
-
-}
 
 
 
@@ -435,6 +376,9 @@ function loadFiles($){
 
 function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,originalUrl,callback){
 	ok = true;
+
+	var simplePageName = revDir.replace(path.join(process.env.SITEDIR,site,"/"),"").replace("-revisions",".html")
+
 //Now that we have correct revision file location, read and send to front end
 	fs.readFile(path.join(revDir,revisionFileName.toString()),function(err,contents){
 		if(err){
@@ -444,11 +388,16 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 		} else {
 		$ = cheerio.load(contents);
 
+
+
+
 		parseU = url.parse(originalUrl);
+		parseU.pageName = simplePageName;
 		params = {}
 
 		$('html').attr('x-site-name',site)
 		$('html').attr('x-current-date',dateGMTString)
+		$('html').attr('x-current-page-name',simplePageName);
 
 		q = (url.parse(originalUrl).query)
 
@@ -486,4 +435,4 @@ module.exports = router;
 module.exports.getRevision = getRevision;
 module.exports.writeRevision = writeRevision;
 module.exports.getRevisionFileContents = getRevisionFileContents;
-module.exports.SEOUrlFilter = SEOUrlFilter;
+

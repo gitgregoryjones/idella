@@ -112,7 +112,7 @@ function addPage(site,page,callback){
 	var ok = true;
 
 	if(page.startsWith("http:") || page.startsWith("https:")){
-		console.log("User linking to external page.  Nothing to do.  Returning")
+		console.log("User linking to external page.  Nothing to do.")
 		callback(ok)
 	}
 
@@ -165,13 +165,14 @@ function writeDefaultSiteContents(site,page,revisionDir,callback){
 
 	var ok = true;
 
-	fs.re
+	currentTimePlus5Seconds = new Date();
 
-	
+	currentTimePlus5Seconds.setTime(currentTimePlus5Seconds.getSeconds() + 5);
+
 
 	getRevisionFileContents(site,new Date().toString(),process.env.HOMEDIR,"template.html","/",function(ok,contents){
 		var version = {html:contents,css:"",currentPage:page, date:new Date().toString(),bps:[]}
-		writeRevision(revisionDir,version,new Date().toString(),callback);
+		writeRevision(revisionDir,version,currentTimePlus5Seconds.toString(),callback);
 	});
 
 	//writeRevision(revisionDir,version,new Date().toString(),callback);

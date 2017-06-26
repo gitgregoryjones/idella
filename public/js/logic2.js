@@ -107,6 +107,10 @@ $(document).ready(function() {
 					if(theSiteObj.currentPage == "/" || theSiteObj.currentPage == ""){
 						theSiteObj.currentPage = "index.html";
 					}
+
+					if($('html').first().attr('x-current-page-name')){
+						theSiteObj.currentPage = $('html').first().attr('x-current-page-name');
+					}
 					//alert(theSiteObj.currentPage)
 					
 							       		

@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var revisions = require('./routes/revisions');
+var rewrites = require('./routes/rewrites');
 var site = require('./routes/site');
 var distort = require('response-distort')
 var url = require('url')
@@ -39,12 +40,13 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/revisions', revisions);
 app.use('/site', site);
+app.use('/rewrites',rewrites);
 
 process.env.HOMEDIR = path.join(__dirname);
 
 process.env.SITEDIR = path.join(__dirname,"public","sites");
 
-app.use(revisions.SEOUrlFilter)
+app.use(rewrites.SEOUrlFilter)
 
 //Put before regular routes so they don't interfere
 app.use(revisions.getRevision);
