@@ -144,6 +144,9 @@ $(document).ready(function() {
 
 				log.debug("GENERIC IS " + JSON.stringify(genericClass));
 				$('body').show();
+				
+				CUSTOM_pressEscapeKey(); 
+				PREVIEW_togglePreview(editing);
 		   	})
 		 } else {
 

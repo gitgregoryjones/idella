@@ -10,6 +10,8 @@ $(document).ready(function(){
 
 	DRAW_SPACE_addWorkSpaceToBody();
 
+	//DRAW_SPACE_deleteWorkspaceFromBody();
+
 })
 
 function DRAW_SPACE_showSettings(){
