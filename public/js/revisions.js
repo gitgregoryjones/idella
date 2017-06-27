@@ -311,7 +311,7 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 				$(".saveImage").hide();
 				REVISION_anchors = [];
 				if(redirect){
-					window.location = "/" + theSiteObj.name + theSiteObj.currentPage;
+					window.location = URI.joinPaths("",theSiteObj.name,theSiteObj.currentPage);
 				}
 				//window.location = "/" + theSiteObj.name + theSiteObj.currentPage;
 			}).fail(function(x,t,e){
