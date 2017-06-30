@@ -1,14 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs')
+const path = require('path')
 var cheerio = require('cheerio')
+var _extend = require('../trigger-catch-event')._extend;
 var fx = require('mkdir-recursive');
 url = require('url');
 //var addPage = require('./site').addPage;
-const path = require('path')
+
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
-var files = ["jquery.js","URI.js","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","idella.css","logic2.js"]
+var files = ["jquery.js","www.movies.com.js","URI.js","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","idella.css","logic2.js"]
 var version = 1;
 //var $ = require('jquery')
 function writeRevision(revisionDirectory,currentRevision,revDate,callback){
@@ -36,7 +38,7 @@ function writeRevision(revisionDirectory,currentRevision,revDate,callback){
 		revDate = new Date();
 	}
 
-	fname = dateformat(revDate, 'mmddyyyyhhMM');
+	fname = dateformat(revDate, 'mmddyyyyHHMM');
 
 	fname = path.join(revisionDirectory,fname)
 
@@ -115,7 +117,7 @@ function getRevisionFileName(fpath,dateGMTString,callback){
 
 	//todayAsNumber = parseFloat(today.getMonth()+""+today.getDate()+""+today.getFullYear()+today.getHours()+""+today.getMinutes())
 	//todayAsNumber = parseFloat(dateformat(today, 'mmddyyyyhhMM'));
-	todayAsNumber = (dateformat(today, 'mmddyyyyhhMM'));
+	todayAsNumber = (dateformat(today, 'mmddyyyyHHMM'));
 
 	console.log("Today " + today.toString() + " as number " + todayAsNumber )
 
@@ -375,6 +377,20 @@ function loadFiles($){
 
 
 function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,originalUrl,callback){
+
+	console.log("MEntered Revision File Contents");
+
+	var cssTextConstants = fs.readFileSync(path.join(process.env.HOMEDIR,"public","js","cssText.js")).toString();
+
+	eval(cssTextConstants)
+
+	var injestLogic = fs.readFileSync(path.join(process.env.HOMEDIR,"public","js","ingest.js")).toString();
+
+	eval(injestLogic)
+
+	//console.log(injestLogic)
+
+
 	ok = true;
 
 	var simplePageName = revDir.replace(path.join(process.env.SITEDIR,site,"/"),"").replace("-revisions",".html")
@@ -392,8 +408,30 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 		} else {
 		$ = cheerio.load(contents);
 
+		$ = _extend($);
 
+		console.log(" The dataPath is " + path.join(process.env.SITEDIR,site,"data.js"))
+		
+		if(fs.existsSync(path.join(process.env.SITEDIR,site,"data.js") ) ){
 
+			var dataPath = path.join(process.env.SITEDIR,site,"data.js");
+
+			console.log("Data Path is " + dataPath);
+
+			var data = fs.readFileSync(dataPath).toString();
+
+			console.log(data)
+
+			try {
+
+				eval(data);
+
+			}catch(e){
+				console.log("Encountered error executing external functions for " + dataPath)
+				console.log(e);
+			}
+		}
+	
 
 		parseU = url.parse(originalUrl);
 		parseU.pageName = simplePageName;
@@ -427,8 +465,54 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 		console.log("Length of scripts is " + $('head').find('script').length);
 
 		$("<script id='pstate'>var pageState = "+JSON.stringify(parseU)  + "</script>").insertBefore($('head'))
+
+		var numberReported = 0;
+
+		$('[alias]').each(function(it,div){
+			//console.log(div)
+			
+			div = $(div);
+			
+			/* Loop through any aliased objects and see if backend content available. If so, update view */	
+			$.trigger(div.attr("alias"),function(serverContent){
+				++numberReported;
+				console.log("Number Reported == " + $.numberRegistered)
+				console.log("ServerContent is " + serverContent)
+				if(serverContent){
+					console.log("ServerContent is below for alias " + div.attr("alias"))
+					console.log(serverContent)
+
+					for(idx in serverContent){
+
+						var response = serverContent[idx];
+
+						console.log("ServerContent Looking for alias with key " + response.alias)
+						/*
+						if(div.is("[type=LIST]")) {
+							$(div).children("[type=IMG]").not(":first").remove();
+						}*/
+					
+						INGEST_populateObject(response, $("[alias=" + response.alias + "]"))
+						/*
+						if(div.is("[type=LIST]")) {
+							$(div).children("[type=IMG]").first().remove();
+						}*/
+
+					}
+				} else {
+					console.log("No content found for list " + div.attr("alias"))
+				}
+				if($.numberRegistered == numberReported){
+						$.clearEvents();
+						callback(ok,$.html())
+				}
+			})	
+		})
 		
-		callback(ok,$.html())
+		if($.numberRegistered == 0){
+			$.clearEvents();
+			callback(ok,$.html());
+		}
 
 		}
 	})

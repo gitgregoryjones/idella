@@ -158,7 +158,7 @@ function SEOUrlFilter(req,res,next){
 
 
 
-	for(x=0;x < mappings.length && str.endsWith(".html"); x++){
+	for(x=0;x < mappings.length; x++){
 	//mappings.forEach((map, idx) => {
 
 		map = mappings[x];

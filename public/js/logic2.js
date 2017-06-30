@@ -207,7 +207,7 @@ function whichTool (tool){
 		});
 		break;
 		case "DIV":
-		case "CIR":
+		case "CIRCLE":
 		case "IMG":
 		case "PLUGIN":
 		case "MENU-ITEM":

@@ -24,6 +24,7 @@ function INGEST_populateList(child,list,idx){
 */
 function INGEST_populateObject(content, object){
 
+	object = $(object);
 	
 	if($(object).length == 0){
 
@@ -33,22 +34,59 @@ function INGEST_populateObject(content, object){
 		//Do simple copy
 		for(key in content){
 
-			if(Array.isArray(content[key]) && object.attr("type") == "LIST"){
-				children = content[key];
-				var before = object.children("[type]").not("[alias^=cntrl]").length;
-				console.log("BEFORE IS " + before)
-				for(childIdx in children){
-					child = children[childIdx];
-					INGEST_populateList(child,object,childIdx);
-				}
+			if(Array.isArray(content[key])){
 
-				var after = object.children("[type]").not("[alias^=cntrl]").length;
-				console.log("AFTER IS " + after)
+				console.log("FOUND ARRAY FOR " + key)
 
-				for(i=0;i<before;i++){
-					c =object.children("[type]").not("[alias^=cntrl]").first();
-					c = $(c);
-					c.remove();
+				if( object.attr("type") == "LIST"){
+
+					children = content[key];
+					var before = object.children("[type]").not("[alias^=cntrl]").length;
+					console.log("BEFORE IS " + before)
+					for(childIdx in children){
+						child = children[childIdx];
+						//Populate Gallery
+						INGEST_populateList(child,object,childIdx);
+					}
+
+					var after = object.children("[type]").not("[alias^=cntrl]").length;
+					console.log("AFTER IS " + after)
+
+					for(i=0;i<before;i++){
+						c =object.children("[type]").not("[alias^=cntrl]").first();
+						c = $(c);
+						c.remove();
+					}
+
+				} else {
+					//populate list of simple objects
+					var lookupKey = key.toUpperCase();
+					if(lookupKey.endsWith("S")){
+						lookupKey = lookupKey.substring(0,lookupKey.indexOf("S"));
+						console.log("Lookup KEY is " + lookupKey)
+
+						var cList = object.find("[type="+lookupKey+"]")
+
+						console.log("[type="+lookupKey + "]  length is " + cList.length) 
+
+						console.log("lookupKey is " + lookupKey + " and content[key] is " + JSON.stringify(content[key]))
+
+						var i = 0;
+
+						var theList = content[key];
+
+						cList.each(function(idx,pageObject){
+							pageObject = $(pageObject);
+							var theContent = theList.pop()
+							console.log("page Object was " + pageObject.length + " id " + pageObject.attr("id")) 
+							console.log("The content is " + theContent);
+							INGEST_populateObject(theContent,pageObject);
+							++i;
+
+						})
+					}
+					
+
 				}
 
 			} else {
@@ -65,7 +103,11 @@ function INGEST_populateObject(content, object){
 				}
 			}
 
+
+
 		}
+
+		return;
 	}
 }
 	
