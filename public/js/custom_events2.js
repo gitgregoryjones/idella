@@ -578,6 +578,8 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 		createAnchorFor(div,true)
 
+		enableHoverEvents();
+
 }
 
 CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
@@ -1014,7 +1016,6 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 
 	if(!overwriteOldAnchor){
 		anchors = $("<a>",{id:"anchor-"+parentId,href:loc,label:loc,type:"anchor"})
-
 		if(!loc.trim().startsWith("http") && !loc.trim().startsWith("javascript:") ){
 			//alert(loc)
 			if(loc.trim().length > 0){
@@ -1033,7 +1034,7 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 			return;
 		}
 
-		anchors = $(parent).find("[type=anchor]");
+		anchors = $(parent).find("[type=anchor]")
 	}
 
 
@@ -1221,7 +1222,7 @@ function setUpDiv(div){
 
 	if(div.is("[type=LIST]")){
 		log.warn("Triggering list load for list " + div.attr("id") + " and alias " + div.attr("alias"))
-		$.event.trigger("listLoad",[div])
+		
 		if(div.hasClass("gallery")){
 			div.css("white-space","nowrap");
 			duration = (div.css("transition-duration"))
@@ -1231,8 +1232,22 @@ function setUpDiv(div){
 
 			SLIDER_init(div);
 		}
+		//$.event.trigger("listLoad",[div])
+		/*
+		$.event.trigger(div.attr("alias") + "-" + "available",[div,function(serverContent){
+			if(serverContent){
+				$(div).children("[type=IMG]").not(":first").remove();
+			
+				INGEST_recursivePopulate(serverContent, $(div))
 
-	}
+				$(div).children("[type=IMG]").first().remove();
+			} else {
+				log.warn("No content found for list " + div.attr("alias"))
+			}
+
+		}])*/
+
+	} 
 
 	
 	if(div.is("[type=IMG]")){
@@ -1255,6 +1270,36 @@ function setUpDiv(div){
 
 	setUpAnchors(div)
 	//div.not("#drawSpace").not("body").on("mouseover",CUSTOM_MOUSEENTER_LOGIC);
+	/*
+	if(div.is("[alias]")){
+
+		$.event.trigger(div.attr("alias") + "-" + "available",[div,function(serverContent){
+				console.log("ServerContent is " + serverContent)
+				if(serverContent){
+					console.log("ServerContent is below for alias " + div.attr("alias"))
+					console.log(serverContent)
+
+					for(responseKey in serverContent){
+						console.log("ServerContent Looking for alias with key " + responseKey)
+						if(div.is("[type=LIST]")) {
+							$(div).children("[type=IMG]").not(":first").remove();
+						}
+					
+						INGEST_recursivePopulate(serverContent[responseKey], $("[alias=" + responseKey + "]"))
+
+						if(div.is("[type=LIST]")) {
+							$(div).children("[type=IMG]").first().remove();
+						}
+
+					}
+				} else {
+					log.warn("No content found for list " + div.attr("alias"))
+				}
+
+		}])
+	}
+	*/
+
 
 	//commented out because it swallows Anchor click event and will not allow links to be clicked.
 	//todo: 1. On user choosing slide options, add JS dynamically to call slider click event and save to JS file
@@ -1264,6 +1309,8 @@ function setUpDiv(div){
 
 	//fix bug in jquery which forces position to relative on draggable() init
 	div.css("position",oldPos);
+
+
 
 
 	

@@ -36,7 +36,7 @@ app.use(cookieParser());
 
 
 
-app.use('/', index);
+//app.use('/', index);
 app.use('/users', users);
 app.use('/revisions', revisions);
 app.use('/site', site);
@@ -51,8 +51,8 @@ app.use(rewrites.SEOUrlFilter)
 //Put before regular routes so they don't interfere
 app.use(revisions.getRevision);
 
-
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public','sites')));
 
 
 // catch 404 and forward to error handler

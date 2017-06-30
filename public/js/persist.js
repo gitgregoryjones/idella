@@ -7,7 +7,7 @@ function persistElement(element){
 
 	obj = trimObject(obj)
 
-	element.children(".dropped-object").each(function(idx,child){
+	element.children("[type]").each(function(idx,child){
 		child = $(child)
 		var type = child.attr("type").toLowerCase() + "s"
 		log.trace("Type of child array " + type)

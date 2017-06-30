@@ -149,7 +149,7 @@ $(document).on("initializationComplete",function(){
                             dropTool(right,{target:aTool,clientX:currentX,clientY:currentY});
                            
 
-                            for(i=0; i < 4; i++){
+                            for(i=0; i < 1; i++){
                                 var bImg = whichTool("IMG")
                                 bImg = configuredTool(bImg);
                                 aTool.append(bImg);

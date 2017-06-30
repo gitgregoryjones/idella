@@ -306,6 +306,11 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	$(".mini-responsive-design-tab").on('click',makeOrBreakpoint)
 
+	
+
+	userHoveringOverNote = false;
+	drawResponsiveTab()
+
 	$(".rocket-save").on('click',function(){
 
 		if(website == "default"){
@@ -323,9 +328,6 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		}
 	});
 
-
-	userHoveringOverNote = false;
-	drawResponsiveTab()
 
 	//$("#tabs").css("height","100%")
 
