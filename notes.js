@@ -150,10 +150,13 @@ function NOTES_makeNote(element,isActive){
 						if($(this).find(":selected").attr("value") == "adaptive"){
 							element.removeClass("gallery");
 							element.css("white-space","normal");
+							element.css({overflow:"auto"})
+
 
 						} else {
 							element.addClass("gallery")
 							element.css("white-space","nowrap");
+							element.css({overflow:"hidden"})
 							//:not(:last)
 						}
 						element.find("[type=MENU-ITEM]").css("white-space","normal")
