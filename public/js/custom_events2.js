@@ -149,7 +149,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 	//enableHoverEvents();
 
-	if(DRAW_SPACE_isEditing()){
+	if(DRAW_SPACE_isEditing() ){
 
 		event.stopPropagation()
 
@@ -183,6 +183,9 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	$("*").removeClass("submenu")
 
 	if(theElem.id){
+
+
+
 		log.debug("Entering parent " + theElem.id + " with X, Y " + $(theElem).css("left") + "," + $(theElem).css("top"))
 	
 		if($(theElem).is("[type=MENU]")){
@@ -206,13 +209,20 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 			return;
 		}	
 
-		$(theElem).addClass("submenu");		
+		$(theElem).addClass("submenu");	
+
+		
+		if(CUSTOM_currentlyMousingOverElementId !=null){
+			$(theElem).parent().trigger("mouseleave")
+			
+		}	
 			
 		CUSTOM_currentlyMousingOverElementId = theElem.id;	
 
 		log.debug("making note for " + CUSTOM_currentlyMousingOverElementId)
 
-		
+
+
 
 		NOTES_delayShowingNote(theElem);
 		//Render popup note above element
@@ -228,7 +238,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 CUSTOM_MOUSELEAVE_LOGIC = function(event){
 
-	event.stopPropagation();
+	//event.stopPropagation();
+
 
 	log.debug("Leaving LOGIC ")
 	log.debug(event.target)
@@ -236,11 +247,11 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 		log.warn("CUSTOMEVENTS2.js: Bad Node Encountered-->\n " + $(event.target).html())
 		$(event.target).removeClass("submenu")
 		$(event.target).parents().removeClass("submenu")
-		$(event.target).parents().first().trigger("mouseleave")
+		$(event.target).parents(".dropped-object").first().trigger("mouseleave")
 	} else {
 		$("#"+event.target.id).removeClass("submenu")
 
-		$(event.target).parents("[type]").first().trigger("mouseenter")
+		//$(event.target).parents(".dropped-object").first().trigger("mouseenter")
 	}
 
 }
@@ -651,6 +662,8 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 	writeTabs(parent,true)
+
+	noteShowing = false;
 
 
 }
