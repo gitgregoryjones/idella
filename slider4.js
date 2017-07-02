@@ -83,6 +83,8 @@ function getTransitionDuration( element, with_delay )
 /*Go right*/
 function goRight(list){
 
+	list = list.target ? $(list.target) : list;
+
 	var options ={}
 
 	options["transition-duration"] =  $(list.css("transition-duration"));
@@ -112,6 +114,9 @@ function goRight(list){
 
 /*Go right*/
 function goLeft(list){
+
+	//In case, this was a onClick event on List
+	list = list.target ? $(list.target) : list;
 
 	var options ={}
 

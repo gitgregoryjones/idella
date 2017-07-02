@@ -150,13 +150,19 @@ function NOTES_makeNote(element,isActive){
 						if($(this).find(":selected").attr("value") == "adaptive"){
 							element.removeClass("gallery");
 							element.css("white-space","normal");
-							element.css({overflow:"auto"})
+							element.css({overflow:"auto","transition-duration":"0s"})
+							element.off("click",goLeft)
 
 
 						} else {
 							element.addClass("gallery")
 							element.css("white-space","nowrap");
-							element.css({overflow:"hidden"})
+							duration = (element.css("transition-duration"))
+							
+							duration = parseFloat(duration) == 0 ? "0.6s" : duration;
+							element.css({overflow:"hidden","transition-duration":duration})
+							element.on("click",goLeft)
+
 							//:not(:last)
 						}
 						element.find("[type=MENU-ITEM]").css("white-space","normal")
