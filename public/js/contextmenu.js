@@ -5,6 +5,7 @@ var currentY = 0;
 var currentCtx = {};
 
 
+
 <!-- language: lang-js -->
 $(document).on("initializationComplete",function(){
 
@@ -23,7 +24,7 @@ $(document).on("initializationComplete",function(){
     })
 
    
-    console.log("Caught Initialization done event");
+    log.debug("CONTEXTMENU.js: Caught Initialization done event");
     // JAVASCRIPT (jQuery)
 
     // Trigger action when the contexmenu is about to be shown
@@ -31,7 +32,7 @@ $(document).on("initializationComplete",function(){
 
 
         if(DRAW_SPACE_advancedShowing ){
-            console.log("Hiding menu because user is modifying advanced settings")
+            log.debug("CONTEXTMENU.js: Hiding menu because user is modifying advanced settings")
             return;
         }
     
@@ -50,7 +51,11 @@ $(document).on("initializationComplete",function(){
         if(!editing || currentCtx.id == "body" ){
             $(".editonly").hide()
         }else {
+
             $(".editonly").show()
+            if(!CUSTOM_lastCopyElement){
+                $("[data-action=paste]").hide()
+            }
         }
 
         if(editing){
@@ -149,7 +154,7 @@ $(document).on("initializationComplete",function(){
                             dropTool(right,{target:aTool,clientX:currentX,clientY:currentY});
                            
 
-                            for(i=0; i < 1; i++){
+                            for(i=0; i < 8; i++){
                                 var bImg = whichTool("IMG")
                                 bImg = configuredTool(bImg);
                                 aTool.append(bImg);
@@ -209,7 +214,27 @@ $(document).on("initializationComplete",function(){
                 writeFields(currentCtx); 
 
                 break;
-            case "copy": if(currentCtx.attr("type") != "canvas"){recursiveCpy(currentCtx);} break;
+            case "copy": if(currentCtx.attr("type") != "canvas"){
+                    CUSTOM_lastCopyElement = recursiveCpy(currentCtx);
+                    op = $(currentCtx).css("opacity");
+                    $(currentCtx).css("opacity","0");
+                    $(currentCtx).animate({opacity:op},600)
+
+                } break;
+            case "paste": if(currentCtx.hasClass("dropped-object"))
+                { 
+                    c = recursiveCpy(CUSTOM_lastCopyElement) ;  
+                    c.appendTo(currentCtx).css(
+                        {top:myPage.Y - currentCtx.offset().top - ($(".custom-menu").height()/2),left:myPage.X - currentCtx.offset().left }
+                    );
+                    CUSTOM_PXTO_VIEWPORT($(c),$(c).position().left ,$(c).position().top); 
+
+                    //alert(myPage.Y) 
+                } 
+                break;
+
+       
+
             case "resize": $(".template").click();break;
             case "javascript": if(currentCtx.attr("type") != "canvas"){         
                     //remove submenu class because we don't need it anymore
@@ -322,7 +347,7 @@ function writeFields(){
             fields[fields.length] = $("<input>",{value:"autoplay:"+$(currentCtx).find("video").attr("autoplay"),label:"autoplay",class:"editonly"})
             fields[fields.length] = $("<input>",{value:"loop:"+$(currentCtx).find("video").attr("loop"),label:"loop",class:"editonly"})
         }
-console.log("I am writing fields of length " + fields.length)
+log.debug("CONTEXTMENU.js: I am writing fields of length " + fields.length)
         //fields[fields.length] = $("<label>",{text:"Edit Fields Like Me"}).append($("<input>",{type:"checkbox",name:"likeme",class:"editonly"}) )
         //fields[fields.length] = $("<label>",{text:"Edit Additional Fields"}).append($("<input>",{type:"checkbox",name:"additional",class:"editonly"}) )
         fields[fields.length] = $("<input>",{type:"button",value:"done",label:"background-color",class:"editonly"}).on("click",function(){
@@ -335,7 +360,7 @@ console.log("I am writing fields of length " + fields.length)
         
 
         for(f=0; f < fields.length; f++){
-            console.log("Putting field at location")
+            log.debug("CONTEXTMENU.js: Putting field at location")
             console.log(locations[f])
             $(fields[f]).css(locations[f]).attr("currentCtx",$(currentCtx).attr("id"))            
             form.append(fields[f]);

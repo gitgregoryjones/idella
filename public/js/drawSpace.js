@@ -292,15 +292,25 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	$(window).on('resize',drawResponsiveTab)
 
+	$("#tabs").append('<div class="setarea"></div>')
+	
 	if(CUSTOM_currentlyMousingOverElementId == null){
-		writeTabs(body)
+		CUSTOM_currentlyMousingOverElementId = $(".dropped-object").not("#drawSpace,[alias=theCanvas]").first().attr("id");
+	
+		
+		_localElem = writeTabs(CUSTOM_currentlyMousingOverElementId,true)
+		//NOTES_makeNote($("#"+_localElem))
+
 	} else {
-		writeTabs($("#"+CUSTOM_currentlyMousingOverElementId));
 		STYLESTABS_forceRewrite = true;
-		NOTES_makeNote($("#drawSpace").children(".dropped-object").first())
+
+		 _localElem = writeTabs($("#"+CUSTOM_currentlyMousingOverElementId),true);
+		
+		//NOTES_makeNote($("#"+_localElem))
 	}
 
-	$("#tabs").append('<div class="setarea"></div>')
+	//NOTES_makeNote($("#"+CUSTOM_currentlyMousingOverElementId))
+
 
 
 
@@ -311,22 +321,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	userHoveringOverNote = false;
 	drawResponsiveTab()
 
-	$(".rocket-save").on('click',function(){
-
-		if(website == "default"){
-			text = prompt("Please enter a name for your new site")
-			if(text && text.trim().length > 0){
-				$('title').text(text);
-				theSiteObj.name = text;
-				theSiteObj.redirect = true;
-				SAVEJS_goInactive()
-			}
-		} else {
-			console.log("Pressed Key for saving ")
-			SAVE_okToSave = true;
-			SAVEJS_goInactive()
-		}
-	});
+	
 
 
 	//$("#tabs").css("height","100%")
@@ -340,7 +335,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 function startVideo(vid){
 	setTimeout(function () {      
 	  // Resume play if the element if is paused.
-	  if (vid && vid.paused) {
+	  if (vid && vid.paused && $(vid).is(":visible")) {
 	    vid.play();
 	  }
 	}, 150);	

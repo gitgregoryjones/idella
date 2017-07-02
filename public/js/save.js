@@ -157,6 +157,11 @@ function getCurrentSite(){
  
 function SAVEJS_goInactive() {
 
+	if($('html')[0].hasAttribute("was-error")){
+			SAVE_okToSave = false;
+	}
+
+
 
 	if(editing) {
 		if($("#drawSpace").children(".dropped-object").length == 0){

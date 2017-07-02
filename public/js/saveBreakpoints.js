@@ -277,6 +277,7 @@ function drawResponsiveTab(){
 		$(".mini-responsive-design-tab").css({"background-color":"black",color:"yellow"})
 	}
 	$(".responsive-design-tab,.mini-responsive-design-tab").text($("body").width() + ", ["+currentBreakPoint + "]")
+
 }
 
 function loadAllBreakPoints(){

@@ -6,8 +6,8 @@ function PREVIEW_togglePreview(showPreview){
 		$(".dropped-object").not(".tool").removeClass("debug-border-style").removeClass("squarepeg");
 		$(".dropped-object,[class=submenu]").removeClass("submenu")
 		try {$(".dropped-object").resizable("destroy");}catch(e){
-			console.log("object ")
-			console.log(e)
+			
+			log.info("PREVIEW.js: " + e.stack)
 		}
 		
 		$(".dropped-object").is(function(){

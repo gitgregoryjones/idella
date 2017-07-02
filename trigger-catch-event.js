@@ -31,15 +31,17 @@ function _extend($){
 		console.log("Triggered Event "+ event);
 		for(i=0; i < events.length; i++){
 			if(events[i].hasOwnProperty(event)){
-
-				try {
-					//call the on('whatever') method dynamically and pass the 'content' array, $ reference to page, done() callback and eventName
-					events[i][event]([],$,done,event);
-				}catch(e){
-					console.log("Failed to get data for event on("+event+")");
-					console.log(e)
-					done(null);
-				}
+				var backendDataPopulatedByUser = []
+				//try {
+					//call the on(whatever') method dynamically and pass the 'content' array, $ reference to page, done() callback and eventName
+					events[i][event](backendDataPopulatedByUser,$,done,event);
+				//}catch(e){
+					
+				//	console.log("Failed to get data for event on("+event+")");
+				//	console.log(e)
+				//	throw 
+				//	done(backendDataPopulatedByUser);
+				///}
 			}
 		}
 	}

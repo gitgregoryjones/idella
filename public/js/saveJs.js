@@ -11,7 +11,7 @@ function saveJs(theElem, script){
 	console.log("Entering save JS with id " + id)
 
 
-	theFunction = "<!-- BEGIN " + id + " //-->\n\nif(true){" + script + "\n}<!-- END "+ id + "//-->";
+	theFunction = "<!-- BEGIN " + id + " //-->\n\n$(document).ready(\n\tfunction(){\n" + script + "\n})<!-- END "+ id + "//-->";
 
 	//eval(theFunction)
 
@@ -23,9 +23,9 @@ function saveJs(theElem, script){
 		$("script.generated").html($("script.generated").html().replace(re,theFunction))
 	}
 
-	localStorage.setItem("javaScript_"+id,script)
+	//localStorage.setItem("javaScript_"+id,script)
 
-	log.debug("Leaving save JS with id " + id)
+	log.debug("SAVJS.js: Leaving save JS with id " + id)
 
 }
 
@@ -39,16 +39,16 @@ function getJs(theElem){
 
 	groups = re.exec($("script.generated").html())
 
-	log.debug("After applying regex " + re + " groups is " + groups);
+	log.debug("SAVJS.js: After applying regex " + re + " groups is " + groups);
 
 	if(groups != null){
 
-		content = groups[1].trim().replace("if(true){","");
-		lastBrace = content.lastIndexOf("}");
+		content = groups[1].trim().replace("$(document).ready(\n\tfunction(){\n","");
+		lastBrace = content.lastIndexOf("})");
 
 		content = content.substring(0,lastBrace);
 
-		log.debug("Really Returning " + content)
+		log.debug("SAVJS.js: Really Returning " + content)
 
 		return content;
 
@@ -65,7 +65,7 @@ function loadAllJs(){
 	$(".dropped-object,.plugin").each(function(index,elem){
 
 		thejs = getJs(elem);
-		log.debug("The JS is " + thejs)
+		log.debug("SAVJS.js: The JS is " + thejs)
 		if(thejs != null && thejs.length > 0){
 			eval(thejs)
 			saveJs(elem,thejs);

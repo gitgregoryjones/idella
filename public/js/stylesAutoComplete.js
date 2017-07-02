@@ -5,9 +5,9 @@ var data = [];
 
 $(document).ready(function(){
 
-
-	console.log($("#autocomplete"))
-	console.log("hep AutoComplete")	
+	log.debug("STYLESAUTOCOMPLETE.js: status of #autocomplete");	
+	log.debug($("#autocomplete"))
+	log.debug("STYLESAUTOCOMPLETE.js: hep AutoComplete")	
 
     $.widget( "custom.catcomplete", $.ui.autocomplete, {
       _create: function() {
@@ -155,7 +155,7 @@ function getCSSData(elem){
 	defaultTabs = ["slider",commonTabLabel,"misc","font","text","border","background","-webkit"]
 
 	$.each(styleMeta,function(label,value){
-		log("The label is " + label + " and value " + value)
+		log.debug("STYLESAUTOCOMPLETE.js: The label is " + label + " and value " + value)
 		
 		var common = null;
 

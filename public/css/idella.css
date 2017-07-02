@@ -214,8 +214,7 @@ ul.tabul {
 
 
 .dropped-object:hover {
-		cursor: url("http://cursors4.totallyfreecursors.com/thumbnails/pencil.gif"), 
-				 auto;
+		cursor: auto;
 }
 
 .mini-responsive-design-tab, .rocket-save, .rocket-settings {

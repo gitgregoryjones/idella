@@ -89,7 +89,7 @@ function NOTES_makeNote(element,isActive){
 
 
 	if(element.id){
-		console.log("Entering parent " + element.id + " with X, Y " + $(element).css("left") + "," + $(element).css("top"))
+		log.debug("NOTES.js: Entering parent " + element.id + " with X, Y " + $(element).css("left") + "," + $(element).css("top"))
 
 	
 		//$(element).addClass("submenu");
@@ -204,7 +204,7 @@ function NOTES_makeNote(element,isActive){
 				plugin = list[idx]
 				select.append(new Option(plugin.alias,plugin.file))
 			}
-			console.log("This is cool")
+			log.debug("NOTES.js: This is cool")
 			console.log(select)
 			theMsg.append($("<div style='display:inline-block'>Library:</div>").append(select));
 			
@@ -372,8 +372,8 @@ function QUICK_EDIT(evnt){
 			//Turn Autosave back on again. Now that user is done editing
 			SAVE_okToSave = true;	
 
-			console.log("Firing : " + label + " ==> " + $(evnt.target).val())
-			console.log("Webkit : " + $(parent).css("-webkit-text-fill-color"))
+			log.debug("NOTES.js: Firing : " + label + " ==> " + $(evnt.target).val())
+			log.debug("NOTES.js: Webkit : " + $(parent).css("-webkit-text-fill-color"))
 
 			if($(".changesToggle").is(":checked")){
 				log.trace("Style is checked ")

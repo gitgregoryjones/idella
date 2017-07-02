@@ -43,10 +43,10 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 			theClassObj[key] = element.find(".content-image").attr("src")
 
 		} else if(key == "display" || includeCustomClasses || (defaultValue != myValue && myValue != undefined ) ){
-			    log.error("[" + key +"] " + ":" + myValue + "!=" + defaultValue)
+			    log.trace("EXTENSIONS2.js: [" + key +"] " + ":" + myValue + "!=" + defaultValue)
 		  		theClassObj[key] = myValue;	  		
 		} else if(key.indexOf("border") > -1 ){
-			log.debug(" Key is " + key + " and value is " + myValue)
+			log.debug("EXTENSIONS2.js: Key is " + key + " and value is " + myValue)
 		}
 	})
 
@@ -59,7 +59,7 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 		//theClassObj.width = element.parents("[type=T]").width()/element.siblings("[type]").length
 	}
 
-	log.error("Background is now " + theClassObj["background-color"])
+	log.info("EXTENSIONS2.js: Background is now " + theClassObj["background-color"])
 
 	theClassObj = computeDimensions(theClassObj)
 
@@ -75,7 +75,7 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 	//theClassObj["rawjson"] = JSON.stringify(theClassObj);
 	theClassObj["cssRule"] = outStr;
 	if(theClassObj.type == "ICON"){
-		log.debug("CSS Rule for ICON")
+		log.debug("EXTENSIONS2.js:CSS Rule for ICON")
 		log.debug(theClassObj.cssRule)
 	}
 
@@ -102,7 +102,7 @@ function computeDimensions(theClassObj){
 
   	if(units =="vw"){
   		adjuster = (100 / document.documentElement.clientWidth);
-  		log.debug("Adjuster is " + adjuster);
+  		log.debug("EXTENSIONS2.js:Adjuster is " + adjuster);
   		log.debug(theClassObj["width"])	
   	}
 
@@ -116,13 +116,13 @@ function computeDimensions(theClassObj){
 
   		while( ( groups = numbersInPXReg.exec(val) ) != null) {
 
-  			//log.debug("Converting value groups[0] " + groups[0] + " to vw")
+  			//log.debug("EXTENSIONS2.js:Converting value groups[0] " + groups[0] + " to vw")
   			var newValue = adjuster * groups[1] + units 
   			computedValue += newValue + " ";
   			log.trace("Converted from groups[0] " + groups[0] + " to " + newValue);
 
   			if(theClassObj.type == "ICON" && field == "width"){
-  				log.debug("Before " + theClassObj[field] + " After is " + computedValue)
+  				log.debug("EXTENSIONS2.js:Before " + theClassObj[field] + " After is " + computedValue)
   			}
 
   		}
@@ -150,10 +150,10 @@ function computeDimensions(theClassObj){
 
   		if(!obj.is("[type=T],[type=BTN],[type=MENU-ITEM],[alias^=cntrl]") ) {
 			//moveMe.css({top:0,left:0,position:"relative"})
-			console.log("I am a LIST and i am overwriting position " + theClassObj.position + " alias is " + theClassObj.alias)
+			log.debug("EXTENSIONS2.js: I am a LIST and i am overwriting position " + theClassObj.position + " alias is " + theClassObj.alias)
 			theClassObj["top"] = 0;
 			theClassObj["left"] = 0;
-			console.log("Inside the list")
+			log.debug("EXTENSIONS2.js: Inside the list")
 			if(parseFloat(theClassObj["font-size"]) > 400 ){
 				//error
 				theClassObj["font-size"] = "16px";
@@ -176,11 +176,11 @@ function computeDimensions(theClassObj){
 	}
 
 
-	console.log("Inner saw the theClassObj.position as " + theClassObj["position"])
+	log.debug("EXTENSIONS2.js: Inner saw the theClassObj.position as " + theClassObj["position"])
 	if(theClassObj["position"] == undefined){
 
 		theClassObj["position"] = "absolute";
-		console.log("Over saw the theClassObj.position as " + theClassObj["position"])
+		log.debug("EXTENSIONS2.js: Over saw the theClassObj.position as " + theClassObj["position"])
 	}
 
 	return theClassObj;
@@ -196,10 +196,10 @@ function computeDimensions(theClassObj){
 	//$(moveMe).removeClass("submenu");
 	moveMe = $(moveMe);
 
-	log.debug("Starting conversion....")
+	log.debug("EXTENSIONS2.js:Starting conversion....")
 
 	if($(moveMe).attr("type") == "ICON"){
- 		log.debug("AFTER Width size is " + moveMe.css("width"))
+ 		log.debug("EXTENSIONS2.js:AFTER Width size is " + moveMe.css("width"))
  	}
 
  	$(moveMe).removeClass("submenu");
@@ -210,12 +210,6 @@ function computeDimensions(theClassObj){
 
 	CSS_TEXT_saveCss(moveMe, theClassObj)
 	
-	
-	if(theClassObj.type == "DIV"){
-		log.error("Foxy")
-		log.error(theClassObj.cssRule)
-	}
-
 	$(moveMe).addClass($(moveMe).attr("id"))
 
 	//remove inline style since we have added a class

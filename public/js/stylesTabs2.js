@@ -29,7 +29,8 @@ function writeTabs(currentCtx,forceWrite){
 			//continue;
 		
 		} else {
-			return;
+			//alert( generatedTabsForId)
+			return generatedTabsForId;
 		}
 	}
 
@@ -47,12 +48,12 @@ function writeTabs(currentCtx,forceWrite){
 
 	writtenTabs = [];
 
-	//console.log("Parent is " + JSON.stringify(parent))
+	//log.debug("STYLETABS2.js:Parent is " + JSON.stringify(parent))
 
 	//Write all tabs
 	$.each(styleMeta,function(label,value){
 
-		log("The label " + label)
+		log.debug("STYLETABS2.js:The label " + label)
 		//Create Tabs dynamically equal to style Groups
 		tabLabel = label.indexOf("-") > -1 ? label.substring(0,label.indexOf("-")) : label;
 
@@ -70,7 +71,7 @@ function writeTabs(currentCtx,forceWrite){
 
 
 		if($.inArray(tabLabel,writtenTabs) == -1 ){
-			log("Writing " +tabLabel)
+			log.debug("STYLETABS2.js:Writing " +tabLabel)
 			li = $("<li id='li-"+ tabLabel+ "'>").append("<a href=\"#t_" +tabLabel + "\">" + tabLabel + "</a>")
 			//.css("visibility","hidden")
 
@@ -125,13 +126,13 @@ function writeTabs(currentCtx,forceWrite){
 
 			styleRow.append(styleLabel).append(styleValue)
 
-			console.log("Appending ID to " + "#t_" + tab);
+			log.debug("STYLETABS2.js:Appending ID to " + "#t_" + tab);
 
 			$("#t_" + tab).append(styleRow);
 			
 
 		} else {
-			console.log("Parent is is now " + parent.id)
+			log.debug("STYLETABS2.js:Parent is is now " + parent.id)
 
 			$("#"+tab + "-id").html(parent.id)
 		}
@@ -181,7 +182,7 @@ function writeTabs(currentCtx,forceWrite){
 			getHelp(url)
 			e.preventDefault();
 
-		}).css({color:"white"})
+		}).css({color:"white","cursor":"help"})
 
 		if(tabLabel != "misc"){
 
@@ -199,13 +200,13 @@ function writeTabs(currentCtx,forceWrite){
 
 		if(label == "src" || label == "align"){
 			if($(parent).find(".content-image").length > 0){
-				console.log("I found the source")
+				log.debug("STYLETABS2.js:I found the source")
 				theValue = $(parent).find(".content-image").attr(label)
 			} else {
-				console.log("No Source Found. Overwriting with background-image if possible")
+				log.debug("STYLETABS2.js:No Source Found. Overwriting with background-image if possible")
 				if($(parent).is("[type=DIV]")){
 					theValue=styleMeta["background-image"];
-					console.log("Parent is DIV is " + $(parent).is("[type=DIV]") + "  styleMeta src " + styleMeta["background-image"])
+					log.debug("STYLETABS2.js:Parent is DIV is " + $(parent).is("[type=DIV]") + "  styleMeta src " + styleMeta["background-image"])
 				}
 
 			}
@@ -242,7 +243,7 @@ function writeTabs(currentCtx,forceWrite){
 						}
 						$(parent).css("background-image",theValue);
 						$(parent).css(label,theValue);
-						console.log("Overwriting background-image with src attribute since this is what the user really wants " + $(evnt.target).val())
+						log.debug("STYLETABS2.js:Overwriting background-image with src attribute since this is what the user really wants " + $(evnt.target).val())
 					}
 
 					//https://www.uvm.edu/~bnelson/computer/html/wrappingtextaroundimages.html
@@ -280,8 +281,8 @@ function writeTabs(currentCtx,forceWrite){
 					$(parent).css("margin",0);
 				}
 
-				console.log("Firing : " + label + " ==> " + $(evnt.target).val())
-				console.log("Webkit : " + $(parent).css("-webkit-text-fill-color"))
+				log.debug("STYLETABS2.js:Firing : " + label + " ==> " + $(evnt.target).val())
+				log.debug("STYLETABS2.js:Webkit : " + $(parent).css("-webkit-text-fill-color"))
 
 				if($(".changesToggle").is(":checked")){
 					log.trace("Style is checked ")
@@ -310,7 +311,7 @@ function writeTabs(currentCtx,forceWrite){
 
 					//test to see if this is a custom attribute instead of class
 					if($(parent).css(label) == undefined){
-						console.log(label + " is not a style " + " overwriting with label " + $(event.target).val())
+						console.log("STYLETABS2.js :" + label + " is not a style " + " overwriting with label " + $(event.target).val())
 						//User modified an an attribute
 						$("#"+originalParentId).attr(label,$(event.target).val())
 						$("[extends='"+originalParentId+"']").not($(parent)).attr(label,$(event.target).val());
@@ -337,7 +338,7 @@ function writeTabs(currentCtx,forceWrite){
 
 			CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
 			if(copiesModified){
-				console.log("I'm in the copies bruh!")
+				log.debug("STYLETABS2.js:I'm in the copies bruh!")
 				//Finally Find all copies of this element and do viewport stuff.  In viewport stuff, we also save any 
 				//onhover events which are passed as attributes on the element since there is no such thing as hover class
 				//retrieved or set via $.css() method
@@ -482,6 +483,23 @@ function writeTabs(currentCtx,forceWrite){
 			}
 
 		})
+
+		$(".rocket-save").on('click',function(){
+
+			if(website == "default"){
+				text = prompt("Please enter a name for your new site")
+				if(text && text.trim().length > 0){
+					$('title').text(text);
+					theSiteObj.name = text;
+					theSiteObj.redirect = true;
+					SAVEJS_goInactive()
+				}
+			} else {
+				console.log("Pressed Key for saving ")
+				SAVE_okToSave = true;
+				SAVEJS_goInactive()
+			}
+		});
 		
 
 		$("#anchorsAway").on("click",function(){

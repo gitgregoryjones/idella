@@ -3,6 +3,8 @@ var hoverOverNote = false;
 var CUSTOM_currentlyMousingOverElementId = null;
 
 
+var CUSTOM_lastCopyElement = null;
+
 function CUSTOM_pressEscapeKey(){
 	var e = jQuery.Event("keydown");
 	e.which = 27; // # Some key code value
@@ -27,7 +29,7 @@ function CUSTOM_incrementZIndex(){
 
 	})
 
-	console.log("Returing global Index globI " + globI)
+	log.debug("CUSTOMEVENTS.js:Returing global Index globI " + globI)
 	return globI;
 }
 
@@ -38,7 +40,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 	hotObj = $("#"+CUSTOM_currentlyMousingOverElementId);
 	
 	if(DRAW_SPACE_advancedShowing && event.which != 27){
-		console.log("Ignoring Hot Key because advanced settings are showing " + event.which)
+		log.debug("CUSTOMEVENTS.js:Ignoring Hot Key because advanced settings are showing " + event.which)
 		return;
 	}
 	
@@ -59,9 +61,30 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 		$(".rocket-settings").click();
 	}
+	//if Cntrl-S or CMD-S then Save
+	if( ( key == 83 && event.shiftKey ) ){
+		
+		
+		$(".rocket-save").click()
+		event.stopPropagation();
+		event.preventDefault();
+
 
 	//KEY C and Shift Key to COPY
-	if(key == 67 && event.shiftKey && $(hotObj).hasClass("dropped-object")){
+	} else
+
+
+	//Shift-V is Paste
+	if(key == 86 && event.shiftKey && $(hotObj).hasClass("dropped-object")){
+		
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		$("[data-action=paste]").click();
+		$(document).click();
+
+
+	//KEY C and Shift Key to COPY
+	}else if(key == 67 && event.shiftKey && $(hotObj).hasClass("dropped-object")){
 	
 
 		$(document).trigger("contextmenu").show()
@@ -111,6 +134,8 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 
 CUSTOM_MOUSEENTER_LOGIC = function(event){
+
+
 	
 	if($(event.target).hasClass("ui-resizable-handle")){
 		//alert($(event.target).parents(".dropped-object").first().attr("id"))
@@ -133,44 +158,39 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	
 	var theElem = event.target;
 
-	console.log("Up in Here! " + theElem.id + " Is anchor = " + $(theElem).is("[type=anchor]"))
-
-
-	//OVERLAY_showOverlay(theElem);
-	/*
-	if($("#editSpace").is(":hover")){
-
-		window.clearTimeout(NOTES_timer);
-		DRAWSPACE_hoveringOverEditWindow = true;
-		alert("DrawSpace " + DRAWSPACE_hoveringOverEditWindow)
-		event.stopPropagation();
-
-		return;
+	if($(theElem).css("cursor") == "auto"){
+		$(theElem).css("cursor","pointer")
+	} else if(theElem.hasAttribute("hasjs")){
+		$(theElem).css("cursor","context-menu")
 	}
-	*/
+
+	log.debug("Up in Here! " + theElem.id + " Is anchor = " + $(theElem).is("[type=anchor]"))
+
+
+	
 
 	if(!editing || $(".custom-menu").is(":visible") ){
 
 
-		OVERLAY_showOverlay(theElem);
+		//OVERLAY_showOverlay(theElem);
 	
-		log.error("will not highlight element user hovers over because master tool edit mode if off ")
-		log.error("theElem is ")
-		log.error(theElem)
+		log.info("will not highlight element user hovers over because master tool edit mode if off ")
+		log.info("theElem is ")
+		log.info(theElem)
 		return;
 	}
 
 	$("*").removeClass("submenu")
 
 	if(theElem.id){
-		console.log("Entering parent " + theElem.id + " with X, Y " + $(theElem).css("left") + "," + $(theElem).css("top"))
+		log.debug("Entering parent " + theElem.id + " with X, Y " + $(theElem).css("left") + "," + $(theElem).css("top"))
 	
 		if($(theElem).is("[type=MENU]")){
 
 
 			theElem = $(theElem).parent();
-			console.log("Trying to trigger T")
-			console.log(theElem.attr("id"))
+			log.debug("Trying to trigger T")
+			log.debug(theElem.attr("id"))
 			theElem.id = theElem.attr("id");
 			
 		}
@@ -179,9 +199,9 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 		if($(theElem).is("[type=anchor]")){
 
-			console.log("Changing target to dropped-object");
+			log.info("Changing target to dropped-object");
 			//theElem = $(theElem).parents(".dropped-object").first();
-			console.log(theElem)
+			log.info(theElem)
 			$(theElem).parents(".dropped-object").first().trigger('mouseenter')
 			return;
 		}	
@@ -190,7 +210,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 			
 		CUSTOM_currentlyMousingOverElementId = theElem.id;	
 
-		console.log("making note for " + CUSTOM_currentlyMousingOverElementId)
+		log.debug("making note for " + CUSTOM_currentlyMousingOverElementId)
 
 		
 
@@ -199,7 +219,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		//NOTES_makeNote(event.target)
 
 	} else {
-		console.log("Entering bad child bad node")
+		log.debug("Entering bad child bad node")
 		$(".dropped-object").not(event.target).removeClass("submenu")
 		$(event.target).parents().first().trigger("mouseenter")
 		return;
@@ -210,10 +230,10 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 
 	event.stopPropagation();
 
-	console.log("Leaving LOGIC ")
-	console.log(event.target)
+	log.debug("Leaving LOGIC ")
+	log.debug(event.target)
 	if(!event.target.id){
-		log.error(event.target)
+		log.warn("CUSTOMEVENTS2.js: Bad Node Encountered-->\n " + $(event.target).html())
 		$(event.target).removeClass("submenu")
 		$(event.target).parents().removeClass("submenu")
 		$(event.target).parents().first().trigger("mouseleave")
@@ -234,7 +254,7 @@ _DEFAULT_OPEN_CODE = function(event,ui){
 
 _DEFAULT_CLOSE_CODE = function(event,ui){
 	SAVE_okToSave = true;
-	log("Closing the window")
+	log.debug("CUSTOMEVENTS.js:Closing the window")
 	log($(event.target).data())
 	parent = $(event.target).data().theClickedElement;
 	log(parent)
@@ -281,7 +301,7 @@ CUSTOM_JS_OPEN_CODE = function(event,ui){
 	log(exampleFunc)
 
 	
-	log("Length of area is " + $(this).find("#user_area").val().trim().length)
+	log.debug("CUSTOMEVENTS.js:Length of area is " + $(this).find("#user_area").val().trim().length)
 
 	//Get Persisted JS from Server
 
@@ -297,26 +317,9 @@ CUSTOM_JS_OPEN_CODE = function(event,ui){
 
 	enableTextAreaTabs($("#user_area"))
 
-	log("Opener of Dialog is")
+	log.debug("CUSTOMEVENTS.js:Opener of Dialog is")
 	log(elem)
 
-}
-/*
-*	Custom Event Triggered When User Click [E] in top left corner of any control
-*   Shows Popup which style options
-*/
-
-function calcWindowSize(pos, objs){
-	/*
-	log.trace("Window Size")
-	log.trace(pos)
-	if(pos.left < 0){
-		objs.element.element.left = objs.target.element.left
-		objs.element.width = 600
-	}
-	log.trace(objs)
-	//return po
-	*/
 }
 
 
@@ -372,8 +375,8 @@ CUSTOM_ON_QUICK_INPUT = function(evnt){
 				//if this is a custom css option. ie how we define components, write as attribute
 				}
 			}
-			console.log("Firing : " + label + " ==> " + $(evnt.target).val())
-			console.log("Webkit : " + $(parent).css("-webkit-text-fill-color"))
+			log.debug("CUSTOMEVENTS.js:Firing : " + label + " ==> " + $(evnt.target).val())
+			log.debug("CUSTOMEVENTS.js:Webkit : " + $(parent).css("-webkit-text-fill-color"))
 
 			if($(".changesToggle").is(":checked")){
 				log.trace("Style is checked ")
@@ -512,7 +515,7 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 				}
 				*/
 				log.debug("Line height is " + child.css("line-height"))
-				//setTimeout(function(){console.log("Waiting....")},2000)
+				//setTimeout(function(){log.debug("CUSTOMEVENTS.js:Waiting....")},2000)
 				//do something
 			} else {
 				child.attr("original-height",child.height())
@@ -609,7 +612,7 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 
 	userHoveringOverNote = false;
 
-	//console.log("Triggered Done Editing Notes for parent " + $(event.target).attr("parent"))
+	//log.debug("CUSTOMEVENTS.js:Triggered Done Editing Notes for parent " + $(event.target).attr("parent"))
 
 	var parentId = $(event.target).attr("parent")
 
@@ -654,10 +657,11 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 
 CUSTOM_CLOSE_LOGIC = function(event,ui){
 	userHoveringOverNote = false;
-	log("Closing the window")
-	log($(event.target).data())
+	log.debug("CUSTOMEVENTS.js: Closing the window")
+	log.debug("CUSTOMEVENTS2.js: " + $(event.target).data())
 	parent = $(event.target).data().theClickedElement;
-	log(parent)
+	log.debug("CUSTOMEVENTS2..js: parent is")
+	log.debug(parent)
 	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
 	if(copiesModified){
 		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
@@ -708,9 +712,9 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 			//Test if user accidentally dblclicked menu-item or children AND correct if they did so
 			if($(myParent).is("[type=MENU],[type=MENU-ITEM]")){
 
-				console.log("Overwriting event target with new target ")
+				log.debug("CUSTOMEVENTS.js:Overwriting event target with new target ")
 				myParent = $(event.target).parents("[type=T]").first();
-				console.log("Making note for " + $(myParent).attr("id"))
+				log.debug("CUSTOMEVENTS.js:Making note for " + $(myParent).attr("id"))
 				console.log(myParent)
 				//return;
 			} 
@@ -720,7 +724,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 
 			if(attr != "T" && attr != "BTN" &&  attr != "IMG" ){
 
-					console.log("DOUBLE_CLICK cancelled " + attr )
+					log.debug("CUSTOMEVENTS.js:DOUBLE_CLICK cancelled " + attr )
 					return;
 
 			}
@@ -734,7 +738,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 
 			currentTxt = "";
 
-			console.log("Parent is " + myParent.attr("id") + " parent type is " + myParent.attr("type")+ " color is "
+			log.debug("CUSTOMEVENTS.js:Parent is " + myParent.attr("id") + " parent type is " + myParent.attr("type")+ " color is "
 				+myParent.css("color"))
 
 			proto = whichTool(myParent.attr("type"));
@@ -789,15 +793,15 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 			myParent.attr("menuItemIds",menuItemIds);
 			myParent.attr("menuOptionsIds",menuOptionsIds);
 
-			console.log("Current TXT IS NOW " + currentTxt)
+			log.debug("CUSTOMEVENTS.js:Current TXT IS NOW " + currentTxt)
 			
 			input = $(proto.editModeHtml).attr('style',proto.editModeStyle).attr('parent-node',id).css("-webkit-text-fill-color","black").val(currentTxt)
 
 			enableTextAreaTabs(input)
 
 
-			console.log("Input color is " + $(myParent).css("color"))
-			console.log("parent color is " + $(myParent).css("background-color"))
+			log.debug("CUSTOMEVENTS.js:Input color is " + $(myParent).css("color"))
+			log.debug("CUSTOMEVENTS.js:parent color is " + $(myParent).css("background-color"))
 			var pbgcolor = $(myParent).css("background-color")
 			/*
 			if( $(myParent).css("color").indexOf("rgb(255, 255, 255)")> -1){
@@ -831,7 +835,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 					if( tokens.length > 0){
 
 				
-						console.log("I should not be here")
+						log.debug("CUSTOMEVENTS.js:I should not be here")
 						//Loop Over Tokens and write as inline Div Tags
 						for(it = 0; it < tokens.length; it++){
 
@@ -841,7 +845,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 							
 							//see if User gave us comma separated line.  If so, treat as images and text in menu item
 							var imgTxtTok = tokens[it].split(",")
-							console.log("SPLITTING ON ,")
+							log.debug("CUSTOMEVENTS.js:SPLITTING ON ,")
 							console.log(imgTxtTok)
 							if(imgTxtTok.length > 0){
 
@@ -888,7 +892,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 									var filename = imgTxtTok[x].trim()
 									//did user specify a fontawesome class or an image or plain text for this menu-item
 									ext = (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined;
-									console.log("EXT is " + ext + " and filename is " + filename)
+									log.debug("CUSTOMEVENTS.js:EXT is " + ext + " and filename is " + filename)
 									if(true){
 										if(filename.startsWith("fa-")) {
 											mi.attr("class","fa" + " " + filename).attr("edittxt",filename).css("padding","5px")
@@ -903,10 +907,10 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 												mi.attr("edittxt",filename)
 
 											}else */{
-												console.log("filename is"+filename)
+												log.debug("CUSTOMEVENTS.js:filename is"+filename)
 												var reg=/(.+)\(([^)]+)\)/g;
 												grp = reg.exec(filename)
-												console.log("group is"+grp)
+												log.debug("CUSTOMEVENTS.js:group is"+grp)
 												if(grp){
 													mi.attr("edittxt",grp[1]).attr("href",grp[2]).text(grp[1]);
 													createAnchorFor(mi);
@@ -935,7 +939,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 									}else {
 										//USER IMAGE NEEDS SOME WORK. SHOULD BE SPLIT OUT TO IMG TAG OR SECOND DIV TAG
 										//found image
-											console.log("Appending image " + filename)
+											log.debug("CUSTOMEVENTS.js:Appending image " + filename)
 											mi.css({display:"inline-block","vertical-align":"middle","background-image":"url(" + filename + ")","background-size":"cover","background-repeat":"no-repeat"})
 												.attr("edittxt",filename)
 											//mi.append($("<div>",{edittxt:filename, style:"display:inline-block"}).html(filename))			
@@ -1049,7 +1053,7 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 		var topPos = immediateParent.css("display") == "inline-block" ? 0 : "0px";
 
 
-		console.log("immediate parent is " + immediateParent.attr("id") + " with offsets " + immediateParent.position().left)
+		log.debug("CUSTOMEVENTS.js:immediate parent is " + immediateParent.attr("id") + " with offsets " + immediateParent.position().left)
 		console.log({left:leftPos,top:immediateParent.offset().top});
 		
 		a.css({align:"center",display:"inline-block",left:leftPos,width:immediateParent.width(),height:immediateParent.height()
@@ -1091,7 +1095,7 @@ function setUpAnchors(div){
 				}
 
 		}).on("click",function(){
-			console.log("Editing is " + editing)
+			log.debug("CUSTOMEVENTS.js:Editing is " + editing)
 				if(editing){
 					$(this).parent("[href]").first().click();
 					//e.preventDefault();
@@ -1173,12 +1177,20 @@ function setUpDiv(div){
 
 	div = $(div)
 
+
+
 	try {
 		div.off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy");
 	} catch(destroy){
 		log.debug("ignoring warning while destroying system generated events tied to div " + div.attr("id"));
 	}
+
+	div.on("mouseenter",function(event){
+		log.debug("CUSTOM_EVENTS2.js: " + event.target.id)
+		//event.stopPropagation()
+		OVERLAY_showOverlay(event.target)
+	})
 
 	var oldPos = div.css("position");
 
@@ -1221,7 +1233,7 @@ function setUpDiv(div){
 	}
 
 	if(div.is("[type=LIST]")){
-		log.warn("Triggering list load for list " + div.attr("id") + " and alias " + div.attr("alias"))
+		log.warn("CUSTOMEVENTS2.js: Triggering list SLIDER_INIT for list " + div.attr("id") + " and alias " + div.attr("alias"))
 		
 		if(div.hasClass("gallery")){
 			div.css("white-space","nowrap");
@@ -1232,20 +1244,7 @@ function setUpDiv(div){
 
 			SLIDER_init(div);
 		}
-		//$.event.trigger("listLoad",[div])
-		/*
-		$.event.trigger(div.attr("alias") + "-" + "available",[div,function(serverContent){
-			if(serverContent){
-				$(div).children("[type=IMG]").not(":first").remove();
-			
-				INGEST_recursivePopulate(serverContent, $(div))
-
-				$(div).children("[type=IMG]").first().remove();
-			} else {
-				log.warn("No content found for list " + div.attr("alias"))
-			}
-
-		}])*/
+	
 
 	} 
 
@@ -1274,13 +1273,13 @@ function setUpDiv(div){
 	if(div.is("[alias]")){
 
 		$.event.trigger(div.attr("alias") + "-" + "available",[div,function(serverContent){
-				console.log("ServerContent is " + serverContent)
+				log.debug("CUSTOMEVENTS.js:ServerContent is " + serverContent)
 				if(serverContent){
-					console.log("ServerContent is below for alias " + div.attr("alias"))
+					log.debug("CUSTOMEVENTS.js:ServerContent is below for alias " + div.attr("alias"))
 					console.log(serverContent)
 
 					for(responseKey in serverContent){
-						console.log("ServerContent Looking for alias with key " + responseKey)
+						log.debug("CUSTOMEVENTS.js:ServerContent Looking for alias with key " + responseKey)
 						if(div.is("[type=LIST]")) {
 							$(div).children("[type=IMG]").not(":first").remove();
 						}
@@ -1328,7 +1327,7 @@ function parseStyleClassFromString(theStr){
 	for(i=0; oldHos && i < oldHos.length; i++){
 		theOldHo = oldHos[i];
 		lilOldHos = theOldHo.split(":")
-		console.log("Do I have old hos!")
+		log.debug("CUSTOMEVENTS.js:Do I have old hos!")
 		console.log(lilOldHos);
 		if(lilOldHos.length > 1){
 			
@@ -1376,7 +1375,7 @@ function initialize(){
 		open: CUSTOM_JS_OPEN_CODE,
 		buttons:{
 			Cancel: function(){
-				log("Ignoring " + $("#jsdialog").find("textarea").val());
+				log.debug("CUSTOMEVENTS.js:Ignoring " + $("#jsdialog").find("textarea").val());
 				$(this).dialog("close");
 			},
 			"Save Function": function(){
@@ -1398,7 +1397,7 @@ function initialize(){
 
 					match = myRegexp.exec(normalizedCopy);
 
-					log("Match is " + match)
+					log.debug("CUSTOMEVENTS.js:Match is " + match)
 
 					elemId = $(this).data().theClickedElement.attr("id")
 
@@ -1409,7 +1408,7 @@ function initialize(){
 					  // matched text: match[0]
 					  // match start: match.index
 					  // capturing group n: match[n]
-					  log("attempting to unbind any events of type ["+match[1] + "] attached to #" + elemId )
+					  log.debug("CUSTOMEVENTS.js:attempting to unbind any events of type ["+match[1] + "] attached to #" + elemId )
 					  $("#"+elemId).unbind(match[1]);
 
 					  if(match[1] == "hover"){
@@ -1438,12 +1437,18 @@ function initialize(){
 					saveJs($(this).data().theClickedElement,$("#jsdialog").find("textarea").val());
 
 				}catch(e){
-					log("Writing Error")
+					log.debug("CUSTOMEVENTS.js:Writing Error")
 					error = true;
 					$("#jsdialog").find("#error_area").val(e)
 				}
 				if(!error) {
+					$(this).data().theClickedElement.attr("hasjs","true")
 					$(this).dialog("close");
+				}
+
+				if($("#jsdialog").find("textarea").val().trim().length == 0){
+					//signal to UI that JS no longer enabled for this element
+					$(this).data().theClickedElement.removeAttr("hasjs")	
 				}
 
 				theId = $(this).data().theClickedElement.attr("id")
@@ -1469,7 +1474,7 @@ function initialize(){
 	$(".dropped-object").droppable("destroy").resizable("destroy")
 	
 	}catch(e){
-		log.warn("No destroy methods found to clean up.  Continuing")
+		log.info("CUSTOMEVENTS2.js: No destroy methods found to clean up.  Continuing")
 	}
 
 
@@ -1549,7 +1554,7 @@ function initialize(){
    	})
 	
 
-   	log("all done")
+   	log.debug("CUSTOMEVENTS.js:all done")
 }
 
 
@@ -1572,7 +1577,14 @@ function recursiveCpy(obj){
 		log.warn(e)
 	}
 
-	clone = obj.clone();
+		$(obj).find(".ui-droppable").each(function(idx,elem){
+   		setUpDiv(elem);
+   	})
+
+   	//Now process copy of obj
+   	var clone = obj.clone();
+
+	clone.removeAttr("hasjs")
 
 	clone.attr("extends",obj.attr("id"))
 
@@ -1584,31 +1596,39 @@ function recursiveCpy(obj){
    	
    	$(clone).css(style)
 
-   	clone.removeClass(obj.attr("id"))  
+   	clone.removeClass(obj.attr("id")) 
 
-   	$(obj).find(".dropped-object").each(function(idx,elem){
+
+	
+	//var goodChildren = $(obj).children(".dropped-object"); 
+
+   	log.trace("CUSTOMEVENTS2.js : bad children after copy");
+   //	console.log($(obj).children(".dropped-object")); 
+
+   	$(obj).children(".dropped-object").each(function(idx,elem){
+   		
+   		var elem = $(elem)
    		log.trace("child copy of " + $(elem).attr("id"))
-   		elem = $(elem)
-   		id = elem.attr("id")
+   		var id = elem.attr("id")
 
    		// find elem on copy
-   		cpy = $(clone).find("#"+id);
+   		var cpy = $(clone).find("#"+id);
 
    	
    		mystyle = CONVERT_STYLE_TO_CLASS_OBJECT(elem)
-   		console.log("what was position " + mystyle.position)
+   		log.debug("CUSTOMEVENTS.js:what was position " + mystyle.position)
    		//mystyle.position = "absolute";
    		cpy.css(mystyle)
-   		console.log("what was written " + cpy.css("position"))
-   		log.trace("Height " + elem.css("height") + " widht " + elem.css("width"))
-   		log.trace("Height " + cpy.css("height") + " widht " + cpy.css("width"))
-   		console.log("Back from traje : position " + cpy.css("position"))
+   		log.debug("CUSTOMEVENTS.js:what was written " + cpy.css("position"))
+   		log.trace("CUSTOMEVENTS.js: Height " + elem.css("height") + " widht " + elem.css("width") + " from id " + elem.attr("id"))
+   		log.trace("CUSTOMEVENTS.js: Height " + cpy.css("height") + " widht " + cpy.css("width")+ " to id " + cpy.attr("id"))
+   		log.debug("CUSTOMEVENTS.js: Back from traje : position " + cpy.css("position"))
    		cpy.attr("extends",id)
    		cpy.attr("id","ELEM_" + new Date().getTime());
    		//trigger write to file
    		//cpy.trigger("resizestop")
-   		CUSTOM_PXTO_VIEWPORT($(cpy),cpy.position().left,cpy.position().top)
-   		console.log("Copy position is " + cpy.css("position"))
+   		//CUSTOM_PXTO_VIEWPORT($(cpy),cpy.position().left,cpy.position().top)
+   		log.debug("CUSTOMEVENTS.js:Copy position is " + cpy.css("position"))
    		//cpy.css("position",cpy.css("position"))
    		//cpy.css("position")
    		cpy.removeClass(id)
@@ -1621,20 +1641,26 @@ function recursiveCpy(obj){
 
   
    	
-   	$(obj).find(".ui-droppable").each(function(idx,elem){
-   		setUpDiv(elem);
-   	})
+   
+
+	
 
    	//then parent
    	setUpDiv($(clone))
 
 	setUpDiv($(obj))
 
-   	obj.parent().append(clone)
+	//wait until paste
+	if(obj.is("[type=LIST]")){
+   	 //obj.parent().append(clone)
+   	 //CUSTOM_PXTO_VIEWPORT($(clone),clone.position().left,clone.position().top)
+	}
 
    	//clone.css({top:obj.offset().top + 10, left:obj.offset().left+10})
 
-   	CUSTOM_PXTO_VIEWPORT($(clone),clone.position().left,clone.position().top)
+  
+
+   
  
    	return $(clone);
 
@@ -1678,27 +1704,27 @@ DROPPER_LOGIC = {
 							.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
 							
 
-        		log("Copy")
+        		log.debug("CUSTOMEVENTS.js:Copy")
 				return;
 				
 			}  
 			
 
 			if($(event.target).attr("type") == "T"){
-				log("Exiting.  Can drop anything on text.  Only Copy is possible")
+				log.debug("CUSTOMEVENTS.js:Exiting.  Can drop anything on text.  Only Copy is possible")
 				return;
 
 			}
 
 			if($(ui.draggable.id) == "trash"){
-				log("Can not drop trash on droppable components....returning")
+				log.debug("CUSTOMEVENTS.js:Can not drop trash on droppable components....returning")
 				return;
 			}
 
         
 	
 			if($(ui.draggable).hasClass("toolset")){
-				log("Can't drop drawing tools")
+				log.debug("CUSTOMEVENTS.js:Can't drop drawing tools")
 				return;		
 			}  	
 
@@ -1706,16 +1732,16 @@ DROPPER_LOGIC = {
 
         	if(event.target.id == "trash"){
         		myCSSLookupKey = "." + $(ui.draggable).remove().attr("id");
-        		log("My Lookup Key " + myCSSLookupKey)
+        		log.debug("CUSTOMEVENTS.js:My Lookup Key " + myCSSLookupKey)
         		var re = new RegExp(myCSSLookupKey+'\\s+\\{[^}]+\\}','img')
 				$("style.generated").html($("style").html().replace(re,""))
 
-        		log("take out trash")
+        		log.debug("CUSTOMEVENTS.js:take out trash")
         	} 
 
         	if(event.target.id == "id_toolset"){
 
-        		log("nothing to do");
+        		log.debug("CUSTOMEVENTS.js:nothing to do");
         		return;
 
         	}else {
@@ -1811,7 +1837,7 @@ DROPPER_LOGIC = {
 					//dropTool(aTool,{target:event.target,clientX:event.clientX,clientY:event.clientY});
 					dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
 					/*
-		        	log("A tool is ")
+		        	log.debug("CUSTOMEVENTS.js:A tool is ")
 		        	log(aTool)
 
 		        	
@@ -1821,7 +1847,7 @@ DROPPER_LOGIC = {
 
 					log(`Value of position is ${$(aTool).css('position')}`);
 				
-					log("Offset before append is " + Math.abs($(event.target).offset().top - $(aTool).offset().top))
+					log.debug("CUSTOMEVENTS.js:Offset before append is " + Math.abs($(event.target).offset().top - $(aTool).offset().top))
 
 					//var relativeAppendTop = createdTool ? event.clientY : Math.abs($(event.target).offset().top - $(aTool).offset().top);	
 					$(event.target).append(aTool);	
@@ -1834,7 +1860,7 @@ DROPPER_LOGIC = {
 		        	$(aTool).addClass("debug-border-style");
 		      		$(aTool).addClass("dropped-object");
 
-		        	log("Handle length is " + aTool.children(".ui-resizable-handle").length)
+		        	log.debug("CUSTOMEVENTS.js:Handle length is " + aTool.children(".ui-resizable-handle").length)
 		        	
         	
 
@@ -1842,7 +1868,7 @@ DROPPER_LOGIC = {
 		        	try {
 		        		aTool.unbind("click",genericSlide).on("click",genericSlide);
 		        	}catch(e){
-		        		log("generic slide is disabled")
+		        		log.debug("CUSTOMEVENTS.js:generic slide is disabled")
 		        	}
 					*/
         	
@@ -1883,7 +1909,7 @@ function dropTool(aTool,dropInfo){
 		var xOffset = dropInfo.clientX;
 
 
-		log("A tool is ")
+		log.debug("CUSTOMEVENTS.js:A tool is ")
 		        	log(aTool)
 
 		        	
@@ -1891,11 +1917,11 @@ function dropTool(aTool,dropInfo){
 
 						        
 
-					log(`Value of position is ${$(aTool).css('position')}`);
-					log.warn(`Value of offset is ${$(aTool).offset()}`);
+					log.info(`CUSTOMEVENTS2.js: Value of position is ${$(aTool).css('position')}`);
+					log.info(`CUSTOMEVENTS2.js: Value of offset is ${$(aTool).offset()}`);
 
 				
-					//log("Offset before append is " + Math.abs($(event.target).offset().top - $(aTool).offset().top))
+					//log.debug("CUSTOMEVENTS.js:Offset before append is " + Math.abs($(event.target).offset().top - $(aTool).offset().top))
 
 					//var relativeAppendTop = createdTool ? event.clientY : Math.abs($(event.target).offset().top - $(aTool).offset().top);	
 					//$(target).append(aTool);	
@@ -1914,7 +1940,7 @@ function dropTool(aTool,dropInfo){
 		        	$(aTool).addClass("debug-border-style");
 		      		$(aTool).addClass("dropped-object");
 
-		        	log("Handle length is " + aTool.children(".ui-resizable-handle").length)
+		        	log.info("CUSTOMEVENTS2.js: Handle length is " + aTool.children(".ui-resizable-handle").length)
 		        	
         	
 
@@ -1923,11 +1949,7 @@ function dropTool(aTool,dropInfo){
 		        	if(aTool.is("[type=VID]")){
 		        		aTool.find("video")[0].play()
 		        	}
-		        	try {
-		        		//aTool.unbind("click",genericSlide).on("click",genericSlide);
-		        	}catch(e){
-		        		log("generic slide is disabled")
-		        	}
+		        	
 }
 
 

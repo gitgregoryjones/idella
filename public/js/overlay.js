@@ -1,4 +1,6 @@
 //https://stackoverflow.com/questions/9144560/jquery-scroll-detect-when-user-stops-scrolling
+
+
 function OVERLAY_setUp(element){
 
 	var adjuster = (100 / document.documentElement.clientWidth);
@@ -58,12 +60,16 @@ function OVERLAY_areOverlaysEnabled(){
 
 function OVERLAY_showOverlay(theElem){
 
+
 	if(theElem.hasAttribute("overlay") ){
 
 			//$("[type=OVERLAY]").trigger("mouseleave");
 			
 
 			obj = $($(theElem).children("[type=OVERLAY]")).first().fadeIn()
+			if($(theElem).find("video").length > 0){
+				$(theElem).find("video")[0].play();
+			}
 
 			$("[type=OVERLAY]").not(obj).fadeOut();
 
@@ -72,10 +78,20 @@ function OVERLAY_showOverlay(theElem){
 			//overlay.off()
 
 			overlay.one("mouseleave",function(){
+				if($(theElem).find("video").length > 0){
+					$(theElem).find("video")[0].pause();
+				}
 				if(!OVERLAY_areOverlaysEnabled() || !editing){
 					$(this).fadeOut();
 				}
 			})
+	} else {
+
+		$(theElem).parents('[overlay]').first().children("[type=OVERLAY]").first().fadeIn()
+		/*
+		if($(theElem).find("video").length > 0){
+			$(theElem).find("video")[0].play();
+		}*/
 	}
 }
 

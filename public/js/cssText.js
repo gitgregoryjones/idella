@@ -14,9 +14,9 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj){
 	var re = new RegExp(myCSSLookupKey+'\\s+\\{[^}]+\\}','img')
 
 	var thescript = $("style.max-width-"+currentBreakPoint)
-	console.log(myCSSLookupKey);
-	console.log("The CSS RULE")
-	console.log(theClassObj.cssRule);
+	log.debug("CSSTEXT.js: " + myCSSLookupKey);
+	log.debug("CSSTEXT.js: The CSS RULE")
+	log.debug("CSSTEXT.js: " + theClassObj.cssRule);
 
 	//temp remove last Brace.  Will add back after append
 	thescript.html(thescript.html().substring(0,thescript.html().lastIndexOf("}") ) );
@@ -34,7 +34,7 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj){
 
 	thescript.html(thescript.html().trim() + "\n}")
 		
-	log.debug("Almost done " + website)
+	log.debug("CSSTEXT.js: Almost done " + website)
 
 	theSiteObj.bp = BREAKPOINTS; 
 
@@ -42,7 +42,7 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj){
 
 		var cbp = BREAKPOINTS[points]
 
-		log.debug("Retrieving site at breakpoint " + cbp);
+		log.debug("CSSTEXT.js: Retrieving site at breakpoint " + cbp);
 
 		theSiteObj["@media-"+cbp] = $("style.max-width-"+cbp).html()
 	}
@@ -55,8 +55,8 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj){
 
 	var thescript = "";
 
-	log.debug("My Class should be persisted as")
-	log.debug(theClassObj.cssRule)
+	log.debug("CSSTEXT.js: My Class should be persisted as")
+	log.debug("CSSTEXT.js: " + theClassObj.cssRule)
 
 	thescript = $("style.generated");
 
@@ -65,10 +65,10 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj){
 	styleCss = thescript.html();
 	//test to see if style is not found, add it.  If found, replace it
 	if(!thescript.html().match(re)){
-		log.error("Appending RULE for " + myCSSLookupKey + " and rule " + theClassObj.cssRule)
+		log.info("CSSTEXT.js: Appending RULE for " + myCSSLookupKey + " and rule " + theClassObj.cssRule)
 		thescript.append(theClassObj.cssRule + "\n");
 	}else {
-		log.error("I found  RULE for " + myCSSLookupKey)
+		log.error("CSSTEXT.js: I found  RULE for " + myCSSLookupKey)
 		thescript.html(thescript.html().replace(re,theClassObj.cssRule))
 	}
 	
@@ -89,14 +89,12 @@ function doWebkitHoverColor(div){
 	    
 	   var color=m[2];
 
-	   str = "-webkit-text-fill-color:"+color+";" + str;
+	   //str = "-webkit-text-fill-color:"+color+";" + str;
+	   str= str.replace(color,"-webkit-text-fill-color:"+color+";");
 
-	   console.log("String is " + str)
+	   log.debug("CSSTEXT.js: onHover string is " + str)
 	    div.attr("onhover",str);
-	    // The result can be accessed through the `m`-variable.
-	    /*m.forEach((match, groupIndex) => {
-	        console.log(`Found match, group ${groupIndex}: ${match}`);
-	    });*/
+	   
 	 }
 }
 
@@ -143,8 +141,8 @@ function CSS_TEXT_saveCss(div, theClassObj) {
 			
 			outStr += "}";
 			theClassObj.cssRule = outStr;
-			console.log("Anchor rule")
-			console.log(theClassObj.cssRule)
+			log.debug("CSSTEXT.js: Anchor rule")
+			log.debug("CSSTEXT.js: " + theClassObj.cssRule)
 
 			writeClassToMasterCSSFile(div,"body.hover "+myCSSLookupKey+":hover",theClassObj);	
 
@@ -156,24 +154,13 @@ function CSS_TEXT_saveCss(div, theClassObj) {
 			writeClassToMasterCSSFile(div,"body.hover " + myCSSLookupKey + ":hover",theClassObj);		
 		}
 
-		/*
-		//Do overlay
-			var outStr = "body.hover ." + div.attr("id") + ":hover [type=OVERLAY] {\n";
-
-			outStr += "\t" + "visibility:visible;opacity:1" + "\n";
-			
-			outStr += "}";
-			theClassObj.cssRule = outStr;
-			console.log("OVERLAY rule")
-			console.log(theClassObj.cssRule)
-
-			writeClassToMasterCSSFile(div,"body.hover "+myCSSLookupKey+":hover [type=OVERLAY]",theClassObj);*/
+		
 	}
 
-	console.log("Style before is " + div.attr("style"))
+	log.debug("CSSTEXT.js: Style before is " + div.attr("style"))
 
 	div.removeAttr("style")
-	console.log("Style is " + div.attr("style"))
+	log.debug("CSSTEXT.js: Style is " + div.attr("style"))
 
 	
 }

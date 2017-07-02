@@ -94,7 +94,7 @@ function goRight(list){
 
 	speed = getTransitionDuration(list)
 
-	console.log("Speed is " + speed)
+	log.debug("SLIDER4.js:Speed is " + speed)
 
 	resetForRight(list);
 
@@ -200,7 +200,7 @@ function goLeft(list){
 
 	speed = getTransitionDuration(list)
 
-	console.log("Speed is " + speed)
+	log.debug("SLIDER4.js:Speed is " + speed)
 
 	resetForLeft(list);
 

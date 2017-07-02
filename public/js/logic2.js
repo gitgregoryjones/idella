@@ -19,22 +19,23 @@ var editing = true;
 //var groupResizeEnabled = false;
 var smartId = 0;
 
-ERROR = 4
-WARN = 3
-TRACE = 2
-DEBUG = 1
+ERROR = {level:4,label:"ERROR"}
+WARN = {level:3,label:"WARN"}
+TRACE = {level:2,label:"TRACE"}
+DEBUG = {level:1,label:"DEBUG"}
 
 var LOGLEVEL = WARN
 
 
 
-var log = function(level, msg){
+var log = function(consoleHandler, msg){
 	if(!msg){
-		msg = level;
+		msg = consoleHandler.label;
 		//console.log(msg)
 	} else{
-		if(level >= LOGLEVEL){
-			console.log(msg);
+		if(consoleHandler.level >= LOGLEVEL.level){
+
+			console.log(consoleHandler.label + ": " + msg);
 		}
 	}
 }
@@ -47,6 +48,8 @@ log["trace"] = function(msg){
 	log(TRACE,msg)
 }
 
+log.info = log.trace;
+
 log["warn"] = function(msg){
 	log(WARN,msg)
 }
@@ -55,17 +58,22 @@ log["error"] = function(msg){
 	log(ERROR,msg)
 }
 
+var myPage = {}
 
 $(document).ready(function() {
 
-	$("body").hide();
+	$(document).mousemove(function(event){
+		myPage.X = event.pageX;
+		myPage.Y = event.pageY;
+	})
+
+	//$("body").hide();
 
 	if(_debug){
 		$.event.trigger("enableDebug",[_debug])
 	} else {
 		$.event.trigger("disableDebug",[_debug])
 	}
-
 
 	   if(editing) {
 
@@ -143,7 +151,7 @@ $(document).ready(function() {
 				meDiv.remove();
 
 				log.debug("GENERIC IS " + JSON.stringify(genericClass));
-				$('body').show();
+				//$('body').show();
 
 				CUSTOM_pressEscapeKey(); 
 				PREVIEW_togglePreview(editing);

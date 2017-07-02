@@ -6,12 +6,38 @@ var cheerio = require('cheerio')
 var _extend = require('../trigger-catch-event')._extend;
 var fx = require('mkdir-recursive');
 url = require('url');
+var getJSON = require('get-json')
+var cacheManager = require('cache-manager');
+var memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: 60 * 30/*seconds*/});
 //var addPage = require('./site').addPage;
 
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
 var files = ["jquery.js","www.movies.com.js","URI.js","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","idella.css","logic2.js"]
 var version = 1;
+
+var $ = null;
+
+process.on('uncaughtException', function (err) {
+
+	if($ != null){
+		console.log("jQuery is alive")
+		$.numberRegistered = 0;
+		
+		var msg = "<ol><li>Encountered error executing javascript you entered in file " + $.dataPath + "<li>" + err.toString();
+				msg += "<li>To find the source of the error go to your file [" + $.dataPath + "] and look for the line that would cause the error below:";
+				msg += "<li><font color='red'>"+ err.toString() + "</font>";
+				msg += "<li>Full Error stack is: " + err.stack + "</ol>";
+
+		$("[alias=notification]").html(msg).css({"height":"200px","padding":"30px"});
+		$("html").attr("was-error","true");
+		$.callback(true,$.html())
+		
+	}
+  	console.log("Caught an exception....continuing")
+  	console.log(err);
+})
+
 //var $ = require('jquery')
 function writeRevision(revisionDirectory,currentRevision,revDate,callback){
 
@@ -406,15 +432,20 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 			console.log(err)
 			callback(!ok,err);
 		} else {
+
 		$ = cheerio.load(contents);
 
 		$ = _extend($);
+
+		$.callback = callback;
 
 		console.log(" The dataPath is " + path.join(process.env.SITEDIR,site,"data.js"))
 		
 		if(fs.existsSync(path.join(process.env.SITEDIR,site,"data.js") ) ){
 
 			var dataPath = path.join(process.env.SITEDIR,site,"data.js");
+
+			$.dataPath = dataPath;
 
 			console.log("Data Path is " + dataPath);
 
@@ -427,6 +458,11 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 				eval(data);
 
 			}catch(e){
+				var msg = "<ol><li>Encountered error executing javascript you entered in file " + dataPath + "<li>" + e.stack;
+				msg += "<li>To find the source of the error go to your file [" + dataPath + "] and look for the line that would cause the error below:";
+				msg += "<li><font color='red'>"+ e.toString() + "</font></ol>";
+				$("[alias=notification]").html(msg).css({"height":"200px","padding":"30px"})
+				$("html").attr("was-error","true");
 				console.log("Encountered error executing external functions for " + dataPath)
 				console.log(e);
 			}
