@@ -11,7 +11,7 @@ function saveJs(theElem, script){
 	console.log("Entering save JS with id " + id)
 
 
-	theFunction = "<!-- BEGIN " + id + " //-->\n\n$(document).ready(\n\tfunction(){\n" + script + "\n})<!-- END "+ id + "//-->";
+	theFunction = "<!-- BEGIN " + id + " //-->\n\n!editing&&$(document).ready(\n\tfunction(){\n" + script.trim() + "\n})<!-- END "+ id + "//-->";
 
 	//eval(theFunction)
 
@@ -43,7 +43,7 @@ function getJs(theElem){
 
 	if(groups != null){
 
-		content = groups[1].trim().replace("$(document).ready(\n\tfunction(){\n","");
+		content = groups[1].trim().replace("!editing&&$(document).ready(\n\tfunction(){\n","");
 		lastBrace = content.lastIndexOf("})");
 
 		content = content.substring(0,lastBrace);

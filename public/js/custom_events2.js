@@ -135,7 +135,6 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 CUSTOM_MOUSEENTER_LOGIC = function(event){
 
-
 	
 	if($(event.target).hasClass("ui-resizable-handle")){
 		//alert($(event.target).parents(".dropped-object").first().attr("id"))
@@ -211,6 +210,11 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 		$(theElem).addClass("submenu");	
 
+		if( $(theElem).parent().is("[type=LIST]") ){
+
+			addCopyButton($(theElem));
+		}	
+
 		
 		if(CUSTOM_currentlyMousingOverElementId !=null){
 			$(theElem).parent().trigger("mouseleave")
@@ -234,6 +238,41 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		$(event.target).parents().first().trigger("mouseenter")
 		return;
 	}
+}
+
+function addCopyButton(elem){
+
+
+	var plusButtonPushed = true;
+
+	var plus = $("<div id='myp' class='fa fa-plus'></div>");
+
+	len = $('#myp').length;
+
+	if(len > 0){
+		$("#myp").replaceWith(plus);
+
+	} else {
+		$(elem).append(plus);
+	}
+
+	$(elem).css("vertical-align","top");
+		plus.css({top:0, left:"100px","border-color":"white","text-align":"center","font-size":"40px","border-radius":"50px",
+				"background-color":"silver","margin":"10px","padding":"10px"
+				,"color":"white"}).on('click',function(){
+					cpy = recursiveCpy($(elem),plusButtonPushed);
+					/*$(elem).css("opacity","0");
+                    $(elem).animate({opacity:op},600)*/
+                   	op = $(currentCtx).css("opacity");
+                    $(cpy).css("opacity","0");
+                    $(cpy).animate({opacity:op},600)
+				}).on("mouseenter",function(){
+					$(this).css("background-color","navy")
+				});
+
+	$(elem).on("mouseleave",function(){
+		plus.remove();
+	})
 }
 
 CUSTOM_MOUSELEAVE_LOGIC = function(event){
@@ -575,6 +614,10 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 			//.trigger("resizestop",[$(child)])
 
 		})
+	}
+
+	if(div.children("[type=OVERLAY]").length > 0){
+		div.children("[type=OVERLAY]").css({left:0,top:0,"width":div.width(),"height":div.height()});
 	}
 
 	//Add border for menu-items. makes it easier for user to click and choose 
@@ -1478,6 +1521,8 @@ function initialize(){
    	
 	kids = $(".ui-resizable").children(".ui-resizable-handle").remove();
 
+	/*
+
 	$(".ui-resizable").on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
 
 	$(".ui-resizable-disabled").resizable().removeClass(".ui-resizable-disabled")
@@ -1492,7 +1537,7 @@ function initialize(){
 
 
 	$(".ui-droppable").resizable().on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
-
+	
 	
 	$(".template").on("click",function(){
 		if($(this).css("opacity") == 1){
@@ -1503,6 +1548,7 @@ function initialize(){
 			groupResizeEnabled = false;
 		}
 	})
+	*/
 
 	$(".dropped-object").each(function(idx,element){
 		setUpDiv($(element));
@@ -1520,7 +1566,7 @@ function initialize(){
    	//Setup up Dblclick event for editing text areas on all components
    	//$("div.hotspot").parentsUntil(".ui-draggable").parent().not("#id_toolset").on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
    	//.resizable({disable:false})
-
+/*
    	//Show Toolbar and setup options
    $(".toolset_header").on("dblclick",function(event){
    		$(".tool_panel").toggle();
@@ -1535,6 +1581,7 @@ function initialize(){
 	});
 
    	$('.toolset').draggable()
+   	*/
 
    $( "#dialog" ).dialog({ 
  			autoOpen: false,
@@ -1542,9 +1589,9 @@ function initialize(){
 
  	});
 
-   $(".trash").resizable("destroy").draggable("destroy")
+  // $(".trash").resizable("destroy").draggable("destroy")
 
-   $(".dropped-object").addClass("squarepeg")
+   //$(".dropped-object").addClass("squarepeg")
 
    
    
@@ -1571,7 +1618,7 @@ function initialize(){
 }
 
 
-function recursiveCpy(obj){
+function recursiveCpy(obj, plusButtonPushed){
 	var obj = $(obj)
 
 	obj.removeClass("submenu")
@@ -1664,9 +1711,10 @@ function recursiveCpy(obj){
 	setUpDiv($(obj))
 
 	//wait until paste
-	if(obj.is("[type=LIST]")){
+	if(obj.parent().is("[type=LIST]") && plusButtonPushed){
    	 //obj.parent().append(clone)
-   	 //CUSTOM_PXTO_VIEWPORT($(clone),clone.position().left,clone.position().top)
+   	 clone.insertAfter(obj);
+   	 CUSTOM_PXTO_VIEWPORT($(clone),clone.position().left,clone.position().top)
 	}
 
    	//clone.css({top:obj.offset().top + 10, left:obj.offset().left+10})

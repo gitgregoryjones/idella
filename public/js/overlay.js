@@ -20,13 +20,10 @@ function OVERLAY_setUp(element){
 	
 	overlay.css({"position":"absolute","margin":"0","background-image":"none","background-color":"yellow",left:0,top:0 });
 
-	//overlay.css({width:"190px"})
-	//overlay.css({height:"190px"})
-	//overlay.css({top:"3px"})
-	//overlay.css({left:"3px"})
+
+	element.append(overlay);
 
 	overlay.draggable("destroy").resizable("destroy")
-	element.append(overlay);
 
 	overlay.attr("overlay-for","#"+element.attr("id"))
 	element.attr("overlay","#"+overlay.attr('id'))
@@ -60,38 +57,55 @@ function OVERLAY_areOverlaysEnabled(){
 
 function OVERLAY_showOverlay(theElem){
 
+	if(editing){
 
-	if(theElem.hasAttribute("overlay") ){
-
-			//$("[type=OVERLAY]").trigger("mouseleave");
+		if(OVERLAY_areOverlaysEnabled) {
+			OVERLAY_enableOverlays();
 			
+		} else if(!OVERLAY_areOverlaysEnabled) {
 
-			obj = $($(theElem).children("[type=OVERLAY]")).first().fadeIn()
+			OVERLAY_disableOverlays();
+		}
+
+
+	} else
+
+
+	if(!editing){
+
+
+		if(theElem.hasAttribute("overlay") ){
+
+				//$("[type=OVERLAY]").trigger("mouseleave");
+				
+
+				obj = $($(theElem).children("[type=OVERLAY]")).first().fadeIn()
+				if($(theElem).find("video").length > 0){
+					$(theElem).find("video")[0].play();
+				}
+
+				$("[type=OVERLAY]").not(obj).fadeOut();
+
+				overlay = $(theElem).children("[type=OVERLAY]").first();
+
+				//overlay.off()
+
+				overlay.one("mouseleave",function(){
+					if($(theElem).find("video").length > 0){
+						$(theElem).find("video")[0].pause();
+					}
+					if(!OVERLAY_areOverlaysEnabled() || !editing){
+						$(this).fadeOut();
+					}
+				})
+		} else {
+
+			$(theElem).parents('[overlay]').first().children("[type=OVERLAY]").first().fadeIn()
+			/*
 			if($(theElem).find("video").length > 0){
 				$(theElem).find("video")[0].play();
-			}
-
-			$("[type=OVERLAY]").not(obj).fadeOut();
-
-			overlay = $(theElem).children("[type=OVERLAY]").first();
-
-			//overlay.off()
-
-			overlay.one("mouseleave",function(){
-				if($(theElem).find("video").length > 0){
-					$(theElem).find("video")[0].pause();
-				}
-				if(!OVERLAY_areOverlaysEnabled() || !editing){
-					$(this).fadeOut();
-				}
-			})
-	} else {
-
-		$(theElem).parents('[overlay]').first().children("[type=OVERLAY]").first().fadeIn()
-		/*
-		if($(theElem).find("video").length > 0){
-			$(theElem).find("video")[0].play();
-		}*/
+			}*/
+		}
 	}
 }
 

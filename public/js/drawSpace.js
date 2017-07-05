@@ -32,7 +32,7 @@ function DRAW_SPACE_showSettings(){
 
 	$(".setarea").load("/settings.html");
 
-	$("#editSpace").animate({height:$(document).height(),top:10},function(){
+	$("#editSpace").animate({height:$(document).height(),top:20},function(){
 		//$("#drawSpace").hide();
 		
 	})
@@ -209,7 +209,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		width:"100%",
 		top:$(ds).height(),
 		position:"absolute",
-		"z-index": 999999999,
+		"z-index": 999999,
 		border:"3px solid yellow"
 		
 	}).show().on("mouseenter",function(){
@@ -245,7 +245,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		theNotice = configuredTool(whichTool("DIV"));
                      
         theNotice.css({"width":"100%",height:"50px","background-color":"yellow"}).attr('alias',"notification")
-                               
+                        
         dropTool(theNotice,{target:theExpandableArea,clientX:0,clientY:0});
 
 		//Make empty page
@@ -278,6 +278,11 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		
 		//getHelp();
 	}
+
+	 $("[alias=notification]").css({height:"100px"}).on("click",function(){
+        	$(this).animate({height:"0"},"slow")
+     })
+      
 
 	top = DRAW_SPACE_getMaxTopElement();
 

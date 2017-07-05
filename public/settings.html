@@ -9,7 +9,7 @@
 		font-size:20px;
 	}
 
-	.fa-arrow-right, [type=create-site], .fa-calendar, .fa-plus-square {
+	.fa-arrow-right, [type=create-site], .fa-calendar, .fa-plus-square, .fa-clock-o, .action-go {
 		color:green;
 		font-size:20px;
 		cursor: pointer;
@@ -22,16 +22,21 @@
 	.fa-spinner {
 		visibility: :hidden;
 	}
+
+	#dTrig {
+		color:green;
+	}
+
 </style>
 <form id="settings">
 
-<div id="settings">
+
 	
 	<div class="styleRow" id="row-height">
 		<h1>My Sites:</h1>
-		<div class="styleLabel"><div>
+		<div class="styleLabel">name</div>
 			
-		</div>name</div>
+		
 
 		<div class="styleValue">
 			<select name="sitename" id="misc-sitename"></select>
@@ -41,9 +46,9 @@
 
 	<div class="styleRow" id="row-height">
 		
-		<div class="styleLabel"><div>
+		<div class="styleLabel">pages</div>
 			
-		</div>pages</div>
+	
 
 		<div class="styleValue">
 			<select name="page" id="misc-pages"></select>
@@ -51,26 +56,50 @@
 			<div class="fa fa-window-close"></div>
 			<div class="fa fa-pencil-square-o"></div>
 			
+		</div>
+		
+	</div>
+
+	<hr>
+	<p></p>
+	<div class="styleRow" id="row-height">
+		<h1 id="dTrig">Viewing: </h1>
+		<div class="styleLabel" style="vertical-align: top">date&nbsp;&nbsp;<div class=" fa fa-calendar calendar-button"></div></div>
+
+		<div class="styleValue">
 			
+			<input style="visibility:visible" id="me" name="revision-start-date" class=""  value="">
+			<div id="theDate" style="" class="popC"></div>
+		</div>
+		
+			
+
+		<div class="styleValue" >
+			
+			<!-- <input style="visibility:hidden" id="me" name="revision-start-date" class=""  value=""> //-->
+			
+		</div>
+	</div>
+	<div class="styleRow" id="row-height" style="vertical-align: top">
+		<h1>&nbsp;</h1>
+		<div class="styleLabel">time</div>
+			
+		
+
+		<div class="styleValue">
+			
+			<input id="se" name="revision-start-time"   value="">
+			
+			<span class="action-go">GO<div class="fa fa-caret-right"></div></span>
 			
 			
 		</div>
 		
 	</div>
-<p></p>
-	<hr>
-	<p></p>
-	<div class="styleRow" id="row-height">
-		<h1>Time travel to:</h1>
-		<div class="styleLabel"><div>
-			
-		</div>date</div>
+	
 
-		<div class="styleValue">
-			<input name="revision-date" id="misc-from" value="today">
-		</div>
-		<div  class="fa fa-calendar"></div>
-	</div>
+	
+	
 <div id="settings" pclass="ui-widget ui-widget-content">
 	
 	<div class="styleRow" id="row-height">
@@ -220,6 +249,29 @@
 </form>
 <!-- Set data //-->
 <script>
+var dSimple = new Date($('html').attr('x-current-date'))
+$('#dTrig').append((parseFloat(dSimple.getMonth()) +1) + "/" + dSimple.getDate()+ "/" + dSimple.getFullYear())
+
+$('.calendar-button').on('click',function(){
+	$("#theDate").datepicker({defaultDate:new Date($('html').first().attr('x-current-date')),onSelect:function(str,instance){
+
+		$( "[name=revision-start-date]" ).val(str).trigger('change');
+		$("#theDate").datepicker("destroy")
+	}})
+})
+
+
+$('[name=revision-start-date]').on('click',function(){
+
+	$('.calendar-button').click();
+})
+
+$('[name=revision-start-date]').on('input',function(){
+
+	$("#theDate").datepicker("setDate",$(this).val())
+})
+
+
 $(".fa-spinner").css({"visibility":"hidden"})
 
 $("#misc-sitename").attr("value",$("title").html())
@@ -294,19 +346,43 @@ $("h1 div.fa-gears").on('click',function(){
 	$(this).parent().css("color","#047100")
 })
 
-  $( function() {
-    $( "#misc-from" ).datepicker({
-      showButtonPanel: true
-    });
-  } );
 
+	
+
+    $('#se').timepicker().timepicker('option', { useSelect: true });
+
+
+
+
+    $("[name=revision-start-date]").val(previewDateStr )
+
+
+    $( ".action-go" ).on("click",function(){
+    	var hours = new Date($("#se").timepicker('getTime').getTime())
+    	var fdate= new Date($( "[name=revision-start-date]" ).val())
+    	//alert(fdate)
+    	
+    	fdate.setHours(hours.getHours())
+    	fdate.setMinutes(hours.getMinutes());
+
+    	//alert(fdate)
+  		$('meta').first().attr('x-current-date',fdate);
+  		//alert($( "[name=revision-start-date]" ).val())
+	 
+	 	window.location = "/" +$("#misc-sitename").find(":selected").attr("value") + "/" + $("#misc-pages").find(":selected").attr("value")
+	  	+ "?xcurrentdate="+fdate; 	
+	})
+
+
+
+/*
   $("#misc-from").on("change",function(){
   	//alert($(this).val())
   	//theSiteObj.date = $(this).val();
   	$('meta').first().attr('x-current-date',$( "#misc-from" ).datepicker( "getDate" ))
   	window.location = "/" +$("#misc-sitename").find(":selected").attr("value") + "/" + $("#misc-pages").find(":selected").attr("value")
   	+ "?xcurrentdate="+$( "#misc-from" ).datepicker( "getDate" );
-  }).val(previewDateStr )
+  }).val(previewDateStr )*/
  
 </script>
 

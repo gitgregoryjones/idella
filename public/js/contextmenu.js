@@ -53,6 +53,13 @@ $(document).on("initializationComplete",function(){
         }else {
 
             $(".editonly").show()
+            if(!CUSTOM_lastCopyElement && localStorage.getItem('copy-buffer')){
+                console.log("I see a copy buffer");
+               CUSTOM_lastCopyElement =  $(localStorage.getItem('copy-buffer'))
+
+            }
+
+
             if(!CUSTOM_lastCopyElement){
                 $("[data-action=paste]").hide()
             }
@@ -217,8 +224,19 @@ $(document).on("initializationComplete",function(){
             case "copy": if(currentCtx.attr("type") != "canvas"){
                     CUSTOM_lastCopyElement = recursiveCpy(currentCtx);
                     op = $(currentCtx).css("opacity");
+                     
+                     var myClass = CONVERT_STYLE_TO_CLASS_OBJECT($(CUSTOM_lastCopyElement));
+                     copy = $(CUSTOM_lastCopyElement).clone(true);
+                     var myClass = CONVERT_STYLE_TO_CLASS_OBJECT(copy);
+                     copy.css(myClass);
+
+                     var str = $(copy).clone().wrap('<div>').parent().html();
                     $(currentCtx).css("opacity","0");
                     $(currentCtx).animate({opacity:op},600)
+                   
+                    console.log(str);
+
+                    localStorage.setItem('copy-buffer',str)
 
                 } break;
             case "paste": if(currentCtx.hasClass("dropped-object"))
@@ -227,6 +245,13 @@ $(document).on("initializationComplete",function(){
                     c.appendTo(currentCtx).css(
                         {top:myPage.Y - currentCtx.offset().top - ($(".custom-menu").height()/2),left:myPage.X - currentCtx.offset().left }
                     );
+
+                    if(c.is("[type=OVERLAY]")){
+                        c.css({left:0,top:0,"width":currentCtx.width(),"height":currentCtx.height()})
+                        c.attr('overlay-for',"#" + currentCtx.attr("id"));
+                        currentCtx.attr("overlay",c.attr("id"));
+                    }
+
                     CUSTOM_PXTO_VIEWPORT($(c),$(c).position().left ,$(c).position().top); 
 
                     //alert(myPage.Y) 
