@@ -99,6 +99,12 @@ function INGEST_populateObject(content, object){
 					if(key == "href") {
 						$(object).children("[type=anchor]").attr('href',content[key]);
 					}
+
+					if(key == "text"){
+						object.text("text",content[key]);
+						object.attr("edittxt",content[key])
+
+					}
 					object.attr(key,content[key])
 				}
 			}

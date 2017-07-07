@@ -8,6 +8,7 @@ var fx = require('mkdir-recursive');
 url = require('url');
 var getJSON = require('get-json')
 var cacheManager = require('cache-manager');
+var persist = require('../persist');
 var memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: 60 * 30/*seconds*/});
 //var addPage = require('./site').addPage;
 
@@ -20,7 +21,7 @@ var $ = null;
 
 process.on('uncaughtException', function (err) {
 
-	if($ != null){
+	if($ != null && $.callback){
 		console.log("jQuery is alive")
 		$.numberRegistered = 0;
 		
@@ -31,6 +32,7 @@ process.on('uncaughtException', function (err) {
 
 		$("[alias=notification]").html(msg).css({"height":"200px","padding":"30px"});
 		$("html").attr("was-error","true");
+
 		$.callback(true,$.html())
 		
 	}
@@ -219,8 +221,10 @@ function getRevision(req,res,next){
 
 	file += file.endsWith("/") ? "index.html" : ""
 
+	console.log("File is " + file + " and endsWith .json is " + file.endsWith(".json"))
+
 	
-	if(!file.endsWith(".html") && !file.endsWith(".htm")) {
+	if(!file.endsWith(".html") && !file.endsWith(".htm") && !file.endsWith(".json")) {
 
 		next();
 		
@@ -307,10 +311,20 @@ function getRevision(req,res,next){
 				 					res.sendStatus(404);
 				 					console.log(htmlOrError);
 				 				} else {
-				 					res.setHeader('Content-type','text/html');
-				 					res.set('x-site-name',site)
-				 					res.end(htmlOrError);
-				 					
+				 					console.log("THE FILE IS " + file)
+				 					if(!file.endsWith(".json")){
+					 					res.setHeader('Content-type','text/html');
+					 					res.set('x-site-name',site)
+					 					res.end(htmlOrError);
+				 					} else {
+				 						res.setHeader('Content-type','application/json');
+				 						$ = cheerio.load(htmlOrError);
+										str = persist.getSectionFromSheet($,$("[alias=theCanvas]"))
+										console.log("My String " + str)
+				 						res.end(JSON.stringify(str))
+				 						
+
+				 					}
 				 				}
 				 			})
 				 		}

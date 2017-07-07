@@ -160,25 +160,49 @@ $(document).on("initializationComplete",function(){
                                 .attr("onhover","opacity:1")
                             dropTool(right,{target:aTool,clientX:currentX,clientY:currentY});
                            
+                            var limit = 8;
+                            var whiteSpace = "nowrap";
 
-                            for(i=0; i < 8; i++){
+                            if($(this).hasClass("adaptive")){
+                                limit = 4;
+                            }
+
+                            for(i=0; i < limit; i++){
                                 var bImg = whichTool("IMG")
                                 bImg = configuredTool(bImg);
+                                if($(this).hasClass("adaptive")){
+                                    bImg.css({"height":"120px","width":"120px"})
+                                }
+                               
                                 aTool.append(bImg);
                                 CUSTOM_PXTO_VIEWPORT(bImg,bImg.offset().left,bImg.offset().top)
                             }
                         
                             aTool.addClass("gallery");
                             aTool.css("height",aTool.height() * 1.25);
-                            aTool.css("white-space","nowrap");
+                            aTool.css("white-space",whiteSpace);
                             duration = (aTool.css("transition-duration"))
                 
                             duration = parseFloat(duration) == 0 ? "0.6s" : duration;
                             aTool.css({overflow:"hidden","transition-duration":duration})
                             
                             SLIDER_init(aTool);
+
+                            if($(this).hasClass("adaptive")){
+                                aTool.removeClass("gallery");
+                                aTool.css("white-space","normal");
+                                aTool.css({overflow:"auto","transition-duration":"0s"})
+                                SLIDER_deInit(aTool);
+                                aTool.css({"overflow":"visible",
+                                    "width":aTool.children("[type=IMG]").first().width()*2.25, "height":aTool.children("[type=IMG]").first().height()*2.25})
+                                
+                                right.remove();
+                                left.remove();
+                            }
                            
                         }
+
+
                         break;
                         
                     

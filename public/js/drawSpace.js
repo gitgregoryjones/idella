@@ -93,9 +93,13 @@ function DRAW_SPACE_deleteWorkspaceFromBody(){
 		startVideo(vid);
 	})
 
-	top = DRAW_SPACE_getMaxTopElement();
+	//top = DRAW_SPACE_getMaxTopElement();
 
 	$("body").css({height:top})
+
+	
+
+
 
 	return $("body");
 
@@ -243,52 +247,58 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		dropTool(theExpandableArea,{target:ds,clientX:0,clientY:0});
 
 		theNotice = configuredTool(whichTool("DIV"));
-                     
-        theNotice.css({"width":"100%",height:"50px","background-color":"yellow"}).attr('alias',"notification")
-                        
-        dropTool(theNotice,{target:theExpandableArea,clientX:0,clientY:0});
-
-		//Make empty page
-		theHead = configuredTool(whichTool("DIV"));
-                     
-        theHead.css({"width":"100%",height:"100px","background-color":"white"}).attr('alias',"header")
-                               
-        dropTool(theHead,{target:theExpandableArea,clientX:0,clientY:theNotice.height()});
-
+       
+		
         //#F2F6F9
 
         theBody = configuredTool(whichTool("DIV"));
                      
         theBody.css({"width":"100%",height:"750px","background-color":"#F2F6F9"}).attr('alias',"body")
                                
-        dropTool(theBody,{target:theExpandableArea,clientX:0,clientY:parseFloat(theHead.offset().top) + parseFloat(theHead.height())});
+        dropTool(theBody,{target:theExpandableArea,clientX:0,clientY:0});
 
+      
         theImage = configuredTool(whichTool("IMG"));
                      
         theImage.css({"width":"550px",height:"350px"}).attr('alias',"bigPicture")
 
                                
-        dropTool(theImage,{target:theBody,clientX:theBody.offset().left + 50,clientY:theBody.offset().top + 50});
+        dropTool(theImage,{target:theBody,clientX:theBody.offset().left + 50,clientY:theBody.offset().top + 250});
 
         theFooter = configuredTool(whichTool("DIV"));
                      
         theFooter.css({"width":"100%",height:"350px","background-color":"grey"}).attr('alias',"footer")
                                
-        dropTool(theFooter,{target:theExpandableArea,clientX:0,clientY:parseFloat(theHead.offset().top) + parseFloat(theHead.height())});
+        dropTool(theFooter,{target:theExpandableArea,clientX:0,clientY:0});
 		
+        theNotice.css({"width":"100%",height:"100px","background-color":"yellow"}).attr('alias',"notification")
+                        
+        dropTool(theNotice,{target:theBody,clientX:0,clientY:0});
+
+		  //Make empty page
+		theHead = configuredTool(whichTool("DIV"));
+                                            
+        dropTool(theHead,{target:theBody,clientX:0,clientY:theNotice.height()});
+     
+		//Now Setup the head
+		theHead.css({"position":"fixed","width":"100%",height:"100px","background-color":"black",top:theNotice.height()}).attr('alias',"header")
 		//getHelp();
 	}
 
-	 $("[alias=notification]").css({height:"100px"}).on("click",function(){
+	$("[alias=notification]").appendTo($("[alias=body]"))
+    .css({overflow:"hidden","position":"fixed",height:"100px","z-index":CUSTOM_incrementZIndex(),top:0})
+    $("[alias=header]").appendTo($("[alias=body]"))
+    .css({"position":"fixed","z-index":CUSTOM_incrementZIndex(),top:$("[alias=notification]").height()})
+
+
+	 $("[alias=notification]").on("click",function(){
+	 		$("[alias=header]").animate({"top":0},"slow")
+	 		$("[alias=theCanvas]").animate({"top":0},"slow")
         	$(this).animate({height:"0"},"slow")
      })
-      
-
-	top = DRAW_SPACE_getMaxTopElement();
-
-	top = top > $("body").height() ? top *1.25 : $("body").height() ;
-
-	//$("body").css({height:top})
+    
+    //$("[alias=notification]").css({"height":"100px"})
+    
 
 	addEditMode()
 
