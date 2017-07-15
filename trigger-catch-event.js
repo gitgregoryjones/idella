@@ -27,14 +27,14 @@ function _extend($){
 
 	$.numberRegistered = 0;
 
-	$.trigger = function(event,done){
+	$.trigger = function(event,whichPage,done){
 		console.log("Triggered Event "+ event);
 		for(i=0; i < events.length; i++){
 			if(events[i].hasOwnProperty(event)){
 				var backendDataPopulatedByUser = []
 				//try {
 					//call the on(whatever') method dynamically and pass the 'content' array, $ reference to page, done() callback and eventName
-					events[i][event](backendDataPopulatedByUser,$,done,event);
+					events[i][event](backendDataPopulatedByUser,$,done,event,whichPage);
 				//}catch(e){
 					
 				//	console.log("Failed to get data for event on("+event+")");

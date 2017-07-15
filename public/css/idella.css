@@ -601,7 +601,7 @@ textarea {
     white-space: nowrap;
     font-family: sans-serif;
     background: #FFF;
-    color: #333;
+   // color: #333;
     border-radius: 5px;
     padding: 0;
 
@@ -660,11 +660,17 @@ textarea {
 	border-radius: 100vw;
 }
 
+
+
 .shapes div{
   //border: 1px dashed black;
-  width:40px;
-  height:20px;
-  font-size:40px;
+  width:25px;
+  height:25px;
+  font-size:25px;
+  //color:#5B7DB5;
+  color:navy;
+  opacity: .5;
+  vertical-align: top;
   top:0;
   left:0;
   display:inline-block;
@@ -672,6 +678,8 @@ textarea {
   margin-right:5px;
   margin:left:3px;
   text-align: center
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .ui-timepicker-wrapper {

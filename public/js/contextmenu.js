@@ -14,7 +14,7 @@ $(document).on("initializationComplete",function(){
    
     $("[data-action=drop]").on("mouseenter",function(){
         
-        $(this).css({color:"green","opacity":"1"})
+        $(this).css({"opacity":"1"})
         $(this).parent().css({"background-color":"white"})
 
 

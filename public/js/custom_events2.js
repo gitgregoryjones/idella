@@ -5,12 +5,34 @@ var CUSTOM_currentlyMousingOverElementId = null;
 
 var CUSTOM_lastCopyElement = null;
 
+
 function CUSTOM_pressEscapeKey(){
 	var e = jQuery.Event("keydown");
 	e.which = 27; // # Some key code value
 	$("input").trigger(e);
 }
 
+//https://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity/3866442#3866442
+function setEndOfContenteditable(contentEditableElement)
+{
+    var range,selection;
+    if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
+    {
+        range = document.createRange();//Create a range (a range is a like the selection but invisible)
+        range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
+        range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+        selection = window.getSelection();//get the selection object (allows you to change selection)
+        selection.removeAllRanges();//remove any selections already made
+        selection.addRange(range);//make the range you have just created the visible selection
+    }
+    else if(document.selection)//IE 8 and lower
+    { 
+        range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
+        range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
+        range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+        range.select();//Select the range (make it the visible selection
+    }
+}
 
 function CUSTOM_incrementZIndex(){
 
@@ -102,8 +124,8 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$(document).click();
 		event.preventDefault()
 
-	//if delete key
-	} else if(key == 68 && event.shiftKey){
+	//if delete key 
+	} else if(key == 8 ){
 		
 		NOTES_delete()
 		$(document).trigger("contextmenu").show()
@@ -208,7 +230,9 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 			return;
 		}	
 
-		$(theElem).addClass("submenu");	
+		if(!$(theElem).is("[type=T]")){
+			$(theElem).addClass("submenu");	
+		}
 
 		if( $(theElem).parent().is("[type=LIST]") && !$(theElem).is("[type^=cntrl]")){
 
@@ -476,7 +500,8 @@ CUSTOM_TXT_RESIZE = function(event,ui){
 		h = ui.height() * (100 / document.documentElement.clientWidth);
 
 
-		ui.find("[resize]").css({height:h+"vw",width:w+"vw"})
+		ui.find("span").css({height:h+"vw",width:w+"vw"})
+		ui.element.find("span").css({height:h+"vw",width:w+"vw", "font-size":h+"vw"})
 		//CUSTOM_PXTO_VIEWPORT(ui,ui.position().left,ui.position().top)
 		
 
@@ -489,7 +514,8 @@ CUSTOM_TXT_RESIZE = function(event,ui){
 		w = ui.element.width() * (100 / document.documentElement.clientWidth);
 		h = ui.element.height() * (100 / document.documentElement.clientWidth);
 
-		ui.element.find("[resize]").css({height:h+"vw",width:w+"vw"})
+		elems= ui.element.find("span").css({height:h+"vw",width:w+"vw", "font-size":h+"vw"})
+		console.log("Resized " +elems.length)
 	}
 }
 
@@ -633,7 +659,10 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 		log.debug("RESIZE X IS " + $(event.target).css("left") + " Y IS " + $(event.target).css("top"))
 		CUSTOM_PXTO_VIEWPORT(event.target,$(event.target).position().left,$(event.target).position().top)
 
-		$(event.target).addClass("submenu");
+		if(!$(event.target).is("[type=T")){
+			$(event.target).addClass("submenu");
+			$(event.target).attr("contenteditable","false")
+		}
 
 		createAnchorFor(div,true)
 
@@ -651,6 +680,8 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 
 	parent = $(event.target)
 
+
+	
 	$(parent).removeClass("submenu");
 
 	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
@@ -1231,6 +1262,7 @@ function disableHoverEvents(){
 	$("body").removeClass("hover");
 }
 
+
 function setUpDiv(div){
 
 	div = $(div)
@@ -1285,10 +1317,48 @@ function setUpDiv(div){
 
 	attr = div.attr("type");
 
+	var draggables = [];
+
 	if(attr == "T" || attr == "BTN"){
 		$.event.trigger("translateTxt",[div])
 
-		div.on("resize",CUSTOM_TXT_RESIZE).on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+		div.on("resize",CUSTOM_TXT_RESIZE)
+		.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+		
+
+		/*
+		div.on("dblclick", function(){
+			DRAW_SPACE_advancedShowing = true;
+			
+			draggables = $(".ui-draggable");
+			try {
+				$(draggables).draggable("destroy");
+
+				
+
+				
+			}catch(e){
+				log.debug("ignoring destroy droppable onclick of txt")
+			}
+			$(this).resizable("destroy");
+			setEndOfContenteditable($(this)[0])
+			$(this).attr('contenteditable','true')
+		}).on('blur',function(){
+			DRAW_SPACE_advancedShowing = false;
+			$(this).attr('contenteditable','false');
+			
+			$(draggables).each(function(it,the){
+				console.log($(the).attr("id"))
+				try {
+				$(the).draggable();
+				}catch(e){
+
+				}
+				
+			})
+			$(this).resizable();
+		})*/
+		
 	}
 
 	if(div.is("[type=LIST]")){

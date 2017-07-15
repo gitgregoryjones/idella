@@ -221,6 +221,9 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 					//alert("visible " + $(".active-message").attr("msg-parent"))
 					$("#" + $(".active-message").attr("msg-parent")).trigger("mouseenter");
 				}
+				DRAW_SPACE_advancedShowing = true;
+			}).on("mouseleave",function(){
+				DRAW_SPACE_advancedShowing = false;
 			})
 
 
@@ -285,10 +288,11 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		//getHelp();
 	}
 
+	$("[alias=body]").css("z-index",400)
 	$("[alias=notification]").appendTo($("[alias=body]"))
     .css({overflow:"hidden","position":"fixed",height:"100px","z-index":CUSTOM_incrementZIndex(),top:0})
     $("[alias=header]").appendTo($("[alias=body]"))
-    .css({"position":"fixed","z-index":CUSTOM_incrementZIndex(),top:$("[alias=notification]").height()})
+    .css({"overflow":"hidden","position":"fixed","z-index":CUSTOM_incrementZIndex(),top:$("[alias=notification]").height()})
 
 
 	 $("[alias=notification]").on("click",function(){

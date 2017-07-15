@@ -265,6 +265,18 @@ function whichTool (tool){
 			droppable:false
 		});
 		break;
+		case "X":
+			theTool = new GenericTool({
+			type:type,
+			class:"texttool",
+			friendlyName : "Text Field",
+			//droppedModeHtml:"<div>Enter Text Here<div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
+			droppedModeHtml:"<div>Enter Text Here</div>",
+			class:"generictext"
+
+		});
+		break;
+
 		default:
 		
 
