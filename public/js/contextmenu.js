@@ -249,12 +249,12 @@ $(document).on("initializationComplete",function(){
                     CUSTOM_lastCopyElement = recursiveCpy(currentCtx);
                     op = $(currentCtx).css("opacity");
                      
-                     var myClass = CONVERT_STYLE_TO_CLASS_OBJECT($(CUSTOM_lastCopyElement));
-                     copy = $(CUSTOM_lastCopyElement).clone(true);
-                     var myClass = CONVERT_STYLE_TO_CLASS_OBJECT(copy);
-                     copy.css(myClass);
+                     //var myClass = CONVERT_STYLE_TO_CLASS_OBJECT($(CUSTOM_lastCopyElement));
+                     //copy = $(CUSTOM_lastCopyElement).clone(true);
+                     //var myClass = CONVERT_STYLE_TO_CLASS_OBJECT(CUSTOM_lastCopyElement);
+                     //CUSTOM_lastCopyElement.css(myClass);
 
-                     var str = $(copy).clone().wrap('<div>').parent().html();
+                     var str = $(CUSTOM_lastCopyElement).clone().wrap('<div>').parent().html();
                     $(currentCtx).css("opacity","0");
                     $(currentCtx).animate({opacity:op},600)
                    

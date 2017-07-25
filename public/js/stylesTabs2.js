@@ -473,15 +473,21 @@ function writeTabs(currentCtx,forceWrite){
 
 	if(reWritingEditSpace){
 
+	
+
 		DRAW_SPACE_advancedShowing ? $(".settings-icon").addClass("fa-angle-double-down").removeClass("fa-angle-double-up") : $(".settings-icon").addClass("fa-angle-double-up").removeClass("fa-angle-double-down")
 
+
 		$(".rocket-settings").on("click",function(){
+
 			if(DRAW_SPACE_advancedShowing){
+				
 				DRAW_SPACE_hideSettings();
 				$(".settings-icon").addClass("fa-angle-double-up").removeClass("fa-angle-double-down")
 				DRAW_SPACE_advancedShowing = false;
 				SAVE_okToSave = false;
 			} else{
+				
 				DRAW_SPACE_showSettings();
 				$(".settings-icon").addClass("fa-angle-double-down").removeClass("fa-angle-double-up")
 				DRAW_SPACE_advancedShowing = true;

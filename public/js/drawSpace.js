@@ -94,6 +94,10 @@ function DRAW_SPACE_isEditing(){
 function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 
 	if(copyForSave){
+
+		NOTES_delete();
+
+		
 		html = $("html").clone();
 
 		//html.append($("html").children())
@@ -103,6 +107,8 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 		html.find("#drawSpace").remove();
 		//html.find("body").append(ds.children());
 
+		//DRAW_SPACE_addWorkSpaceToBody()
+		PREVIEW_makeSaveableView(html);
 		return html;
 	}
 
@@ -266,7 +272,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 					//alert("visible " + $(".active-message").attr("msg-parent"))
 					$("#" + $(".active-message").attr("msg-parent")).trigger("mouseenter");
 				}
-				DRAW_SPACE_advancedShowing = true;
+//				DRAW_SPACE_advancedShowing = true;
 			}).on("mouseleave",function(){
 				DRAW_SPACE_advancedShowing = false;
 			})

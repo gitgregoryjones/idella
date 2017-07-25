@@ -1735,7 +1735,7 @@ function recursiveCpy(obj, plusButtonPushed){
    	log.trace("CUSTOMEVENTS2.js : bad children after copy");
    //	console.log($(obj).children(".dropped-object")); 
 
-   	$(obj).children(".dropped-object").each(function(idx,elem){
+   	$(obj).find(".dropped-object").each(function(idx,elem){
    		
    		var elem = $(elem)
    		log.trace("child copy of " + $(elem).attr("id"))
@@ -1754,7 +1754,7 @@ function recursiveCpy(obj, plusButtonPushed){
    		log.trace("CUSTOMEVENTS.js: Height " + cpy.css("height") + " widht " + cpy.css("width")+ " to id " + cpy.attr("id"))
    		log.debug("CUSTOMEVENTS.js: Back from traje : position " + cpy.css("position"))
    		cpy.attr("extends",id)
-   		cpy.attr("id","ELEM_" + new Date().getTime());
+   		cpy.attr("id","ELEM_" + new Date().getTime()+idx);
    		//trigger write to file
    		//cpy.trigger("resizestop")
    		//CUSTOM_PXTO_VIEWPORT($(cpy),cpy.position().left,cpy.position().top)

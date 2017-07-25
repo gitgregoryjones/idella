@@ -318,6 +318,7 @@ function getRevision(req,res,next){
 					 					$ = cheerio.load(htmlOrError);
 					 					$("[alias=notification]").css({"height":0})
 					 					$("[alias=header]").css({"top":0})
+					 					$(".dropped-object").addClass("noborder");
 					 					res.end($.html());
 				 					} else {
 				 						res.setHeader('Content-type','application/json');
