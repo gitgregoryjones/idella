@@ -157,6 +157,8 @@ function getCurrentSite(){
  
 function SAVEJS_goInactive() {
 
+
+
 	if($('html')[0].hasAttribute("was-error")){
 			SAVE_okToSave = false;
 	}
@@ -178,83 +180,16 @@ function SAVEJS_goInactive() {
    //if(autoSaveEnabled && !userHoveringOverNote && !$("#jsdialog").dialog("isOpen") && !$("#dialog").dialog("isOpen") && !$("#smalldialog").dialog("isOpen")){
    if(SAVE_okToSave){	
 
-	
-
-	var saveImage = $("<div>",{class:"saveImage"})
-	$("body").append(saveImage);
-	$(saveImage).css("left",$(document).width()/2 - $(".saveImage").width());
-	$(saveImage).css("top",$(document).height()/8 - $(".saveImage").height()/2);
-	$(saveImage).show();
-	
-
-	log.debug(escape($("body").html()).replace("\n",""));
-
-		
-	var redrawTools = false;
-
-
-	if($("#id_toolset").is(":visible")) {
-		redrawTools = true;
-	}
-
-	if($("#drawSpace").css("background-image") == "none") {
-		userInPreview=true;
-	}
-
-	
-	//simulate keypress to clean up view before saving. THIS ALSO DELETES VISIBLE NOTES
-	CUSTOM_pressEscapeKey();
-
-
-
-	$("#id_toolset").hide();
-
-	//toggle preview mode
-
-
-	log.debug("website is " + website)
-	
-	if(website.length > 0){
-
-
+		var saveImage = $("<div>",{class:"saveImage"})
+		$("body").append(saveImage);
+		$(saveImage).css("left",$(document).width()/2 - $(".saveImage").width());
+		$(saveImage).css("top",$(document).height()/8 - $(".saveImage").height()/2);
+		$(saveImage).show();
 		
 
-		
-		log.debug("Setting website html for " + website)
+		$(document).trigger("REVISION_NEEDED_EVENT",[LOGIC_redirectNeeded]);
 
-		//get raw body from drawSpace()
-		var body = DRAW_SPACE_deleteWorkspaceFromBody();
 	
-		theSiteObj.html = $(body).html();
-
-		theSiteObj.style = $("style.generated").html()
-
-		log.debug("Seting style for website " + website)
-		log.debug(theSiteObj)
-
-
-		saveCurrentSite(theSiteObj)
-
-		$(document).trigger("REVISION_NEEDED_EVENT",[theSiteObj.redirect]);
-
-		//setTimeout(function(){$(saveImage).remove()},2500)
-
-		//Redraw dspace
-		if(editing)
-			DRAW_SPACE_addWorkSpaceToBody();
-
-	}
-
-
-	if(redrawTools){
-		$("#id_toolset").show();
-	}
-	
-	if(userInPreview){
-		$("#drawSpace").css("background-image","none");
-		userInPreview = true;
-	}
-
 
    		
    	} else {

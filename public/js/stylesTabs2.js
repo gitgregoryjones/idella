@@ -22,7 +22,6 @@ function writeTabs(currentCtx,forceWrite){
 	currentCtx = currentCtx.target ? currentCtx.target : currentCtx;
 
 
-
 	if(generatedTabsForId ==currentCtx.id){
 
 		if(forceWrite){
@@ -36,6 +35,13 @@ function writeTabs(currentCtx,forceWrite){
 
 
 	var parent =currentCtx;
+
+	if($(currentCtx).parent().is("[type=T]")){
+		//currentCtx = $(currentCtx).parent();
+		$(currentCtx).parent().focus();
+
+		return;
+	}
 
 	styleMeta = CONVERT_STYLE_TO_CLASS_OBJECT(parent,true);
 
@@ -490,9 +496,11 @@ function writeTabs(currentCtx,forceWrite){
 			if(website == "default"){
 				text = prompt("Please enter a name for your new site")
 				if(text && text.trim().length > 0){
+					$('html').attr("x-site-name",text);
 					$('title').text(text);
-					theSiteObj.name = text;
-					theSiteObj.redirect = true;
+					LOGIC_redirectNeeded = true;
+					//theSiteObj.name = text;
+					//theSiteObj.redirect = true;
 					SAVEJS_goInactive()
 				}
 			} else {

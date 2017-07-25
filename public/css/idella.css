@@ -1,4 +1,5 @@
-
+@font-face { font-family: Miami; src: url('/css/20db.otf'); }
+ 
   .ui-autocomplete-category {
     font-weight: bold;
     padding: .2em .4em;
@@ -568,6 +569,7 @@ body {
 	align:center;
 	padding:0px;
 	height:"2000px";
+	background-color: :silver;
 
 }
 textarea {

@@ -14,7 +14,7 @@ var memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: 60 * 30/
 
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
-var files = ["jquery.js","jquery.timepicker.css","/js/ui/icons.svg","trumbowyg.min.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","idella.css","trumbowyg.min.css","logic2.js"]
+var files = ["jquery.js","jquery.timepicker.css","/js/ui/icons.svg","trumbowyg.min.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","idella.css","trumbowyg.min.css","logic2.js"]
 var version = 1;
 
 var $ = null;
@@ -315,7 +315,10 @@ function getRevision(req,res,next){
 				 					if(!file.endsWith(".json")){
 					 					res.setHeader('Content-type','text/html');
 					 					res.set('x-site-name',site)
-					 					res.end(htmlOrError);
+					 					$ = cheerio.load(htmlOrError);
+					 					$("[alias=notification]").css({"height":0})
+					 					$("[alias=header]").css({"top":0})
+					 					res.end($.html());
 				 					} else {
 				 						res.setHeader('Content-type','application/json');
 				 						$ = cheerio.load(htmlOrError);

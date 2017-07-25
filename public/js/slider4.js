@@ -161,7 +161,7 @@ function SLIDER_setUpButton(button,list,blockClick){
 	if(button.attr("alias").indexOf("left") > -1){
 
 		//alert("In here " + button.attr("id") + " list is " + list.attr("id"))
-		button.css({top:0,left:0,"z-index":800})
+		button.css({top:0,left:0,"z-index":800,height:list.children(".dropped-object").first().outerHeight()})
 		button.off("click",goLeft);
 		button.on("click",goLeft);
 		if(!blockClick){
@@ -170,7 +170,7 @@ function SLIDER_setUpButton(button,list,blockClick){
 		//goLeft(list);
 	} else {
 
-		button.css({top:0,left:list.width()-button.width(),"z-index":800})
+		button.css({top:0,left:list.width()-button.width(),"z-index":800,height:list.children(".dropped-object").first().outerHeight()})
 		button.off("click",goRight);
 		button.on("click",goRight);
 		if(!blockClick){

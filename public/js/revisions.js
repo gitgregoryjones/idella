@@ -112,23 +112,22 @@ var LocalStorageRepo = class extends Repo {
 
 		super(theSiteObj)
 
-		var title = theSiteObj.name;
-
-		var currentPage = theSiteObj.currentPage;
-
+		var title = $('html').attr('x-site-name')
+		var currentPage = $('html').attr('x-current-page-name')
 		var page = {};
 
 		console.log("Loading " + title)
 
-		this.website = localStorage.getItem("repo_"+title);
-
+		//this.website = localStorage.getItem("repo_"+title);
+		this.website = {name:$('html').attr('x-site-name'),pages:{}}
+		/*
 		if(!this.website){
-			this.website = {name:theSiteObj.name,pages:{}}
+			this.website = {name:$('html').attr('x-site-name'),pages:{}}
 		} else {
 			this.website = JSON.parse(this.website)
-		}
+		}*/
 
-		if(!this.website.pages[currentPage]){
+		//if(!this.website.pages[currentPage]){
 
 			page = {name:currentPage,revisions:[]}
 
@@ -136,7 +135,7 @@ var LocalStorageRepo = class extends Repo {
 
 			this.website.pages[page.name].revisions = [];
 
-		}
+		//}
 
 		this.page = this.website.pages[currentPage]; 
 
@@ -219,20 +218,17 @@ function REVISION_getAllSites(callback){
 }
 
 
-function REVISION_createNewSite(settings,callback) {
+function REVISION_createNewSite(siteName,callback) {
 
-	console.log(settings)
-	console.log(JSON.stringify(settings))
-
-	str = JSON.stringify(settings);
-
-	$.get("/site/lookup/"+settings.name).fail(function(){
+	console.log(siteName)
+	
+	$.get("/site/lookup/"+siteName).fail(function(){
 
 		$.ajax({
 		    type: "POST",
 		    url: "/site",
 		    // The key needs to match your method's input parameter (case-sensitive).
-		    data: str,
+		    data: "{}",
 		    contentType: "application/json; charset=utf-8"
 		   
 		
@@ -247,7 +243,7 @@ function REVISION_createNewSite(settings,callback) {
 			callback(false,e);
 		});
 	}).done(function(x,t,c){
-		console.log("Not creating site " + settings.name + " because it already exists");
+		console.log("Not creating site " + siteName + " because it already exists");
 		callback(true);
 	})
 }
@@ -278,24 +274,18 @@ function REVISION_createPage(pagename){
 
 $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 
-	//alert("revision needed")
-
 	repo = new LocalStorageRepo(theSiteObj);
 
-	object = repo.writeRevision(theSiteObj,$('html').first().attr('x-current-date'),"Standard Release")
+	//true means, just give a copy for saving but don't actually change UI
+	var tempHTML = DRAW_SPACE_deleteWorkspaceFromBody(true)
 
-	tempH = $('<html>').append($('html').html())
+	tempH = $('<html>').append(tempHTML.children())
 
 	tempH.find('.saveImage').remove();
-	//tempH.find('script').remove();
-	//tempH.find('style').remove()
-	//tempH.find('head').append($('<script>',{src:"/css/jquery-ui-1.12.1.custom/external/jquery/jquery.js"}))
-	//tempH.find('head').append($('<script>',{src:"/js/logic.js"}))
 
+	object = {siteName:$('html').first().attr('x-site-name'),html:tempH.html(),css:"",pageName:$('html').first().attr('x-current-page-name'), anchors:REVISION_anchors}
 
-	object = {siteName:theSiteObj.name,html:tempH.html(),css:"",pageName:theSiteObj.currentPage, anchors:REVISION_anchors}
-
-	REVISION_createNewSite(theSiteObj,function(ok,err){
+	REVISION_createNewSite(object.siteName,function(ok,err){
 
 		if(ok){
 			console.log("Sending a new revision")
@@ -311,9 +301,10 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 				$(".saveImage").hide();
 				REVISION_anchors = [];
 				if(redirect){
-					window.location = URI.joinPaths("",theSiteObj.name,theSiteObj.currentPage);
-				}
-				//window.location = "/" + theSiteObj.name + theSiteObj.currentPage;
+					
+					window.location = URI.joinPaths("",object.siteName,object.pageName);
+				} 
+				
 			}).fail(function(x,t,e){
 				alert("Failure is here:")
 				alert(e);

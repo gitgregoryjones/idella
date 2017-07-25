@@ -59,10 +59,10 @@ function OVERLAY_showOverlay(theElem){
 
 	if(editing){
 
-		if(OVERLAY_areOverlaysEnabled) {
+		if(OVERLAY_areOverlaysEnabled()) {
 			OVERLAY_enableOverlays();
 			
-		} else if(!OVERLAY_areOverlaysEnabled) {
+		} else if(!OVERLAY_areOverlaysEnabled()) {
 
 			OVERLAY_disableOverlays();
 		}

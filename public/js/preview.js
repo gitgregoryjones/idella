@@ -31,7 +31,7 @@ function PREVIEW_togglePreview(showPreview){
 		//Anything with an overlay can not be resized in review mode
 		//existence of resize anchors make onhover logic not work correctly
 		$("[overlay]").resizable("destroy")
-
+		
 		DRAW_SPACE_deleteWorkspaceFromBody();
 		$(".ui-icon").hide();
 

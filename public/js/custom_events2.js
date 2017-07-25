@@ -12,27 +12,6 @@ function CUSTOM_pressEscapeKey(){
 	$("input").trigger(e);
 }
 
-//https://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity/3866442#3866442
-function setEndOfContenteditable(contentEditableElement)
-{
-    var range,selection;
-    if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
-    {
-        range = document.createRange();//Create a range (a range is a like the selection but invisible)
-        range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
-        range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-        selection = window.getSelection();//get the selection object (allows you to change selection)
-        selection.removeAllRanges();//remove any selections already made
-        selection.addRange(range);//make the range you have just created the visible selection
-    }
-    else if(document.selection)//IE 8 and lower
-    { 
-        range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
-        range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
-        range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-        range.select();//Select the range (make it the visible selection
-    }
-}
 
 function CUSTOM_incrementZIndex(){
 
@@ -680,8 +659,6 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 
 	parent = $(event.target)
 
-
-	
 	$(parent).removeClass("submenu");
 
 	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
@@ -691,6 +668,8 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 		})
 	}
 	//alert("enable");
+
+
 	enableHoverEvents();
 	//
 }
@@ -1297,7 +1276,7 @@ function setUpDiv(div){
 		NOTES_makeNote(this);
 
 	}).on("dragstart resizestart",function(e){
-	
+		$(e.target).attr("contenteditable","false");
 		disableHoverEvents()
 	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("resize",function(){
 		NOTES_makeNote(this);
@@ -1322,42 +1301,59 @@ function setUpDiv(div){
 	if(attr == "T" || attr == "BTN"){
 		$.event.trigger("translateTxt",[div])
 
+		div.css({outline: "0px solid transparent","white-space":"pre-line"});
+
 		div.on("resize",CUSTOM_TXT_RESIZE)
-		.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+		//.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 		
 
-		/*
-		div.on("dblclick", function(){
+		
+		div.on("focus", function(){
+
+
 			DRAW_SPACE_advancedShowing = true;
 			
 			draggables = $(".ui-draggable");
 			try {
-				$(draggables).draggable("destroy");
+					$(draggables).draggable("disable");
 
-				
+					$(this).resizable("destroy");
 
 				
 			}catch(e){
 				log.debug("ignoring destroy droppable onclick of txt")
 			}
-			$(this).resizable("destroy");
-			setEndOfContenteditable($(this)[0])
+		
+			//$(this).children(".ui-resizable-handle").remove();
+			//setEndOfContenteditable($(this)[0])
 			$(this).attr('contenteditable','true')
+
 		}).on('blur',function(){
 			DRAW_SPACE_advancedShowing = false;
-			$(this).attr('contenteditable','false');
+			//$(this).attr('contenteditable','false');
 			
 			$(draggables).each(function(it,the){
 				console.log($(the).attr("id"))
 				try {
-				$(the).draggable();
+				$(the).draggable("enable");
 				}catch(e){
 
 				}
 				
 			})
 			$(this).resizable();
-		})*/
+		}).on('keydown',function(e){
+			 if(e.keyCode == 9 && e.shiftKey){
+				e.preventDefault()
+
+				document.execCommand('outdent', true, null)
+							} else if(e.keyCode == 9){
+				document.execCommand('indent', false, null)
+				//document.execCommand('bold', true, null)
+				e.preventDefault()
+			}
+		})
+			 
 		
 	}
 

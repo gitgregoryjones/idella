@@ -10,6 +10,7 @@ var allSitesAsObj = null;
 var website = "default";
 var theSiteObj = null;
 var theSiteConfig = {};
+LOGIC_redirectNeeded = false;
 version = "1.0";
 
 
@@ -24,7 +25,7 @@ WARN = {level:3,label:"WARN"}
 TRACE = {level:2,label:"TRACE"}
 DEBUG = {level:1,label:"DEBUG"}
 
-var LOGLEVEL = WARN
+var LOGLEVEL = WARN;
 
 
 
@@ -127,20 +128,6 @@ $(document).ready(function() {
 					log.error(e)
 			   }
 
-	   		       
-	  		 $("title").html(website)
-
-	  		 $.ajaxSetup({
-    				beforeSend: function(xhr) {
-        			xhr.setRequestHeader('x-site-name', theSiteObj.name);
-        			xhr.setRequestHeader('x-current-page-name', theSiteObj.currentPage);
-        			xhr.setRequestHeader('x-current-date', $('html').first().attr('x-current-date'));
-
-    			}
-			})
-
-
-
 		   		initialize();
 		   		$(document).trigger("pageReloaded",pageState,currentBreakPoint);
 				$.event.trigger("initializationComplete",[]);
@@ -154,7 +141,7 @@ $(document).ready(function() {
 				//$('body').show();
 
 				CUSTOM_pressEscapeKey(); 
-				PREVIEW_togglePreview(editing);
+				PREVIEW_togglePreview(false);
 		   	})
 		 } else {
 
@@ -162,7 +149,16 @@ $(document).ready(function() {
 		   $('body').show().addClass("hover");
 		 }
 
+		 website = $('html').first().attr("x-site-name")
 
+		  $.ajaxSetup({
+    				beforeSend: function(xhr) {
+        			xhr.setRequestHeader('x-site-name', $('html').first().attr("x-site-name"));
+        			xhr.setRequestHeader('x-current-page-name', $('html').first().attr("x-current-page-name"));
+        			xhr.setRequestHeader('x-current-date', $('html').first().attr('x-current-date'));
+
+    			}
+			})
 		
 });
 
@@ -265,13 +261,13 @@ function whichTool (tool){
 			droppable:false
 		});
 		break;
-		case "X":
+		case "T":
 			theTool = new GenericTool({
 			type:type,
 			class:"texttool",
 			friendlyName : "Text Field",
 			//droppedModeHtml:"<div>Enter Text Here<div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
-			droppedModeHtml:"<div>Enter Text Here</div>",
+			droppedModeHtml:"<div contenteditable=\"true\">Enter Text Here</div>",
 			class:"generictext"
 
 		});

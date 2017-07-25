@@ -4,13 +4,36 @@ var DRAW_SPACE_advancedShowing = false;
 
 var editSpaceCoords = {}
 
+//Always Execute This function
 $(document).ready(function(){
 
-	//$(document).on("scroll",function(){ if(!editing){$("[type=OVERLAY]").hide();}})
+	$("[alias=notification]").on("click",function(){
+	 		$("[alias=header]").animate({"top":0},"slow")
+	 		$("[alias=theCanvas]").animate({"top":0},"slow")
+        	$(this).animate({height:"0"},"slow")
+        	if(!editing){
+        			localStorage.setItem($(this).text().replace(" ",""),$(this).text());
+        	}
+     })
 
-	DRAW_SPACE_addWorkSpaceToBody();
+	key = $("[alias=notification").text();
 
-	//DRAW_SPACE_deleteWorkspaceFromBody();
+	ack = localStorage.getItem(key.replace(" ",""));
+
+    if(ack){
+		//alert(editing)
+		if(!editing){
+			$("[alias=notification]").css({"height":0})
+			//$("[alias=notification]").click()
+			$("[alias=header]").css({"top":0})
+	 		$("[alias=theCanvas]").css({"top":0})
+   
+		}
+	} else {
+		$("[alias=notification]").css({height:"100px",top:0})
+		$("[alias=header]").css({top:$("[alias=notification]").height()})
+	}
+	
 
 })
 
@@ -51,16 +74,6 @@ function DRAW_SPACE_hideSettings(){
 	})
 	
 }
-/*
-function DRAW_SPACE_hideSettings2(){
-
-	$("#editSpace > #settings").remove();
-
-	DRAW_SPACE_deleteWorkspaceFromBody();
-
-	DRAW_SPACE_addWorkSpaceToBody()
-	
-}*/
 
 
 function DRAW_SPACE_getMaxTopElement(){
@@ -78,13 +91,45 @@ function DRAW_SPACE_isEditing(){
 	return DRAWSPACE_hoveringOverEditWindow;
 }
    
-function DRAW_SPACE_deleteWorkspaceFromBody(){
+function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
+
+	if(copyForSave){
+		html = $("html").clone();
+
+		//html.append($("html").children())
+		html.find("body").append(html.find("#drawSpace").children())
+		html.find("#workspace").remove();
+		html.find("#editSpace").remove();
+		html.find("#drawSpace").remove();
+		//html.find("body").append(ds.children());
+
+		return html;
+	}
+
+
 
 	workspace = $("#workspace");
 
 	removeEditMode();
 
 	$("body").append($("#drawSpace").children())
+
+	key = $("[alias=notification").text();
+
+	ack = localStorage.getItem(key.replace(" ",""));
+
+    if(ack){
+		//alert(editing)
+		if(!editing){
+			$("[alias=notification]").css({"height":0});
+			//$("[alias=notification]").click()
+			$("[alias=header]").css({"top":0})
+	 		$("[alias=theCanvas]").css({"top":0})
+        	
+
+			//localStorage.setItem($(this).text().replace(" ",""),$(this).text());
+		}
+	}
 
 	$(workspace).remove();
 
@@ -286,21 +331,18 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		//Now Setup the head
 		theHead.css({"position":"fixed","width":"100%",height:"100px","background-color":"black",top:theNotice.height()}).attr('alias',"header")
 		//getHelp();
-	}
+	} 
 
 	$("[alias=body]").css("z-index",400)
+	
+
+  
 	$("[alias=notification]").appendTo($("[alias=body]"))
-    .css({overflow:"hidden","position":"fixed",height:"100px","z-index":CUSTOM_incrementZIndex(),top:0})
-    $("[alias=header]").appendTo($("[alias=body]"))
+	    .css({overflow:"hidden","position":"fixed",height:"100px","z-index":CUSTOM_incrementZIndex(),top:0})
+	
+	$("[alias=header]").appendTo($("[alias=body]"))
     .css({"overflow":"hidden","position":"fixed","z-index":CUSTOM_incrementZIndex(),top:$("[alias=notification]").height()})
 
-
-	 $("[alias=notification]").on("click",function(){
-	 		$("[alias=header]").animate({"top":0},"slow")
-	 		$("[alias=theCanvas]").animate({"top":0},"slow")
-        	$(this).animate({height:"0"},"slow")
-     })
-    
     //$("[alias=notification]").css({"height":"100px"})
     
 
