@@ -220,7 +220,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 		
 		if(CUSTOM_currentlyMousingOverElementId !=null){
-			$(theElem).parent().trigger("mouseleave")
+			//$(theElem).parent().trigger("mouseleave")
 			
 		}	
 			
@@ -228,12 +228,12 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 		log.debug("making note for " + CUSTOM_currentlyMousingOverElementId)
 
-
+		$(theElem).addClass("submenu")
 
 
 		NOTES_delayShowingNote(theElem);
 		//Render popup note above element
-		//NOTES_makeNote(event.target)
+		//NOTES_makeNote(theElem)
 
 	} else {
 		log.debug("Entering bad child bad node")
@@ -295,7 +295,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 	} else {
 		$("#"+event.target.id).removeClass("submenu")
 
-		//$(event.target).parents(".dropped-object").first().trigger("mouseenter")
+		$(event.target).parents(".dropped-object").first().trigger("mouseenter")
 	}
 
 }

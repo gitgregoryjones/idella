@@ -266,6 +266,14 @@ $(document).on("initializationComplete",function(){
             case "paste": if(currentCtx.hasClass("dropped-object"))
                 { 
                     c = recursiveCpy(CUSTOM_lastCopyElement) ;  
+
+
+                     if(c.attr("type") == "LIST"){
+                         c.css("transition-duration","0s")
+                    }
+
+                   
+
                     c.appendTo(currentCtx).css(
                         {top:myPage.Y - currentCtx.offset().top - ($(".custom-menu").height()/2),left:myPage.X - currentCtx.offset().left }
                     );
@@ -278,6 +286,9 @@ $(document).on("initializationComplete",function(){
 
                     CUSTOM_PXTO_VIEWPORT($(c),$(c).position().left ,$(c).position().top); 
 
+                     if(c.attr("type") == "LIST"){
+                         SLIDER_init(c)
+                    }
                     //alert(myPage.Y) 
                 } 
                 break;
