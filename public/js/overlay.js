@@ -1,7 +1,7 @@
 //https://stackoverflow.com/questions/9144560/jquery-scroll-detect-when-user-stops-scrolling
 
 
-function OVERLAY_setUp(element){
+function OVERLAY_setUp(element,isTemplate){
 
 	var adjuster = (100 / document.documentElement.clientWidth);
 
@@ -16,16 +16,31 @@ function OVERLAY_setUp(element){
 
 	overlay = recursiveCpy(element)
 
-	overlay.children(".dropped-object").remove();
-	
-	overlay.css({"position":"absolute","margin":"0","background-image":"none","background-color":"yellow",left:0,top:0 });
+	overlay.children().remove();
 
+	overlay.text("")
+	
+
+	if(isTemplate){
+		overlay.css({"position":"absolute","margin":"0","background-image":"none","background-color":"rgba(255,255,255,.5)",left:0,top:0 });
+	}else {
+		overlay.css({"position":"absolute","margin":"0","background-image":"none","background-color":"rgba(255,255,255,.5)",left:0,top:0 });
+	}
+
+	
 
 	element.append(overlay);
 
-	overlay.draggable("destroy").resizable("destroy")
+	try{
+		overlay.draggable("destroy").resizable("destroy")
+	}catch(e){
+		console.log("Ignoring destroy console errors.")
+	}
 
 	overlay.attr("overlay-for","#"+element.attr("id"))
+	if(isTemplate){
+		overlay.attr("template",true)
+	}
 	element.attr("overlay","#"+overlay.attr('id'))
 	overlay.attr("type","OVERLAY")
 	overlay.removeAttr("extends")
@@ -70,6 +85,7 @@ function OVERLAY_showOverlay(theElem){
 
 	} else
 
+	console.log("editing is " + editing )
 
 	if(!editing){
 
@@ -77,30 +93,31 @@ function OVERLAY_showOverlay(theElem){
 		if(theElem.hasAttribute("overlay") ){
 
 				//$("[type=OVERLAY]").trigger("mouseleave");
-				
+				olay = $(theElem).children("[type=OVERLAY]").first();				
 
-				obj = $($(theElem).children("[type=OVERLAY]")).first().fadeIn()
+				olay.fadeIn()
+
 				if($(theElem).find("video").length > 0){
 					$(theElem).find("video")[0].play();
 				}
 
-				$("[type=OVERLAY]").not(obj).fadeOut();
+				$("[type=OVERLAY]").not(olay).fadeOut();
 
-				overlay = $(theElem).children("[type=OVERLAY]").first();
+				//overlay = $(theElem).children("[type=OVERLAY]").first();
 
 				//overlay.off()
 
-				overlay.one("mouseleave",function(){
+				olay.on("mouseleave",function(){
 					if($(theElem).find("video").length > 0){
 						$(theElem).find("video")[0].pause();
 					}
 					if(!OVERLAY_areOverlaysEnabled() || !editing){
-						$(this).fadeOut();
+						$(this).fadeOut()
 					}
 				})
 		} else {
 
-			$(theElem).parents('[overlay]').first().children("[type=OVERLAY]").first().fadeIn()
+			//$(theElem).parents('[overlay]').first().children("[type=OVERLAY]").first().fadeIn()
 			/*
 			if($(theElem).find("video").length > 0){
 				$(theElem).find("video")[0].play();

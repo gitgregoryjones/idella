@@ -166,7 +166,7 @@ function SAVEJS_goInactive() {
 
 
 	if(editing) {
-		if($("#drawSpace").children(".dropped-object").length == 0){
+		if($("#drawSpace").find(".dropped-object").length == 0){
 			log.debug("Nothing to save")
 			return;
 		}

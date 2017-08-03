@@ -14,7 +14,7 @@ var memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: 60 * 30/
 
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
-var files = ["jquery.js","jquery.timepicker.css","/js/ui/icons.svg","trumbowyg.min.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","idella.css","trumbowyg.min.css","logic2.js"]
+var files = ["jquery.js","jquery.timepicker.css","/js/ui/icons.svg","trumbowyg.min.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","https://fonts.googleapis.com/css?family=Anton:n,b,i,bi|Basic:n,b,i,bi|Caudex:n,b,i,bi|Chelsea+Market:n,b,i,bi|Corben:n,b,i,bi|EB+Garamond:n,b,i,bi|Enriqueta:n,b,i,bi|Forum:n,b,i,bi|Fredericka+the+Great:n,b,i,bi|Jockey+One:n,b,i,bi|Josefin+Slab:n,b,i,bi|Jura:n,b,i,bi|Kelly+Slab:n,b,i,bi|Marck+Script:n,b,i,bi|Lobster:n,b,i,bi|Mr+De+Haviland:n,b,i,bi|Cinzel:n,b,i,bi|Niconne:n,b,i,bi|Noticia+Text:n,b,i,bi|Overlock:n,b,i,bi|Patrick+Hand:n,b,i,bi|Play:n,b,i,bi|Sarina:n,b,i,bi|Signika:n,b,i,bi|Spinnaker:n,b,i,bi|Monoton:n,b,i,bi|Sacramento:n,b,i,bi|Cookie:n,b,i,bi|Raleway:n,b,i,bi|Open+Sans+Condensed:300:n,b,i,bi|Amatic+SC:n,b,i,bi|Cinzel:n,b,i,bi|Sail:n,b,i,bi|Playfair+Display:n,b,i,bi|Libre+Franklin:n,b,i,bi|Libre+Baskerville:n,b,i,bi|&subset=latin-ext,cyrillic,japanese,korean,arabic,hebrew,latin","idella.css","trumbowyg.min.css","logic2.js"]
 var version = 1;
 
 var $ = null;
@@ -256,10 +256,12 @@ function getRevision(req,res,next){
 	if(site.length == 0){
 		console.log("User needs default revision")
 		revDir =process.env.HOMEDIR;
-		var template = "template.html";
+		var template = req.query.template ? req.query.template : "blank.html";
+
+
 		console.log("Default Revision dir is " + revDir + " and template is " + template);
 		//Show the default workspace html
-		getRevisionFileContents("default",new Date().toString(),revDir,template,req.url,function(ok,htmlOrError){
+		getRevisionFileContents("default",new Date().toString(),revDir,template,req.url+"?x-template="+template,function(ok,htmlOrError){
 			if(!ok){
 				res.sendStatus(404);
 				console.log(htmlOrError);
@@ -381,7 +383,14 @@ function loadFiles($){
   			selectAttrName = "href";
   			srcLocation = "/css/" + file;
   			linkRel = "stylesheet";
-  		} 
+  		} else {
+  			ext = file
+  			selectAttrValue = "[href='" + file+"'']";
+  			selectorTag = "<link>";
+  			selectAttrName = "href";
+  			srcLocation =  file;
+  			linkRel = "stylesheet";
+  		}
 
 
   		if(file.endsWith(ext)){
@@ -494,6 +503,7 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 		$('html').attr('x-site-name',site)
 		$('html').attr('x-current-date',dateGMTString)
 		$('html').attr('x-current-page-name',simplePageName);
+
 
 		q = (url.parse(originalUrl).query)
 

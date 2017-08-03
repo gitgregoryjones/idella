@@ -21,14 +21,15 @@ function writeTabs(currentCtx,forceWrite){
 
 	currentCtx = currentCtx.target ? currentCtx.target : currentCtx;
 
+	console.log("Writing tab for " + $(currentCtx).attr("id") + " and generatedTabsForId " + generatedTabsForId)
 
-	if(generatedTabsForId ==currentCtx.id){
+	if(generatedTabsForId == $(currentCtx).attr("id")){
 
 		if(forceWrite){
 			//continue;
 		
 		} else {
-			//alert( generatedTabsForId)
+			console.log( "Quick return. Nothing to do for " + generatedTabsForId)
 			return generatedTabsForId;
 		}
 	}
@@ -42,6 +43,8 @@ function writeTabs(currentCtx,forceWrite){
 
 		return;
 	}
+
+	console.log("Still Writing tab for " + $(currentCtx).attr("id") )
 
 	styleMeta = CONVERT_STYLE_TO_CLASS_OBJECT(parent,true);
 
@@ -205,9 +208,9 @@ function writeTabs(currentCtx,forceWrite){
 
 
 		if(label == "src" || label == "align"){
-			if($(parent).find(".content-image").length > 0){
+			if($(parent).is("[type=IMG]")){
 				log.debug("STYLETABS2.js:I found the source")
-				theValue = $(parent).find(".content-image").attr(label)
+				theValue = $(parent).attr(label)
 			} else {
 				log.debug("STYLETABS2.js:No Source Found. Overwriting with background-image if possible")
 				if($(parent).is("[type=DIV]")){
@@ -242,13 +245,14 @@ function writeTabs(currentCtx,forceWrite){
 					} else
 					
 					if($(parent).is("[type=DIV],[type=IMG]")){
-						if($(evnt.target).val().indexOf("url(") == -1){
+						if($(evnt.target).val().indexOf("url(") == -10){
 							theValue = "url(" + $(evnt.target).val() + ")"
 						} else {
 							theValue = $(evnt.target).val();
 						}
 						$(parent).css("background-image",theValue);
 						$(parent).css(label,theValue);
+						$(parent).attr(label,theValue)
 						log.debug("STYLETABS2.js:Overwriting background-image with src attribute since this is what the user really wants " + $(evnt.target).val())
 					}
 
@@ -468,7 +472,7 @@ function writeTabs(currentCtx,forceWrite){
 
 
 	//$("#editSpace").offset({top:$("#drawSpace").height()});
-	generatedTabsForId = currentCtx.id;
+	generatedTabsForId = $(currentCtx).attr("id");
 
 
 	if(reWritingEditSpace){

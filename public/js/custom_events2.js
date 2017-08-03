@@ -136,6 +136,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 CUSTOM_MOUSEENTER_LOGIC = function(event){
 
+
 	
 	if($(event.target).hasClass("ui-resizable-handle")){
 		//alert($(event.target).parents(".dropped-object").first().attr("id"))
@@ -200,7 +201,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 
 
-		if($(theElem).is("[type=anchor]")){
+		if($(theElem).prop("tagName") == "A"){
 
 			log.info("Changing target to dropped-object");
 			//theElem = $(theElem).parents(".dropped-object").first();
@@ -227,6 +228,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		CUSTOM_currentlyMousingOverElementId = theElem.id;	
 
 		log.debug("making note for " + CUSTOM_currentlyMousingOverElementId)
+
+	
 
 		$(theElem).addClass("submenu")
 
@@ -282,7 +285,7 @@ function addPlusButton(elem){
 
 CUSTOM_MOUSELEAVE_LOGIC = function(event){
 
-	//event.stopPropagation();
+	event.stopPropagation();
 
 
 	log.debug("Leaving LOGIC ")
@@ -290,12 +293,12 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 	if(!event.target.id){
 		log.warn("CUSTOMEVENTS2.js: Bad Node Encountered-->\n " + $(event.target).html())
 		$(event.target).removeClass("submenu")
-		$(event.target).parents().removeClass("submenu")
-		$(event.target).parents(".dropped-object").first().trigger("mouseleave")
+		$(event.target).parent().removeClass("submenu")
+		$(event.target).parent(".dropped-object").trigger("mouseleave")
 	} else {
 		$("#"+event.target.id).removeClass("submenu")
 
-		$(event.target).parents(".dropped-object").first().trigger("mouseenter")
+		$(event.target).parent(".dropped-object").trigger("mouseenter")
 	}
 
 }
@@ -1153,7 +1156,7 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 function setUpAnchors(div){
 
 
-	div.find("[type=anchor]").each(function(idx,anchor){
+	div.find("[href]").each(function(idx,anchor){
 
 		$(anchor).on("dblclick",function(e){
 				if(editing){
@@ -1255,12 +1258,15 @@ function setUpDiv(div){
 		log.debug("ignoring warning while destroying system generated events tied to div " + div.attr("id"));
 	}
 
-	div.on("mouseenter",function(event){
-		log.debug("CUSTOM_EVENTS2.js: " + event.target.id)
-		//event.stopPropagation()
-		OVERLAY_showOverlay(event.target)
+	console.log("Setting up my DIV " + div.attr("id"))
+	div.not("[type=OVERLAY]").on("mouseenter",function(event){
+		
+		if($(this).attr("overlay") && !$(this).children("[type=OVERLAY]").first().is(":visible") ) {
+			log.error("Entered MOUSE CUSTOM_EVENTS2.js: " + event.target.id)
+			OVERLAY_showOverlay(event.target)
+		}
+		
 	})
-
 	var oldPos = div.css("position");
 
 	div.find(".hotspot").css({height:0,width:0}).hide()
@@ -1276,10 +1282,13 @@ function setUpDiv(div){
 		NOTES_makeNote(this);
 
 	}).on("dragstart resizestart",function(e){
+
 		$(e.target).attr("contenteditable","false");
 		disableHoverEvents()
-	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("resize",function(){
+	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("resize",function(e){
+		
 		NOTES_makeNote(this);
+
 	});
 
 
@@ -1308,9 +1317,9 @@ function setUpDiv(div){
 		
 
 		
-		div.on("focus", function(){
+		div.on("dblclick", function(){
 
-
+			
 			DRAW_SPACE_advancedShowing = true;
 			
 			draggables = $(".ui-draggable");
@@ -1352,8 +1361,26 @@ function setUpDiv(div){
 				//document.execCommand('bold', true, null)
 				e.preventDefault()
 			}
+		}).on('tdblclick',function(){
+			DRAW_SPACE_advancedShowing = true;
+			
+			draggables = $(".ui-draggable");
+			try {
+					$(draggables).draggable("disable");
+
+					$(this).resizable("destroy");
+
+				
+			}catch(e){
+				log.debug("ignoring destroy droppable onclick of txt")
+			}
+		
+			//$(this).children(".ui-resizable-handle").remove();
+			//setEndOfContenteditable($(this)[0])
+			$(this).attr('contenteditable','true')
 		})
-			 
+		
+
 		
 	}
 
@@ -1470,6 +1497,76 @@ function parseStyleClassFromString(theStr){
 
 function initialize(){
 
+	if(LOGIC_TEMPLATE_MODE){
+	$(":text,div,span,img").on("mouseenter",function(e){
+		//$(this).parents().trigger("mouseleave");
+		console.log("Template MODE Entering " + $(e.target).attr("id"))
+			
+			//NOTES_delayShowingNote($(this))
+		}).on("mouseleave",function(e){
+			//$(e.target).removeClass("redoutline")
+			//$(this).css("opacity",1)
+			NOTES_delete()
+			//$(this).parents().first().trigger("mouseenter")
+		}).on("click",function(e){
+			
+			if($(e.target).parents(".custom-menu").length > 0){
+				return
+			}
+			e.stopPropagation();
+			e.preventDefault();
+			$(this).off();
+			$(this).removeClass("redoutline")
+			$(this).addClass("from-template");
+			
+			$(this).attr("id","ELEM_" + new Date().getTime()).attr("type","DIV")
+			if($(this).prop("tagName") == "IMG" || $(this).css("background-image") != "none"){
+				$(this).attr("type","IMG")
+				tmp = whichTool("IMG")
+				var img = configuredTool(tmp)
+				img.addClass("from-template")
+				style = CONVERT_STYLE_TO_CLASS_OBJECT($(this))
+				console.log("SRC IS " + $(this).attr("src"))
+				$(this).replaceWith(img.css(style))
+
+				theImgSrc = $(this).prop("tagName") == "IMG" ? "url("+$(this).attr("src") + ")" : $(this).css("background-image")
+
+				$(img).css("background-image",theImgSrc)
+				
+				
+				
+				$(img).attr("id","ELEM_" + new Date().getTime())
+				$(img).parent().css({position:"initial"})
+				setUpDiv(img);
+				//OVERLAY_setUp(img,true)
+				//NOTES_makeNote(img)
+				//$(img).addClass("submenu")
+
+			} else if($(this).prop("tagName") == "SPAN"){
+				
+				
+				var myText= configuredTool(whichTool("T"))
+				myText.addClass("from-template")
+				var style = CONVERT_STYLE_TO_CLASS_OBJECT($(e.target))
+				$(e.target).replaceWith(myText.css(style).text($(e.target).text()))
+				
+				
+				setUpDiv(myText)
+				//NOTES_makeNote(myText);
+				//OVERLAY_setUp(myText,true)
+				
+				
+			} else {
+				alert($(this).prop("tagName"))
+				//var style = CONVERT_STYLE_TO_CLASS_OBJECT($(e.target))
+				setUpDiv($(e.target));
+				//$(e.target).css(style)
+				//NOTES_makeNote($(this))
+				//OVERLAY_setUp($(this),true)
+			}
+
+		})	 
+	}
 	
  	$("body").attr("id","body").addClass("body").addClass("hover");
 
@@ -1954,6 +2051,12 @@ DROPPER_LOGIC = {
 	        		} else {
 	        			log.trace ("i REALLY don't know this child")
 	        		}
+
+	        		if(LOGIC_TEMPLATE_MODE){
+		        		CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+		        		return;
+	        		}
+
 
 	        		if( $(ui.draggable).hasClass("dropped-object")){
 	        			aTool = $(ui.draggable)

@@ -170,7 +170,7 @@ function writeDefaultSiteContents(site,page,revisionDir,callback){
 	currentTimePlus5Seconds.setTime(currentTimePlus5Seconds.getSeconds() + 5);
 
 
-	getRevisionFileContents(site,new Date().toString(),process.env.HOMEDIR,"template.html","/",function(ok,contents){
+	getRevisionFileContents(site,new Date().toString(),process.env.HOMEDIR,"template2.html","/",function(ok,contents){
 		var version = {html:contents,css:"",currentPage:page, date:new Date().toString(),bps:[]}
 		writeRevision(revisionDir,version,currentTimePlus5Seconds.toString(),callback);
 	});

@@ -11,6 +11,7 @@ var website = "default";
 var theSiteObj = null;
 var theSiteConfig = {};
 LOGIC_redirectNeeded = false;
+var LOGIC_TEMPLATE_MODE = false;
 version = "1.0";
 
 
@@ -67,6 +68,10 @@ $(document).ready(function() {
 		myPage.X = event.pageX;
 		myPage.Y = event.pageY;
 	})
+
+	if(pageState.params && pageState.params["x-template"]){
+		LOGIC_TEMPLATE_MODE = true;
+	}
 
 	//$("body").hide();
 
@@ -145,8 +150,16 @@ $(document).ready(function() {
 		   	})
 		 } else {
 
-		   $("*").removeClass("submenu").not("[type=anchor]").css("cursor","default")
-		   $('body').show().addClass("hover");
+		  	$("*").removeClass("submenu").not("[type=anchor]").css("cursor","default")
+		   	$('body').show().addClass("hover");
+			$(".dropped-object").not("[type=OVERLAY]").on("mouseenter",function(event){
+					
+					if($(this).attr("overlay") && !$(this).children("[type=OVERLAY]").first().is(":visible") ) {
+						
+						OVERLAY_showOverlay(event.target)
+					}
+					
+			})		   
 		 }
 
 		 website = $('html').first().attr("x-site-name")
@@ -334,7 +347,7 @@ function configuredTool(options){
 		me = this;
 
 		log(options)
-		this.node = $(options.droppedModeHtml).addClass(options.class).attr('id',this.name)
+		this.node = $(options.droppedModeHtml).addClass(options.class).addClass("dropped-object").attr('id',this.name)
 
 			.css({zIndex: options.zIndex,display:"block"}).attr('type',options.type);
 

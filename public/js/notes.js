@@ -57,6 +57,15 @@ function NOTES_makeNote(element,isActive){
 
 	var msgcoords = {top:0,left:0}
 
+	if(!$(element).hasClass("dropped-object") && LOGIC_TEMPLATE_MODE){
+		$("*").not(".dropped-object").removeClass("redoutline")
+				$(element).addClass("redoutline")
+				//$(element).css("opacity",".7");
+				CUSTOM_currentlyMousingOverElementId = $(element).attr("id")
+
+				$(element).parents().first().trigger("mouseleave")
+	}
+
 	
 	if(!editing  ||  userHoveringOverNote || $(element).attr("id") == "undefined" || CUSTOM_currentlyMousingOverElementId != $(element).attr("id") ){
 
@@ -73,7 +82,9 @@ function NOTES_makeNote(element,isActive){
 		return msgcoords;
 	}
 	
-	writeTabs(element)
+	if($(element).hasClass("dropped-object")){
+		writeTabs(element)
+	}
 	//NOTES_delete()
 
 	//window.clearTimeout(NOTES_timer);

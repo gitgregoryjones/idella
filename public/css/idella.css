@@ -20,6 +20,7 @@
 //-->
 
 <style>
+
 .ui-wrapper{
 	position: inherit;
 	
@@ -515,6 +516,10 @@ div.container {
 	//opacity: 50% !important;
 	//background-color: #3164EB !important;
 	
+}
+
+.redoutline {
+	border: solid red !important;
 }
 
 .disabledElements {
