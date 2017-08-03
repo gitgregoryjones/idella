@@ -146,7 +146,7 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 
 	//top = DRAW_SPACE_getMaxTopElement();
 
-	$("body").css({height:top})
+	$("body").css({height:700})
 
 	
 

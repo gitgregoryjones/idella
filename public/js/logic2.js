@@ -16,7 +16,7 @@ version = "1.0";
 
 
 //var autoSaveEnabled = true;
-var editing = false;
+var editing = true;
 //var copiesModified = false;
 //var groupResizeEnabled = false;
 var smartId = 0;
