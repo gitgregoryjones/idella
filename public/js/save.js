@@ -204,42 +204,40 @@ function deleteElement(element, prompt){
 	if(prompt == true){
 
 		if(confirm("are you sure you want to delete :" + $(element).attr("type"))){
-				if(isBreakPoint()){
-					$(element).css("background-color","red")
-				}
+				
 		} else {
 			log.trace("User changed mind about deleting object")
 			return;
 		}
 	}
 
-	NOTES_delete(element);
+	if(isBreakPoint()){
+			//pass TRUE as last Param to have method just tell us if found in master CSS file. If so, GHOST it.  
+			//If not really found ,delete it and children
+			if(writeClassToMasterCSSFile($(element),"."+$(element).attr("id"),{cssRule:""},true)){
+				GHOST_setUpElement($(element));
 
-	//delete kids first
-	$(element).children(".dropped-object").each(function(it,child){
-		deleteElement(child,false);
-	})
+			} else {
+				writeClassToBreakPointCSSFile($(element),"."+$(element).attr("id"),{cssRule:""})
+				$(element).children(".dropped-object").each(function(it,child){
+					writeClassToBreakPointCSSFile($(child),"."+$(child).attr("id"),{cssRule:""})
+					$.event.trigger("deleteEvent",[$(child).attr("id")])
+				})
+				$(element).remove()
+				$.event.trigger("deleteEvent",[$(element).attr("id")])
+			}
+		} else {
+			writeClassToMasterCSSFile($(element),"."+$(element).attr("id"),{cssRule:""})
+			$(element).children(".dropped-object").each(function(it,child){
+				writeClassToMasterCSSFile($(child),"."+$(child).attr("id"),{cssRule:""})
+				$.event.trigger("deleteEvent",[$(child).attr("id")])
+			})
+			$(element).remove()
+			$.event.trigger("deleteEvent",[$(element).attr("id")])
 
-	element = $(element).remove()
-
-	var myCSSLookupKey = "." + $(element).attr("id")
-
-	var re = new RegExp(myCSSLookupKey+'\\s+\\{[^}]+\\}','img')
-
-	var thescript = "";
-
+		}
 	
-	//delete base style
-	thescript = $("style.generated");
-
-	//thescript.html(thescript.html().replace(re,"\n/* user deleted class [" + myCSSLookupKey + "] */\n"))
-	thescript.html(thescript.html().replace(re,""))
-
-	//Trigger anyone listening for this delete event.  ie. Context Menu
-	$.event.trigger("deleteEvent",[$(element).attr("id")])
-
-	//delete breakpoints
-	//delete js
+	NOTES_delete(element);
 
 }
 

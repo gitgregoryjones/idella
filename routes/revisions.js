@@ -52,6 +52,7 @@ function writeRevision(revisionDirectory,currentRevision,revDate,callback){
 	$('body').find("[role=dialog]").remove()
 	$('body').find('ul.custom-menu').remove();
 	$('body').find('.responsive-design-tab').remove();
+	$('html').attr("BREAKPOINTS",JSON.stringify(currentRevision.BREAKPOINTS))
 
 	try {
 

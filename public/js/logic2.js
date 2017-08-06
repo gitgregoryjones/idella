@@ -16,7 +16,7 @@ version = "1.0";
 
 
 //var autoSaveEnabled = true;
-var editing = false;
+var editing = true;
 //var copiesModified = false;
 //var groupResizeEnabled = false;
 var smartId = 0;
@@ -99,8 +99,7 @@ $(document).ready(function() {
 						getCurrentSite();
 						log.debug("After Current Site")
 						//load scripts now that body has been written
-						loadAllBreakPoints();
-						loadAllJs();
+						
 					} else {
 
 						
@@ -112,8 +111,10 @@ $(document).ready(function() {
 						theSiteObj.currentPage = location.pathname.replace("/"+website,"");
 
 						$('body').append(containerDiv)
-						loadAllJs();
+						//loadAllJs();
 					}
+					loadAllBreakPoints();
+					loadAllJs();
 
 					theSiteObj.currentPage = location.pathname.replace("/"+website,"");
 

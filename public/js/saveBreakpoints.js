@@ -216,42 +216,6 @@ function saveBreakPoint(moveMe, theClassObj){
 
 	CSS_TEXT_saveCss(moveMe, theClassObj)
 
-	//writeClassToBreakPointCSSFile(moveMe, myCSSLookupKey,theClassObj);
-
-	/*
-	var thescript = $("style.max-width-"+currentBreakPoint)
-
-
-	//temp remove last Brace.  Will add back after append
-	thescript.html(thescript.html().substring(0,thescript.html().lastIndexOf("}") ) );
-
-	styleCss = thescript.html();
-	//test to see if style is not found, add it.  If found, replace it
-	if(styleCss.indexOf(myId) == -1){
-		thescript.append(theClassObj.cssRule);
-	}else {
-		thescript.html(thescript.html().replace(re,theClassObj.cssRule))
-	}
-
-	thescript.html(thescript.html() + "\n}")
-		
-	log.debug("Almost done " + website)
-
-	theSiteObj.bp = BREAKPOINTS; 
-
-	for(points in BREAKPOINTS){
-
-		var cbp = BREAKPOINTS[points]
-
-		log.debug("Retrieving site at breakpoint " + cbp);
-
-		theSiteObj["@media-"+cbp] = $("style.max-width-"+cbp).html()
-	} */
-
-	//saveCurrentSite(theSiteObj)
-
-	//localStorage.setItem("sites",JSON.stringify(theSiteObj))
-
 	log.debug("Leaving save saveBreakPoint ")
 
 	log.debug(theSiteObj)
@@ -281,12 +245,18 @@ function drawResponsiveTab(){
 }
 
 function loadAllBreakPoints(){
+	
 
 	log.debug("Breakpoints called")
 
-	bp = theSiteObj.bp
+	bp = [];
 
-	log.debug("BREAKPOINTS is " + bp)
+	if($("html").attr("BREAKPOINTS")){
+		bp = JSON.parse($("html").attr("BREAKPOINTS"))
+	}
+
+	
+	console.log("BREAKPOINTS is " + bp)
 
 	if(bp){
 

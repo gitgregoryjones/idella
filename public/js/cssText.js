@@ -9,9 +9,11 @@ CSSTEXT_HARDCODEDCSSTEXT.split(";").forEach(function(style){
 	}
 })
 
-function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj){
+function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExists){
 
 	var re = new RegExp(myCSSLookupKey+'\\s+\\{[^}]+\\}','img')
+
+	var exists = false;
 
 	var thescript = $("style.max-width-"+currentBreakPoint)
 	log.debug("CSSTEXT.js: " + myCSSLookupKey);
@@ -29,7 +31,12 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj){
 
 		thescript.append(theClassObj.cssRule);
 	}else {
+		if(justTestIfExists){
+			exists = true;
+			return exists;
+		}
 		thescript.html(thescript.html().replace(re,theClassObj.cssRule))
+		
 	}
 
 	thescript.html(thescript.html().trim() + "\n}")
@@ -46,16 +53,20 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj){
 
 		theSiteObj["@media-"+cbp] = $("style.max-width-"+cbp).html()
 	}
+
+	return exists;
 }
 
 
 
-function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj){
+function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExists){
 
 
 	var re = new RegExp(myCSSLookupKey+'\\s+\\{[^}]+\\}','img')
 
 	var thescript = "";
+
+	var exists = false;
 
 	log.debug("CSSTEXT.js: My Class should be persisted as")
 	log.debug("CSSTEXT.js: " + theClassObj.cssRule)
@@ -70,10 +81,15 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj){
 		log.info("CSSTEXT.js: Appending RULE for " + myCSSLookupKey + " and rule " + theClassObj.cssRule)
 		thescript.append(theClassObj.cssRule + "\n");
 	}else {
+		if(justTestIfExists){
+			exists = true;
+			return exists;
+		}
 		log.error("CSSTEXT.js: I found  RULE for " + myCSSLookupKey)
+
 		thescript.html(thescript.html().replace(re,theClassObj.cssRule))
 	}
-	
+	return exists;
 }
 
 function doWebkitHoverColor(div){

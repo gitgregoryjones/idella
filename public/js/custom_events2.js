@@ -298,7 +298,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 	} else {
 		$("#"+event.target.id).removeClass("submenu")
 
-		$(event.target).parent(".dropped-object").trigger("mouseenter")
+		//$(event.target).parent(".dropped-object").trigger("mouseenter")
 	}
 
 }
@@ -672,6 +672,9 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 	}
 	//alert("enable");
 
+	if($(parent).attr("overlay")){
+		$($(parent).attr("overlay")).css({width:$(parent).outerWidth(),height:$(parent).outerHeight()})
+	}
 
 	enableHoverEvents();
 	//
