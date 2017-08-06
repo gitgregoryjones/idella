@@ -1,4 +1,4 @@
-var express = require('express');
+
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -15,8 +15,11 @@ var url = require('url')
 //var compression = require('compression')
 var fs = require('fs')
 
-var app = express();
 
+var compression = require('compression')
+var express = require('express')
+var app = express()
+app.use(compression())
 
 
 // compress all responses 
