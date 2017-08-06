@@ -12,9 +12,15 @@ var rewrites = require('./routes/rewrites');
 var site = require('./routes/site');
 var distort = require('response-distort')
 var url = require('url')
+//var compression = require('compression')
 var fs = require('fs')
 
 var app = express();
+
+
+
+// compress all responses 
+//app.use(compression())
 
 
 var favicon = require('serve-favicon');

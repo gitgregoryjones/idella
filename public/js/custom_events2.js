@@ -1251,12 +1251,14 @@ function setUpDiv(div){
 
 
 
+
 	try {
 		div.off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy");
 	} catch(destroy){
 		log.debug("ignoring warning while destroying system generated events tied to div " + div.attr("id"));
 	}
+
 
 	console.log("Setting up my DIV " + div.attr("id"))
 	div.not("[type=OVERLAY]").on("mouseenter",function(event){
@@ -1275,7 +1277,8 @@ function setUpDiv(div){
 		.not("[type=TXT],[type=ICON],[type=BTN]").on("resize",CUSTOM_ON_RESIZE_LOGIC);
 
 
-	
+		
+
 	div.not("[alias=notification],[alias=header]").draggable().on("drag",function(e){
 		
 		//e.stopPropagation()
@@ -1498,6 +1501,7 @@ function parseStyleClassFromString(theStr){
 function initialize(){
 
 	if(LOGIC_TEMPLATE_MODE){
+
 	$(":text,div,span,img").on("mouseenter",function(e){
 		//$(this).parents().trigger("mouseleave");
 		console.log("Template MODE Entering " + $(e.target).attr("id"))
@@ -1568,6 +1572,8 @@ function initialize(){
 		})	 
 	}
 	
+
+
  	$("body").attr("id","body").addClass("body").addClass("hover");
 
  	$("#smalldialog").dialog({
@@ -1687,35 +1693,7 @@ function initialize(){
    	
 	kids = $(".ui-resizable").children(".ui-resizable-handle").remove();
 
-	/*
-
-	$(".ui-resizable").on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
-
-	$(".ui-resizable-disabled").resizable().removeClass(".ui-resizable-disabled")
-
-	try {
-
-	$(".dropped-object").droppable("destroy").resizable("destroy")
 	
-	}catch(e){
-		log.info("CUSTOMEVENTS2.js: No destroy methods found to clean up.  Continuing")
-	}
-
-
-	$(".ui-droppable").resizable().on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
-	
-	
-	$(".template").on("click",function(){
-		if($(this).css("opacity") == 1){
-			$(this).css({"opacity":.9,"background-color":"green"})
-			groupResizeEnabled = true;
-		} else {
-			$(this).css({"opacity":1,"background-color":"transparent"})	
-			groupResizeEnabled = false;
-		}
-	})
-	*/
-
 	$(".dropped-object").each(function(idx,element){
 		setUpDiv($(element));
 	})

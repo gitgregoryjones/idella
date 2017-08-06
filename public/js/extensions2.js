@@ -9,6 +9,8 @@ var standardFields = "id:0;extends:none;alias:none;background-image:none;display
 
 var simple = (CSSTEXT_HARDCODEDCSSTEXT + standardFields).split(";")
 
+//var simple = "id: hello;height: 35.486160397445vw;width: 42.583392476933994vw;position: absolute;left: 50px;top: 300px;background-image: url(http://i.cdn.turner.com/v5cache/CARTOON/site/Images/i203/ppg_unordinaryweek_725x400.jpg);".split(";")
+
 CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 
  	element = $(element)

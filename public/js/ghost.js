@@ -11,8 +11,9 @@ function GHOST_setUpElement(element,event){
 		return;
 	}
 
-	ghost = $("<div>").addClass("ghost");
-	$("#drawSpace").append(ghost);
+	ghost = $("<div>").addClass("ghost")
+	//$("#drawSpace").append(ghost);
+	element.parent().append(ghost)
 
 	coords = NOTES_makeNote(element);
 	//alert(JSON.stringify(coords))
@@ -30,7 +31,7 @@ alert(event.pageY)
 	}*/
 
 
-	ghost.css({top:(top), left:(left),"z-index":9999})
+	ghost.css(  {top:$(element).position().top,left:myPage.X,position:element.css("position"),"z-index":99999})
 		.attr("ghost-for","#"+$(element).attr("id"))
 		.attr("ghost-width",element.width())
 		.attr("ghost-height",element.height())

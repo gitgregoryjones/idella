@@ -88,7 +88,7 @@ function rewriteAllBreakpointQueries() {
 		//2. if new script tag, write it
 		if(thescript.length == 0){
 			log.warn("Writing new script for query [" + query  + "]")
-			thescript = $("<style>").addClass("max-width-"+currentBreakPoint).html(query)
+			thescript = $("<style>").addClass("max-width-"+currentBreakPoint).html(query).addClass("generated")
 			$("head").append(thescript)
 		//3. Else modify the media query within
 		} else {

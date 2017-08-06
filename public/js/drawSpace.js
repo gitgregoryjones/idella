@@ -80,7 +80,7 @@ function DRAW_SPACE_getMaxTopElement(){
 	var lastOne = [];
 
 	$(".dropped-object").each(function(idx,it){
-		lastOne.push($(this).offset().top + $(this).height());
+		lastOne.push($(this).position().top + $(this).height());
 	})
 
 	return lastOne.sort().reverse()[0]
@@ -144,9 +144,9 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 		startVideo(vid);
 	})
 
-	//top = DRAW_SPACE_getMaxTopElement();
+	top = DRAW_SPACE_getMaxTopElement();
 
-	$("body").css({height:700})
+//		$("body").css({height:"3000px"})
 
 	
 
@@ -325,7 +325,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
                                
         dropTool(theFooter,{target:theExpandableArea,clientX:0,clientY:0});
 		
-        theNotice.css({"width":"100%",height:"100px","background-color":"yellow"}).attr('alias',"notification")
+        theNotice.css({"width":"100%",height:"25%","background-color":"yellow"}).attr('alias',"notification")
                         
         dropTool(theNotice,{target:theBody,clientX:0,clientY:0});
 
@@ -335,7 +335,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
         dropTool(theHead,{target:theBody,clientX:0,clientY:theNotice.height()});
      
 		//Now Setup the head
-		theHead.css({"position":"fixed","width":"100%",height:"100px","background-color":"black",top:theNotice.height()}).attr('alias',"header")
+		theHead.css({"position":"fixed","width":"100%",height:"25%","background-color":"black",top:theNotice.height()}).attr('alias',"header")
 		//getHelp();
 	} 
 

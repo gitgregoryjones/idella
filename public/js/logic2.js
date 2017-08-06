@@ -151,6 +151,7 @@ $(document).ready(function() {
 		 } else {
 
 		  	$("*").removeClass("submenu").not("[type=anchor]").css("cursor","default")
+		  	$(".ghost").remove();
 		   	$('body').show().addClass("hover");
 			$(".dropped-object").not("[type=OVERLAY]").on("mouseenter",function(event){
 					
@@ -159,7 +160,8 @@ $(document).ready(function() {
 						OVERLAY_showOverlay(event.target)
 					}
 					
-			})		   
+			})
+			.css("touch-action","auto").addClass("previewmode")		   
 		 }
 
 		 website = $('html').first().attr("x-site-name")

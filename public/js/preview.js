@@ -73,6 +73,7 @@ function PREVIEW_togglePreview(showPreview){
 		
 		DRAW_SPACE_deleteWorkspaceFromBody();
 		$(".ui-icon").hide();
+		$(".ghost").hide();
 
 	}else {
 		$(".dropped-object").not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg").removeClass("noborder");
@@ -87,7 +88,7 @@ function PREVIEW_togglePreview(showPreview){
 		editing = true;
 		DRAW_SPACE_addWorkSpaceToBody();
 		$(".ui-icon").show();
-
+		$(".ghost").show();
 	}
 
 }

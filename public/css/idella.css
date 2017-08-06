@@ -569,12 +569,16 @@ div.container {
 	border:none !important;
 }
 
+html {
+	height: 100%
+}
+
 body {
 	width:100%;
 	align:center;
 	padding:0px;
-	height:"2000px";
-	background-color: :silver;
+	height:3000px;
+	background-color:green;
 
 }
 textarea {
@@ -715,6 +719,18 @@ textarea {
 	color: white;
 	
 
+}
+
+.me {
+position:relative;
+width:400px;
+height:400px
+background-image:url("https://static.wixstatic.com/media/cd3196_b8e1027a20b24a349839a38f610497ea~mv2.png/v1/fill/w_764,h_596,al_c,usm_0.66_1.00_0.01/cd3196_b8e1027a20b24a349839a38f610497ea~mv2.png");
+background-size: cover;
+}
+
+.me2 {
+    position:absolute;
 }
 
 
