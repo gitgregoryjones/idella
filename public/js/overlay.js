@@ -20,6 +20,8 @@ function OVERLAY_setUp(element,isTemplate){
 
 	overlay.text("")
 	
+	//overlay.css({height:$(element).outerHeight(),width:$(element).outerWidth()})				
+
 
 	if(isTemplate){
 		overlay.css({"position":"absolute","margin":"0","background-image":"none","background-color":"rgba(255,255,255,.5)",left:0,top:0 });
@@ -43,7 +45,8 @@ function OVERLAY_setUp(element,isTemplate){
 	}
 	element.attr("overlay","#"+overlay.attr('id'))
 	overlay.attr("type","OVERLAY")
-	overlay.removeAttr("extends")
+	overlay.removeAttr("extends").removeAttr("ui-draggable").removeAttr("ui-resizable").removeAttr("ui-resizable-handle")
+
 
 	if(!OVERLAY_areOverlaysEnabled()){
 		$(".showOverlays").click();
@@ -93,7 +96,9 @@ function OVERLAY_showOverlay(theElem){
 		if(theElem.hasAttribute("overlay") ){
 
 				//$("[type=OVERLAY]").trigger("mouseleave");
-				olay = $(theElem).children("[type=OVERLAY]").first();				
+				olay = $(theElem).children("[type=OVERLAY]").first();
+
+				olay.css({height:$(theElem).outerHeight(),width:$(theElem).outerWidth()})				
 
 				olay.fadeIn()
 

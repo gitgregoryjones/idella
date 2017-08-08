@@ -265,7 +265,7 @@ function addPlusButton(elem){
 	$(elem).css("vertical-align","top");
 	plus.css({top:10, position:"relative","border-color":"white","text-align":"center","font-size":"40px","border-radius":"50px",
 			"background-color":"silver","margin":"10px","padding":"10px"
-			,"color":"white"}).on('click',function(){
+			,"color":"white","z-index":30000}).on('click',function(){
 				cpy = recursiveCpy($(elem),plusButtonPushed);
 				/*$(elem).css("opacity","0");
                 $(elem).animate({opacity:op},600)*/
@@ -602,19 +602,11 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 	div = $(event.target);
 
-	//if(div.is("[type=T]")){
-
-	
-
-	//}
-	
-
 	if(groupResizeEnabled){
 		
 	
-		$(event.target).find(".dropped-object").each(function(it,child){
+		$(event.target).children(".dropped-object").each(function(it,child){
 			child = $(child)
-
 
 			log.trace("Resizing Child is stopped for " + child.attr("id"))
 
@@ -626,9 +618,7 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 		})
 	}
 
-	if(div.children("[type=OVERLAY]").length > 0){
-		div.children("[type=OVERLAY]").css({left:0,top:0,"width":div.width(),"height":div.height()});
-	}
+	
 
 	//Add border for menu-items. makes it easier for user to click and choose 
 	/*
@@ -669,11 +659,6 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
 			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
 		})
-	}
-	//alert("enable");
-
-	if($(parent).attr("overlay")){
-		$($(parent).attr("overlay")).css({width:$(parent).outerWidth(),height:$(parent).outerHeight()})
 	}
 
 	enableHoverEvents();
@@ -1466,10 +1451,6 @@ function setUpDiv(div){
 
 	//fix bug in jquery which forces position to relative on draggable() init
 	div.css("position",oldPos);
-
-
-
-
 	
 }
 
@@ -1707,29 +1688,7 @@ function initialize(){
 					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).find(".hotspot").css({height:0,width:0}).hide()
 	
 	
-   	//Setup edit hotspots
-   	//$("div.hotspot").on("click",sSPOT_CLICK)
-
-   	//Setup up Dblclick event for editing text areas on all components
-   	//$("div.hotspot").parentsUntil(".ui-draggable").parent().not("#id_toolset").on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
-   	//.resizable({disable:false})
-/*
-   	//Show Toolbar and setup options
-   $(".toolset_header").on("dblclick",function(event){
-   		$(".tool_panel").toggle();
-   })
-
-   $(".tool").draggable({
-		helper: "clone"
-	});
-
-   $(".mastercopy").draggable({
-		helper: "clone"
-	});
-
-   	$('.toolset').draggable()
-   	*/
-
+   	
    $( "#dialog" ).dialog({ 
  			autoOpen: false,
  			close:CUSTOM_CLOSE_LOGIC
@@ -1759,7 +1718,8 @@ function initialize(){
 
    		GHOST_init(ghost);
    	})
-	
+
+
 
    	log.debug("CUSTOMEVENTS.js:all done")
 }

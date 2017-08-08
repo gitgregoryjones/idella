@@ -577,8 +577,9 @@ body {
 	width:100%;
 	align:center;
 	padding:0px;
-	height:3000px;
-	background-color:green;
+	--height:3000px;
+	background-color:rgb(217, 225, 233);
+	font-family: Cinzel;
 
 }
 textarea {

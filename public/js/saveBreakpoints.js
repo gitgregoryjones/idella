@@ -276,7 +276,11 @@ function loadAllBreakPoints(){
 
 			mediaQueryCSS = theSiteObj["@media-"+breakpointWidth]
 
-			$("head").append($("<style>").addClass("max-width-"+breakpointWidth).html(mediaQueryCSS))
+			if($(".max-width-"+breakpointWidth).length == 0){
+				$("head").append($("<style>").addClass("max-width-"+breakpointWidth).html(mediaQueryCSS))
+			}
+
+			
 		}
 	}
 

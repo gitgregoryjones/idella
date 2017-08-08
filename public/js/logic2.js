@@ -16,7 +16,7 @@ version = "1.0";
 
 
 //var autoSaveEnabled = true;
-var editing = true;
+var editing = false;
 //var copiesModified = false;
 //var groupResizeEnabled = false;
 var smartId = 0;
@@ -154,6 +154,7 @@ $(document).ready(function() {
 		  	$("*").removeClass("submenu").not("[type=anchor]").css("cursor","default")
 		  	$(".ghost").remove();
 		   	$('body').show().addClass("hover");
+		   	$('#myp').hide();
 			$(".dropped-object").not("[type=OVERLAY]").on("mouseenter",function(event){
 					
 					if($(this).attr("overlay") && !$(this).children("[type=OVERLAY]").first().is(":visible") ) {

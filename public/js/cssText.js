@@ -51,7 +51,7 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj,justTestI
 
 		log.debug("CSSTEXT.js: Retrieving site at breakpoint " + cbp);
 
-		theSiteObj["@media-"+cbp] = $("style.max-width-"+cbp).html()
+		theSiteObj["@media-"+cbp] = $("style.max-width-"+cbp).addClass("generated").html()
 	}
 
 	return exists;
