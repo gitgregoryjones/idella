@@ -52,6 +52,7 @@ function writeRevision(revisionDirectory,currentRevision,revDate,callback){
 	$('body').find("[role=dialog]").remove()
 	$('body').find('ul.custom-menu').remove();
 	$('body').find('.responsive-design-tab').remove();
+	
 	$('html').attr("BREAKPOINTS",JSON.stringify(currentRevision.BREAKPOINTS))
 
 	try {
@@ -220,6 +221,11 @@ function getRevision(req,res,next){
 	
 	var file = url.parse(req.url).pathname;
 
+	if(file.indexOf("keys.txt") > -1){
+		res.sendStatus(404);
+		return;
+	}
+
 	file += file.endsWith("/") ? "index.html" : ""
 
 	console.log("File is " + file + " and endsWith .json is " + file.endsWith(".json"))
@@ -353,8 +359,9 @@ function loadFiles($){
 
 	var ok = true;
 
-	//$("head").find('style').not(".generated").remove();
-	//$("head").find('script').not(".generated").remove();
+	$("head").find('style').not(".generated").remove();
+	$("head").find('script').not(".generated").remove();
+	$("head").find("link").remove();
 
 	files.forEach(function(file){
 
@@ -416,19 +423,20 @@ function loadFiles($){
   		} 
   	})
 
-	if($("style.generated").length == 0){
-		
-		$("head").append("<style class='generated'></style>");
-	}
-
-	if($("script.generated").length == 0){
-		
-		$("head").append("<script class='generated'></script>");
-	}
-
+	
 	//make sure these are always last
 	$("style.generated").appendTo($('head'))
 	$("script.generated").appendTo($('head'))
+
+	if($("style.default").length == 0){
+		
+		$("head").append("<style class='default generated'></style>");
+	}
+
+	if($("script.default").length == 0){
+		
+		$("head").append("<script class='default generated'></script>");
+	}
 
 	
 

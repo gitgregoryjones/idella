@@ -16,11 +16,11 @@ function saveJs(theElem, script){
 	//eval(theFunction)
 
 	//test to see if style is not found, add it.  If found, replace it
-	if($("script.generated").html().match(re) == null){
+	if($("script.default").html().match(re) == null){
 		console.log("Did not find match ")
-		$("script.generated").append(theFunction);
+		$("script.default").append(theFunction);
 	}else {
-		$("script.generated").html($("script.generated").html().replace(re,theFunction))
+		$("script.default").html($("script.default").html().replace(re,theFunction))
 	}
 
 	//localStorage.setItem("javaScript_"+id,script)
@@ -35,9 +35,9 @@ function getJs(theElem){
 
 	re = new RegExp('<!-- BEGIN\\s'+id+'\\s//-->([\\s\\S]+)<!-- END\\s'+id+'//-->','img')
 
-	script = $("script.generated").html();
+	script = $("script.default").html();
 
-	groups = re.exec($("script.generated").html())
+	groups = re.exec($("script.default").html())
 
 	log.debug("SAVJS.js: After applying regex " + re + " groups is " + groups);
 

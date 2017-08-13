@@ -20,23 +20,13 @@ function GHOST_setUpElement(element,event){
 	var top = coords.top;
 	var left = coords.left;
 
-/*
-	if(element.parent().is("[type=LIST]")){
-alert(event.pageY)
-		top = element.parent().offset().top;
-		left = event.pageX;
-	} else {
-		$(element).offset().top - ghost.height();
-		$(element).offset().left
-	}*/
-
-
 	ghost.css(  {top:$(element).position().top,left:myPage.X,position:element.css("position"),"z-index":99999})
 		.attr("ghost-for","#"+$(element).attr("id"))
 		.attr("ghost-width",element.width())
 		.attr("ghost-height",element.height())
 		.attr("ghost-opacity",element.css("opacity"))
 		.attr("id","ELEM_" + new Date().getTime())
+		.attr("breakpoint",currentBreakPoint)
 		.attr("type","GHOST")
 
 	//ghost.css({top:ghost.offset().top - ghost.width()})

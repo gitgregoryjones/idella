@@ -242,6 +242,31 @@ function drawResponsiveTab(){
 	}
 	$(".responsive-design-tab,.mini-responsive-design-tab").text($("body").width() + ", ["+currentBreakPoint + "]")
 
+	$("[breakpoint]").each(function(it,theGhost){
+		theGhost = $(theGhost);
+
+		if(theGhost.attr('breakpoint') != currentBreakPoint){
+			if(theGhost.is(":visible")){
+				theGhost.hide();
+				
+			}
+			//theGhost.hide();
+			$(theGhost.attr("ghost-for")).show().css("opacity",1);
+		}else {
+			if(theGhost.not(":visible")){
+				if(editing)
+				 theGhost.show();
+				
+			}
+			
+			$(theGhost.attr("ghost-for")).hide();
+			//theGhost.show();
+			//theGhost.hide();
+		}
+	})
+
+
+
 }
 
 function loadAllBreakPoints(){

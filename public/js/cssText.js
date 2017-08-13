@@ -43,6 +43,9 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj,justTestI
 		
 	log.debug("CSSTEXT.js: Almost done " + website)
 
+	
+
+	/*
 	theSiteObj.bp = BREAKPOINTS; 
 
 	for(points in BREAKPOINTS){
@@ -52,7 +55,7 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj,justTestI
 		log.debug("CSSTEXT.js: Retrieving site at breakpoint " + cbp);
 
 		theSiteObj["@media-"+cbp] = $("style.max-width-"+cbp).addClass("generated").html()
-	}
+	}*/
 
 	return exists;
 }
@@ -71,7 +74,7 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExi
 	log.debug("CSSTEXT.js: My Class should be persisted as")
 	log.debug("CSSTEXT.js: " + theClassObj.cssRule)
 
-	thescript = $("style.generated");
+	thescript = $("style.default");
 
 	
 
@@ -129,11 +132,13 @@ function CSS_TEXT_saveCss(div, theClassObj) {
 	doWebkitHoverColor(div);
 
 	if(isBreakPoint()){
+
 		writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj)
 		//Do Hover of attribute for object. Ugly but necessary. Without Else statement we would have left over ELEMENT:hover classes
 		//in css when user clear the onhover attribute from #editSpace
 
 		if(div.attr("onhover")){
+
 			var outStr = "body.hover ." + div.attr("id") + ":hover {\n";
 
 			outStr += "\t" + $(div).attr("onhover") + "\n";

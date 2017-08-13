@@ -169,7 +169,7 @@ function computeDimensions(theClassObj){
 			theClassObj["position"] = "relative";
 			//theClassObj["float"] = "left"
 			//theClassObj["width"] = "20px"
-			 theClassObj["display"] = "inline-block";
+			theClassObj["display"] = "inline-block";
 		}
 		
 	} 

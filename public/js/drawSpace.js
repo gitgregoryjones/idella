@@ -347,7 +347,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	    .css({overflow:"hidden","position":"fixed",height:"100px","z-index":CUSTOM_incrementZIndex(),top:0})
 	
 	$("[alias=header]").appendTo($("[alias=body]"))
-    .css({"overflow":"hidden","position":"fixed","z-index":CUSTOM_incrementZIndex(),top:$("[alias=notification]").height()})
+    .css({"overflow":"hidden","z-index":CUSTOM_incrementZIndex(),top:$("[alias=notification]").height()})
 
     //$("[alias=notification]").css({"height":"100px"})
     

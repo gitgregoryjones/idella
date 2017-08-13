@@ -16,7 +16,7 @@ version = "1.0";
 
 
 //var autoSaveEnabled = true;
-var editing = false;
+var editing = false		;
 //var copiesModified = false;
 //var groupResizeEnabled = false;
 var smartId = 0;
@@ -152,9 +152,18 @@ $(document).ready(function() {
 		 } else {
 
 		  	$("*").removeClass("submenu").not("[type=anchor]").css("cursor","default")
-		  	$(".ghost").remove();
+		  	$("[type=anchor]").css("border","none")
+		  	$("*").prop("contenteditable",false).css("-webkit-user-modify","read-only")
+		  	$(".ghost").hide();
 		   	$('body').show().addClass("hover");
 		   	$('#myp').hide();
+		   	$("[type=LIST]").each(function(it,div){
+		   		//console.log("LISTING IT")
+		   		div = $(div)
+		   		if(div.hasClass("gallery")){
+		   			SLIDER_init(div);
+		   		}
+		   	})
 			$(".dropped-object").not("[type=OVERLAY]").on("mouseenter",function(event){
 					
 					if($(this).attr("overlay") && !$(this).children("[type=OVERLAY]").first().is(":visible") ) {
@@ -163,7 +172,11 @@ $(document).ready(function() {
 					}
 					
 			})
-			.css("touch-action","auto").addClass("previewmode")		   
+			.css("touch-action","auto").addClass("previewmode")
+
+			//on window resize, do ghost stuff
+			loadAllBreakPoints()
+			$(window).on('resize',drawResponsiveTab)		   
 		 }
 
 		 website = $('html').first().attr("x-site-name")

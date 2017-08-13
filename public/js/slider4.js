@@ -155,6 +155,8 @@ function SLIDER_setUpButton(button,list,blockClick){
 
 	button = $(button);
 
+	button.css("cursor","pointer")
+
 	
 	list.append(button);
 
@@ -182,8 +184,8 @@ function SLIDER_setUpButton(button,list,blockClick){
 
 	list.on("resizestop",function(){
 
-		$(this).children("[alias=cntrl-left]").css({top:0,left:0,"z-index":800,"visibility":"visible"});
-		$(this).children("[alias=cntrl-right]").css({top:0,left:list.width()-button.width(),"z-index":800,"visibility":"visible"})
+		$(this).children("[alias=cntrl-left]").css({height:list.children(".dropped-object").first().outerHeight(),top:0,left:0,"z-index":800,"visibility":"visible"});
+		$(this).children("[alias=cntrl-right]").css({height:list.children(".dropped-object").first().outerHeight(),top:0,left:list.width()-button.width(),"z-index":800,"visibility":"visible"})
 	})
 
 }

@@ -633,7 +633,7 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 		if(!$(event.target).is("[type=T")){
 			$(event.target).addClass("submenu");
-			$(event.target).attr("contenteditable","false")
+			$(event.target).attr("contenteditable","false").css("-webkit-user-modify","false")
 		}
 
 		createAnchorFor(div,true)
@@ -643,7 +643,8 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 }
 
 CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
-	log.debug("Triggered Done Dragging parent " + event.target.id)
+	//log.debug("Triggered Done Dragging parent " + event.target.id)
+
 
 	event.stopPropagation();
 	
@@ -754,7 +755,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 			event.preventDefault();
 			event.stopPropagation();
 
-			if($(event.target).is("[type=IMG]")){
+			if($(event.target).is("[type=IMG],[type=DIV]")){
 				log.debug("starting image upload")
 				$("#fileElem").click();
 
@@ -1079,7 +1080,7 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 
 	if(!overwriteOldAnchor){
 		anchors = $("<a>",{id:"anchor-"+parentId,href:loc,label:loc,type:"anchor"})
-		if(!loc.trim().startsWith("http") && !loc.trim().startsWith("javascript:") ){
+		if(!loc.trim().startsWith("http") && !loc.trim().startsWith("javascript:") && !loc.trim().startsWith("#")){
 			//alert(loc)
 			if(loc.trim().length > 0){
 				if(loc.startsWith("/")){
@@ -1088,7 +1089,7 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 				
 				REVISION_anchors.push(loc.trim())
 			}
-		}
+		} 
 
 	} else {
 
@@ -1119,6 +1120,17 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 			,"position":"absolute", top:topPos});				
 		a.on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 		a.on("click",writeTabs)
+
+		//
+		if(a.attr("href").startsWith("#")){
+			var fragmentId = a.attr("href").substring(1);
+			console.log("fragmentId is " + fragmentId);
+			var linkTo = $("[alias="+fragmentId+"]").attr("id")
+			if(linkTo){
+				console.log("LinkTo is " + linkTo)
+				a.attr("href","#"+linkTo);
+			}
+		}
 
 		CUSTOM_PXTO_VIEWPORT($(a),$(a).position().left, a.position().top)
 
@@ -1194,8 +1206,11 @@ function CUSTOM_HANDLEFILES(files) {
     var reader = new FileReader();
     reader.onload = (function(aImg) { return function(e) { 
     	 $(aImg).css({"background-image":"url(" + e.target.result + ")","background-size":"cover"})
+    	  
     }; })(img);
     reader.readAsDataURL(file);
+    CUSTOM_PXTO_VIEWPORT($(img),$(img).position().left, $(img).position().top)
+
   }
 }
 
@@ -1241,7 +1256,7 @@ function setUpDiv(div){
 
 
 	try {
-		div.off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+		div.off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy");
 	} catch(destroy){
 		log.debug("ignoring warning while destroying system generated events tied to div " + div.attr("id"));
@@ -1274,7 +1289,7 @@ function setUpDiv(div){
 
 	}).on("dragstart resizestart",function(e){
 
-		$(e.target).attr("contenteditable","false");
+		$(e.target).attr("contenteditable","false").css("-webkit-user-modify","read-only");
 		disableHoverEvents()
 	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("resize",function(e){
 		
@@ -1326,7 +1341,7 @@ function setUpDiv(div){
 		
 			//$(this).children(".ui-resizable-handle").remove();
 			//setEndOfContenteditable($(this)[0])
-			$(this).attr('contenteditable','true')
+			$(this).attr('contenteditable','true').css("-webkit-user-modify","read-write")
 
 		}).on('blur',function(){
 			DRAW_SPACE_advancedShowing = false;
@@ -1368,7 +1383,7 @@ function setUpDiv(div){
 		
 			//$(this).children(".ui-resizable-handle").remove();
 			//setEndOfContenteditable($(this)[0])
-			$(this).attr('contenteditable','true')
+			$(this).attr('contenteditable','true').css("-webkit-user-modify","read-write")
 		})
 		
 
@@ -1392,7 +1407,7 @@ function setUpDiv(div){
 	} 
 
 	
-	if(div.is("[type=IMG]")){
+	if(div.is("[type=IMG],[type=DIV]")){
 		//$.event.trigger("translateTxt",[div])
 		div.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 	}
@@ -1545,7 +1560,6 @@ function initialize(){
 				
 				
 			} else {
-				alert($(this).prop("tagName"))
 				//var style = CONVERT_STYLE_TO_CLASS_OBJECT($(e.target))
 				setUpDiv($(e.target));
 				//$(e.target).css(style)
@@ -1951,7 +1965,7 @@ DROPPER_LOGIC = {
 
 		        	} else
 
-
+		        	
 		        	if($(event.target).parent().is("[type=LIST]") && $(ui.draggable).parent().is("[type=LIST]")){
 		        		 
 							$(ui.draggable).insertBefore($(event.target));
@@ -1982,17 +1996,21 @@ DROPPER_LOGIC = {
 						$(ui.draggable).css("white-space","pre-line")
 					}
 
+					if($(parent).children(child).length > 0  && $(parent).is("[type=LIST]")){
+						return;
+					}
 
+					/* Not needed since on dragstop event is already active
 	        		if($(parent).children(child).length > 0  )
 	        		{
 	        	
-	        			CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+	        			//CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
 	     
 	        			return;
 	        		} else {
 	        			log.trace ("i REALLY don't know this child")
 	        		}
-
+					*/
 	        		if(LOGIC_TEMPLATE_MODE){
 		        		CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
 		        		return;
