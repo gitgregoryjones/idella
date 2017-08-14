@@ -2321,7 +2321,7 @@ body.hover .ELEM_1502582445884:hover {
 	position:relative;
 	cursor:default;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url(index-revisions/images/ELEM_1502582445916-image.jpg);
+	background-image:url(images/ELEM_1502582445916-image.jpg);
 	background-size:cover;
 	border:0.2135231316725979vw;
 	border-bottom-style:dashed;
@@ -2366,7 +2366,7 @@ body.hover .ELEM_1502582445884:hover {
 	position:relative;
 	cursor:default;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url(index-revisions/images/ELEM_1502582445950-image.jpg);
+	background-image:url(images/ELEM_1502582445950-image.jpg);
 	background-size:cover;
 	border:0.2135231316725979vw;
 	border-bottom-style:dashed;
@@ -2411,7 +2411,7 @@ body.hover .ELEM_1502582445884:hover {
 	position:relative;
 	cursor:default;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url(index-revisions/images/ELEM_1502582445980-image.jpg);
+	background-image:url(images/ELEM_1502582445980-image.jpg);
 	background-size:cover;
 	border:0.2135231316725979vw;
 	border-bottom-style:dashed;
@@ -2725,7 +2725,7 @@ body.hover .ELEM_1502582445884:hover {
 	position:relative;
 	cursor:pointer;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url(index-revisions/images/ELEM_1502583238583-image.jpg);
+	background-image:url(images/ELEM_1502583238583-image.jpg);
 	background-size:cover;
 	border:0.2135231316725979vw;
 	border-bottom-style:dashed;
@@ -2776,7 +2776,7 @@ body.hover .ELEM_1502582445884:hover {
 	position:relative;
 	cursor:default;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url(index-revisions/images/ELEM_1502583247312-image.jpg);
+	background-image:url(images/ELEM_1502583247312-image.jpg);
 	background-size:cover;
 	border:0.2135231316725979vw;
 	border-bottom-style:dashed;
@@ -3248,7 +3248,7 @@ body.hover .ELEM_1502583970213:hover {
 	cursor:default;
 	background-attachment:fixed;
 	background-color:rgb(255, 255, 255);
-	background-image:url(index-revisions/images/contact-image.jpg);
+	background-image:url(images/contact-image.jpg);
 	background-position:0% 50%;
 	background-repeat:no-repeat;
 	background-size:cover;
@@ -3920,7 +3920,7 @@ body.hover .ELEM_1502583970213:hover {
 	position:absolute;
 	cursor:pointer;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url(index-revisions/images/ELEM_15025851060980-image.jpg);
+	background-image:url(images/ELEM_15025851060980-image.jpg);
 	background-size:cover;
 	border:0vw;
 	border-bottom-left-radius:14.23487544483986vw;
@@ -4680,7 +4680,7 @@ body.hover .ELEM_1502583970213:hover {
 	position:relative;
 	cursor:default;
 	background-color:rgb(255, 255, 255);
-	background-image:url(index-revisions/images/services-image.png);
+	background-image:url(images/services-image.png);
 	background-position:90% 0%;
 	background-size:cover;
 	border:0.24911032028469754vw;
@@ -5131,7 +5131,7 @@ body.hover .ELEM_1502583970213:hover {
 	position:relative;
 	cursor:default;
 	background-color:rgb(255, 255, 255);
-	background-image:url(index-revisions/images/reviews-image.png);
+	background-image:url(images/reviews-image.png);
 	background-position:90% 0%;
 	background-size:cover;
 	border:0vw;
@@ -5296,7 +5296,7 @@ body.hover .ELEM_1502583970213:hover {
 	position:absolute;
 	cursor:pointer;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url(index-revisions/images/ELEM_15025900753531-image.png);
+	background-image:url(images/ELEM_15025900753531-image.png);
 	background-size:cover;
 	border:0vw;
 	bottom:5.575978647686833vw;
@@ -6371,7 +6371,7 @@ body.hover .ELEM_1502583970213:hover {
 	position:relative;
 	cursor:pointer;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url(index-revisions/images/ELEM_1502670159051-image.jpg);
+	background-image:url(images/ELEM_1502670159051-image.jpg);
 	background-size:cover;
 	border:0.2135231316725979vw;
 	border-bottom-style:dashed;
@@ -6418,7 +6418,7 @@ body.hover .ELEM_1502583970213:hover {
 	position:relative;
 	cursor:pointer;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url(index-revisions/images/ELEM_1502670163208-image.jpg);
+	background-image:url(images/ELEM_1502670163208-image.jpg);
 	background-size:cover;
 	border:0.2135231316725979vw;
 	border-bottom-style:dashed;
