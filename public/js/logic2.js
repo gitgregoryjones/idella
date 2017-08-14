@@ -16,7 +16,7 @@ version = "1.0";
 
 
 //var autoSaveEnabled = true;
-var editing = false		;
+var editing = true	;
 //var copiesModified = false;
 //var groupResizeEnabled = false;
 var smartId = 0;
@@ -152,11 +152,11 @@ $(document).ready(function() {
 		 } else {
 
 		  	$("*").removeClass("submenu").not("[type=anchor]").css("cursor","default")
-		  	$("[type=anchor]").css("border","none")
+		  	//$("[type=anchor]").css("border","none")
 		  	$("*").prop("contenteditable",false).css("-webkit-user-modify","read-only")
 		  	$(".ghost").hide();
 		   	$('body').show().addClass("hover");
-		   	$('#myp').hide();
+		 
 		   	$("[type=LIST]").each(function(it,div){
 		   		//console.log("LISTING IT")
 		   		div = $(div)

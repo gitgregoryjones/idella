@@ -9,8 +9,9 @@ function PREVIEW_makeSaveableView(page){
 		}
 		
 		$(page).find(".dropped-object").is(function(){
-			log("border is " + $(this).css("border"))
-			hasDefaultBorder = $(this).css("border-top-style").indexOf("dashed") != -1
+			log.debug("border is " + $(this).css("border-top-style"))
+			hasDefaultBorder = $(this).css("border-top-style").indexOf("dashed") > -1
+			log.debug($(this).attr("id") + " hasDefaultBorder " + hasDefaultBorder);
 			if(hasDefaultBorder){
 				$(this).addClass("noborder");
 			}
@@ -51,7 +52,7 @@ function PREVIEW_togglePreview(showPreview){
 		
 		$(".dropped-object").is(function(){
 			log("border is " + $(this).css("border"))
-			hasDefaultBorder = $(this).css("border-top-style").indexOf("dashed") != -1
+			hasDefaultBorder = $(this).css("border-top-style").indexOf("dashed") > -1
 			if(hasDefaultBorder){
 				$(this).addClass("noborder");
 			}

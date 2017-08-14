@@ -40,8 +40,98 @@ process.on('uncaughtException', function (err) {
   	console.log(err);
 })
 
+function getStyleSheetForElement(elementStyleSheetId,Query,currentBreakPoint){
+
+	var myCSSLookupKey = "\\." + elementStyleSheetId
+
+	var theExp = new RegExp(myCSSLookupKey+'\\s+(\\{[^}]+\\})','im')
+
+	var thescript = "";
+
+	if(currentBreakPoint && currentBreakPoint > 0){
+		thescript = Query("style.max-width-"+currentBreakPoint)
+	} else {
+		thescript = Query("style.default");
+	}
+	groups = thescript.html().match(theExp)
+
+	if(groups && groups[1]){
+
+		var obj = {};
+
+		str = groups[1];
+
+		str = str.substring(1);
+
+		str = str.substring(0,str.length-1);
+
+		lines = str.split("\n");
+
+		lines.forEach(function(line){
+			key = line.substring(0,line.indexOf(":")).trim();
+			value = line.substring(line.indexOf(":")+1, line.lastIndexOf(";"));
+			if(key.length > 0){
+				obj[key] = value;
+			}
+		})
+
+		return obj;
+
+	} else {
+
+		return {};
+	}
+
+}
+
+/** DELETE THIS ONCE WE USE THE WRITE STYLE SHEET FROM CSSTEXT.js . THis is duplicate code
+because of scope of JS.  Can fix but requires much refactoring **/
+function writeStyleSheetForElement(styleObject,Query,documentWidth,currentBreakPoint){
+
+	var myCSSLookupKey = "\\." + styleObject.id
+
+	var theExp = new RegExp(myCSSLookupKey+'\\s+(\\{[^}]+\\})','im')
+
+	var thescript = "";
+
+	if(currentBreakPoint && currentBreakPoint > 0){
+		thescript = Query("style.max-width-"+currentBreakPoint)
+	} else {
+		thescript = Query("style.default");
+	}
+	groups = thescript.html().match(theExp)
+
+	var cssTextConstants = fs.readFileSync(path.join(process.env.HOMEDIR,"public","js","cssText.js")).toString();
+
+	var extConstants = fs.readFileSync(path.join(process.env.HOMEDIR,"public","js","extensions2.js")).toString();
+
+	var log = {}
+	log.debug = console.log;
+
+	//After evaluating this line, we can use any functions in that file
+	eval(cssTextConstants)
+
+	eval(extConstants)
+
+
+	if(groups && groups[1]){
+
+		//from the included file
+		styleObject = computeDimensions(styleObject,Query,documentWidth)
+
+		thescript.html(thescript.html().replace(theExp,styleObject.cssRule))
+
+		console.log("Wrote rule and new background-image  as " + styleObject["background-image"])
+
+		Query("#"+styleObject.id).attr("style","");
+	} 
+
+	return Query;
+
+}
+
 //var $ = require('jquery')
-function writeRevision(revisionDirectory,currentRevision,revDate,callback){
+function writeRevision(revisionDirectory,currentRevision,revDate,callback,siteName){
 
 	ok = true;
 
@@ -52,8 +142,13 @@ function writeRevision(revisionDirectory,currentRevision,revDate,callback){
 	$('body').find("[role=dialog]").remove()
 	$('body').find('ul.custom-menu').remove();
 	$('body').find('.responsive-design-tab').remove();
+	$('body').find('#myp').remove();
+	$('body').find('[type=anchor]').css('border','none')
+	$("body").find('.ui-helper-hidden-accessible,.ui-autocomplete,#ghostery-purple-box').remove();
 	
 	$('html').attr("BREAKPOINTS",JSON.stringify(currentRevision.BREAKPOINTS))
+
+
 
 	try {
 
@@ -71,6 +166,68 @@ function writeRevision(revisionDirectory,currentRevision,revDate,callback){
 	fname = dateformat(revDate, 'mmddyyyyHHMM');
 
 	fname = path.join(revisionDirectory,fname)
+
+	var theImgPathDir = path.join(path.join(process.env.SITEDIR,siteName,"images"))
+
+	console.log("Writing images to " + theImgPathDir)
+
+	fx.mkdirSync(theImgPathDir);
+
+	var base64Img = require('base64-img');
+
+	$(".convertImage").each(function(it,div){
+
+		div = $(div);
+
+		obj = getStyleSheetForElement(div.attr("id"),$)
+
+		if(obj["background-image"]){
+
+			var raw = obj["background-image"].substring(obj["background-image"].indexOf("data"),obj["background-image"].lastIndexOf("\""));
+
+			console.log("Raw is " + raw)
+
+			var newName = obj.alias ? obj.alias +"-image" : obj.id + "-image";
+
+			var filepath = null;
+
+			if(raw.startsWith("data:")){
+				try {
+					filepath = base64Img.imgSync(raw, theImgPathDir, newName);
+				}catch(e){
+					console.log("Base64 error")
+					console.log(e);
+					div.removeClass("convertImage");
+				}
+
+
+				if(filepath){
+
+					console.log("Wrote image to " + filepath);
+
+					div.css("background-image","url("+ filepath.substring(filepath.indexOf("/images")+1) + ")");
+
+					obj["background-image"] = div.css("background-image");
+
+					//now set CSS file correctly
+
+					$ = writeStyleSheetForElement(obj,$,currentRevision.documentWidth);
+
+					div.removeClass("convertImage");
+
+
+
+					
+				}
+			} else {
+				$ = writeStyleSheetForElement(obj,$,currentRevision.documentWidth);
+				div.removeClass("convertImage");
+			}
+		}
+		
+
+	})
+
 
 	fs.writeFile(fname,$.html(),function(err){
 
@@ -131,7 +288,7 @@ router.post('/', function(req, res, next) {
 		}else {
 			res.sendStatus(200);
 		}
-	});
+	},req.get('x-site-name'));
 	
 	
 });

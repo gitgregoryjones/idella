@@ -9,6 +9,8 @@ CSSTEXT_HARDCODEDCSSTEXT.split(";").forEach(function(style){
 	}
 })
 
+
+
 function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExists){
 
 	var re = new RegExp(myCSSLookupKey+'\\s+\\{[^}]+\\}','img')

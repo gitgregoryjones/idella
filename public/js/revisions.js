@@ -283,7 +283,10 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 
 	tempH.find('.saveImage').remove();
 
-	object = {siteName:$('html').first().attr('x-site-name'),html:tempH.html(),css:"",pageName:$('html').first().attr('x-current-page-name'), anchors:REVISION_anchors,BREAKPOINTS:BREAKPOINTS}
+	object = {siteName:$('html').first().attr('x-site-name'),html:tempH.html(),css:""
+		,pageName:$('html').first().attr('x-current-page-name')
+		, anchors:REVISION_anchors,BREAKPOINTS:BREAKPOINTS
+		,documentWidth:document.documentElement.clientWidth}
 
 	REVISION_createNewSite(object.siteName,function(ok,err){
 

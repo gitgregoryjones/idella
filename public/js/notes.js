@@ -63,7 +63,7 @@ function NOTES_makeNote(element,isActive){
 				//$(element).css("opacity",".7");
 				CUSTOM_currentlyMousingOverElementId = $(element).attr("id")
 
-				$(element).parents().first().trigger("mouseleave")
+				$(element).parents().first().mouseleave()
 	}
 
 	
@@ -225,10 +225,10 @@ function NOTES_makeNote(element,isActive){
 				element.resizable();
 			})
 		}
-		
+		/*
 		theMsg.on('mouseenter',function(){
 			userHoveringOverNote = true;
-		}).on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);
+		}).on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);*/
 
 	
 		$("body").append(theMsg);
@@ -315,8 +315,16 @@ function NOTES_makeNote(element,isActive){
 		$(".quick-disabled").on("input",QUICK_EDIT)
 
 						.on("click",function(et){$(et.target).attr("value","")})
-						.on("mouseenter",function(et){$(et.target).addClass("quick-edit")})
-						.on("mouseleave",function(et){$(et.target).removeClass("quick-edit")},CUSTOM_DONE_NOTE_EDITING_LOGIC)
+						.on("mouseenter",function(et){$(et.target).addClass("quick-edit"); $(et.target).attr("ov",$(et.target).attr("value"))})
+						.on("mouseleave",function(et){
+							targ = $(et.target);
+							targ.removeClass("quick-edit");
+							if(targ.attr("value") != targ.attr("ov")){
+								CUSTOM_DONE_NOTE_EDITING_LOGIC(et);
+							}
+
+						})
+						
 						
 	} 
 

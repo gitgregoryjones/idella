@@ -65,7 +65,7 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 
 	theClassObj = computeDimensions(theClassObj)
 
-
+	/*
 
 	var outStr = "." + element.attr("id") + " {\n";
 
@@ -79,7 +79,7 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 	if(theClassObj.type == "ICON"){
 		log.debug("EXTENSIONS2.js:CSS Rule for ICON")
 		log.debug(theClassObj.cssRule)
-	}
+	}*/
 
 	
 
@@ -88,9 +88,16 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 }
 
 
-function computeDimensions(theClassObj){
+function computeDimensions(theClassObj,Query,cWidth){
+
+
+	var theDocWidth = cWidth ? cWidth : document.documentElement.clientWidth;
 
 	//moveMe = $(moveMe)
+	if(Query){
+		$ = Query;
+	}
+
 
 	var X = theClassObj.left;
 
@@ -103,7 +110,7 @@ function computeDimensions(theClassObj){
   	var numbersInPXReg = /([+-]?\d+(?:\.\d+)?)(px)/g
 
   	if(units =="vw"){
-  		adjuster = (100 / document.documentElement.clientWidth);
+  		adjuster = (100 / theDocWidth);
   		log.debug("EXTENSIONS2.js:Adjuster is " + adjuster);
   		log.debug(theClassObj["width"])	
   	}
@@ -185,6 +192,19 @@ function computeDimensions(theClassObj){
 		theClassObj["position"] = "absolute";
 		log.debug("EXTENSIONS2.js: Over saw the theClassObj.position as " + theClassObj["position"])
 	}
+
+	var outStr = "." + theClassObj.id + " {\n";
+
+	var obj = {a: 1, b: 2, c: 3};
+    
+	for (var prop in theClassObj) {
+	  outStr += "\t" + prop + ":" + theClassObj[prop] + ";\n";
+	}
+
+	outStr +="}"
+	//theClassObj["rawjson"] = JSON.stringify(theClassObj);
+	theClassObj["cssRule"] = outStr;
+	
 
 	return theClassObj;
 

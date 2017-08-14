@@ -163,35 +163,6 @@ function generateMediaQueryString(){
 }
 
 
-function getStyleSheetForElement(elementStyleSheetId){
-
-	var myCSSLookupKey = "\\." + elementStyleSheetId
-
-	var theExp = new RegExp(myCSSLookupKey+'\\s+(\\{[^}]+\\})','im')
-
-	var thescript = "";
-
-	if(isBreakPoint()){
-		thescript = $("style.max-width-"+currentBreakPoint)
-	} else {
-		thescript = $("style.generated");
-	}
-
-	groups = thescript.html().match(theExp)
-
-	log.debug(groups)
-
-	if(groups[1]){
-
-		return (groups[1])
-
-	} else {
-
-		return {};
-	}
-
-}
-
 
 /* persist breakpoint
 */

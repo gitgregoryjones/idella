@@ -140,7 +140,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	
 	if($(event.target).hasClass("ui-resizable-handle")){
 		//alert($(event.target).parents(".dropped-object").first().attr("id"))
-		$(event.target).parents(".dropped-object").first().trigger("mouseenter");
+		$(event.target).parents(".dropped-object").first().mouseenter();
 		//$(event.target).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 		
 		return;	
@@ -206,7 +206,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 			log.info("Changing target to dropped-object");
 			//theElem = $(theElem).parents(".dropped-object").first();
 			log.info(theElem)
-			$(theElem).parents(".dropped-object").first().trigger('mouseenter')
+			$(theElem).parents(".dropped-object").first().mouseenter();
 			return;
 		}	
 
@@ -241,7 +241,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	} else {
 		log.debug("Entering bad child bad node")
 		$(".dropped-object").not(event.target).removeClass("submenu")
-		$(event.target).parents().first().trigger("mouseenter")
+		$(event.target).parents().first().mouseenter();
 		return;
 	}
 }
@@ -294,7 +294,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 		log.warn("CUSTOMEVENTS2.js: Bad Node Encountered-->\n " + $(event.target).html())
 		$(event.target).removeClass("submenu")
 		$(event.target).parent().removeClass("submenu")
-		$(event.target).parent(".dropped-object").trigger("mouseleave")
+		$(event.target).parent(".dropped-object").mouseleave();
 	} else {
 		$("#"+event.target.id).removeClass("submenu")
 
@@ -1160,15 +1160,17 @@ function setUpAnchors(div){
 
 		$(anchor).on("dblclick",function(e){
 				if(editing){
-					$(this).parents("[href]").first().trigger("dblclick")
+					
+					$(this).parents("[href]").first().dblclick();
 					//e.preventDefault();
+
 					return false;
 				}
 
 		}).on("click",function(){
 			log.debug("CUSTOMEVENTS.js:Editing is " + editing)
 				if(editing){
-					$(this).parent("[href]").first().click();
+					//$(this).parent("[href]").first().click();
 					//e.preventDefault();
 					return false;
 				}
@@ -1177,7 +1179,7 @@ function setUpAnchors(div){
 
 			if(editing) {			
 				window.status = $(this).attr("href");
-				$(this).parent("[href]").first().trigger("mouseenter");
+				$(this).parent("[href]").first().mouseenter();
 			}
 		})
 
@@ -1206,10 +1208,11 @@ function CUSTOM_HANDLEFILES(files) {
     var reader = new FileReader();
     reader.onload = (function(aImg) { return function(e) { 
     	 $(aImg).css({"background-image":"url(" + e.target.result + ")","background-size":"cover"})
-    	  
+    	 $(aImg).addClass("convertImage");
+    	 CUSTOM_PXTO_VIEWPORT($(aImg),$(aImg).position().left, $(aImg).position().top) 
     }; })(img);
     reader.readAsDataURL(file);
-    CUSTOM_PXTO_VIEWPORT($(img),$(img).position().left, $(img).position().top)
+    
 
   }
 }
