@@ -181,7 +181,7 @@ function getHelp(url){
 
 	} else {
 
-		tools.frame = $('<iframe id="help-css" src="'+url+'" width="100%" height="100%"></iframe>').css({display:"none",position:"absolute",top:"0px",left:"0px","z-index":"10000"})
+		tools.frame = $('<iframe id="help-css" src="'+url+'" ></iframe>').css({display:"none",position:"absolute",top:$("[alias=header]").position().top,left:"0px","z-index":"10000",height:"6000px",width:"100vw"})
 
 		tools.close = $('<div id="close-help" class="fa fa-window-close"></div>')
 				.css({display:"none",cursor:"pointer",position:"absolute",top:"10px","right":"10px",
@@ -210,6 +210,8 @@ function getHelp(url){
 			$("#drawSpace").append($(tools.frame).fadeIn(1000))
 			$("#drawSpace").append(tools.close.fadeIn(1000));
 			//$("#drawSpace").append(tools.sponsor.fadeIn(1000));
+		} else {
+			$('body').append($(tools.frame).fadeIn(1000))
 		}
 	} 
 
