@@ -176,9 +176,12 @@ $(document).ready(function() {
 
 			//on window resize, do ghost stuff
 			loadAllBreakPoints()
+			
+			
 			$(window).on('resize',drawResponsiveTab)		   
 		 }
 
+	
 		 website = $('html').first().attr("x-site-name")
 
 		  $.ajaxSetup({
