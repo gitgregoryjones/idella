@@ -2001,7 +2001,16 @@ DROPPER_LOGIC = {
 
 					if($(parent).children(child).length > 0  && $(parent).is("[type=LIST]")){
 						return;
-					}
+
+					} else if($(parent).children(child).length > 0  )
+	        		{
+	        	
+	        			CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+	     
+	        			return;
+	        		} 
+
+
 
 					/* Not needed since on dragstop event is already active
 	        		if($(parent).children(child).length > 0  )

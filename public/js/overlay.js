@@ -96,7 +96,7 @@ function OVERLAY_showOverlay(theElem){
 		if(theElem.hasAttribute("overlay") ){
 
 				//$("[type=OVERLAY]").trigger("mouseleave");
-				olay = $(theElem).children("[type=OVERLAY]").first();
+				var olay = $(theElem).children("[type=OVERLAY]").first();
 
 				olay.css("opacity",0)
 				olay.show();
@@ -186,6 +186,8 @@ function OVERLAY_showOverlay(theElem){
 						})
 					
 					}
+				}).on("click",function(){
+					$(this).mouseleave();
 				})
 		} else {
 
