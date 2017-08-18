@@ -178,7 +178,7 @@ function SAVEJS_goInactive() {
 
     // do save
    //if(autoSaveEnabled && !userHoveringOverNote && !$("#jsdialog").dialog("isOpen") && !$("#dialog").dialog("isOpen") && !$("#smalldialog").dialog("isOpen")){
-   if(SAVE_okToSave){	
+   if(SAVE_okToSave && editing){	
 
 		var saveImage = $("<div>",{class:"saveImage"})
 		$("body").append(saveImage);
