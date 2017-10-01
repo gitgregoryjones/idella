@@ -172,7 +172,7 @@ function writeDefaultSiteContents(site,page,revisionDir,callback){
 
 	getRevisionFileContents(site,new Date().toString(),process.env.HOMEDIR,"template2.html","/",function(ok,contents){
 		var version = {html:contents,css:"",currentPage:page, date:new Date().toString(),bps:[]}
-		writeRevision(revisionDir,version,currentTimePlus5Seconds.toString(),callback);
+		writeRevision(revisionDir,version,currentTimePlus5Seconds.toString(),callback,site);
 	});
 
 	//writeRevision(revisionDir,version,new Date().toString(),callback);

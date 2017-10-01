@@ -544,53 +544,100 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 		rT = ui.position.top / ui.originalPosition.top 
 
 		
-		$(event.target).find("[type]").each(function(it,child){
-
-			child = $(child)
-
-		
-
-			if(child.attr("original-height") && child.attr("original-width")){
-
-				var myH = parseFloat(child.attr("original-height"))
-				var myW = parseFloat(child.attr("original-width")) 
-				var myT = parseFloat(child.attr("original-top"))
-				var myL = parseFloat(child.attr("original-left")) 
-				var LRatio = parseFloat(child.attr("left-ratio"))
-				var TRatio = parseFloat(child.attr("top-ratio"))
-
-				child.css(
-					{
-						height:myH * rH,
-						width:myW * rW,
-						left:LRatio * ui.size.width, 
-						top:TRatio * ui.size.height, 
-						"font-size":myH * rH
-					})
-				/*
-				if(child.is("[type=T],[type=BTN]")){
-					child.css("line-height","20px");
-				} else {
-				//	child.css("line-height",myH * rH)
-				}
-				*/
-				log.debug("Line height is " + child.css("line-height"))
-				//setTimeout(function(){log.debug("CUSTOMEVENTS.js:Waiting....")},2000)
-				//do something
-			} else {
-				child.attr("original-height",child.height())
-				child.attr("original-width",child.width())
-				child.attr("original-top",child.position().top)
-				child.attr("original-left",child.position().left)
-				child.attr("left-ratio",child.position().left/ui.originalSize.width)
-				child.attr("top-ratio",child.position().top/ui.originalSize.height)
-			}
-			
-
-		})
+		growOrShrinkChildren(event.target,ui)
 	}
 
 }
+
+//Called after parent node is in process of resizing and child nodes need to copy that effect
+//relative to parent
+function growOrShrinkChildren(node,ui){
+
+	$(node).children("[type]").each(function(it,child){
+
+		child = $(child)	
+
+		if(!child.attr("original-height")) {
+			child.attr("original-height",child.height())
+			child.attr("original-width",child.width())
+			child.attr("original-top",child.position().top)
+			child.attr("original-left",child.position().left)
+			child.attr("left-ratio",child.position().left/ui.originalSize.width)
+			child.attr("top-ratio",child.position().top/ui.originalSize.height)
+		}
+
+		var myH = parseFloat(child.attr("original-height"))
+		var myW = parseFloat(child.attr("original-width")) 
+		var myT = parseFloat(child.attr("original-top"))
+		var myL = parseFloat(child.attr("original-left")) 
+		var LRatio = parseFloat(child.attr("left-ratio"))
+		var TRatio = parseFloat(child.attr("top-ratio"))
+
+		//Save settings before shrinking
+		originalSize = {
+			width:child.width(),
+			height:child.height()
+		}
+
+		child.css(
+		{
+			height:myH * rH,
+			width:myW * rW,
+			left:LRatio * ui.size.width, 
+			top:TRatio * ui.size.height, 
+			"font-size":myH * rH
+		})
+
+		newSize = {
+			width:child.width(),
+			height:child.height()
+		}
+
+		if(child.children("[type]").length > 0){
+			console.log("I'm doing the small stuff " + child.attr("id"))
+			growOrShrinkChildren(child,{originalSize:originalSize,size:newSize})
+		} else {
+			console.log("I'm doing the big stuff " + child.attr("id"))
+		}
+	})
+
+}
+
+
+function onResizeEffectEnded(element){
+	//On Resize Stop...reset ratio of this node in relation to it's parent
+	if($(element).parent("[type]").length > 0){
+		console.log("I need to resize")
+
+		var parent = $(element).parent("[type]");
+		var node = $(element);
+
+		node.attr("original-height",node.height())
+		node.attr("original-width",node.width())
+		node.attr("original-top",node.position().top)
+		node.attr("original-left",node.position().left)
+		node.attr("left-ratio",node.position().left/parent.width())
+		node.attr("top-ratio",node.position().top/parent.height())
+
+	}
+
+	//On Resize Stop...reset ratios of any children
+	$(element).find("[type]").each(function(it,child){
+
+		var child = $(child);
+		var parent = $(element);
+
+		child.attr("original-height",child.height())
+		child.attr("original-width",child.width())
+		child.attr("original-top",child.position().top)
+		child.attr("original-left",child.position().left)
+		child.attr("left-ratio",child.position().left/parent.width())
+		child.attr("top-ratio",child.position().top/parent.height())
+
+
+	})
+}
+
 
 CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 	log.trace("Resizing is stopped " + event.target.id)
@@ -602,6 +649,8 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 	div = $(event.target);
 
+	onResizeEffectEnded(event.target);
+
 	if(groupResizeEnabled){
 		
 	
@@ -610,14 +659,13 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 			log.trace("Resizing Child is stopped for " + child.attr("id"))
 
-			child.removeAttr("original-height").removeAttr("original-width")
+			//child.removeAttr("original-height").removeAttr("original-width")
 
 			CUSTOM_PXTO_VIEWPORT(child,$(child).position().left,$(child).position().top)
 			//.trigger("resizestop",[$(child)])
 
 		})
 	}
-
 	
 
 	//Add border for menu-items. makes it easier for user to click and choose 
@@ -654,6 +702,8 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 	parent = $(event.target)
 
 	$(parent).removeClass("submenu");
+
+	onResizeEffectEnded(parent);
 
 	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
 	if(copiesModified){

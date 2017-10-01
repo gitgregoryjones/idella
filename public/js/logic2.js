@@ -16,7 +16,7 @@ version = "1.0";
 
 
 //var autoSaveEnabled = true;
-var editing = false	;
+var editing = true	;
 //var copiesModified = false;
 //var groupResizeEnabled = false;
 var smartId = 0;
@@ -335,7 +335,7 @@ function GenericTool(options){
 	this.id = this.name;
 	this.droppedModeStyle = "";
 	//this.droppedModeHtml = "<div>&nbsp;<div class='hotspot'>E</div><div>&nbsp;</div></div>";
-	this.droppedModeHtml="<div></div>";
+	this.droppedModeHtml="<div><div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img   src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div></div>";
 	this.editModeHtml = "<textarea>";
 	this.editModeStyle = "";
 	this.editModeAttribute = "value";

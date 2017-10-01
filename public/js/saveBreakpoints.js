@@ -204,6 +204,8 @@ function drawResponsiveTab(){
 
 	log.debug("Drawing Tab")
 
+	NOTES_delete();
+
 	if(isBreakPoint()){
 		$(".responsive-design-tab").css("background-color","green")
 		$(".mini-responsive-design-tab").css({"background-color":"green",color:"white"})

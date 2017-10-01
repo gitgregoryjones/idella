@@ -229,6 +229,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	var ds = $("<div>",{id:"drawSpace",class:"dropped-object",type:"canvas"})
 	var es = $("<div>",{id:"editSpace"}).append('<div id="tabs"><ul class="tabul"></ul></div>');
+
 	
 
 	ds.append(body.children());
@@ -239,7 +240,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	wp.append(es)
 
 	$(body).append(wp);
-
+	
 
 
 	wp.css({

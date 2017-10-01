@@ -239,10 +239,12 @@ function NOTES_makeNote(element,isActive){
 
 		//position bar in correct place so it does not overrun the screen
 		if(parseInt($(element).offset().left) + $(".msg").width()  > $("body").width()){
-			$(".msg").css({position:"absolute",top:parseInt($(element).offset().top)- $(".msg").height() - 20, left:parseInt($(element).offset().left)-300})
+			console.log("Slide Left " + $(element).attr("id")) 
+			$(".msg").css({position:"absolute",top:parseInt($(element).offset().top- $(".msg").height() - 40), left:parseInt($(element).offset().left)-160})
 			$(".peak").css({position:"absolute",top:parseInt($(element).offset().top)-20, left:parseInt($(element).offset().left)+20})
 		} else {
-			$(".msg").css({position:"absolute",top:parseInt($(element).offset().top)- $(".msg").height() - 20, left:parseInt($(element).offset().left)})
+			console.log("Default Slide Left " + $(element).attr("id")) 
+			$(".msg").css({position:"absolute",top:parseInt($(element).offset().top)- $(".msg").height() - 40, left:parseInt($(element).offset().left)})
 			$(".peak").css({position:"absolute",top:parseInt($(element).offset().top)-20, left:parseInt($(element).offset().left)+20})
 		}
 
@@ -261,16 +263,20 @@ function NOTES_makeNote(element,isActive){
 
 
 			//ok, this is really the last last check.  If to close to bottom, flip again
-		if(parseInt($(element).offset().top) + $(element).height() + $(".msg").height() + 20 > $("#drawSpace").height()){
+			if(parseInt($(element).offset().top) + $(element).height() + $(".msg").height() + 20 > $("#drawSpace").height()){
 
-			$(".msg").css({position:"absolute",top:parseInt($(element).offset().top) + $(element).height() - $(".msg").height() - 20})
-			$(".peak").css({position:"absolute",top:parseInt($(".msg").offset().top) + $(".msg").height()})
-		} else {
-				$(".msg").css({position:"absolute",top:parseInt($(element).offset().top) + $(element).height() + 20})
-				$(".peak").css({position:"absolute",top:parseInt($(element).offset().top) + $(element).height() -15})
-				//flip vertically
-				$(".peak").css({"-ms-transform": "rotate(180deg)","-webkit-transform": "rotate(180deg)","transform": "rotate(180deg)"})
-			}
+				//Place in bottom left corner of element
+				console.log("Bottom Left " + $(element).attr("id")) 
+				$(".peak").css({position:"absolute",top:parseInt(($(element).offset().top + $(element).height()) - 20 )})
+				$(".msg").css({position:"absolute",top:parseInt($(".peak").offset().top - $(".msg").height() - 20)})
+			} else {
+				console.log("Top Left " + $(element).attr("id")) 
+					$(".msg").css({position:"absolute",top:parseInt($(element).offset().top) + $(element).height() + 20 })
+					
+					//flip vertically
+					$(".peak").css({"-ms-transform": "rotate(180deg)","-webkit-transform": "rotate(180deg)","transform": "rotate(180deg)"})
+					$(".peak").css({position:"absolute",top:parseInt($(".msg").offset().top) - 40})
+				}
 
 		}
 
@@ -286,8 +292,8 @@ function NOTES_makeNote(element,isActive){
 
 
 		//Convert Coords to VW
-		$(".msg").css({top:($(".msg").offset().top * pxToVWAdjuster) + "vw",left:($(".msg").offset().left * pxToVWAdjuster) + "vw"})
-		$(".peak").css({top:($(".peak").offset().top * pxToVWAdjuster) + "vw",left:($(".peak").offset().left * pxToVWAdjuster) + "vw"})
+		//$(".msg").css({top:($(".msg").offset().top * pxToVWAdjuster) + "vw",left:($(".msg").offset().left * pxToVWAdjuster) + "vw"})
+		//$(".peak").css({top:($(".peak").offset().top * pxToVWAdjuster) + "vw",left:($(".peak").offset().left * pxToVWAdjuster) + "vw"})
 	
 
 
@@ -306,6 +312,8 @@ function NOTES_makeNote(element,isActive){
 
 		}
 
+		$(".active-message").css("overflow","auto")
+
 
 		noteShowing = true;
 
@@ -314,7 +322,7 @@ function NOTES_makeNote(element,isActive){
 		//write changes to parent object
 		$(".quick-disabled").on("input",QUICK_EDIT)
 
-						.on("click",function(et){$(et.target).attr("value","")})
+						.on("click",function(et){$(et.target).attr("value") == 'url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif")' ? $(et.target).attr("value","") : ""})
 						.on("mouseenter",function(et){$(et.target).addClass("quick-edit"); $(et.target).attr("ov",$(et.target).attr("value"))})
 						.on("mouseleave",function(et){
 							targ = $(et.target);

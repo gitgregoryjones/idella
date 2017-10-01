@@ -439,12 +439,13 @@ function writeTabs(currentCtx,forceWrite){
 		//Write menu
 		$(".tabul").append("<li style='width:10px'>&nbsp;</li>")
 		$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;More Styles : <input type="search" id="tags" value=""></div></li>');
-		$(".tabul").append('<li style="50px; padding:5px" class="mini-responsive-design-tab fa fa-desktop"><div class="fa fa-desktop"></div></li>');
+		$(".tabul").append('<li style="50px; padding:5px" class="mini-responsive-design-tab"><div class="fa fa-desktop"></div></li>');
+		$(".tabul").append('<li style="50px; padding:5px" class="rocket-save"><div style="display:inline">&nbsp;&nbsp;Save: </div><div class="fa fa-save"></div></li>');
+		$(".tabul").append('<li style="50px; padding:5px" class="rocket-settings"><div style="display:inline">&nbsp;&nbsp;Options: </div><div class="settings-icon fa fa-angle-double-up"></div></li>');
 		$(".tabul").append('<li style="50px; padding:5px">&nbsp;&nbsp;Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">&nbsp;&nbsp;Disable Hover <input type="checkbox" name="disableHoverEvents" id="disableHoverEvents">&nbsp;&nbsp;Show Overlays <input type="checkbox" name="showOverlays" id="showOverlays" class="showOverlays">&nbsp;&nbsp;Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">&nbsp;&nbsp;Resize Group <input type="checkbox" name="group-resize" id="group-resize"></li>');
 
 		//$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;Search Styles : <input type="search" id="tags" value=""></div></li>');
-		$(".tabul").append('<li style="50px; padding:5px" class="rocket-save"><div style="display:inline">&nbsp;&nbsp;Save: <div class="fa fa-save"></div></li>');
-		$(".tabul").append('<li style="50px; padding:5px" class="rocket-settings"><div style="display:inline">&nbsp;&nbsp;Config: <div class="settings-icon fa fa-angle-double-up"></div></li>');
+		
 		
 		$(".tabul").append('<div class="ui-widget">')
 

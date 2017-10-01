@@ -14,7 +14,7 @@ var memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: 60 * 30/
 
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
-var files = ["https://fonts.googleapis.com/css?family=Open+Sans:n,b,i,bi|Pacifico:n,b,i,bi|Lora:n,b,i,bi|Anton:n,b,i,bi|Basic:n,b,i,bi|Caudex:n,b,i,bi|Chelsea+Market:n,b,i,bi|Corben:n,b,i,bi|EB+Garamond:n,b,i,bi|Enriqueta:n,b,i,bi|Forum:n,b,i,bi|Fredericka+the+Great:n,b,i,bi|Jockey+One:n,b,i,bi|Josefin+Slab:n,b,i,bi|Jura:n,b,i,bi|Kelly+Slab:n,b,i,bi|Marck+Script:n,b,i,bi|Lobster:n,b,i,bi|Mr+De+Haviland:n,b,i,bi|Cinzel:n,b,i,bi|Niconne:n,b,i,bi|Noticia+Text:n,b,i,bi|Overlock:n,b,i,bi|Patrick+Hand:n,b,i,bi|Play:n,b,i,bi|Sarina:n,b,i,bi|Signika:n,b,i,bi|Spinnaker:n,b,i,bi|Monoton:n,b,i,bi|Sacramento:n,b,i,bi|Cookie:n,b,i,bi|Raleway:n,b,i,bi|Open+Sans+Condensed:300:n,b,i,bi|Amatic+SC:n,b,i,bi|Cinzel:n,b,i,bi|Sail:n,b,i,bi|Playfair+Display:n,b,i,bi|Libre+Franklin:n,b,i,bi|Libre+Baskerville:n,b,i,bi|&subset=latin-ext,cyrillic,japanese,korean,arabic,hebrew,latin","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","logic2.js"]
+var files = ["https://fonts.googleapis.com/css?family=Broadway:n,b,i,bi|Open+Sans:n,b,i,bi|Pacifico:n,b,i,bi|Lora:n,b,i,bi|Anton:n,b,i,bi|Basic:n,b,i,bi|Caudex:n,b,i,bi|Chelsea+Market:n,b,i,bi|Corben:n,b,i,bi|EB+Garamond:n,b,i,bi|Enriqueta:n,b,i,bi|Forum:n,b,i,bi|Fredericka+the+Great:n,b,i,bi|Jockey+One:n,b,i,bi|Josefin+Slab:n,b,i,bi|Jura:n,b,i,bi|Kelly+Slab:n,b,i,bi|Marck+Script:n,b,i,bi|Lobster:n,b,i,bi|Mr+De+Haviland:n,b,i,bi|Cinzel:n,b,i,bi|Niconne:n,b,i,bi|Noticia+Text:n,b,i,bi|Overlock:n,b,i,bi|Patrick+Hand:n,b,i,bi|Play:n,b,i,bi|Sarina:n,b,i,bi|Signika:n,b,i,bi|Spinnaker:n,b,i,bi|Monoton:n,b,i,bi|Sacramento:n,b,i,bi|Cookie:n,b,i,bi|Raleway:n,b,i,bi|Open+Sans+Condensed:300:n,b,i,bi|Amatic+SC:n,b,i,bi|Cinzel:n,b,i,bi|Sail:n,b,i,bi|Playfair+Display:n,b,i,bi|Libre+Franklin:n,b,i,bi|Libre+Baskerville:n,b,i,bi|&subset=latin-ext,cyrillic,japanese,korean,arabic,hebrew,latin","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","logic2.js"]
 var version = 1;
 
 var $ = null;
@@ -136,6 +136,7 @@ function writeRevision(revisionDirectory,currentRevision,revDate,callback,siteNa
 	ok = true;
 
 	console.log("Revision Directory is " + revisionDirectory)
+	console.log("passed Site Name is "+ siteName)
 
 	$ = cheerio.load(currentRevision.html.trim());
 	$('body').find('#misc-controls').remove();
@@ -171,6 +172,9 @@ function writeRevision(revisionDirectory,currentRevision,revDate,callback,siteNa
 	fname = dateformat(revDate, 'mmddyyyyHHMM');
 
 	fname = path.join(revisionDirectory,fname)
+
+	console.log("The siteName is " + siteName);
+	console.log("The site is " + process.env.SITEDIR);
 
 	var theImgPathDir = path.join(path.join(process.env.SITEDIR,siteName,"images"))
 
@@ -285,6 +289,9 @@ router.post('/', function(req, res, next) {
 
 	console.log(req.body)
 
+	
+	console.log("site name is still " + req.body.siteName)
+
 	writeRevision(dir,req.body,req.get('x-current-date'),function(ok,err){
 
 		if(err){
@@ -293,7 +300,7 @@ router.post('/', function(req, res, next) {
 		}else {
 			res.sendStatus(200);
 		}
-	},req.get('x-site-name'));
+	},req.body.siteName);
 	
 	
 });
@@ -607,7 +614,7 @@ function loadFiles($){
 
 function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,originalUrl,callback){
 
-	console.log("MEntered Revision File Contents");
+	console.log("MEntered Revision File Contents and site is " + site);
 
 	var cssTextConstants = fs.readFileSync(path.join(process.env.HOMEDIR,"public","js","cssText.js")).toString();
 

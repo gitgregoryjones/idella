@@ -10,3 +10,15 @@ Miami Font, http://www.dafont.com/20-db.font?text=MIAMI+VICE
 https://stackoverflow.com/questions/7961721/how-do-i-install-a-custom-font-on-an-html-site
 https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand#Commands
 rgb(202, 36, 39)
+//What I thought was a cool idea for the callout bubble.  Ended up not using it because the opacity was distracting and didn't lend well to users knowing that the bubble could actually manipulate the element
+.active-message {
+	background-color: rgba(49, 100, 235,.5)
+}
+
+.active-message:hover {
+	background-color: rgb(49, 100, 235)
+}
+
+.active-peak {
+	border-top-color:rgb(49, 100, 235);
+}

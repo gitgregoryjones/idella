@@ -194,8 +194,8 @@ function SAVEJS_goInactive() {
    		
    	} else {
    		log("Not saving because user is currently editing content " + $(".adialog").dialog("isOpen") +"in popup window or autoSaveEnabled " + SAVE_okToSave)	
-
-
+   		 window.clearTimeout(timeoutID);
+   		
    	}
 }
 
