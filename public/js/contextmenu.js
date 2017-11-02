@@ -141,6 +141,29 @@ $(document).on("initializationComplete",function(){
                         var aTool =  whichTool($(this).attr("type"));
                         aTool = configuredTool(aTool);
                         dropTool(aTool,{target:$("#drawSpace"),clientX:currentX,clientY:currentY});
+                        
+                        if(aTool.is("[type=NAVIGATION]")){
+                            aTool.css({width:"500px",height:"50px"});
+                            for(i=0;i<2;i++){
+                                var item = configuredTool(whichTool("SPAN"));
+                                item.html("menu "+(i+1));
+                                aTool.append(item);
+                                item.addClass("menutext")
+                                item.css({height:"30px",display:"inline-block","position":"relative","text-align":"center"})
+                                item.attr("onhover","background-color:navy;color:white")
+                              
+                                setUpDiv(item);
+
+                                CUSTOM_PXTO_VIEWPORT(item,item.offset().left,item.offset().top)
+                            } 
+
+                            //now convert to regular list for simplicity.
+                            //Note IF Condition will be skipped because we are already in this IF statement. Ugly code
+                            //but saves lines of code later
+                            aTool.attr("type","LIST")
+                            
+
+                        } else
                         //add helpers
                         if(aTool.is("[type=LIST]")){
 
@@ -525,6 +548,7 @@ log.debug("CONTEXTMENU.js: I am writing fields of length " + fields.length)
         }).on("click",function(event){
             $(document).unbind("keydown")
             $(this).attr("value","")
+            
         })
 
         $("#quick-edit input")[0].focus();

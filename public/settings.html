@@ -56,6 +56,7 @@
 			
 			<div class="fa fa-window-close"></div>
 			<div class="fa fa-pencil-square-o"></div>
+			<a href=""><div class="fa fa-download"></div></a>
 			
 		</div>
 		
@@ -283,6 +284,11 @@ $("#misc-sitename").on("change",function(){
 
 $("#misc-pages").on("change",function(){
 	window.location = "/" +$("#misc-sitename").find(":selected").attr("value") + "/" + $("#misc-pages").find(":selected").attr("value");
+})
+
+$(".fa-download").on('click',function(){
+	$(this).parent().attr("href","/download/"+$("#misc-sitename").find(":selected").attr("value"));
+	//alert($("#misc-sitename").find(":selected").attr("value"))
 })
 
 REVISION_getAllSites(function(ok,payload){

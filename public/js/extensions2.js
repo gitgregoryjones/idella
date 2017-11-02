@@ -154,7 +154,7 @@ function computeDimensions(theClassObj,Query,cWidth){
   	//theClassObj["line-height"] = theClassObj["type"] == "ICON" ||  theClassObj["type"] == "BTN" ? theClassObj["height"] : ( adjuster * parsePx(theClassObj["line-height"]));
   	//any last minute overrides
   	var me = $("#"+theClassObj["id"]);
-  	if($("#"+theClassObj["id"]).parent(".dropped-object").is("[type=LIST]")){
+  	if($("#"+theClassObj["id"]).parent(".dropped-object").is("[type=LIST],[type=NAVIGATION]")){
 
   		obj = $("#"+theClassObj.id);
 

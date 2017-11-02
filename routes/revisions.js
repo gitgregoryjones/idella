@@ -770,4 +770,5 @@ module.exports = router;
 module.exports.getRevision = getRevision;
 module.exports.writeRevision = writeRevision;
 module.exports.getRevisionFileContents = getRevisionFileContents;
+module.exports.getRevisionFileName = getRevisionFileName;
 

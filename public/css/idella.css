@@ -80,11 +80,16 @@ body.editing a[type=anchor] {
 	background-color: transparent;
 	color:inherit;
 	text-overflow: ellipsis;
+	width:100px;
 	
 }
 
+.quick-disabled-image-field {
+	width:250px;
+}	
+
 .quick-edit {
-	border: 2px dashed white;
+	border: 2px dashed red;
 }
 
 .peak , .active-peak{
@@ -100,6 +105,7 @@ body.editing a[type=anchor] {
     border-top-color: silver;
     width: 0px;
     height: 0px;
+    display:inline;
     z-index:9999999;
 }
 
@@ -108,7 +114,7 @@ body.editing a[type=anchor] {
 	background-color: silver;
 	color:white;
 	width:27.77777777777778vw;
-	width:250px;
+	width:300px;
 	min-width: 200px
 	min-height:60px;
 	height:9.333333333333334vw;
@@ -741,6 +747,29 @@ background-size: cover;
 .me2 {
     position:absolute;
 }
+
+
+.mini-responsive-design-tab {
+		display:none;
+}
+
+/*
+Edit box
+*/
+
+.edit-text{
+	font-size: 15px;
+	padding:5px;
+	background-color: black;
+	color:white;
+	font-weight: bold;
+	display:inline;
+}
+
+.edit-text:hover, .edit-text:visited {
+	background-color:navy;
+}
+
 
 
 @media (max-width: 700px) {

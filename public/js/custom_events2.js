@@ -225,7 +225,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 			
 		}	
 			
-		CUSTOM_currentlyMousingOverElementId = theElem.id;	
+		
 
 		log.debug("making note for " + CUSTOM_currentlyMousingOverElementId)
 
@@ -235,6 +235,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 
 		NOTES_delayShowingNote(theElem);
+
+		CUSTOM_currentlyMousingOverElementId = theElem.id;	
 		//Render popup note above element
 		//NOTES_makeNote(theElem)
 
@@ -263,20 +265,34 @@ function addPlusButton(elem){
 	}
 
 	$(elem).css("vertical-align","top");
-	plus.css({top:10, position:"relative","border-color":"white","text-align":"center","font-size":"40px","border-radius":"50px",
-			"background-color":"silver","margin":"10px","padding":"10px"
-			,"color":"white","z-index":30000}).on('click',function(){
-				cpy = recursiveCpy($(elem),plusButtonPushed);
-				/*$(elem).css("opacity","0");
-                $(elem).animate({opacity:op},600)*/
-               	op = $(currentCtx).css("opacity");
-                $(cpy).css("opacity","0");
-                $(cpy).animate({opacity:op},600)
-			}).on("mouseenter",function(){
-				$(this).css("background-color","navy")
-			});
 
-	plus.css({left:$(elem).width()/2 - plus.width()/2})
+	if($(elem).hasClass("menutext")){
+
+		plus.css({position:"absolute","background-color":"silver",color:"white","z-index":30000});
+		plus.css({left:0,top:0})
+
+	} else {
+
+		plus.css({top:10, position:"relative","border-color":"white","text-align":"center",
+			"font-size":"40px","border-radius":"50px",
+				"background-color":"silver","margin":"10px","padding":"10px"
+				,"color":"white","z-index":30000})
+
+		plus.css({left:$(elem).width()/2 - plus.width()/2})
+
+	}
+
+	plus.on('click',function(){
+		cpy = recursiveCpy($(elem),plusButtonPushed);
+		/*$(elem).css("opacity","0");
+        $(elem).animate({opacity:op},600)*/
+       	op = $(currentCtx).css("opacity");
+        $(cpy).css("opacity","0");
+        $(cpy).animate({opacity:op},600)
+
+	}).on("mouseenter",function(){
+		$(this).css("background-color","navy")
+	});
 
 	$(elem).on("mouseleave",function(){
 		plus.remove();
@@ -679,7 +695,7 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 		log.debug("RESIZE X IS " + $(event.target).css("left") + " Y IS " + $(event.target).css("top"))
 		CUSTOM_PXTO_VIEWPORT(event.target,$(event.target).position().left,$(event.target).position().top)
 
-		if(!$(event.target).is("[type=T")){
+		if(!$(event.target).is("[type=T]")){
 			$(event.target).addClass("submenu");
 			$(event.target).attr("contenteditable","false").css("-webkit-user-modify","false")
 		}
@@ -1366,6 +1382,34 @@ function setUpDiv(div){
 
 	var draggables = [];
 
+	if(div.is(".menutext")){
+
+		$(div).on("blur",function(e){
+
+			DRAW_SPACE_advancedShowing = false;
+
+			var div = $(e.target);
+
+			const regex = /(fa-\S+)/igm;
+
+			const subst = `<div class="fa $1"></div>`;
+
+			console.log($(div).html())
+
+			var txt = $(div).html();
+
+			$(div).html(txt.replace(regex,subst))
+
+			$(div).resizable("destroy").resizable();
+
+			$(div).attr('contenteditable','false').css("-webkit-user-modify","read");
+
+
+						
+		})
+	}
+
+
 	if(attr == "T" || attr == "BTN"){
 		$.event.trigger("translateTxt",[div])
 
@@ -1409,6 +1453,21 @@ function setUpDiv(div){
 				}
 				
 			})
+
+			const regex = /(fa-\w+)/igm;
+
+			const subst = `<div class="fa $1"></div>`;
+
+			var txt = "";
+
+			$(div).html($(div).html().replace(regex,subst))
+
+
+			$(div).resizable("destroy").resizable();
+
+			//Disable contenteditable on blur
+			$(div).attr('contenteditable','false').css("-webkit-user-modify","read");
+
 			$(this).resizable();
 		}).on('keydown',function(e){
 			 if(e.keyCode == 9 && e.shiftKey){

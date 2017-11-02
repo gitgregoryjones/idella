@@ -251,6 +251,7 @@ function writeTabs(currentCtx,forceWrite){
 							theValue = $(evnt.target).val();
 						}
 						$(parent).css("background-image",theValue);
+						$(parent).css("width","500px")
 						$(parent).css(label,theValue);
 						$(parent).attr(label,theValue)
 						log.debug("STYLETABS2.js:Overwriting background-image with src attribute since this is what the user really wants " + $(evnt.target).val())
@@ -286,7 +287,7 @@ function writeTabs(currentCtx,forceWrite){
 					$(parent).css("margin",0);
 				} else
 
-				if($(parent).is("[type=LIST]") && label.startsWith("margin")){
+				if($(parent).is("[type=LIST],[type=NAVIGATION]") && label.startsWith("margin")){
 					$(parent).children(".dropped-object").css(label,$(event.target).val())
 					$(parent).css("margin",0);
 				}

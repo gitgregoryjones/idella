@@ -32,12 +32,13 @@ function getFiles (srcpath) {
 	    .filter(file => fs.lstatSync(path.join(srcpath, file)).isFile())
 }
 
-/* Create direectory and home page. */
-router.get('/all', function(req, res, next) {
+function getAllSitePageNames(startingDir){
 
-	dirs = getDirectories(process.env.SITEDIR)
+	var dirs = getDirectories(startingDir)
 
-	dirList = []
+	console.log("getAllSitePageNames Reading Dirs is " + dirs);
+
+	var dirList = []
 
 	for(i=0;i<dirs.length; i++){
 
@@ -47,8 +48,8 @@ router.get('/all', function(req, res, next) {
 
 	dirsList = dirList.filter(function(directory){
 		console.log("Testing ["+directory.name + "]")
-		console.log("Looking for files in directory " + path.join(process.env.SITEDIR,directory.name))
-		directory.files = (getDirectories(path.join(process.env.SITEDIR,directory.name)));
+		console.log("Looking for files in directory " + startingDir)
+		directory.files = (getDirectories(path.join(startingDir,directory.name)));
 
 		clean = [];
 		directory.files.forEach(function(f){
@@ -60,9 +61,16 @@ router.get('/all', function(req, res, next) {
 		return true;
 
 	})
- 
 
-	res.send(JSON.stringify(dirsList));
+	return dirsList;
+}
+
+/* Create direectory and home page. */
+router.get('/all', function(req, res, next) {
+
+	var theFiles = getAllSitePageNames(process.env.SITEDIR)
+
+	res.send(JSON.stringify(theFiles));
 });
 
 /* Create direectory and home page. */
@@ -216,4 +224,5 @@ function createSite(name,callback){
 
 module.exports = router;
 module.exports.addPage = addPage;
+module.exports.getAllSitePageNames = getAllSitePageNames;
 

@@ -608,7 +608,7 @@
 	type:DIV;
 }
 .ELEM_1502581546042 {	id:ELEM_1502581546042;	height:1.921708185053381vw;	width:38.718861209964416vw;	color:rgb(0, 0, 0);	z-index:2;	class:generictext dropped-object ui-resizable ui-draggable ui-draggable-handle ui-droppable ELEM_1502581546042 debug-border-style squarepeg;	src:undefined;	position:absolute;	cursor:pointer;	background-color:rgba(0, 0, 0, 0);	border:0vw;	bottom:-22.473309608540927vw;	display:block;	font-family:Cinzel;	font-size:1.921708185053381vw;	font-weight:400;	left:3.2028469750889683vw;	letter-spacing:0;	margin-bottom:0vw;	margin-left:0vw;	margin-right:0vw;	margin-top:0vw;	outline-color:rgba(0, 0, 0, 0);	outline-style:solid;	outline-width:0.2135231316725979vw;	overflow-wrap:break-word;	right:25.907473309608545vw;	text-align:center;	text-decoration:underline solid rgb(0, 0, 0);	top:1.5658362989323844vw;	touch-action:none;	white-space:pre-line;	word-wrap:break-word;	align-items:normal;	align-self:normal;	-webkit-line-break:after-white-space;	perspective-origin:5.338078291814947vw 0.7117437722419929vw;	-webkit-text-decorations-in-effect:underline;	transform-origin:5.338078291814947vw 0.7117437722419929vw;	-webkit-user-modify:read-write;	text:meet personal chef malcolm prude;	type:T;}
-.ELEM_1502581608572 {	id:ELEM_1502581608572;	height:45.415162454873645vw;	width:44.765342960288805vw;	color:rgb(0, 0, 0);	z-index:1;	class:dropped-object ui-resizable ui-draggable ui-draggable-handle ui-droppable ELEM_1502581608572 previewmode debug-border-style squarepeg;	src:undefined;	position:absolute;	background-color:rgb(255, 255, 255);	background-image:url("http://localhost.turner.com:3000/www.personalchefmalcolm3.com/non");	background-repeat:no-repeat;	background-size:cover;	border:0vw;	bottom:-38.84346570397112vw;	box-shadow:0.21352346570397113vw 0.21352346570397113vw 0.21352346570397113vw 0vw;	display:block;	font-family:Cinzel;	font-weight:400;	left:51.33119133574007vw;	letter-spacing:0;	margin-bottom:0vw;	margin-left:0vw;	margin-right:0vw;	margin-top:0vw;	right:31.03205776173285vw;	text-decoration:none solid rgb(0, 0, 0);	top:3.55426714801444vw;	touch-action:none;	align-items:normal;	align-self:normal;	perspective-origin:7.326281588447653vw 7.326281588447653vw;	transform-origin:7.326281588447653vw 7.326281588447653vw;	type:DIV;}
+.ELEM_1502581608572 {	id:ELEM_1502581608572;	height:45.415162454873645vw;	width:44.765342960288805vw;	color:rgb(0, 0, 0);	z-index:1;	class:dropped-object ui-resizable ui-draggable ui-draggable-handle ui-droppable ELEM_1502581608572 previewmode debug-border-style squarepeg;	src:undefined;	position:absolute;	background-color:rgb(255, 255, 255);	background-repeat:no-repeat;	background-size:cover;	border:0vw;	bottom:-38.84346570397112vw;	box-shadow:0.21352346570397113vw 0.21352346570397113vw 0.21352346570397113vw 0vw;	display:block;	font-family:Cinzel;	font-weight:400;	left:51.33119133574007vw;	letter-spacing:0;	margin-bottom:0vw;	margin-left:0vw;	margin-right:0vw;	margin-top:0vw;	right:31.03205776173285vw;	text-decoration:none solid rgb(0, 0, 0);	top:3.55426714801444vw;	touch-action:none;	align-items:normal;	align-self:normal;	perspective-origin:7.326281588447653vw 7.326281588447653vw;	transform-origin:7.326281588447653vw 7.326281588447653vw;	type:DIV;}
 .ELEM_1502582146542 {
 	id:ELEM_1502582146542;
 	height:1.7477203647416413vw;
@@ -1052,7 +1052,6 @@
 	position:relative;
 	cursor:pointer;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url("none");
 	background-size:cover;
 	border:0.07598784194528875vw;
 	border-bottom-left-radius:1.6977963525835866vw;
@@ -3199,7 +3198,6 @@
 	position:absolute;
 	cursor:pointer;
 	background-color:rgba(255, 255, 255, 0.5);
-	background-image:url("http://localhost.turner.com:3000/www.personalchefmalcolm3.com/non");
 	background-repeat:no-repeat;
 	background-size:cover;
 	border:0vw;
@@ -4394,7 +4392,6 @@ body.hover .ELEM_1502578771214:hover {
 	src:undefined;
 	position:relative;
 	background-color:rgba(0, 0, 0, 0);
-	background-image:url("none");
 	background-size:cover;
 	border:0.25vw;
 	border-bottom-left-radius:1.6977975vw;

@@ -9,6 +9,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var revisions = require('./routes/revisions');
 var rewrites = require('./routes/rewrites');
+var download = require('./routes/downloadsite');
 var site = require('./routes/site');
 var distort = require('response-distort')
 var url = require('url')
@@ -50,6 +51,7 @@ app.use('/users', users);
 app.use('/revisions', revisions);
 app.use('/site', site);
 app.use('/rewrites',rewrites);
+app.use('/download',download);
 
 process.env.HOMEDIR = path.join(__dirname);
 

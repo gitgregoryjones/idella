@@ -265,7 +265,7 @@ function loadAllBreakPoints(){
 
 	//$("head").append($("style").addClass("generated").html(theSiteObj.style))
 
-	if(bp){
+	if(bp && theSiteObj){
 
 		for(idx in bp){
 			//mediaQueryCSS = getBreakpoint(bp[idx])

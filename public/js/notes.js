@@ -54,6 +54,8 @@ function setCaretPosition(elem, caretPos) {
 
 function NOTES_makeNote(element,isActive){
 
+	var blurInitialized = false;
+
 
 	var msgcoords = {top:0,left:0}
 
@@ -77,6 +79,9 @@ function NOTES_makeNote(element,isActive){
 		}
 		
 	}
+
+
+	console.log("CUSTOM_currentlyMousingOverElementId != $(element).attr(\"id\") is " + CUSTOM_currentlyMousingOverElementId + " ==? " + $(element).attr("id") )
 
 	if(GHOST_isForElement(element)){
 		return msgcoords;
@@ -199,11 +204,11 @@ function NOTES_makeNote(element,isActive){
 				}
 
 			} else {
-				theMsg.append(" <div>Source: <input type='text' class='quick-disabled' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
+				theMsg.append(" <div>Source: <input type='text' class='quick-disabled quick-disabled-image-field' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
 			}
 
 			theMsg.append("<div style='display:inline-block'></div>BgColor: <div style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ color + "'/>")
-			theMsg.append(" <div style='display:inline-block'><input type='text' class='quick-disabled' name='background-color' parent='" + element.id + "' value='" + color + "'></div>")
+			theMsg.append(" <div style='display:inline-block'><input type='text' class='quick-disabled quick-color' name='background-color' parent='" + element.id + "' value='" + color + "'></div>")
 			
 			theMsg.append(" <div>Font: <input type='text' class='quick-disabled' name='font-family' parent='" + element.id + "' value='" + fontFamily + "'></div>")
 			theMsg.append(" <div style='display:inline-block'> Text Color: <input type='text' class='quick-disabled' name='color' parent='" + element.id + "' value='" + txtColor + "'></div>")
@@ -225,10 +230,10 @@ function NOTES_makeNote(element,isActive){
 				element.resizable();
 			})
 		}
-		/*
+		
 		theMsg.on('mouseenter',function(){
 			userHoveringOverNote = true;
-		}).on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);*/
+		}).on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);
 
 	
 		$("body").append(theMsg);
@@ -313,7 +318,54 @@ function NOTES_makeNote(element,isActive){
 		}
 
 		$(".active-message").css("overflow","auto")
+		//Add 'Edit Box'
+		var ii = 0;
+		if($(element).is("[type=T],.menutext")){
+			$(".active-peak").append($("<div class=\"edit-text fa fa-edit\"></div>"))
+			$(".edit-text").css({position:"absolute",top:0-$(".edit-text").height(),left:0})
 
+			$(".edit-text").on("click",function(){
+				DRAW_SPACE_advancedShowing = true;
+				const regex = /<div class="\s*fa\s+(fa\-\S+)"><\/div>/gim;
+				const str = `$1`
+
+				$(element).html($(element).html().replace(regex,str))
+
+				$(element).attr('contenteditable','true').css("-webkit-user-modify","read-write").focus();
+			})
+
+
+			/*
+			if(!element.attr("blurred")){
+				$(element).css({outline: "0px solid transparent","white-space":"pre-line"});
+				//only register it once
+				$(element).attr("blurred","true")
+				$(element).on("blur",function(e){
+
+						DRAW_SPACE_advancedShowing = false;
+
+						var div = $(e.target);
+
+						const regex = /(fa-\S+)/igm;
+
+						const subst = `<div class="fa $1"></div>`;
+
+						console.log($(div).html())
+
+						var txt = $(div).html();
+
+						$(div).html(txt.replace(regex,subst))
+
+						$(div).resizable("destroy").resizable();
+
+						$(div).attr('contenteditable','false').css("-webkit-user-modify","read");
+
+
+					
+				})
+			}*/
+		
+		}
 
 		noteShowing = true;
 
@@ -321,7 +373,7 @@ function NOTES_makeNote(element,isActive){
 
 		//write changes to parent object
 		$(".quick-disabled").on("input",QUICK_EDIT)
-
+						.on("dblclick",function(et){this.value=""})
 						.on("click",function(et){$(et.target).attr("value") == 'url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif")' ? $(et.target).attr("value","") : ""})
 						.on("mouseenter",function(et){$(et.target).addClass("quick-edit"); $(et.target).attr("ov",$(et.target).attr("value"))})
 						.on("mouseleave",function(et){
