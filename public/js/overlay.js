@@ -73,6 +73,31 @@ function OVERLAY_areOverlaysEnabled(){
 
 }
 
+function OVERLAY_deleteInstructions(){
+
+	$("#imgwin").remove();
+
+	
+}
+
+
+function OVERLAY_showInstructions(theElem){
+
+	theElem = $(theElem)
+
+	OVERLAY_deleteInstructions();
+
+	if(editing && $(theElem).css("background-image").indexOf("saveabandonedbabies") > -1){
+		div = $("<div>",{id:"imgwin",width:theElem.width(),height:theElem.height()*.40})
+		div.append("Double click to edit image").css("text-align","center")
+		div.on("dblclick",function(){
+			$(this).parent().dblclick();
+			$(this).remove();
+		})
+		theElem.append(div);
+	}
+}
+
 function OVERLAY_showOverlay(theElem){
 
 	if(editing){
@@ -98,66 +123,76 @@ function OVERLAY_showOverlay(theElem){
 				//$("[type=OVERLAY]").trigger("mouseleave");
 				var olay = $(theElem).children("[type=OVERLAY]").first();
 
-				olay.css("opacity",0)
-				olay.show();
+				//Do Big Overlay if user wants
+				if(olay.attr("bigun")){
 
-				//olay.css({height:"6000px",width:$(theElem).outerWidth()})
-				olay.attr("orig-height",olay.height())
-				olay.attr("orig-width",olay.width());
-				olay.attr("orig-top",olay.offset().top);
-				olay.attr("orig-left",olay.offset().left);
+					olay.css("opacity",0)
+					olay.show();
 
-				olay.find(".dropped-object").each(function(it,div){
-					var div = $(div);
-					div.attr("orig-height",div.height())
-					div.attr("orig-width",div.width())
-					div.attr("ratio",div.height()/div.width());
-					div.attr("pct-x", (olay.offset().left -div.offset().left)/olay.width() )
-					div.attr("pct-y", (olay.offset().top -div.offset().top)/olay.height() )
-					div.attr("orig-top",div.offset().top)
-					div.attr("orig-left",div.offset().left)
-					//div.css({top:window.scrollY + "30",width:(div.width()/olay.width())*$(window).width(),height:(div.width()/olay.height())*$(window).height()})
-				})
+					//olay.css({height:"6000px",width:$(theElem).outerWidth()})
+					olay.attr("orig-height",olay.height())
+					olay.attr("orig-width",olay.width());
+					olay.attr("orig-top",olay.offset().top);
+					olay.attr("orig-left",olay.offset().left);
 
-				olay.hide();
-				olay.css("opacity",1);
+					olay.find(".dropped-object").each(function(it,div){
+						var div = $(div);
+						div.attr("orig-height",div.height())
+						div.attr("orig-width",div.width())
+						div.attr("ratio",div.height()/div.width());
+						div.attr("pct-x", (olay.offset().left -div.offset().left)/olay.width() )
+						div.attr("pct-y", (olay.offset().top -div.offset().top)/olay.height() )
+						div.attr("orig-top",div.offset().top)
+						div.attr("orig-left",div.offset().left)
+						//div.css({top:window.scrollY + "30",width:(div.width()/olay.width())*$(window).width(),height:(div.width()/olay.height())*$(window).height()})
+					})
 
+
+					olay.hide();
+					olay.css("opacity",1);
+					olay.appendTo($('body')).css({"position":"absolute","z-index":"10000",top:0,height:"6000px",width:"100vw"})
+				}
+
+	
 				olay.fadeIn()
 
-				olay.appendTo($('body')).css({"position":"absolute","z-index":"10000",top:0,height:"6000px",width:"100vw"})
+				
 
 			
+				if(olay.attr("bigun")){
+					olay.find(".dropped-object").each(function(it,div){
+						var div = $(div);
+						
+						//alert(olay.attr("orig-top")/div.attr("orig-top"))
+						//alert((parseFloat(div.attr("orig-left"))/parseFloat(olay.attr("orig-left"))))
+						console.log("pct-x " + div.attr("pct-x"));
+						console.log("Left " + div.attr("pct-x")*$(window).width());
 
-				olay.find(".dropped-object").each(function(it,div){
-					var div = $(div);
-					
-					//alert(olay.attr("orig-top")/div.attr("orig-top"))
-					//alert((parseFloat(div.attr("orig-left"))/parseFloat(olay.attr("orig-left"))))
-					console.log("pct-x " + div.attr("pct-x"));
-					console.log("Left " + div.attr("pct-x")*$(window).width());
+						var coords = {"position":"absolute",display:"inline-block",
+							width:(div.attr("orig-width")/$(olay).attr("orig-width"))*$(window).outerWidth(),
+							height:((div.attr("orig-width")/$(olay).attr("orig-width"))*$(window).width()) * div.attr("ratio"),
+							top:Math.abs((div.attr("pct-y") * $(window).height())) - div.parent(".dropped-object").offset().top,
+							left:Math.abs((div.attr("pct-x") * $(window).outerWidth())) - div.parent(".dropped-object").offset().left
+						}
+					//	olay.append($("<div style='font-size:20px'>"+JSON.stringify(coords)+ "</div>").css({top:window.scrollY,width:"400px"}))
+						//if first child
+						if(div.parent(olay)){
+							coords.top += window.scrollY;
+						}
+						div.css(coords)
+					})
+				}	
 
-					var coords = {"position":"absolute",display:"inline-block",
-						width:(div.attr("orig-width")/$(olay).attr("orig-width"))*$(window).outerWidth(),
-						height:((div.attr("orig-width")/$(olay).attr("orig-width"))*$(window).width()) * div.attr("ratio"),
-						top:Math.abs((div.attr("pct-y") * $(window).height())) - div.parent(".dropped-object").offset().top,
-						left:Math.abs((div.attr("pct-x") * $(window).outerWidth())) - div.parent(".dropped-object").offset().left
+				if(olay.attr("bigun")){
+					var close = $('<div id="close-help" class="fa fa-window-close"></div>');
+
+					close.appendTo(olay).css({position:"absolute","color":"navy","right":"5%","font-size":"30px","top":window.scrollY,"z-index":olay.css("z-index")+1}).on("click",function(){
+						olay.mouseleave();
+					});
+
+					if($(theElem).find("video").length > 0){
+						$(theElem).find("video")[0].play();
 					}
-				//	olay.append($("<div style='font-size:20px'>"+JSON.stringify(coords)+ "</div>").css({top:window.scrollY,width:"400px"}))
-					//if first child
-					if(div.parent(olay)){
-						coords.top += window.scrollY;
-					}
-					div.css(coords)
-				})
-
-				var close = $('<div id="close-help" class="fa fa-window-close"></div>');
-
-				close.appendTo(olay).css({position:"absolute","color":"navy","right":"5%","font-size":"30px","top":window.scrollY,"z-index":olay.css("z-index")+1}).on("click",function(){
-					olay.mouseleave();
-				});
-
-				if($(theElem).find("video").length > 0){
-					$(theElem).find("video")[0].play();
 				}
 
 				$("[type=OVERLAY]").not(olay).fadeOut();
@@ -173,17 +208,21 @@ function OVERLAY_showOverlay(theElem){
 
 					}
 					if(!OVERLAY_areOverlaysEnabled() || !editing){
-						$(this).fadeOut(function(){
-								olay.appendTo($(theElem))
-								olay.css({height:olay.attr("orig-height"),width:olay.attr("orig-width"),top:0,left:0})
-								olay.find(".dropped-object").each(function(it,div){
-					div = $(div);
-					
-					console.log("Width " + div.attr("orig-width")/$(window).width()*$(window).width());
-					div.attr("style","")
-				})
-								close.remove();
-						})
+						if(olay.attr("bigun")){
+							$(this).fadeOut(function(){
+									olay.appendTo($(theElem))
+									olay.css({height:olay.attr("orig-height"),width:olay.attr("orig-width"),top:0,left:0})
+									olay.find(".dropped-object").each(function(it,div){
+										div = $(div);
+										
+										console.log("Width " + div.attr("orig-width")/$(window).width()*$(window).width());
+										div.attr("style","")
+									})
+									close.remove();
+							})
+						} else {
+							$(this).fadeOut();
+						}
 					
 					}
 				}).on("click",function(){

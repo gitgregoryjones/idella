@@ -94,6 +94,7 @@ function NOTES_makeNote(element,isActive){
 
 	//window.clearTimeout(NOTES_timer);
 
+
 	element = $(element);
 
 	element.id = $(element).attr("id")
@@ -134,6 +135,17 @@ function NOTES_makeNote(element,isActive){
 			if(element.is("[type=T], [type=LIST]")){
 
 				if(element.is("[type=T]")){
+
+					
+
+					
+
+					var content = $(element).text();
+
+					
+					
+					theMsg.append(" <div style='display:inline-block'> Value: <input type='text' class='quick-disabled' name='value' parent='" + element.id + "' value='" + content + "'></div>").append("<br>")
+
 					stype = $("<select>").append(new Option("paragraph","paragraph")).append(new Option("menutext","menutext"));
 					theMsg.append($("<div style='display:inline-block; margin-right:10px'>Type:</div>").append(stype));
 
@@ -153,6 +165,8 @@ function NOTES_makeNote(element,isActive){
 						}
 						//element.resizable();
 					})
+
+
 
 				} else {
 
@@ -212,6 +226,7 @@ function NOTES_makeNote(element,isActive){
 			
 			theMsg.append(" <div>Font: <input type='text' class='quick-disabled' name='font-family' parent='" + element.id + "' value='" + fontFamily + "'></div>")
 			theMsg.append(" <div style='display:inline-block'> Text Color: <input type='text' class='quick-disabled' name='color' parent='" + element.id + "' value='" + txtColor + "'></div>")
+
 		
 		} else {
 			list = PLUGINS_getPluginList();
@@ -320,52 +335,7 @@ function NOTES_makeNote(element,isActive){
 		$(".active-message").css("overflow","auto")
 		//Add 'Edit Box'
 		var ii = 0;
-		if($(element).is("[type=T],.menutext")){
-			$(".active-peak").append($("<div class=\"edit-text fa fa-edit\"></div>"))
-			$(".edit-text").css({position:"absolute",top:0-$(".edit-text").height(),left:0})
-
-			$(".edit-text").on("click",function(){
-				DRAW_SPACE_advancedShowing = true;
-				const regex = /<div class="\s*fa\s+(fa\-\S+)"><\/div>/gim;
-				const str = `$1`
-
-				$(element).html($(element).html().replace(regex,str))
-
-				$(element).attr('contenteditable','true').css("-webkit-user-modify","read-write").focus();
-			})
-
-
-			/*
-			if(!element.attr("blurred")){
-				$(element).css({outline: "0px solid transparent","white-space":"pre-line"});
-				//only register it once
-				$(element).attr("blurred","true")
-				$(element).on("blur",function(e){
-
-						DRAW_SPACE_advancedShowing = false;
-
-						var div = $(e.target);
-
-						const regex = /(fa-\S+)/igm;
-
-						const subst = `<div class="fa $1"></div>`;
-
-						console.log($(div).html())
-
-						var txt = $(div).html();
-
-						$(div).html(txt.replace(regex,subst))
-
-						$(div).resizable("destroy").resizable();
-
-						$(div).attr('contenteditable','false').css("-webkit-user-modify","read");
-
-
-					
-				})
-			}*/
-		
-		}
+	
 
 		noteShowing = true;
 
@@ -374,14 +344,87 @@ function NOTES_makeNote(element,isActive){
 		//write changes to parent object
 		$(".quick-disabled").on("input",QUICK_EDIT)
 						.on("dblclick",function(et){this.value=""})
-						.on("click",function(et){$(et.target).attr("value") == 'url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif")' ? $(et.target).attr("value","") : ""})
-						.on("mouseenter",function(et){$(et.target).addClass("quick-edit"); $(et.target).attr("ov",$(et.target).attr("value"))})
-						.on("mouseleave",function(et){
-							targ = $(et.target);
+						.on("click",function(et){
+						//Do Default
+
+							$(et.target).attr("value") == 'url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif")' ? $(et.target).attr("value","") : "";
+
+
+							if($(et.target).attr("name") != "value"){
+								console.log("Not a text type...returning")
+								return;
+							}
+
+							var parent = $("#" + $(et.target).attr("parent"));
+
+							//DRAW_SPACE_advancedShowing = false;
+
+							const regex = /<div (?:icon="fa\-\S+")? class="\s*fa\s+(fa\-\S+)"\s*(?:style=".*")?><\/div>/gim;
+							const str = `$1`
+
+							$(parent).html($(parent).html().replace(regex,str))
+
+							$(et.target).val($(parent).text())
+
+						})
+
+						.on("mouseenter",function(et){
+							userHoveringOverNote = true;
+							$(et.target).addClass("quick-edit"); $(et.target).attr("ov",$(et.target).attr("value"))
+						})
+						.on("mouseleave",function(evnt){
+							targ = $(evnt.target);
 							targ.removeClass("quick-edit");
 							if(targ.attr("value") != targ.attr("ov")){
 								CUSTOM_DONE_NOTE_EDITING_LOGIC(et);
 							}
+
+						
+
+							userHoveringOverNote = false;
+							var parent = $("#" + $(evnt.target).attr("parent"));
+							parent.resizable("destroy").resizable();
+
+							console.log("CHANGING IT UP BABY")
+
+
+							if(parent.is("[type=T]")){
+
+								if(parent.text().trim() == "fa-bars"){
+									//Write JS
+									$(parent).attr("id","zMenu")
+									var id = "#" + $(parent).attr("id");
+									var jsString = `$("${id}").on("click",function(){\n\tonMenu()\n})`;
+									if(getJs(parent) == null){
+										eval(jsString)
+									}
+									
+									saveJs(parent,jsString);
+
+								}
+
+								$(parent).contents().filter(function() { 
+								    //Node.TEXT_NODE === 3
+								    return (this.nodeType === 3);
+								}).each(function () {
+								    // for each text node, do something with this.nodeValue
+								    
+	
+								    	const regex = /((fa-\w+)(?:-\w+)?)/igm;
+
+										const subst = `<div icon="$1" class="fa $1"></div>`;
+
+										//alert($(div).html())
+										//this.nodeValue = (this.nodeValue.replace(regex,subst))
+										$(this).replaceWith(this.nodeValue.replace(regex,subst))
+
+								    
+								});
+
+
+
+								
+							} 
 
 						})
 						
@@ -412,7 +455,8 @@ function QUICK_EDIT(evnt){
 				$(parent).attr("user-classes",$(event.target).val())	
 			}else if(label == "src" || label == "align"){
 
-				$(parent).find(".content-image").attr(label,$(evnt.target).val())
+				//$(parent).find(".content-image").attr(label,$(evnt.target).val())
+				$(parent).find("video").first().attr(label,$(evnt.target).val())
 				//https://www.uvm.edu/~bnelson/computer/html/wrappingtextaroundimages.html
 				if(label == "align"){
 					$(parent).find("br").attr(clear,$(evnt.target).val())
@@ -437,9 +481,32 @@ function QUICK_EDIT(evnt){
 
                     
 				
-			} else {
+			} else if(label == "value"){
 
-				//if this is a custom css option. ie how we define components, write as attribute
+					console.log("User changing text to " + $(evnt.target).val())
+
+					var idx =0;
+
+					var final = "";
+
+					/*
+					$(parent).contents().filter(function() { 
+					    //Node.TEXT_NODE === 3
+					    return (this.nodeType === 3);
+					}).each(function () {
+					    // for each text node, do something with this.nodeValue
+					    //if(idx == 0){
+					    	this.nodeValue = $(evnt.target).val()
+
+					    //}
+					});*/
+
+					$(parent).text($(evnt.target).val());
+
+					
+			}else {
+
+				//if this is NOT custom css option. ie how we define components, write as attribute
 				if(!$(parent).css(label)){
 					$(parent).attr(label,$(evnt.target).val())
 				} else {

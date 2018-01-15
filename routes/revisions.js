@@ -9,12 +9,13 @@ url = require('url');
 var getJSON = require('get-json')
 var cacheManager = require('cache-manager');
 var persist = require('../persist');
+var moment = require('moment');
 var memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: 60 * 30/*seconds*/});
 //var addPage = require('./site').addPage;
 
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
-var files = ["https://fonts.googleapis.com/css?family=Broadway:n,b,i,bi|Open+Sans:n,b,i,bi|Pacifico:n,b,i,bi|Lora:n,b,i,bi|Anton:n,b,i,bi|Basic:n,b,i,bi|Caudex:n,b,i,bi|Chelsea+Market:n,b,i,bi|Corben:n,b,i,bi|EB+Garamond:n,b,i,bi|Enriqueta:n,b,i,bi|Forum:n,b,i,bi|Fredericka+the+Great:n,b,i,bi|Jockey+One:n,b,i,bi|Josefin+Slab:n,b,i,bi|Jura:n,b,i,bi|Kelly+Slab:n,b,i,bi|Marck+Script:n,b,i,bi|Lobster:n,b,i,bi|Mr+De+Haviland:n,b,i,bi|Cinzel:n,b,i,bi|Niconne:n,b,i,bi|Noticia+Text:n,b,i,bi|Overlock:n,b,i,bi|Patrick+Hand:n,b,i,bi|Play:n,b,i,bi|Sarina:n,b,i,bi|Signika:n,b,i,bi|Spinnaker:n,b,i,bi|Monoton:n,b,i,bi|Sacramento:n,b,i,bi|Cookie:n,b,i,bi|Raleway:n,b,i,bi|Open+Sans+Condensed:300:n,b,i,bi|Amatic+SC:n,b,i,bi|Cinzel:n,b,i,bi|Sail:n,b,i,bi|Playfair+Display:n,b,i,bi|Libre+Franklin:n,b,i,bi|Libre+Baskerville:n,b,i,bi|&subset=latin-ext,cyrillic,japanese,korean,arabic,hebrew,latin","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","logic2.js"]
+var files = ["https://fonts.googleapis.com/css?family=Dancing+Script|Roboto|Lato|Broadway|Open+Sans|Pacifico:n,b,i,bi|Lora:n,b,i,bi|Anton:n,b,i,bi|Basic:n,b,i,bi|Caudex:n,b,i,bi|Chelsea+Market:n,b,i,bi|Corben:n,b,i,bi|EB+Garamond:n,b,i,bi|Enriqueta:n,b,i,bi|Forum:n,b,i,bi|Fredericka+the+Great:n,b,i,bi|Jockey+One:n,b,i,bi|Josefin+Slab:n,b,i,bi|Jura:n,b,i,bi|Kelly+Slab:n,b,i,bi|Marck+Script:n,b,i,bi|Lobster:n,b,i,bi|Mr+De+Haviland:n,b,i,bi|Cinzel:n,b,i,bi|Niconne:n,b,i,bi|Noticia+Text:n,b,i,bi|Overlock:n,b,i,bi|Patrick+Hand:n,b,i,bi|Play:n,b,i,bi|Sarina:n,b,i,bi|Signika:n,b,i,bi|Spinnaker:n,b,i,bi|Monoton:n,b,i,bi|Sacramento:n,b,i,bi|Cookie:n,b,i,bi|Raleway:n,b,i,bi|Open+Sans+Condensed:300:n,b,i,bi|Amatic+SC:n,b,i,bi|Cinzel:n,b,i,bi|Sail:n,b,i,bi|Playfair+Display:n,b,i,bi|Libre+Franklin:n,b,i,bi|Libre+Baskerville:n,b,i,bi|&subset=latin-ext,cyrillic,japanese,korean,arabic,hebrew,latin","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","logic2.js"]
 var version = 1;
 
 var $ = null;
@@ -223,9 +224,6 @@ function writeRevision(revisionDirectory,currentRevision,revDate,callback,siteNa
 					$ = writeStyleSheetForElement(obj,$,currentRevision.documentWidth);
 
 					div.removeClass("convertImage");
-
-
-
 					
 				}
 			} else {
@@ -314,6 +312,8 @@ function getRevisionFileName(fpath,dateGMTString,callback){
 		
 	today = new Date(dateGMTString)
 
+	var todayAsMs = today.getTime();
+
 	//todayAsNumber = parseFloat(today.getMonth()+""+today.getDate()+""+today.getFullYear()+today.getHours()+""+today.getMinutes())
 	//todayAsNumber = parseFloat(dateformat(today, 'mmddyyyyhhMM'));
 	todayAsNumber = (dateformat(today, 'mmddyyyyHHMM'));
@@ -339,14 +339,20 @@ function getRevisionFileName(fpath,dateGMTString,callback){
 
 		list.reverse();
 
-		fileName = "";
+		var fileName = "";
 
 		//console.log("List is  " + list )
 
 		for(i=0; i < list.length; i++){
 			fileName = list[i];
-			console.log("comparing todayAsNumber > list[i] : " + todayAsNumber + " > " + (list[i]))
-			if(todayAsNumber >= parseFloat(list[i])){
+
+			var fileAsMs = new Date(moment(fileName,"MMDDYYYYHHmm").format()).getTime();
+			console.log("Doobears" + fileAsMs	+ " filename " + fileName)
+
+			//console.log("comparing todayAsNumber > list[i] : " + todayAsNumber + " > " + (list[i]))
+			console.log("comparing todayAsNumber > list[i] : " + todayAsMs + " > " + (fileAsMs))
+			//if(new Date(todayAsNumber >= parseFloat(list[i])){
+			if(parseFloat(todayAsMs) >= parseFloat(fileName)){
 			//if(todayAsNumber >= list[i]){
 
 				break;

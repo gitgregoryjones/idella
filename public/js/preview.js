@@ -79,6 +79,7 @@ function PREVIEW_togglePreview(showPreview){
 		DRAW_SPACE_deleteWorkspaceFromBody();
 		$(".ui-icon").hide();
 		$(".ghost").hide();
+		$("#myp").hide();
 		$(".dropped-object").css("touch-action","auto")
 
 	}else {

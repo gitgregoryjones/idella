@@ -83,15 +83,21 @@ router.get('/:site', function(req, res, next) {
 	    overwrite: true,
 	    expand: true, 
 	    transform: function(src, dest, stats) {
+
+	    	var regex = new RegExp("(http:\/\/\\S+\/"+site+"\/)","g");
+
+	    	console.log("Regex is ");
+	    	console.log(regex);
 	      
 	        return through(function(chunk, enc, done)  {
 	        	if(!chunk){
 	        		return null;
 	        	}
 
-	            var output = chunk.toString().replace(/\"\/css/g,"\"css").replace(/\"\/js/g,"\"js")
+	            var output = chunk.toString().replace(/\"\/css/g,"\"css").replace(/\"\/js/g,"\"js").replace(regex,"")
 	            
-	            .replace(/\"\/images/g,"\"images").replace(/style\:dashed/g,"style:none");
+	            .replace(/\"\/images/g,"\"images").replace(/style\:dashed/g,"style:none")
+	            
 	            //console.log("Output is " + output)
 	            done(null, output);
 	        });
@@ -165,14 +171,8 @@ router.get('/:site', function(req, res, next) {
 		}
 	}
 
-	try {
-
-	fs.mkdirSync(srcImagesPath)
-
-	}catch(e){
-		console.log("images directory already exists");
-		console.log(e)
-	}
+	
+	fx.mkdirSync(srcImagesPath)
 
 
 	//Step 1

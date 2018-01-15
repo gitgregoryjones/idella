@@ -30,7 +30,7 @@ $(document).ready(function(){
    
 		}
 	} else {
-		$("[alias=notification]").css({height:"100px",top:0})
+		$("[alias=notification]").css({height:"400px",top:0})
 		$("[alias=header]").css({top:$("[alias=notification]").height()})
 	}
 	
@@ -317,7 +317,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
       
         theImage = configuredTool(whichTool("IMG"));
                      
-        theImage.css({"width":"550px",height:"350px"}).attr('alias',"bigPicture")
+        //theImage.css({"width":"337px",height:"134px"}).attr('alias',"bigPicture")
 
                                
         dropTool(theImage,{target:theBody,clientX:theBody.offset().left + 50,clientY:theBody.offset().top + 250});
@@ -330,7 +330,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		
         theNotice.css({"width":"100%",height:"25%","background-color":"yellow"}).attr('alias',"notification")
                         
-        dropTool(theNotice,{target:theBody,clientX:0,clientY:0});
+        //dropTool(theNotice,{target:theBody,clientX:0,clientY:0});
 
 		  //Make empty page
 		theHead = configuredTool(whichTool("DIV"));
@@ -338,8 +338,10 @@ function DRAW_SPACE_addWorkSpaceToBody(){
         dropTool(theHead,{target:theBody,clientX:0,clientY:theNotice.height()});
      
 		//Now Setup the head
-		theHead.css({"position":"fixed","width":"100%",height:"25%","background-color":"black",top:theNotice.height()}).attr('alias',"header")
+		theHead.css({"position":"fixed","width":"100%",height:"15%","background-color":"black",top:theNotice.height()}).attr('alias',"header")
 		//getHelp();
+
+
 	} 
 
 	$("[alias=body]").css("z-index",400)
@@ -347,7 +349,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
   
 	$("[alias=notification]").appendTo($("[alias=body]"))
-	    .css({overflow:"hidden","position":"fixed",height:"100px","z-index":CUSTOM_incrementZIndex(),top:0})
+	    .css({overflow:"hidden","position":"fixed",zheight:"100px","z-index":CUSTOM_incrementZIndex(),top:0})
 	
 	$("[alias=header]").appendTo($("[alias=body]"))
     .css({"overflow":"hidden","z-index":CUSTOM_incrementZIndex(),top:$("[alias=notification]").height()})
@@ -391,7 +393,61 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	userHoveringOverNote = false;
 	drawResponsiveTab()
 
+	var sliderp = $("<div id='sliderp'></div>").css("width","400px");
 	
+	$("#editSpace").prepend(sliderp);
+
+	var origWidth = $("[alias=theCanvas]").width();
+	var origHeight = $("[alias=theCanvas]").height();
+
+	var target = {};
+
+	target.target = $("#drawSpace").first();
+
+	target.stopPropagation = function(){
+
+	}
+
+	target.preventDefault = function(){
+
+	}
+
+    $( "#sliderp" ).slider({value:100}).on('slide',function(event,ui){
+    	//console.log("This is it ");
+    	//console.log(ui);
+    	//console.log((ui.value/100) * origWidth)
+    	//$("#drawSpace").css("width",(ui.value/100) * origWidth);
+    	//$("#drawSpace").css("width",(ui.value/100) * origWidth);
+    	
+    
+
+		ui = {
+			size :{
+				height:  (ui.value/100) * origHeight,
+				width:(ui.value/100) * origWidth
+
+				
+			},
+			position :{
+				left:$("[alias=theCanvas]").position().left,
+				top:$("[alias=theCanvas]").position().top
+			},
+			originalSize : {
+				height: origHeight,
+				width: origWidth
+
+			},
+			originalPosition : {
+				left:$("[alias=theCanvas]").position().left,
+				top:$("[alias=theCanvas]").position().top,
+			}
+		}
+
+
+
+    	CUSTOM_ON_RESIZE_LOGIC(target,ui);
+    });
+
 
 
 	//$("#tabs").css("height","100%")

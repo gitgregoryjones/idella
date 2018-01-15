@@ -6,10 +6,20 @@ var CUSTOM_currentlyMousingOverElementId = null;
 var CUSTOM_lastCopyElement = null;
 
 
+
+var menuFunc = function(){
+	log.info("User click zMenu")
+	onMenu();
+}
+
+
 function CUSTOM_pressEscapeKey(){
+
 	var e = jQuery.Event("keydown");
 	e.which = 27; // # Some key code value
 	$("input").trigger(e);
+
+	closeMenu();
 }
 
 
@@ -38,6 +48,11 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 	log.trace("Pressed Key " + event.which)
 
+	if(userHoveringOverNote){
+		console.log("Ignoring user actions because hovering over note field")
+		return;
+	}
+
 	hotObj = $("#"+CUSTOM_currentlyMousingOverElementId);
 	
 	if(DRAW_SPACE_advancedShowing && event.which != 27){
@@ -65,7 +80,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 	//if Cntrl-S or CMD-S then Save
 	if( ( key == 83 && event.shiftKey ) ){
 		
-		
+		OVERLAY_deleteInstructions();
 		$(".rocket-save").click()
 		event.stopPropagation();
 		event.preventDefault();
@@ -105,7 +120,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 	//if delete key 
 	} else if(key == 8 ){
-		
+		console.log("User clicked delete key")
 		NOTES_delete()
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
@@ -119,6 +134,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		//Shift-R toggles draft mode
 	} else if(key == 82 && event.shiftKey){
 		NOTES_delete();
+		OVERLAY_deleteInstructions();
 		//$("#id_toolset").find(".mastertools").find("img").click();
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
@@ -302,6 +318,8 @@ function addPlusButton(elem){
 CUSTOM_MOUSELEAVE_LOGIC = function(event){
 
 	event.stopPropagation();
+
+	OVERLAY_deleteInstructions();
 
 
 	log.debug("Leaving LOGIC ")
@@ -554,11 +572,11 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 	groupResizeEnabled = $("#group-resize").is(":checked")
 
 	if(groupResizeEnabled && ui.originalSize){
+		 
 		rH = ui.size.height / ui.originalSize.height 
 		rW = ui.size.width / ui.originalSize.width 
 		rL = ui.position.left / ui.originalPosition.left 
-		rT = ui.position.top / ui.originalPosition.top 
-
+		rT = ui.position.top / ui.originalPosition.top
 		
 		growOrShrinkChildren(event.target,ui)
 	}
@@ -568,6 +586,9 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 //Called after parent node is in process of resizing and child nodes need to copy that effect
 //relative to parent
 function growOrShrinkChildren(node,ui){
+console.log($(node).children("[type]").length + " leng")
+
+
 
 	$(node).children("[type]").each(function(it,child){
 
@@ -697,7 +718,8 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 		if(!$(event.target).is("[type=T]")){
 			$(event.target).addClass("submenu");
-			$(event.target).attr("contenteditable","false").css("-webkit-user-modify","false")
+			$(event.target).attr("contenteditable","false")
+			//.css("-webkit-user-modify","false")
 		}
 
 		createAnchorFor(div,true)
@@ -806,6 +828,11 @@ CUSTOM_CLOSE_LOGIC = function(event,ui){
 
 CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 	
+			if($(event.target).is("[type=T]")){
+
+				$("[name=value]").click().focus();
+				return;
+			}
 
 			userHoveringOverNote = true;
 
@@ -1324,6 +1351,7 @@ function setUpDiv(div){
 
 
 
+
 	try {
 		div.off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy");
@@ -1338,6 +1366,8 @@ function setUpDiv(div){
 		if($(this).attr("overlay") && !$(this).children("[type=OVERLAY]").first().is(":visible") ) {
 			log.error("Entered MOUSE CUSTOM_EVENTS2.js: " + event.target.id)
 			OVERLAY_showOverlay(event.target)
+		} else if(div.is("[type=IMG]")) {
+			OVERLAY_showInstructions(event.target);
 		}
 		
 	})
@@ -1358,11 +1388,14 @@ function setUpDiv(div){
 
 	}).on("dragstart resizestart",function(e){
 
-		$(e.target).attr("contenteditable","false").css("-webkit-user-modify","read-only");
+		$(e.target).attr("contenteditable","false")
+		.css("-webkit-user-modify","read-only");
 		disableHoverEvents()
+
 	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("resize",function(e){
 		
 		NOTES_makeNote(this);
+		OVERLAY_showInstructions(e.target)
 
 	});
 
@@ -1382,33 +1415,7 @@ function setUpDiv(div){
 
 	var draggables = [];
 
-	if(div.is(".menutext")){
-
-		$(div).on("blur",function(e){
-
-			DRAW_SPACE_advancedShowing = false;
-
-			var div = $(e.target);
-
-			const regex = /(fa-\S+)/igm;
-
-			const subst = `<div class="fa $1"></div>`;
-
-			console.log($(div).html())
-
-			var txt = $(div).html();
-
-			$(div).html(txt.replace(regex,subst))
-
-			$(div).resizable("destroy").resizable();
-
-			$(div).attr('contenteditable','false').css("-webkit-user-modify","read");
-
-
-						
-		})
-	}
-
+	
 
 	if(attr == "T" || attr == "BTN"){
 		$.event.trigger("translateTxt",[div])
@@ -1416,89 +1423,8 @@ function setUpDiv(div){
 		div.css({outline: "0px solid transparent","white-space":"pre-line"});
 
 		div.on("resize",CUSTOM_TXT_RESIZE)
-		//.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+		.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 		
-
-		
-		div.on("dblclick", function(){
-
-			
-			DRAW_SPACE_advancedShowing = true;
-			
-			draggables = $(".ui-draggable");
-			try {
-					$(draggables).draggable("disable");
-
-					$(this).resizable("destroy");
-
-				
-			}catch(e){
-				log.debug("ignoring destroy droppable onclick of txt")
-			}
-		
-			//$(this).children(".ui-resizable-handle").remove();
-			//setEndOfContenteditable($(this)[0])
-			$(this).attr('contenteditable','true').css("-webkit-user-modify","read-write")
-
-		}).on('blur',function(){
-			DRAW_SPACE_advancedShowing = false;
-			//$(this).attr('contenteditable','false');
-			
-			$(draggables).each(function(it,the){
-				console.log($(the).attr("id"))
-				try {
-				$(the).draggable("enable");
-				}catch(e){
-
-				}
-				
-			})
-
-			const regex = /(fa-\w+)/igm;
-
-			const subst = `<div class="fa $1"></div>`;
-
-			var txt = "";
-
-			$(div).html($(div).html().replace(regex,subst))
-
-
-			$(div).resizable("destroy").resizable();
-
-			//Disable contenteditable on blur
-			$(div).attr('contenteditable','false').css("-webkit-user-modify","read");
-
-			$(this).resizable();
-		}).on('keydown',function(e){
-			 if(e.keyCode == 9 && e.shiftKey){
-				e.preventDefault()
-
-				document.execCommand('outdent', true, null)
-							} else if(e.keyCode == 9){
-				document.execCommand('indent', false, null)
-				//document.execCommand('bold', true, null)
-				e.preventDefault()
-			}
-		}).on('tdblclick',function(){
-			DRAW_SPACE_advancedShowing = true;
-			
-			draggables = $(".ui-draggable");
-			try {
-					$(draggables).draggable("disable");
-
-					$(this).resizable("destroy");
-
-				
-			}catch(e){
-				log.debug("ignoring destroy droppable onclick of txt")
-			}
-		
-			//$(this).children(".ui-resizable-handle").remove();
-			//setEndOfContenteditable($(this)[0])
-			$(this).attr('contenteditable','true').css("-webkit-user-modify","read-write")
-		})
-		
-
 		
 	}
 
@@ -1537,6 +1463,14 @@ function setUpDiv(div){
 		setUpMenuItems(div);	
 	} 
 
+	
+
+	if(div.is("[id=closeB]")){
+		div.on("click",function(){
+			closeMenu();
+		})
+	}
+
 	setUpAnchors(div)
 	//div.not("#drawSpace").not("body").on("mouseover",CUSTOM_MOUSEENTER_LOGIC);
 	/*
@@ -1568,6 +1502,7 @@ function setUpDiv(div){
 		}])
 	}
 	*/
+
 
 
 	//commented out because it swallows Anchor click event and will not allow links to be clicked.
@@ -1807,6 +1742,10 @@ function initialize(){
 	$(".dropped-object").each(function(idx,element){
 		setUpDiv($(element));
 	})
+
+
+
+	//$("body").off("click","#zMenu",menuFunc).on("click","#zMenu",menuFunc)
 
 	//$('.ui-draggable').draggable({snap:false});
 	
@@ -2153,9 +2092,18 @@ DROPPER_LOGIC = {
 					}
 
 
+					if($("[alias=zMenuContent]").width() > 0 ){
+
+                            dropTool(aTool,{target:$("[alias=zMenuContent]"),clientX:aTool.offset().left,clientY:aTool.offset().top});
+
+                     }else {
+                           dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
+                     }
+
+
 					//dropTool Call
 					//dropTool(aTool,{target:event.target,clientX:event.clientX,clientY:event.clientY});
-					dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
+					//dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
 					/*
 		        	log.debug("CUSTOMEVENTS.js:A tool is ")
 		        	log(aTool)

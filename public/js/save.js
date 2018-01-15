@@ -203,7 +203,9 @@ function deleteElement(element, prompt){
 
 	if(prompt == true){
 
-		if(confirm("are you sure you want to delete :" + $(element).attr("type"))){
+		var alias = $(element).attr("alias") == undefined ? $(element).attr("type") : $(element).attr("type") + " (" + $(element).attr("alias") + ")";
+
+		if(confirm("Are you sure you want to delete " + alias + "?")){
 				
 		} else {
 			log.trace("User changed mind about deleting object")

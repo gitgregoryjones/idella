@@ -196,6 +196,108 @@ $(document).ready(function() {
 });
 
 
+function onMenu(menu){
+
+
+	var winHeight = Math.max.apply(null,$.map($("[type]"),function(it,i){return $(it).offset().top + $(it).height()}));
+
+	var theHeight = $("#drawSpace").length > 0 ? $("#drawSpace").height() : winHeight;
+
+	NOTES_delete();
+
+	var myDiv = $("[alias=zMenuContent]");
+
+	if($(myDiv).length == 0){
+
+		myDiv = configuredTool(whichTool("div")).css({
+						"width":0,
+						height:theHeight,
+						"background-color":"rgba(0,0,0,.9)",
+						position:"absolute",
+						top:0,
+						left:0,
+						transition:"0.5s"
+
+					}); 
+
+		myDiv.attr("alias","zMenuContent");
+
+		var closeB = configuredTool(whichTool("T")).css(
+				{width:"60px",height:"60px",color:"white","font-size":"64px",
+			"position":"fixed",width:"60px",top:$("#zMenu").offset().top, left:$(window).width()-100})
+				.attr("id","closeB").text("").append($("<div>",{class:"fa fa-window-close",icon:"fa-window-close"}))
+
+		$(closeB).attr("id","closeB")
+
+		myDiv.append(closeB)	
+
+		$(body).append(myDiv)
+		
+		var id = "#" + $(closeB).attr("id");
+
+		var jsString = `$("${id}").on("click",function(){\n\tcloseMenu()\n})`;
+		
+		if(getJs($(closeB)) == null){
+			eval(jsString)
+		}
+	
+		saveJs($(closeB),jsString);
+
+		CUSTOM_PXTO_VIEWPORT($(closeB),$(closeB).position().left ,$(closeB).position().top);
+
+		
+
+	} 
+
+	$("#closeB").show();
+
+	if(myDiv.draggable( "instance" )){
+
+		myDiv.draggable("disable");
+	}
+	
+	
+
+	myDiv.css({width:$(window).width()})
+
+	if(!editing){
+		myDiv.css({height:winHeight})
+	}
+
+
+	//CUSTOM_PXTO_VIEWPORT($(myDiv),$(myDiv).position().left ,$(myDiv).position().top);
+
+	$(".responsive-design-tab").hide();
+
+/*
+	$("[alias=zMenuContent]").children().each(function(c){
+		$(c).css({left:$(c).attr("orig-left")});
+	})*/
+
+	//$(myDiv).css({position:"absolute",top:0, left:0,"z-Index":"1000000","backgroundColor":"pink"}).attr("id","bobby")
+
+}
+
+
+function closeMenu(){
+
+	var farthestLeft = Math.max.apply(null,$.map($("[alias=zMenuContent]").children(),
+									function(it,i){return $(it).offset().left + $(it).width()}));
+
+	$("[alias=zMenuContent]").attr("farthestLeft", farthestLeft);
+
+	$("[alias=zMenuContent]").children().css("transition","0.4s")
+	//$("[alias=zMenuContent]").children().css("left", farthestLeft/-1)
+	$("[alias=zMenuContent]").css({width:0})
+	
+	$("#closeB").hide();
+
+	drawResponsiveTab();
+	
+	
+}
+
+
 /**
 *  Which Tool do we want to instantiate based on User Input
 */
@@ -300,7 +402,7 @@ function whichTool (tool){
 			class:"texttool",
 			friendlyName : "Text Field",
 			//droppedModeHtml:"<div>Enter Text Here<div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
-			droppedModeHtml:"<div contenteditable=\"true\">Enter Text Here</div>",
+			droppedModeHtml:"<div contenteditable=\"false\">Enter Text Here</div>",
 			class:"generictext"
 
 		});

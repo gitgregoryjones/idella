@@ -202,6 +202,10 @@ function getBreakpoint(bp){
 
 function drawResponsiveTab(){
 
+	if(!editing){
+		return;
+	}
+
 	log.debug("Drawing Tab")
 
 	NOTES_delete();

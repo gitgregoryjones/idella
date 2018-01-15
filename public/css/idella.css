@@ -188,7 +188,10 @@ ul.tabul {
 .ui-autocomplete { color:yellow;position: absolute; cursor: default;z-index:999999999999 !important;}  
 
 
-.ui-widget.ui-widget-content, div.styleValue > input {
+
+
+
+.ui-widget.ui-widget-content, #imgwin, div.styleValue > input {
 	//background-color: #232323;
 	background-color: #484F5D;
 	border:0px;
@@ -314,7 +317,7 @@ ul.tabul {
 	font-size:14px;
 }
 
-div.styleValue > input {
+div.styleValue > input, #imgwin {
 	//background-color: #232323;
 	border:none;
 	border-bottom: 1px solid;
@@ -673,9 +676,15 @@ textarea {
 }
 
 [type=IMG] {
-	background-image: url(https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif);
+	z-background-image: url(https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif);
+	z-background-image: url(https://cdn.colorlib.com/wp/wp-content/uploads/sites/2/jquery-file-upload-scripts.png);
+	background-image: url(http://saveabandonedbabies.org/wp-content/uploads/2015/08/default.png);
+	height:154px;
+	width: 275px	;
 	background-size: cover;
 }
+
+
 
 [type=PLUGIN] {
 	background-image: url(https://maxcdn.icons8.com/Share/icon/win10/Industry//insert1600.png);

@@ -98,26 +98,39 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExi
 }
 
 function doWebkitHoverColor(div){
-	const regex = /(^|[^-])color:([^;]+)(\s|;|$)/g;
+	var regex = /((^|[^-])color):([^;]+)(\s|;|$)/g;
 	//const str = `-webkit-text-fill-color:red;background-color:blue;color:red;border-color:orange`;
-	let m;
 
+
+	
 	var str = div.attr("onhover");
+
+
+	let m = null;
+
+	
 
 	if ((m = regex.exec(str)) !== null) {
 	    // This is necessary to avoid infinite loops with zero-width matches
-	   /* if (m.index === regex.lastIndex) {
+	    if (m.index === regex.lastIndex) {
 	        regex.lastIndex++;
-	    }*/
+	    }
 	    
-	   var color=m[2];
+	   var color=m[3];
 
+	   LOGLEVEL=DEBUG;
+
+	   log.debug("Value of M")
+	   log.debug(m);
+	   log.debug("Str before is " + str);
 	   //str = "-webkit-text-fill-color:"+color+";" + str;
-	   str= str.replace(color,"-webkit-text-fill-color:"+color+";");
+	   str= str.replace(m[0],"-webkit-text-fill-color:"+color);
 
 	   log.debug("CSSTEXT.js: onHover string is " + str)
 	    div.attr("onhover",str);
 	   
+	 } else {
+	 	console.log("nothing happened " + str);
 	 }
 }
 

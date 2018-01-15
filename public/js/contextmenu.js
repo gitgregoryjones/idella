@@ -140,7 +140,8 @@ $(document).on("initializationComplete",function(){
             case "drop": 
                         var aTool =  whichTool($(this).attr("type"));
                         aTool = configuredTool(aTool);
-                        dropTool(aTool,{target:$("#drawSpace"),clientX:currentX,clientY:currentY});
+
+                        dropTool(aTool,{target:$(currentCtx),clientX:currentX,clientY:currentY});
                         
                         if(aTool.is("[type=NAVIGATION]")){
                             aTool.css({width:"500px",height:"50px"});
