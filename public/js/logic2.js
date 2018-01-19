@@ -196,8 +196,32 @@ $(document).ready(function() {
 });
 
 
-function onMenu(menu){
+function onMenu(vertical){
 
+	if($("#zMenu").attr("open") == "open"){
+		return;
+	}
+
+	$("#zMenu").attr("open","open");
+
+	if($("[alias=theCanvas]").offset().top > 0){
+		$("[alias=theCanvas]").css({top:0})
+	}
+
+	if(typeof vertical == "object"){
+
+		//Do nothing this is event object
+	} else {
+		
+			//dont' overwrite and use user value passed in as boolean paramter
+		
+
+	}
+
+	//Try to override with user value, otherwise set to false
+	if($("#zMenu").attr("slider-direction")){
+		vertical = $("#zMenu").attr("slider-direction").trim() == "left"? false : true;
+	}
 
 	var winHeight = Math.max.apply(null,$.map($("[type]"),function(it,i){return $(it).offset().top + $(it).height()}));
 
@@ -210,32 +234,41 @@ function onMenu(menu){
 	if($(myDiv).length == 0){
 
 		myDiv = configuredTool(whichTool("div")).css({
-						"width":0,
-						height:theHeight,
+						"width":$(window).width(),
+						height:(vertical ? "400px" : theHeight),
 						"background-color":"rgba(0,0,0,.9)",
 						position:"absolute",
-						top:0,
-						left:0,
+						top:(vertical? "-400px" : 0),
+						left:(vertical? -10: $(document).width()/-1),
+						"z-index":$("[alias=header]").css("z-index")-1,
 						transition:"0.5s"
 
 					}); 
 
+		myDiv.resizable("destroy")
+
 		myDiv.attr("alias","zMenuContent");
 
 		var closeB = configuredTool(whichTool("T")).css(
-				{width:"60px",height:"60px",color:"white","font-size":"64px",
-			"position":"fixed",width:"60px",top:$("#zMenu").offset().top, left:$(window).width()-100})
+				{height:"5%",color:"white",right:"50px",position:"absolute",
+			width:"5%",top:$("#zMenu").offset().top,left:$(myDiv).width()/3-parseFloat($("#zMenu").css("width"))})
 				.attr("id","closeB").text("").append($("<div>",{class:"fa fa-window-close",icon:"fa-window-close"}))
+
+		if(vertical){
+			closeB.css({"left":$(myDiv).width()-parseFloat($("#zMenu").css("width"))})
+		}
 
 		$(closeB).attr("id","closeB")
 
 		myDiv.append(closeB)	
 
-		$(body).append(myDiv)
+		$("body").append(myDiv)
+
+		closeB.css({"font-size":$("#zMenu").css("font-size")})
 		
 		var id = "#" + $(closeB).attr("id");
 
-		var jsString = `$("${id}").on("click",function(){\n\tcloseMenu()\n})`;
+		var jsString = `$("${id}").on("click",closeMenu)`;
 		
 		if(getJs($(closeB)) == null){
 			eval(jsString)
@@ -257,13 +290,66 @@ function onMenu(menu){
 	}
 	
 	
+	console.log("Sliding time!")
 
-	myDiv.css({width:$(window).width()})
+	var pTransition = getTransitionDuration( myDiv, true );
 
-	if(!editing){
+	
+	if(vertical){
+		myDiv.css({
+		"width":$(document).width(),
+		height:(vertical ? "400px" : theHeight),
+		
+		position:"absolute",
+		top:(vertical? "-400px" : 0),
+		left:(vertical? 0: $("[alias=theCanvas]").width()/-1)
+		})
+
+		$("#closeB").css({position:"absolute",top:$("#zMenu").offset().top,left:$(myDiv).width()-parseFloat($("#zMenu").css("font-size"))*2})
+
+		myDiv.css({"position":"absolute",top:($("#zMenu").height() * 1.5 + $("#zMenu").offset().top )})
+
+		
+
+		$("[alias=theCanvas]").css("transition","0.5s").css("top","+=" + (myDiv.height()+5));
+		//Move all content to make space
+		
+		//If moving left to right
+	}else {
+		myDiv.css({
+		"width":$(window).width(),
+		height:(vertical ? "400px" : theHeight),
+		
+		position:"absolute",
+		top:(vertical? "-400px" : 0),
+		left:(vertical? 0: $(document).width()/-1)
+		})
+
+		$("#closeB").css({position:"absolute",top:$("#zMenu").offset().top,left:$(myDiv).width()-parseFloat($("#zMenu").css("width"))})
+				
+
+		myDiv.css({left:0,width:$(document).width()/3})
+	}
+	
+
+
+	if(!editing && !vertical){
 		myDiv.css({height:winHeight})
 	}
 
+	/*
+	if(!$.hasData($("#closeB"))){
+		$("#closeB").on("click",function(){
+			closeMenu();
+		})
+	}*/
+
+	myDiv.find(".dropped-object").each(function(i,child){
+		child = $(child);
+		if(!$.hasData(child)){
+			child.on("click",closeMenu)
+		}
+	})
 
 	//CUSTOM_PXTO_VIEWPORT($(myDiv),$(myDiv).position().left ,$(myDiv).position().top);
 
@@ -279,16 +365,32 @@ function onMenu(menu){
 }
 
 
-function closeMenu(){
+function closeMenu(vertical){
 
-	var farthestLeft = Math.max.apply(null,$.map($("[alias=zMenuContent]").children(),
-									function(it,i){return $(it).offset().left + $(it).width()}));
+	$("#zMenu").attr("open",false);
 
-	$("[alias=zMenuContent]").attr("farthestLeft", farthestLeft);
+	if(typeof vertical == "object"){
 
-	$("[alias=zMenuContent]").children().css("transition","0.4s")
-	//$("[alias=zMenuContent]").children().css("left", farthestLeft/-1)
-	$("[alias=zMenuContent]").css({width:0})
+		//Do nothing this is event object
+	} else {
+		
+			//dont' overwrite and use user value passed in as boolean paramter
+		
+
+	}
+
+	//Try to override with user value, otherwise set to false
+	if($("#zMenu").attr("slider-direction")){
+		vertical = $("#zMenu").attr("slider-direction").trim() == "left"? false : true;
+	}
+
+	if(vertical){
+		$("[alias=zMenuContent]").css({top:$("[alias=zMenuContent]").height()/-1})
+		$("[alias=theCanvas]").css("top",0);
+	} else {
+		$("[alias=zMenuContent]").css({left:$("[alias=zMenuContent]").width()/-1})	
+	}
+	
 	
 	$("#closeB").hide();
 
@@ -374,6 +476,15 @@ function whichTool (tool){
 			type:type,
 			droppedModeStyle:"",
 			droppedModeHtml:'<div><video preload="auto" autoplay><source class="content-image" src="http://brown-sugar.bouncemediallc.netdna-cdn.com/video/featured.mp4" type="video/mp4"/></video></div>',
+			droppable:true,
+			class:"squarepeg"
+		});
+		break;
+		case "SITE":
+		theTool = new GenericTool({
+			type:type,
+			droppedModeStyle:"",
+			droppedModeHtml:'<div><iframe style="pointer-events:none; width:100%; height:100%" class="content-image" onmouseover="$(this).parents().first().mouseenter()" src="https://www.wikipedia.org/"></iframe></div>',
 			droppable:true,
 			class:"squarepeg"
 		});

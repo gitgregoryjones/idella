@@ -85,6 +85,12 @@ $(document).on("initializationComplete",function(){
             }
         }
      
+        //The top
+        var topOff = event.pageY - window.scrollY
+
+        if( $("#editSpace").length > 0 && (event.pageY + parseFloat($(".custom-menu").height())) > $("#editSpace").offset().top){
+            topOff = event.pageY - $(".custom-menu").height()
+        }
 
    
         // Show contextmenu
@@ -92,7 +98,7 @@ $(document).on("initializationComplete",function(){
         
         // In the right position (the mouse)
         css({
-            top: event.pageY - window.scrollY,
+            top: topOff,
             position:"fixed",
             left: event.pageX,
             "z-index":10000000000
@@ -345,7 +351,7 @@ $(document).on("initializationComplete",function(){
                 }           
                 break;  
                 // $(currentCtx).find("img")[0].click();break;
-            case "preview": CUSTOM_pressEscapeKey(); PREVIEW_togglePreview(editing);  break;
+            case "preview": CUSTOM_pressEscapeKey(); closeMenu(); PREVIEW_togglePreview(editing);  break;
             case "delete": if(currentCtx.attr("type") != "canvas"){if(currentCtx.is(".ghost")){GHOST_delete(currentCtx)};deleteElement(currentCtx,true); NOTES_delete();} break;
             case "scroller": convertToScroller(); break;
         }

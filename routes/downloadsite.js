@@ -8,6 +8,7 @@ var link = require('fs-symlink')
 const path = require('path')
 var copy = require('recursive-copy');
 var through = require('through2');
+var shell = require('shelljs');
 
 var zipper = require("zip-local");
  
@@ -53,7 +54,11 @@ router.get('/:site', function(req, res, next) {
 	var srcImagesPath = path.join(process.env.SITEDIR,site,"images");
 	var destImagesPath = path.join(process.env.SITEDIR,site,"website","images");
 
+	var gitProjectBasePath = path.join("/Users","gjones","projects","preview-site.bitbucket.io");
 
+	var gitSiteDestPath = path.join(gitProjectBasePath,site);
+
+	var siteUnpackedDest = path.join(process.env.SITEDIR,site,"website");
 
 
 	var options = {
@@ -76,6 +81,11 @@ router.get('/:site', function(req, res, next) {
 	    	});
 	    } 
 	};
+
+	var simpleOptions = {
+		overwrite:true,
+		expand:true
+	}
 
 	
 
@@ -174,6 +184,9 @@ router.get('/:site', function(req, res, next) {
 	
 	fx.mkdirSync(srcImagesPath)
 
+	fx.mkdirSync(gitSiteDestPath);
+
+
 
 	//Step 1
 	copy(srcJsPath, destJsPath, options,function(error, results) {
@@ -226,6 +239,50 @@ router.get('/:site', function(req, res, next) {
 
 					        	})
 					        })
+
+					        //final step . Update index.html with new file name and push to Git for preview
+					         copy(siteUnpackedDest, gitSiteDestPath, simpleOptions,function(error, results) {
+
+					         	if(error){
+					         		console.log("Failed while writing to git directory : " + error)
+					         		
+					         	} else {
+					         		console.log('Git Packer copied ' + results.length + ' files from ' + siteUnpackedDest + " to " + gitSiteDestPath)
+					         		console.log("Git files written...checking in")
+					         		var currDate = new Date().toString();
+									
+									var commands = [
+									`echo "<script>arr['${site}'] = '${site}'</script>" >> ${gitProjectBasePath}/index.html`,
+									`git -C ${gitProjectBasePath} add .`,
+									`git -C ${gitProjectBasePath} commit -m "deployed ${site} from UI ${currDate}"`,
+									`git -C ${gitProjectBasePath} push`];
+									
+									console.log(commands)
+									
+									shell.exec(commands[0], function(code, stdout, stderr) {
+									  console.log('Exit code:', code);
+									  console.log('Program output:', stdout);
+									  console.log('Program stderr:', stderr);
+									  shell.exec(commands[1], function(code, stdout, stderr) {
+										  console.log('Exit code:', code);
+										  console.log('Program output:', stdout);
+										  console.log('Program stderr:', stderr);
+										  shell.exec(commands[2], function(code, stdout, stderr) {
+										  	console.log('Exit code:', code);
+											console.log('Program output:', stdout);
+											console.log('Program stderr:', stderr);
+											 shell.exec(commands[3], function(code, stdout, stderr) {
+										  	console.log('Exit code:', code);
+											console.log('Program output:', stdout);
+											console.log('Program stderr:', stderr);
+										   });
+										   });
+										 
+									   });
+									});
+
+					         	}
+					         })
 
 					    }
 					});

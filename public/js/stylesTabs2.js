@@ -211,7 +211,9 @@ function writeTabs(currentCtx,forceWrite){
 			if($(parent).is("[type=IMG]")){
 				log.debug("STYLETABS2.js:I found the source")
 				theValue = $(parent).attr(label)
-			} else {
+			} else if($(parent).is("[type=SITE]")){
+				theValue = $(parent).find(".content-image").attr(label)
+			}else {
 				log.debug("STYLETABS2.js:No Source Found. Overwriting with background-image if possible")
 				if($(parent).is("[type=DIV]")){
 					theValue=styleMeta["background-image"];
@@ -226,23 +228,29 @@ function writeTabs(currentCtx,forceWrite){
 					
 		f = $("<input>",{id:tabLabel+"-"+label,value:theValue}).on('input',function(evnt){
 				//evnt.preventDefault();
+
 				
 				if(label == "class"){
 					//do nothing.  wait until class is complete
 					$(parent).addClass($(evnt.target).val())
-					$(parent).attr("user-classes",$(event.target).val())	
+					$(parent).attr("user-classes",$(evnt.target).val())	
 				}else if(label == "src" || label == "align"){
-
-					if(jwplayer){
+					/*
+					if(jwplayer == true){
 							jwplayer().load([{file:$(event.target).val()}])
 							//$(parent).attr(label,$(event.target).val())
-					}
+					}*/
+
+					console.log("Src is true and value is " + $(evnt.target).val() + " pID " + $(parent).attr("id") + " type is ["+ $(parent).attr("type") + "]")
 
 					if($(parent).is("[type=VID]")){
 						$(parent).find("video").first().attr(label,$(evnt.target).val())
 
 
 					} else
+					if($(parent).is("[type=SITE]")){
+						$(parent).children(".content-image").attr(label,$(evnt.target).val())
+					} else 
 					
 					if($(parent).is("[type=DIV],[type=IMG]")){
 						if($(evnt.target).val().indexOf("url(") == -10){
@@ -332,6 +340,7 @@ function writeTabs(currentCtx,forceWrite){
 					copiesModified = true;
 				}
 		}).on("change",function(evnt){
+			userHoveringOverNote = false;
 
 			//only used to write class info here.  Everything else should use on.input
 			if(label == "class" &&  $(parent).attr("user-classes").trim().length > 0){
@@ -388,6 +397,8 @@ function writeTabs(currentCtx,forceWrite){
 			STYLESTABS_forceRewrite = false;
 
 
+		}).on("mouseenter",function(){
+			userHoveringOverNote = true;
 		})
 
 		//Don't write id field again. We already manually added to each tab for consistency above

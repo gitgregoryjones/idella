@@ -354,7 +354,7 @@ function getRevisionFileName(fpath,dateGMTString,callback){
 			//if(new Date(todayAsNumber >= parseFloat(list[i])){
 			if(parseFloat(todayAsMs) >= parseFloat(fileName)){
 			//if(todayAsNumber >= list[i]){
-
+				if(fileAsMs !=0)
 				break;
 			} 
 		}

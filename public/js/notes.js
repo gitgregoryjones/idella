@@ -118,19 +118,19 @@ function NOTES_makeNote(element,isActive){
 		if(!element.is("[type=PLUGIN]")){
 
 			color = $(element).css("background-color")
-			image =  $(element).is("[type=VID]") ? $(element).find(".content-image").attr("src") : $(element).css("background-image")
+			image =  $(element).is("[type=VID],[type=SITE]") ? $(element).find(".content-image").attr("src") : $(element).css("background-image")
 			txtColor = $(element).css("-webkit-text-fill-color")
 			fontFamily  = $(element).css("font-family")
 			href = $(element).attr("href") != undefined ? $(element).attr("href") : "none" ;
 
 			theMsg.append(" <div>href: <input type='text' class='quick-disabled' name='href' parent='" + element.id + "' value='" + href + "'></div>")
-
+/*
 			color = $(element).css("background-color")
-			image =  $(element).is("[type=VID]") ? $(element).find(".content-image").attr("src") : $(element).css("background-image")
+			image =  $(element).is("[type=VID,[type=SITE]") ? $(element).find(".content-image").attr("src") : $(element).css("background-image")
 			txtColor = $(element).css("-webkit-text-fill-color")
-			fontFamily  = $(element).css("font-family")
+			fontFamily  = $(element).css("font-family")*/
 
-			videoOrImage = $(element).is("[type=VID]") ? "src" : "background-image";
+			videoOrImage = $(element).is("[type=VID],[type=SITE]") ? "src" : "background-image";
 
 			if(element.is("[type=T], [type=LIST]")){
 
@@ -360,9 +360,12 @@ function NOTES_makeNote(element,isActive){
 							//DRAW_SPACE_advancedShowing = false;
 
 							const regex = /<div (?:icon="fa\-\S+")? class="\s*fa\s+(fa\-\S+)"\s*(?:style=".*")?><\/div>/gim;
+
 							const str = `$1`
 
-							$(parent).html($(parent).html().replace(regex,str))
+							if(parent.html()){
+								$(parent).html($(parent).html().replace(regex,str))
+							}
 
 							$(et.target).val($(parent).text())
 
@@ -394,11 +397,11 @@ function NOTES_makeNote(element,isActive){
 									//Write JS
 									$(parent).attr("id","zMenu")
 									var id = "#" + $(parent).attr("id");
-									var jsString = `$("${id}").on("click",function(){\n\tonMenu()\n})`;
+									var jsString = `$("${id}").on("click",onMenu)`;
 									if(getJs(parent) == null){
 										eval(jsString)
 									}
-									
+									$(parent).css("--webkit-user-modify","read-only")
 									saveJs(parent,jsString);
 
 								}
@@ -454,9 +457,9 @@ function QUICK_EDIT(evnt){
 				$(parent).addClass($(evnt.target).val())
 				$(parent).attr("user-classes",$(event.target).val())	
 			}else if(label == "src" || label == "align"){
-
+				$(parent).find(".content-image").attr("src",$(evnt.target).val());
 				//$(parent).find(".content-image").attr(label,$(evnt.target).val())
-				$(parent).find("video").first().attr(label,$(evnt.target).val())
+				//$(parent).find("video").first().attr(label,$(evnt.target).val())
 				//https://www.uvm.edu/~bnelson/computer/html/wrappingtextaroundimages.html
 				if(label == "align"){
 					$(parent).find("br").attr(clear,$(evnt.target).val())

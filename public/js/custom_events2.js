@@ -19,7 +19,8 @@ function CUSTOM_pressEscapeKey(){
 	e.which = 27; // # Some key code value
 	$("input").trigger(e);
 
-	closeMenu();
+
+	//closeMenu();
 }
 
 
@@ -719,7 +720,7 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 		if(!$(event.target).is("[type=T]")){
 			$(event.target).addClass("submenu");
 			$(event.target).attr("contenteditable","false")
-			//.css("-webkit-user-modify","false")
+			.css("-webkit-user-modify","read-only")
 		}
 
 		createAnchorFor(div,true)
@@ -781,11 +782,10 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 			}
 	}
 
+	if(parent.position()){
+		CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
+	}
 
-   
-	
-
-	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
 	if(copiesModified){
 		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
 			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
@@ -1464,12 +1464,12 @@ function setUpDiv(div){
 	} 
 
 	
-
+	/*
 	if(div.is("[id=closeB]")){
 		div.on("click",function(){
 			closeMenu();
 		})
-	}
+	}*/
 
 	setUpAnchors(div)
 	//div.not("#drawSpace").not("body").on("mouseover",CUSTOM_MOUSEENTER_LOGIC);
