@@ -339,6 +339,9 @@ function writeTabs(currentCtx,forceWrite){
 					}
 					copiesModified = true;
 				}
+		}).on("mouseleave",function(){
+			userHoveringOverNote = false;
+
 		}).on("change",function(evnt){
 			userHoveringOverNote = false;
 

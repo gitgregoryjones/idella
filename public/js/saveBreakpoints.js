@@ -15,9 +15,9 @@ function isBreakPoint(){
 
 	var isBreaking = false;
 
-	var width = $("body").width()
+	var width = $(window).width()
 
-	log.debug("Body width " + $("body").width())
+	log.debug("Body width " + $(window).width())
 
 	var sorted = BREAKPOINTS.sort(boost)
 
@@ -217,7 +217,7 @@ function drawResponsiveTab(){
 		$(".responsive-design-tab").css("background-color","initial")
 		$(".mini-responsive-design-tab").css({"background-color":"black",color:"yellow"})
 	}
-	$(".responsive-design-tab,.mini-responsive-design-tab").text($("body").width() + ", ["+currentBreakPoint + "]")
+	$(".responsive-design-tab,.mini-responsive-design-tab").text($(window).width() + ", ["+currentBreakPoint + "]")
 
 	$("[breakpoint]").each(function(it,theGhost){
 		theGhost = $(theGhost);

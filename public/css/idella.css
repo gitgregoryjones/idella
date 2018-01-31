@@ -585,14 +585,13 @@ div.container {
 	border:none !important;
 }
 
-html {
-	height: 100%
-}
+
 
 body {
-	//width:100%;
+	width:100%;
 	align:center;
 	padding:0px;
+	margin:0px;
 	--height:3000px;
 	//background-color:rgb(217, 225, 233);
 	background-color: #fefefe;

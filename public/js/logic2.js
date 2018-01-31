@@ -223,7 +223,7 @@ function onMenu(vertical){
 		vertical = $("#zMenu").attr("slider-direction").trim() == "left"? false : true;
 	}
 
-	var winHeight = Math.max.apply(null,$.map($("[type]"),function(it,i){return $(it).offset().top + $(it).height()}));
+	var winHeight = Math.max.apply(null,$.map($("[type]"),function(it,i){return $(it).offset().top}));
 
 	var theHeight = $("#drawSpace").length > 0 ? $("#drawSpace").height() : winHeight;
 
@@ -239,7 +239,7 @@ function onMenu(vertical){
 						"background-color":"rgba(0,0,0,.9)",
 						position:"absolute",
 						top:(vertical? "-400px" : 0),
-						left:(vertical? -10: $(document).width()/-1),
+						left:(vertical? -10: $(window).width()/-1),
 						"z-index":$("[alias=header]").css("z-index")-1,
 						transition:"0.5s"
 
@@ -251,7 +251,7 @@ function onMenu(vertical){
 
 		var closeB = configuredTool(whichTool("T")).css(
 				{height:"5%",color:"white",right:"50px",position:"absolute",
-			width:"5%",top:$("#zMenu").offset().top,left:$(myDiv).width()/3-parseFloat($("#zMenu").css("width"))})
+			width:"5%",top:$("#zMenu").offset().top,left:$(window).width()/3-parseFloat($("#zMenu").css("width"))})
 				.attr("id","closeB").text("").append($("<div>",{class:"fa fa-window-close",icon:"fa-window-close"}))
 
 		if(vertical){
@@ -276,7 +276,7 @@ function onMenu(vertical){
 	
 		saveJs($(closeB),jsString);
 
-		CUSTOM_PXTO_VIEWPORT($(closeB),$(closeB).position().left ,$(closeB).position().top);
+	
 
 		
 
@@ -294,10 +294,13 @@ function onMenu(vertical){
 
 	var pTransition = getTransitionDuration( myDiv, true );
 
+
+	myDiv.show()
+
 	
 	if(vertical){
 		myDiv.css({
-		"width":$(document).width(),
+		"width":$(window).width(),
 		height:(vertical ? "400px" : theHeight),
 		
 		position:"absolute",
@@ -305,7 +308,7 @@ function onMenu(vertical){
 		left:(vertical? 0: $("[alias=theCanvas]").width()/-1)
 		})
 
-		$("#closeB").css({position:"absolute",top:$("#zMenu").offset().top,left:$(myDiv).width()-parseFloat($("#zMenu").css("font-size"))*2})
+		$("#closeB").css({position:"absolute",top:$("#zMenu").offset().top,left:$(window).width()-parseFloat($("#zMenu").css("font-size"))*2})
 
 		myDiv.css({"position":"absolute",top:($("#zMenu").height() * 1.5 + $("#zMenu").offset().top )})
 
@@ -313,6 +316,8 @@ function onMenu(vertical){
 
 		$("[alias=theCanvas]").css("transition","0.5s").css("top","+=" + (myDiv.height()+5));
 		//Move all content to make space
+
+		//CUSTOM_PXTO_VIEWPORT($(myDiv),$(myDiv).position().left ,$(myDiv).position().top);
 		
 		//If moving left to right
 	}else {
@@ -322,15 +327,17 @@ function onMenu(vertical){
 		
 		position:"absolute",
 		top:(vertical? "-400px" : 0),
-		left:(vertical? 0: $(document).width()/-1)
+		left:(vertical? 0: $(window).width()/-1)
 		})
 
 		$("#closeB").css({position:"absolute",top:$("#zMenu").offset().top,left:$(myDiv).width()-parseFloat($("#zMenu").css("width"))})
 				
 
-		myDiv.css({left:0,width:$(document).width()/3})
+		myDiv.css({left:0,width:$(window).width()/3})
 	}
 	
+
+
 
 
 	if(!editing && !vertical){
@@ -351,7 +358,9 @@ function onMenu(vertical){
 		}
 	})
 
-	//CUSTOM_PXTO_VIEWPORT($(myDiv),$(myDiv).position().left ,$(myDiv).position().top);
+	//CUSTOM_PXTO_VIEWPORT($("#closeB"),$("#closeB").position().left ,$("#closeB").position().top);
+	CUSTOM_PXTO_VIEWPORT($(closeB),$(closeB).position().left ,$(closeB).position().top);
+
 
 	$(".responsive-design-tab").hide();
 
@@ -363,6 +372,11 @@ function onMenu(vertical){
 	//$(myDiv).css({position:"absolute",top:0, left:0,"z-Index":"1000000","backgroundColor":"pink"}).attr("id","bobby")
 
 }
+
+
+$(window).on("orientationchange",function(){
+	closeMenu();
+})
 
 
 function closeMenu(vertical){
@@ -390,6 +404,24 @@ function closeMenu(vertical){
 	} else {
 		$("[alias=zMenuContent]").css({left:$("[alias=zMenuContent]").width()/-1})	
 	}
+
+	//Do transition end stuff
+	if(!$("[alias=zMenuContent]").data().transitionendKey){
+
+		$("[alias=zMenuContent]").data().transitionendKey = "set";
+
+		$("[alias=zMenuContent]").on("transitionend",function(evnt){
+			var men = $("[alias=zMenuContent]")
+			if($("#zMenu").attr("open") != "open"){
+				evnt.stopPropogation();
+				CUSTOM_PXTO_VIEWPORT($(men),$(men).position().left ,$(men).position().top);
+				$(this).hide();
+			} 
+		})
+
+	}
+
+	
 	
 	
 	$("#closeB").hide();

@@ -2092,7 +2092,7 @@ DROPPER_LOGIC = {
 					}
 
 
-					if($("[alias=zMenuContent]").width() > 0 ){
+					if($("[alias=zMenuContent]").width() > 0 && $("#zMenu").attr("open") == "open"){
 
                             dropTool(aTool,{target:$("[alias=zMenuContent]"),clientX:aTool.offset().left,clientY:aTool.offset().top});
 

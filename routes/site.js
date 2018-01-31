@@ -115,8 +115,6 @@ router.post('/', function(req, res, next) {
 
 function addPage(site,page,callback){
 
-
-
 	var ok = true;
 
 	if(page.startsWith("http:") || page.startsWith("https:")){

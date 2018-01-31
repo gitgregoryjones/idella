@@ -245,12 +245,12 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	wp.css({
 		height:window.innerHeight,
-		width:"100%"
+		width:$(window).width()
 	})
 
 	ds.css({
 		height:$(wp).height() * .75,
-		width:"100%",
+		width:$(window).width(),
 		"overflow-y":"scroll",
 		"overflow-x":"hidden",
 		position:"absolute",
@@ -299,7 +299,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 		//create starter template
 		theExpandableArea = configuredTool(whichTool("LIST"));
-		theExpandableArea.css({"width":"100%",height:"1000px","background-color":"transparent","font-family":"avenir-next-rounded-std-med"}).attr('alias',"theCanvas")
+		theExpandableArea.css({"width":$(document).outerWidth(),height:"1000px","background-color":"transparent","font-family":"avenir-next-rounded-std-med"}).attr('alias',"theCanvas")
 		
 		dropTool(theExpandableArea,{target:ds,clientX:0,clientY:0});
 
@@ -310,7 +310,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
         theBody = configuredTool(whichTool("DIV"));
                      
-        theBody.css({"width":"100%",height:"750px","background-color":"#F2F6F9"}).attr('alias',"body")
+        theBody.css({"width":$(document).outerWidth(),height:"750px","background-color":"#F2F6F9"}).attr('alias',"body")
                                
         dropTool(theBody,{target:theExpandableArea,clientX:0,clientY:0});
 
@@ -324,7 +324,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
         theFooter = configuredTool(whichTool("DIV"));
                      
-        theFooter.css({"width":"100%",height:"350px","background-color":"grey"}).attr('alias',"footer")
+        theFooter.css({"width":$(document).outerWidth(),height:"350px","background-color":"grey"}).attr('alias',"footer")
                                
         dropTool(theFooter,{target:theExpandableArea,clientX:0,clientY:0});
 		
@@ -338,7 +338,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
         dropTool(theHead,{target:theBody,clientX:0,clientY:theNotice.height()});
      
 		//Now Setup the head
-		theHead.css({"position":"fixed","width":"100%",height:"15%","background-color":"black",top:theNotice.height()}).attr('alias',"header")
+		theHead.css({"position":"fixed","width":$(document).outerWidth(),height:"15%","background-color":"black",top:theNotice.height()}).attr('alias',"header")
 		//getHelp();
 
 
