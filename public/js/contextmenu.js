@@ -88,10 +88,11 @@ $(document).on("initializationComplete",function(){
         //The top
         var topOff = event.pageY - window.scrollY
 
+        /*
         if( $("#editSpace").length > 0 && (event.pageY + parseFloat($(".custom-menu").height())) > $("#editSpace").offset().top){
             topOff = event.pageY - $(".custom-menu").height()
         }
-
+        */
    
         // Show contextmenu
         $(".custom-menu").finish().toggle(100).
@@ -230,6 +231,12 @@ $(document).on("initializationComplete",function(){
                                 left.remove();
                             }
                            
+                        } else if(aTool.is("[type=INPUT]")){
+                            if(aTool.children().first().attr('type') == "text"){
+                                txt = $(aTool.children().first());
+                                
+                                aTool.css({"width":txt.width()*1.25, "background-color":"black"});
+                            }
                         }
 
 

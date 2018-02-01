@@ -61,14 +61,14 @@ function getJs(theElem){
 }
 
 function loadAllJs(){
-
+	console.log("loadAllJs called but this method should be deprecated")
 	$(".dropped-object,.plugin").each(function(index,elem){
 
 		thejs = getJs(elem);
 		log.debug("SAVJS.js: The JS is " + thejs)
 		if(thejs != null && thejs.length > 0){
-			eval(thejs)
-			saveJs(elem,thejs);
+			//eval(thejs)
+			//saveJs(elem,thejs);
 		}
 	})
 

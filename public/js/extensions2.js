@@ -5,9 +5,10 @@ var currentNode = {}
 
 var lastComputed = 0;
 
-var standardFields = "id:0;extends:none;alias:none;background-image:none;display:block;src:none;text:none;class:none;type:none;width:0;height:0;";
+var standardFields = "id:0;extends:none;alias:none;background-image:none;display:block;src:none;text:none;class:none;type:none;width:0;height:0";
 
 var simple = (CSSTEXT_HARDCODEDCSSTEXT + standardFields).split(";")
+
 
 //var simple = "id: hello;height: 35.486160397445vw;width: 42.583392476933994vw;position: absolute;left: 50px;top: 300px;background-image: url(http://i.cdn.turner.com/v5cache/CARTOON/site/Images/i203/ppg_unordinaryweek_725x400.jpg);".split(";")
 
@@ -24,7 +25,12 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 
 	$(simple).each(function(x,str){
 
+		console.log("Working on " + str)
 	   key = str.substring(0,str.indexOf(":")).trim();
+
+	   if(key.trim().length == 0){
+
+	   }
 
 	   //Very Important!!! Filter out alias classes
 	   if(key.startsWith("common-") && !includeCustomClasses){

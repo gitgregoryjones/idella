@@ -572,7 +572,7 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 
 	groupResizeEnabled = $("#group-resize").is(":checked")
 
-	if(groupResizeEnabled && ui.originalSize){
+	if(groupResizeEnabled && ui.originalSize ||  $(event.target).is("[type=INPUT]")){
 		 
 		rH = ui.size.height / ui.originalSize.height 
 		rW = ui.size.width / ui.originalSize.width 
@@ -703,6 +703,17 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 			//.trigger("resizestop",[$(child)])
 
 		})
+	}
+
+	if($(event.target).is("[type=INPUT]")){
+		
+	
+		child = $(event.target).children().first();
+		child = $(child)
+
+			CUSTOM_PXTO_VIEWPORT(child,$(child).position().left,$(child).position().top)
+			//.trigger("resizestop",[$(child)])
+
 	}
 	
 
@@ -2155,8 +2166,10 @@ DROPPER_LOGIC = {
         },
        
         over: function(event,ui){
-        
-        	$(this).addClass('over');
+        	//if dialog not showing
+        	if($("#greybox").length == 0){
+        		$(this).addClass('over');
+        	}
         	
 
         

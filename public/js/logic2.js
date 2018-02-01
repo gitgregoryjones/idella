@@ -26,7 +26,7 @@ WARN = {level:3,label:"WARN"}
 TRACE = {level:2,label:"TRACE"}
 DEBUG = {level:1,label:"DEBUG"}
 
-var LOGLEVEL = WARN;
+var LOGLEVEL = DEBUG;
 
 
 
@@ -406,14 +406,14 @@ function closeMenu(vertical){
 	}
 
 	//Do transition end stuff
-	if(!$("[alias=zMenuContent]").data().transitionendKey){
+	if($("[alias=zMenuContent]").data() && !$("[alias=zMenuContent]").data().transitionendKey){
 
 		$("[alias=zMenuContent]").data().transitionendKey = "set";
 
 		$("[alias=zMenuContent]").on("transitionend",function(evnt){
 			var men = $("[alias=zMenuContent]")
 			if($("#zMenu").attr("open") != "open"){
-				evnt.stopPropogation();
+				//evnt.stopPropogation();
 				CUSTOM_PXTO_VIEWPORT($(men),$(men).position().left ,$(men).position().top);
 				$(this).hide();
 			} 
@@ -564,6 +564,19 @@ function whichTool (tool){
 			
 		break;
 
+		case "INPUT":
+		
+
+		//<div type="MENU-ITEM" id="ELEM_1491749916155-0" item="ELEM_1491749916155-0" style="display: inline-block; padding-left: 20px;"><div type="MENU-ITEM-TXT" edittxt="Modeis" style="display:inline-block">Modeis</div></div>	
+	
+		theTool = new GenericTool({
+			type:type,
+			class:"texttool",
+			friendlyName : "Input Field",
+			droppedModeHtml:"<div class='helper-wrapper'><input id='bob' type=\"text\"></div>"
+		});
+		break;
+
 		default:
 		
 
@@ -580,6 +593,7 @@ function whichTool (tool){
 
 		});
 		break;
+		
 	}
 
 	return theTool;
