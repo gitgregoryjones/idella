@@ -123,7 +123,30 @@ function NOTES_makeNote(element,isActive){
 			fontFamily  = $(element).css("font-family")
 			href = $(element).attr("href") != undefined ? $(element).attr("href") : "none" ;
 
-			theMsg.append(" <div>href: <input type='text' class='quick-disabled' name='href' parent='" + element.id + "' value='" + href + "'></div>")
+			if(element.is("[id*=-control]")){
+				var stype = $("<select>").append(new Option("checkbox","checkbox"))
+							.append(new Option("text area","textarea"))
+							.append(new Option("input field","text"))
+							.append(new Option("radio group","radio"));
+					theMsg.append($("<div style='display:inline-block; margin-right:10px'>Type:</div>").append(stype));
+
+					//AutoSelect option based on what user chose last
+					if(element.find("[type]").length > 0){
+						var theType = element.find("[type]").attr('type').toLowerCase();
+						console.log(`Looking for archType of ${theType}`)
+						stype.find(`[value=${theType}]`).attr('selected','selected');
+					}
+
+					stype.on('change',function(){
+						var archType = $(this).find(":selected").attr("value")
+						CONTROLS_makeFormFieldFor(element,archType);
+						element.resizable("enable");
+						//element.resizable();
+					})
+			} else {
+				theMsg.append(" <div>href: <input type='text' class='quick-disabled' name='href' parent='" + element.id + "' value='" + href + "'></div>")
+			}
+			
 /*
 			color = $(element).css("background-color")
 			image =  $(element).is("[type=VID,[type=SITE]") ? $(element).find(".content-image").attr("src") : $(element).css("background-image")
@@ -343,6 +366,7 @@ function NOTES_makeNote(element,isActive){
 
 		//write changes to parent object
 		$(".quick-disabled").on("input",QUICK_EDIT)
+
 						.on("dblclick",function(et){this.value=""})
 						.on("click",function(et){
 						//Do Default
@@ -386,48 +410,12 @@ function NOTES_makeNote(element,isActive){
 
 							userHoveringOverNote = false;
 							var parent = $("#" + $(evnt.target).attr("parent"));
-							parent.resizable("destroy").resizable();
+							//parent.resizable("disable").resizable();
 
 							console.log("CHANGING IT UP BABY")
 
 
-							if(parent.is("[type=T]")){
-
-								if(parent.text().trim() == "fa-bars"){
-									//Write JS
-									$(parent).attr("id","zMenu")
-									var id = "#" + $(parent).attr("id");
-									var jsString = `$("${id}").on("click",onMenu)`;
-									if(getJs(parent) == null){
-										eval(jsString)
-									}
-									$(parent).css("--webkit-user-modify","read-only")
-									saveJs(parent,jsString);
-
-								}
-
-								$(parent).contents().filter(function() { 
-								    //Node.TEXT_NODE === 3
-								    return (this.nodeType === 3);
-								}).each(function () {
-								    // for each text node, do something with this.nodeValue
-								    
-	
-								    	const regex = /((fa-\w+)(?:-\w+)?)/igm;
-
-										const subst = `<div icon="$1" class="fa $1"></div>`;
-
-										//alert($(div).html())
-										//this.nodeValue = (this.nodeValue.replace(regex,subst))
-										$(this).replaceWith(this.nodeValue.replace(regex,subst))
-
-								    
-								});
-
-
-
-								
-							} 
+							//Moved to QUICK_EDIT
 
 						})
 						
@@ -449,6 +437,11 @@ function QUICK_EDIT(evnt){
 	var parentId =  "#" + $(evnt.target).attr("parent");
 
 	var parent = $(parentId);
+
+	//Signal On change for Label. Since user is modifying the note field for the label, trigger
+							//the parent "Label field so that is modifies the control 'name' field with  value "
+							//var parent = $("#" + $(et.target).attr("parent"));
+							
 
 	var label = $(evnt.target).attr("name");
 
@@ -551,7 +544,58 @@ function QUICK_EDIT(evnt){
 
 				copiesModified = true;
 			}
-		
+
+			if(parent.is("[type=T]")){
+
+								if(parent.text().trim() == "fa-bars"){
+									//Write JS
+									$(parent).attr("id","zMenu")
+									var id = "#" + $(parent).attr("id");
+									var jsString = `$("${id}").on("click",onMenu)`;
+									if(getJs(parent) == null){
+										eval(jsString)
+									}
+									$(parent).css("--webkit-user-modify","read-only")
+									saveJs(parent,jsString);
+
+								}
+
+								$(parent).contents().filter(function() { 
+								    //Node.TEXT_NODE === 3
+								    return (this.nodeType === 3);
+								}).each(function () {
+								    // for each text node, do something with this.nodeValue
+								    
 	
+								    	const regex = /((fa-\w+)(?:-\w+)?)/igm;
+
+										const subst = `<div icon="$1" class="fa $1"></div>`;
+
+										//alert($(div).html())
+										//this.nodeValue = (this.nodeValue.replace(regex,subst))
+										$(this).replaceWith(this.nodeValue.replace(regex,subst))
+
+								    
+								});
+
+
+
+								
+			} 
+
+
+	
+
+			if(parent.attr("href") != undefined){
+				//alert('hrefs is ' + parent.attr('href'))
+					
+					//if(loc.trim().length  > 0){
+
+						createAnchorFor(parent);
+				
+					//}
+			} 
+		
+	parent.trigger("input")
 }
 

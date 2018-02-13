@@ -21,6 +21,8 @@
 
 <style>
 
+
+
 .ui-wrapper{
 	position: inherit;
 	
@@ -532,6 +534,12 @@ div.container {
 	//opacity: 50% !important;
 	//background-color: #3164EB !important;
 	
+}
+
+
+
+.preview {
+	background-color:transparent;
 }
 
 .redoutline {

@@ -224,11 +224,28 @@ function writeTabs(currentCtx,forceWrite){
 			
 		}
 
-		
-					
-		f = $("<input>",{id:tabLabel+"-"+label,value:theValue}).on('input',function(evnt){
-				//evnt.preventDefault();
+		var theType = "text"
 
+		if(label == "dialog-enabled"){
+			theType = "checkbox"
+		}
+
+		f = $("<input>",{type:theType,id:tabLabel+"-"+label,value:theValue});
+
+		//If this is a dialog Box
+		if(label == "dialog-enabled"){
+			
+			if(theValue == "true"){
+				$(parent).attr("hasjs","true");
+				f.prop("checked",$(parent).attr(label))
+			} else {
+				$(parent).removeAttr("hasjs")
+			}
+		}
+					
+		f.on('input',function(evnt){
+				//evnt.preventDefault();
+				
 				
 				if(label == "class"){
 					//do nothing.  wait until class is complete
@@ -344,6 +361,20 @@ function writeTabs(currentCtx,forceWrite){
 
 		}).on("change",function(evnt){
 			userHoveringOverNote = false;
+
+			if($(evnt.target).attr('type') == "checkbox" && $(event.target).attr("id") == "dialog-dialog-enabled"){
+				var jsString = !$(evnt.target).is(":checked")? `$("#${$(parent).attr('id')}").on("click",function(){})`: `$("#${$(parent).attr('id')}").on("click",popup)`;
+				$(parent).off("click");
+				//if(getJs($(evnt.target)) == null){
+					eval(jsString)
+				//}
+				saveJs($(parent),jsString);
+
+				$(parent).attr("dialog-enabled",$(evnt.target).prop("checked"));
+
+				!$(evnt.target).prop("checked") ? $(parent).removeAttr("hasjs") : $(parent).attr("hasjs",true)
+
+			}
 
 			//only used to write class info here.  Everything else should use on.input
 			if(label == "class" &&  $(parent).attr("user-classes").trim().length > 0){

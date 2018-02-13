@@ -149,6 +149,207 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 }
 
+const reducer = (accumulator, currentValue) => accumulator + currentValue;
+
+function setUpPopUpButtons(){
+
+	$("[data-cancel-button-for],[data-close-button-for]").each(function(idx,closeButton){
+		closeButton = $(closeButton);
+		if(closeButton.data("clickset") != "on"){
+                            
+            closeButton.on("click",function(){
+                $(closeButton).parents("[data-popup-for]").hide();
+                enableScroll(); 
+                $("#greybox").remove();
+                $("#drawSpace").css({"overflow-y":"hidden"});
+            })
+            closeButton.data("clickset","on")
+        }                 
+	})
+
+	$("[data-send-button-for]").each(function(idx,submitButton){
+		submitButton = $(submitButton);
+		if(submitButton.data("clickset") != "on"){
+                            
+            submitButton.on("click",function(){
+               var cereal = $(submitButton).parents("[data-popup-for]").find("form").serialize();
+               
+               if(editing){
+               		console.log("Serialize the form -->" + cereal )
+               		alert(`Submitted values will be ${cereal}`)
+               }
+               $(submitButton).parents("[data-popup-for]").hide();
+               enableScroll(); 
+                $("#greybox").remove();
+                $("#drawSpace").css({"overflow-y":"hidden"});
+                
+            })
+            submitButton.data("clickset","on")
+        }                 
+	}).css({cursor:"pointer"})
+}
+
+function setUpGroupContainer(aTool,rebuild){
+	
+
+
+	console.log("Input here...")
+	//aTool.data("original-background-image",aTool.css("background-image"));
+    aTool.css({"background-image":'url("http://www.orserumsik.se/webb/wp-content/themes/shoestrap-3/assets/img/patterns/rough_diagonal.png")',"background-size":"auto","font-weight":"600","font-family":"GT America, Helvetica Neue, Helvetica, Arial, sans-serif", "padding":"20px"})
+    //aTool.css({"background-color":"rgb(255, 255, 0,.2)","font-weight":"600","font-family":"GT America, Helvetica Neue, Helvetica, Arial, sans-serif", "padding":"20px"})
+    
+
+    aTool.find("[class*=-control]").css({width:aTool.find("[type]").width()})
+    var theWidth =  Math.max.apply(null,$.map(aTool.find("[type]"),function(it,i){return $(it).width()}))
+    //alert(theWidth)
+    aTool.css({width:theWidth + parseInt(aTool.css("padding-top"))});
+
+    aTool.find("[class*=-label]").on("input",function(evnt){
+    	
+    	aTool.find("[type]").attr("name",$(evnt.target).text().replace(/\W+/g,"_").toLowerCase()).attr("placeholder",`Enter ${$(evnt.target).text()}`);
+    })
+
+
+
+    if(aTool.data("eventsCreated") != "on"){
+
+	    aTool.on("resize",CUSTOM_ON_RESIZE_GROUP_CONTAINER)
+	    	.on("resizestop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
+	    	.on("dragstop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
+	    aTool.find("[class*=-control],[class*=-label]")
+	    	.on("resize",CUSTOM_ON_RESIZE_FIELD_CONTAINER)
+	    	
+	    aTool.find("[class*=-control],[class*=-label]")
+	    	.on("resizestop dragstop",CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER)
+	    	//.on("dragstop",CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER)
+	   
+	    aTool.data("eventsCreated","on");
+
+	}
+
+    var zMaxHeightArr = $.map(aTool.find(".dropped-object"), function(d,idx){
+   							return $(d).height()
+   						})
+   
+
+    var totalHeight = zMaxHeightArr.reduce(reducer);
+
+    aTool.css({height:totalHeight})
+
+    //CUSTOM_PXTO_VIEWPORT(aTool);
+
+    aTool.trigger("dragstop");
+}
+
+CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER = function(event,u){
+
+	if(!u){
+		u = {element:$(event.target)};
+	}
+
+	var zMaxHeightArr = $.map(u.element.find("[id*=-label],[id*=-control]"), function(d,idx){
+   							return $(d).height()
+   						})
+   
+
+    var totalHeight = zMaxHeightArr.reduce(reducer);
+
+    u.element.css({height:totalHeight})
+
+    u.element.find("[id*=-label],[id*=-control],[type]").each(function(idx,copy){
+    	copy = $(copy);
+    	
+    	CUSTOM_PXTO_VIEWPORT(copy)
+    })
+
+    CUSTOM_PXTO_VIEWPORT(u.element);
+}
+
+
+CUSTOM_ON_RESIZE_GROUP_CONTAINER = function(evnt,u){
+
+		var theWidth = u.size.width;
+
+		console.log("The width is " + theWidth); 
+
+		//do height calculations
+		
+		if((u.size.height - u.originalSize.height) > 0 ){
+			$.map(u.element.find("[id*=-label],[id*=-control]"), function(it,i){
+				it = $(it);
+				$(it).css({"font-size":parseInt($(it).css("font-size"))+1 ,height:parseInt($(it).height()) + 1 })
+				if(it.is("[class*=-control]")){
+						it.find("[type]").css({"font-size":it.height() *.5 + "px",height:"100%"})
+				}
+				return it;
+			})
+		} else if((u.size.height - u.originalSize.height) < 0 ){
+			
+			$.map(u.element.find("[id*=-label],[id*=-control]"), function(it,i){
+				it = $(it);
+				$(it).css({"font-size":parseInt($(it).css("font-size"))-1 ,height:parseInt($(it).height()) - 1 })
+				if(it.is("[class*=-control]")){
+						it.find("[type]").css({"font-size":it.height() *.5 + "px",height:"100%"})
+				}
+				return it;
+			})
+			
+		}
+
+
+
+		//do width calculations
+		u.element.find("[id*=-label],[id*=-control]").css({width:theWidth + "px"})
+		u.element.find("[type]").css({width:theWidth + "px"})
+
+		return;
+
+}
+
+
+CUSTOM_ON_RESIZE_FIELD_CONTAINER = function(evnt,ui){
+
+	var container = ui.element;
+
+	var inputField = container.find("[type]");
+
+	inputField.css({width:container.width(), height:container.height()})
+
+	var zMaxWidth = Math.max.apply(null,$.map(container.parent(".group-container").find(".dropped-object"),function(it,i){return $(it).width()}))
+
+	var zParent = container.parent(".group-container");
+
+	var zMaxHeightArr = $.map(container.parent(".group-container").find("[id*=-control],[id*=-label]"), function(d,idx){
+   							return $(d).height()
+   						})
+   
+
+    var totalHeight = zMaxHeightArr.reduce(reducer);
+
+
+	zParent.css({width:zMaxWidth,height:totalHeight})
+
+	if(container.is("[class*=-control]")){
+		container.find("[type]").css({"font-size":container.height() *.5 + "px", height:container.height(), width:container.width()})
+	}
+
+}
+
+CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER = function(evnt,ui){
+
+	//ui.size.height
+	//alert(ui.element)
+
+	var container = ui.helper;
+
+	CUSTOM_PXTO_VIEWPORT(container,$(container).position().left,$(container).position().top)
+
+	if(container.is("[class*=-control]")){
+		var inputText = container.find("[type]").css({"font-size":container.height() *.5 + "px"})
+		CUSTOM_PXTO_VIEWPORT(inputText,$(inputText).position().left,$(inputText).position().top)
+	}
+
+}
 
 
 CUSTOM_MOUSEENTER_LOGIC = function(event){
@@ -163,6 +364,19 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		return;	
 	}
 
+	if($(event.target).parent().is("[id*=-control]")){
+		//alert('hi')
+		$(event.target).parents(".dropped-object").first().mouseenter();
+		//$(event.target).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+		
+		return;	
+	}
+
+
+	if($(event.target).is("[type=text]")){
+		$(event.target).parent(".dropped-object").mouseenter();
+		return;
+	}
 	//NOTES_delete()
 
 	//enableHoverEvents();
@@ -349,7 +563,7 @@ _DEFAULT_CLOSE_CODE = function(event,ui){
 	SAVE_okToSave = true;
 	log.debug("CUSTOMEVENTS.js:Closing the window")
 	log($(event.target).data())
-	parent = $(event.target).data().theClickedElement;
+	parent = ui.element.data().theClickedElement;
 	log(parent)
 
 	if(copiesModified){
@@ -370,6 +584,10 @@ _DEFAULT_CLOSE_CODE = function(event,ui){
 */
 CUSTOM_JS_OPEN_CODE = function(event,ui){
 
+	if(!ui.element){
+		ui = {element:$(event.target)}
+	}
+
 	NOTES_delete();
 
 	userHoveringOverNote = true;
@@ -377,9 +595,9 @@ CUSTOM_JS_OPEN_CODE = function(event,ui){
 	$(document).unbind("keydown");
 
 	//Add Default Title...Other funcs override this if user clicks on draggable shape
-	$(event.target).dialog("option","title","Global JS");
+	ui.element.dialog("option","title","Global JS");
 
-	$(event.target).find("#error_area").val("")
+	ui.element.find("#error_area").val("")
 	
 	exampleFunc = "//Enter Global JS below";
 
@@ -568,18 +786,18 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 	event.stopPropagation()
 	event.preventDefault();
 
-	log.trace("Group Resize Enabled is " + groupResizeEnabled + "ID " + $(event.target).attr("id"))
+	log.trace("Group Resize Enabled is " + groupResizeEnabled + "ID " + ui.element.attr("id"))
 
 	groupResizeEnabled = $("#group-resize").is(":checked")
 
-	if(groupResizeEnabled && ui.originalSize ||  $(event.target).is("[type=INPUT]")){
+	if(groupResizeEnabled && ui.originalSize){
 		 
 		rH = ui.size.height / ui.originalSize.height 
 		rW = ui.size.width / ui.originalSize.width 
 		rL = ui.position.left / ui.originalPosition.left 
 		rT = ui.position.top / ui.originalPosition.top
 		
-		growOrShrinkChildren(event.target,ui)
+		growOrShrinkChildren(ui.element,ui)
 	}
 
 }
@@ -591,7 +809,7 @@ console.log($(node).children("[type]").length + " leng")
 
 
 
-	$(node).children("[type]").each(function(it,child){
+	node.children("[type]").each(function(it,child){
 
 		child = $(child)	
 
@@ -683,16 +901,16 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 	event.stopPropagation()
 	event.preventDefault();
 
-	$(event.target).removeClass("submenu");
+	ui.element.removeClass("submenu");
 
 	div = $(event.target);
 
-	onResizeEffectEnded(event.target);
+	onResizeEffectEnded(ui.element);
 
 	if(groupResizeEnabled){
 		
 	
-		$(event.target).children(".dropped-object").each(function(it,child){
+		ui.element.children(".dropped-object").each(function(it,child){
 			child = $(child)
 
 			log.trace("Resizing Child is stopped for " + child.attr("id"))
@@ -705,16 +923,7 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 		})
 	}
 
-	if($(event.target).is("[type=INPUT]")){
-		
 	
-		child = $(event.target).children().first();
-		child = $(child)
-
-			CUSTOM_PXTO_VIEWPORT(child,$(child).position().left,$(child).position().top)
-			//.trigger("resizestop",[$(child)])
-
-	}
 	
 
 	//Add border for menu-items. makes it easier for user to click and choose 
@@ -725,12 +934,12 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 	
 
 //if called from clone/copy cmd
-		log.debug("RESIZE X IS " + $(event.target).css("left") + " Y IS " + $(event.target).css("top"))
-		CUSTOM_PXTO_VIEWPORT(event.target,$(event.target).position().left,$(event.target).position().top)
+		log.debug("RESIZE X IS " + ui.element.css("left") + " Y IS " + ui.element.css("top"))
+		CUSTOM_PXTO_VIEWPORT(ui.element,ui.element.position().left,ui.element.position().top)
 
-		if(!$(event.target).is("[type=T]")){
-			$(event.target).addClass("submenu");
-			$(event.target).attr("contenteditable","false")
+		if(!ui.element.is("[type=T]")){
+			ui.element.addClass("submenu");
+			ui.element.attr("contenteditable","false")
 			.css("-webkit-user-modify","read-only")
 		}
 
@@ -740,6 +949,8 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 }
 
+
+
 CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 	//log.debug("Triggered Done Dragging parent " + event.target.id)
 
@@ -747,7 +958,7 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 	event.stopPropagation();
 	
 
-	NOTES_makeNote(event.target)
+	NOTES_makeNote($(event.target))
 
 	parent = $(event.target)
 
@@ -778,7 +989,9 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 		//alert('nothing to do ' + $(event.target).attr("parent"))
 		return;
 	}
+	var parent = $("#"+parentId)
 
+	/* Moved to QUICK_INPUT
 
 	var parent = $("#"+parentId)
 
@@ -792,6 +1005,7 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 		
 			}
 	}
+	*/
 
 	if(parent.position()){
 		CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
@@ -815,10 +1029,13 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 }
 
 CUSTOM_CLOSE_LOGIC = function(event,ui){
+	if(!ui.element){
+		ui = {element:$(event.target)}
+	}
 	userHoveringOverNote = false;
 	log.debug("CUSTOMEVENTS.js: Closing the window")
 	log.debug("CUSTOMEVENTS2.js: " + $(event.target).data())
-	parent = $(event.target).data().theClickedElement;
+	parent = ui.element.data().theClickedElement;
 	log.debug("CUSTOMEVENTS2..js: parent is")
 	log.debug(parent)
 	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
@@ -841,7 +1058,9 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 	
 			if($(event.target).is("[type=T]")){
 
-				$("[name=value]").click().focus();
+				$("[name=value]").dblclick().focus().parent().mouseenter();
+				//userHoveringOverNote = true;
+
 				return;
 			}
 
@@ -1192,6 +1411,9 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 				}
 				
 				REVISION_anchors.push(loc.trim())
+			} else {
+				parent.find("[type=anchor]").remove();
+				return;
 			}
 		} 
 
@@ -1371,7 +1593,7 @@ function setUpDiv(div){
 	}
 
 
-	console.log("Setting up my DIV " + div.attr("id"))
+	log.debug("Setting up my DIV " + div.attr("id"))
 	div.not("[type=OVERLAY]").on("mouseenter",function(event){
 		
 		if($(this).attr("overlay") && !$(this).children("[type=OVERLAY]").first().is(":visible") ) {
@@ -1524,6 +1746,12 @@ function setUpDiv(div){
 
 	//fix bug in jquery which forces position to relative on draggable() init
 	div.css("position",oldPos);
+
+	if(div.is(".group-container")){
+		setUpGroupContainer(div);
+	}
+
+	return div;
 	
 }
 
@@ -1878,6 +2106,8 @@ function recursiveCpy(obj, plusButtonPushed){
    		cpy.removeClass(id)
 
    		cpy.off();
+
+   		cpy.removeData();
    		
    		setUpDiv(cpy);
    	
@@ -1922,6 +2152,8 @@ DROPPER_LOGIC = {
 		greedy:true,
 		
         drop: function(event, ui) {
+
+
 
         	//remove class which highlights element when hovering over it in inspect mode
         	$(ui.draggable).removeClass("submenu")
@@ -2001,13 +2233,38 @@ DROPPER_LOGIC = {
 
 		        	var isBTNCntrl = false;
 		        	
-
 		        	theElem = $(ui.draggable);
+		        	
 		        	theTarget = $(event.target);
 
-		        
 
-		      
+		        	if(theTarget.parent().is("[type=LIST]") && $(ui.draggable).parent().is("[type=LIST]")){
+		        			alert('hello ' + theTarget.attr('id'))
+							$(ui.draggable).insertBefore(theTarget);
+							//CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+							return;
+					
+					} else
+					
+		        	
+		        	if($("#greybox").is(":visible")){
+
+		        		if(theTarget.parents("[data-popup-for]").length == 0){
+		        			
+                            if(theTarget == $("[data-popup-for]").first()){
+                            	event.target = theTarget;
+                               // txt = $(aTool.children().first());
+                                //aTool.draggable( "option", "scope", "dialog")
+                                //aTool.droppable( "option", "greedy", true );
+
+                                //aTool.css({height:txt.height(),"width":txt.width()*1.25, "background-color":"transparent"});
+                            }
+                        }
+                        return;
+                     }  else
+
+                    
+		   
 
 		        	if(theElem.is("[alias^=cntrl]")){
 		        		
@@ -2027,21 +2284,14 @@ DROPPER_LOGIC = {
 
 		        	} else
 
-		        	
-		        	if($(event.target).parent().is("[type=LIST]") && $(ui.draggable).parent().is("[type=LIST]")){
-		        		 
-							$(ui.draggable).insertBefore($(event.target));
-							CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
-							return;
-					
-					}
+		        
 
 		        	if(isBTNCntrl){
 		        		log.trace("Can't drop button here")
 					
 						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
 						return;
-		        	}
+		        	} else
 					
 					
 					
@@ -2051,7 +2301,7 @@ DROPPER_LOGIC = {
 						
 						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
 						return;
-					}
+					} 
 
 
 					if($(ui.draggable).is("[type=T]")){
@@ -2068,6 +2318,7 @@ DROPPER_LOGIC = {
 	     
 	        			return;
 	        		} 
+
 
 
 
@@ -2102,55 +2353,20 @@ DROPPER_LOGIC = {
 			        	createdTool = true;
 					}
 
+					
+
 
 					if($("[alias=zMenuContent]").width() > 0 && $("#zMenu").attr("open") == "open"){
-
+							
                             dropTool(aTool,{target:$("[alias=zMenuContent]"),clientX:aTool.offset().left,clientY:aTool.offset().top});
 
                      }else {
+                     	
                            dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
                      }
 
 
-					//dropTool Call
-					//dropTool(aTool,{target:event.target,clientX:event.clientX,clientY:event.clientY});
-					//dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
-					/*
-		        	log.debug("CUSTOMEVENTS.js:A tool is ")
-		        	log(aTool)
 
-		        	
-		        	$(aTool).css({position:"absolute"})
-
-						        
-
-					log(`Value of position is ${$(aTool).css('position')}`);
-				
-					log.debug("CUSTOMEVENTS.js:Offset before append is " + Math.abs($(event.target).offset().top - $(aTool).offset().top))
-
-					//var relativeAppendTop = createdTool ? event.clientY : Math.abs($(event.target).offset().top - $(aTool).offset().top);	
-					$(event.target).append(aTool);	
-
-					yOffset = event.clientY + window.scrollY;
-					xOffset = event.clientX;
-					aTool.offset({left:xOffset,top:yOffset})
-					$(event.target).append(aTool);	
-		        	aTool = CUSTOM_PXTO_VIEWPORT(aTool,aTool.position().left,aTool.position().top)
-		        	$(aTool).addClass("debug-border-style");
-		      		$(aTool).addClass("dropped-object");
-
-		        	log.debug("CUSTOMEVENTS.js:Handle length is " + aTool.children(".ui-resizable-handle").length)
-		        	
-        	
-
-		        	aTool.resizable({disabled:false}).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
-		        	try {
-		        		aTool.unbind("click",genericSlide).on("click",genericSlide);
-		        	}catch(e){
-		        		log.debug("CUSTOMEVENTS.js:generic slide is disabled")
-		        	}
-					*/
-        	
         	}
         
         	log.trace("Showing hiddenItems")
@@ -2170,7 +2386,7 @@ DROPPER_LOGIC = {
         	if($("#greybox").length == 0){
         		$(this).addClass('over');
         	}
-        	
+        	$(this).addClass('over');
 
         
         	//|| parseInt($(this).css("left")) < parseInt($(this).parent().css("left")) )

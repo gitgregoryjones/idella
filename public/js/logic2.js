@@ -26,7 +26,7 @@ WARN = {level:3,label:"WARN"}
 TRACE = {level:2,label:"TRACE"}
 DEBUG = {level:1,label:"DEBUG"}
 
-var LOGLEVEL = DEBUG;
+var LOGLEVEL = WARN;
 
 
 
@@ -61,6 +61,14 @@ log["error"] = function(msg){
 }
 
 var myPage = {}
+
+
+jQuery.fn.outerHTML = function(s) {
+return (s)
+? this.before(s).remove()
+: jQuery("&lt;p&gt;").append(this.eq(0).clone()).html();
+}
+
 
 $(document).ready(function() {
 
@@ -151,7 +159,13 @@ $(document).ready(function() {
 		   	})
 		 } else {
 
-		  	$("*").removeClass("submenu").not("[type=anchor]").css("cursor","default")
+		 	$("*").removeClass("submenu").not("[type=anchor]").css("cursor","default")
+
+		 	$(".group-container").css("background-color","transparent");
+
+		 	setUpPopUpButtons();
+
+		  	
 		  	//$("[type=anchor]").css("border","none")
 		  	$("*").prop("contenteditable",false).css("-webkit-user-modify","read-only")
 		  	$(".ghost").hide();
@@ -533,7 +547,7 @@ function whichTool (tool){
 		
 		theTool =  new GenericTool({
 			type:type,
-			droppable:true,
+			
 			editModeHtml:"",
 			droppedModeHtml:"<div class=\"fa fa-youtube icon\"></div>",
 			droppable:false
@@ -566,16 +580,16 @@ function whichTool (tool){
 
 		case "INPUT":
 		
-
-		//<div type="MENU-ITEM" id="ELEM_1491749916155-0" item="ELEM_1491749916155-0" style="display: inline-block; padding-left: 20px;"><div type="MENU-ITEM-TXT" edittxt="Modeis" style="display:inline-block">Modeis</div></div>	
 	
 		theTool = new GenericTool({
 			type:type,
 			class:"texttool",
 			friendlyName : "Input Field",
-			droppedModeHtml:"<div class='helper-wrapper'><input id='bob' type=\"text\"></div>"
+			droppedModeHtml:"<div class='group-container  helper-wrapper'><div class='dropped-object' type='T'>Field Label</div><div class='dropped-object field-container' type='DIV'><input  width='100%' height='100%' type=\"text\" placeholder=\"Enter field value\"></div></div>"
 		});
 		break;
+
+
 
 		default:
 		
@@ -586,7 +600,7 @@ function whichTool (tool){
 			type:type,
 			class:"texttool",
 			friendlyName : "generic",
-			droppedModeHtml:"<"+type+">generic text</"+type+">",
+			droppedModeHtml:`<${type} type="${type}"></${type}>`,
 			//droppedModeHtml:"<div>Enter Text Here<div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
 			//droppedModeHtml:"<div><div type=\"MENU\"><div type=\"MENU-ITEM\"  style=\"display: inline-block; padding-left: 0px;\" edittxt=\"Enter Text Here\">Enter Text Here</div></div></div>",
 			class:"generictext"
@@ -644,12 +658,27 @@ function configuredTool(options){
 
 			.css({zIndex: options.zIndex,display:"block"}).attr('type',options.type);
 
-		setUpDiv(this.node)
+		var div = setUpDiv(this.node)
+
+		if(div.attr("type") == "INPUT"){
+			div.find(".dropped-object").each(function(idx,n){
+				n = $(n);
+				console.log("ID IS " + $(div).attr("id"))
+				if(n.is("[type=T]")){
+					n.attr("id",div.attr("id")+ "-label")
+				} else {
+					n.attr("id",div.attr("id")+ "-control")
+					n.find("input").attr("id", div.attr("id") + "inputField");
+				}
+
+				setUpDiv($(n));
+			})
+		}
 
 		if(!options.droppable){
 			$(this.node).removeClass("ui-droppable").droppable("destroy")
 		}
-
+		//Note: since node has not been added to document, it can does not have a width or height yet
 		return this.node;
 	}
 	

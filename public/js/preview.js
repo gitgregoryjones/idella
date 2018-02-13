@@ -1,7 +1,20 @@
 
 function PREVIEW_makeSaveableView(page){
 
-	$(page).find(".dropped-object").not(".tool").removeClass("debug-border-style").removeClass("squarepeg");
+		$(".group-container").each(function(idx,it){
+			it = $(it);
+			//it.data("original-background-image",it.css("background-image"))
+			it.css("background-image","none");
+		})
+
+		$("form").css({"background-color":"transparent"})
+
+		$("#greybox").hide();
+
+		$("[data-popup-for]").hide();
+
+		$(page).find(".dropped-object").not(".tool").removeClass("debug-border-style").removeClass("squarepeg");
+
 		$(page).find(".dropped-object,[class=submenu]").removeClass("submenu")
 		try {$(page).find(".dropped-object").resizable("destroy");}catch(e){
 			
@@ -45,6 +58,13 @@ function PREVIEW_togglePreview(showPreview){
 					
 		$(".dropped-object").not(".tool").removeClass("debug-border-style").removeClass("squarepeg");
 		$(".dropped-object,[class=submenu]").removeClass("submenu")
+		$("form").css({"background-color":"transparent"})
+		$(".group-container").each(function(idx,it){
+			it = $(it);
+			//it.data("original-background-image",it.css("background-image"))
+			it.css("background-image","none");
+			
+		})
 		try {$(".dropped-object").resizable("destroy");}catch(e){
 			
 			log.info("PREVIEW.js: " + e.stack)
@@ -83,6 +103,11 @@ function PREVIEW_togglePreview(showPreview){
 		$(".dropped-object").css("touch-action","auto")
 
 	}else {
+		$(".group-container").each(function(idx,it){
+
+			setUpGroupContainer($(it));
+
+		})
 		$(".dropped-object").not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg").removeClass("noborder");
 		$(".dropped-object").resizable().on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
 		$(".ui-droppable").resizable({disabled:false})

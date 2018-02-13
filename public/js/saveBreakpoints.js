@@ -258,7 +258,7 @@ function loadAllBreakPoints(){
 	}
 
 	
-	console.log("BREAKPOINTS is " + bp)
+	log.debug("BREAKPOINTS is " + bp)
 
 	if(bp){
 

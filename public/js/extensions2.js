@@ -25,7 +25,7 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 
 	$(simple).each(function(x,str){
 
-		console.log("Working on " + str)
+	   log.debug("Still Working on " + str)
 	   key = str.substring(0,str.indexOf(":")).trim();
 
 	   if(key.trim().length == 0){
@@ -224,6 +224,10 @@ function computeDimensions(theClassObj,Query,cWidth){
   	
 	//$(moveMe).removeClass("submenu");
 	moveMe = $(moveMe);
+
+	X = moveMe.position().left;
+
+	Y = moveMe.position().top;
 
 	log.debug("EXTENSIONS2.js:Starting conversion....")
 

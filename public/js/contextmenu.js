@@ -71,7 +71,10 @@ $(document).on("initializationComplete",function(){
             if(currentCtx.is("[type=LIST]")){
                 log.debug("Showing list option")
                 $("[data-action=scroller]").show()
-            } else {
+            } else if(currentCtx.parent("[type=LIST]")){
+                $("[data-action=insertBefore]").show();
+                $("[data-action=insertAfter]").show()
+            }else {
                 log.debug("Hiding list option")
                 $("[data-action=scroller]").hide()
             }
@@ -144,6 +147,16 @@ $(document).on("initializationComplete",function(){
             
             // A case for each action. Your actions here
             case "first": alert("first"); break;
+            case "insertBefore": 
+                        currentCtx.insertBefore(currentCtx.prevAll(".dropped-object").first())
+                        CUSTOM_PXTO_VIEWPORT(currentCtx)
+                      
+                        break;
+             case "insertAfter": 
+                        currentCtx.insertAfter(currentCtx.nextAll(".dropped-object").first())
+                        CUSTOM_PXTO_VIEWPORT(currentCtx)
+                      
+                        break;
             case "drop": 
                         var aTool =  whichTool($(this).attr("type"));
                         aTool = configuredTool(aTool);
@@ -232,13 +245,13 @@ $(document).on("initializationComplete",function(){
                             }
                            
                         } else if(aTool.is("[type=INPUT]")){
-                            if(aTool.children().first().attr('type') == "text"){
-                                txt = $(aTool.children().first());
-                                
-                                aTool.css({"width":txt.width()*1.25, "background-color":"black"});
-                            }
-                        }
+                            if(aTool.attr("type") == "INPUT"){
+                                setUpGroupContainer(aTool);
 
+                                //aTool.trigger("dragstop");
+                             }
+
+                        }
 
                         break;
                         
