@@ -63,7 +63,7 @@ function OVERLAY_enableOverlays(){
 }
 
 function OVERLAY_disableOverlays(){
-	$("[overlay-for]").trigger("mouseleave");
+	//$("[overlay-for]").trigger("mouseleave");
 	$("[overlay-for]").hide();
 }
 

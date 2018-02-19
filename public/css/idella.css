@@ -769,6 +769,27 @@ background-size: cover;
 		display:none;
 }
 
+
+form {
+
+	background-color: transparent !important;
+}
+
+form.editing {
+	background-color:rgba(3, 76, 158,.5) !important;
+}
+
+
+.group-container {
+	
+	background-image: none !important;
+	padding:20px;
+}
+
+.group-container.editing {
+	--background-color: silver !important;
+	background-image:url("http://www.orserumsik.se/webb/wp-content/themes/shoestrap-3/assets/img/patterns/rough_diagonal.png") !important
+}
 /*
 Edit box
 */

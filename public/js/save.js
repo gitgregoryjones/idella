@@ -199,48 +199,54 @@ function SAVEJS_goInactive() {
    	}
 }
 
-function deleteElement(element, prompt){
-
-	if(prompt == true){
-
-		var alias = $(element).attr("alias") == undefined ? $(element).attr("type") : $(element).attr("type") + " (" + $(element).attr("alias") + ")";
-
-		if(confirm("Are you sure you want to delete " + alias + "?")){
-				
-		} else {
-			log.trace("User changed mind about deleting object")
-			return;
-		}
-	}
+function deleteElement(element){
 
 	if(isBreakPoint()){
-			//pass TRUE as last Param to have method just tell us if found in master CSS file. If so, GHOST it.  
-			//If not really found ,delete it and children
-			if(writeClassToMasterCSSFile($(element),"."+$(element).attr("id"),{cssRule:""},true)){
-				GHOST_setUpElement($(element));
+				//pass TRUE as last Param to have method just tell us if found in master CSS file. If so, GHOST it.  
+				//If not really found ,delete it and children
+				if(writeClassToMasterCSSFile($(element),"."+$(element).attr("id"),{cssRule:""},true)){
+					GHOST_setUpElement($(element));
 
-			} else {
-				writeClassToBreakPointCSSFile($(element),"."+$(element).attr("id"),{cssRule:""})
+				} else {
+					writeClassToBreakPointCSSFile($(element),"."+$(element).attr("id"),{cssRule:""})
+					$(element).children(".dropped-object").each(function(it,child){
+						writeClassToBreakPointCSSFile($(child),"."+$(child).attr("id"),{cssRule:""})
+						$.event.trigger("deleteEvent",[$(child).attr("id")])
+					})
+					$(element).remove()
+					$.event.trigger("deleteEvent",[$(element).attr("id")])
+				}
+	} else {
+				writeClassToMasterCSSFile($(element),"."+$(element).attr("id"),{cssRule:""})
 				$(element).children(".dropped-object").each(function(it,child){
-					writeClassToBreakPointCSSFile($(child),"."+$(child).attr("id"),{cssRule:""})
+					writeClassToMasterCSSFile($(child),"."+$(child).attr("id"),{cssRule:""})
 					$.event.trigger("deleteEvent",[$(child).attr("id")])
 				})
 				$(element).remove()
 				$.event.trigger("deleteEvent",[$(element).attr("id")])
-			}
-		} else {
-			writeClassToMasterCSSFile($(element),"."+$(element).attr("id"),{cssRule:""})
-			$(element).children(".dropped-object").each(function(it,child){
-				writeClassToMasterCSSFile($(child),"."+$(child).attr("id"),{cssRule:""})
-				$.event.trigger("deleteEvent",[$(child).attr("id")])
-			})
-			$(element).remove()
-			$.event.trigger("deleteEvent",[$(element).attr("id")])
 
-		}
-	
+	}
+		
 	NOTES_delete(element);
 
+
+}
+
+function deleteWithPrompt(element, prompt){
+
+	if(prompt == true){
+
+		var alias = $(element).attr("alias")  == undefined ?  $(element).attr("type")  : $(element).attr("alias");
+
+		MAKE_MSG_BOX_for({promptMsg:"Do you want to delete " + alias + "?"},function(){
+
+			deleteElement(element)						
+		})
+
+	} else{
+
+		deleteElement(element);
+	}
 }
 
 

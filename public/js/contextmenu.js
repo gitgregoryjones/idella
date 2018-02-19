@@ -28,7 +28,7 @@ $(document).on("initializationComplete",function(){
     // JAVASCRIPT (jQuery)
 
     // Trigger action when the contexmenu is about to be shown
-    $(document).bind("contextmenu", function (event) {
+    $(document).off("contextmenu").bind("contextmenu", function (event) {
 
 
         if(DRAW_SPACE_advancedShowing ){
@@ -65,19 +65,35 @@ $(document).on("initializationComplete",function(){
             }
         }
 
+        $("[data-action=drop][type=FIELD]").hide()
+
         if(editing){
 
                //only show convert to scroller option for list types
             if(currentCtx.is("[type=LIST]")){
                 log.debug("Showing list option")
                 $("[data-action=scroller]").show()
-            } else if(currentCtx.parent("[type=LIST]")){
-                $("[data-action=insertBefore]").show();
-                $("[data-action=insertAfter]").show()
-            }else {
+                if(currentCtx.is("[data-form-for]")) {
+                    
+                    $("[data-action=drop][type=FIELD]").show()
+                } 
+            }
+             else if( currentCtx.parent().is("[type=LIST],[type=SELECT]")){
+                $("[data-action*=insert]").show();
+                
+            } else
+
+          
+
+        
+            if(!currentCtx.parent().is("[type=LIST]")) {
                 log.debug("Hiding list option")
                 $("[data-action=scroller]").hide()
+                $("[data-action*=insert]").hide()
+
             }
+
+
 
             if(currentCtx.is(".ghost")){
                 $("[data-action]").not('.ghostok').hide()
@@ -86,6 +102,8 @@ $(document).on("initializationComplete",function(){
             } else {
                  $("[data-action='ghost']").show();
             }
+
+
         }
      
         //The top
@@ -140,7 +158,7 @@ $(document).on("initializationComplete",function(){
 
 
     // If the menu element is clicked
-    $("[data-action]").click(function(event){
+    $("[data-action]").off("click").click(function(event){
        // $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
         // This is the triggered action name
         switch($(this).attr("data-action")) {
@@ -148,20 +166,46 @@ $(document).on("initializationComplete",function(){
             // A case for each action. Your actions here
             case "first": alert("first"); break;
             case "insertBefore": 
-                        currentCtx.insertBefore(currentCtx.prevAll(".dropped-object").first())
-                        CUSTOM_PXTO_VIEWPORT(currentCtx)
+                        currentCtx.insertBefore(currentCtx.prevAll(":not(.ui-resizable-handle)").first())
+                        if(currentCtx.is("[type=FIELD]")){
+
+                            var isGroupContainer = currentCtx;
+
+                            //For special Form Field types, do more processing before returning here.
+                            //trigger CUSTOM_ON_RESIZE_GROUP_CONTAINER
+                        
+                            isGroupContainer.trigger("resizestop",[{element:isGroupContainer,
+                                width:isGroupContainer.height(),width:isGroupContainer.width()}])
+                            
+                        } else {
+                            CUSTOM_PXTO_VIEWPORT(currentCtx)
+                        }                 
                       
                         break;
              case "insertAfter": 
-                        currentCtx.insertAfter(currentCtx.nextAll(".dropped-object").first())
-                        CUSTOM_PXTO_VIEWPORT(currentCtx)
+                        currentCtx.insertAfter(currentCtx.nextAll(":not(.ui-resizable-handle)").first())
+                        if(currentCtx.is("[type=FIELD]")){
+
+                            var isGroupContainer = currentCtx;
+
+                            //For special Form Field types, do more processing before returning here.
+                            //trigger CUSTOM_ON_RESIZE_GROUP_CONTAINER
+                        
+                            isGroupContainer.trigger("resizestop",[{element:isGroupContainer,
+                                width:isGroupContainer.height(),width:isGroupContainer.width()}])
+                           
+                        } else {
+                            CUSTOM_PXTO_VIEWPORT(currentCtx)
+                        }
+                       
+
                       
                         break;
             case "drop": 
                         var aTool =  whichTool($(this).attr("type"));
                         aTool = configuredTool(aTool);
 
-                        dropTool(aTool,{target:$(currentCtx),clientX:currentX,clientY:currentY});
+                        dropTool(aTool,{target:currentCtx,clientX:currentX,clientY:currentY});
                         
                         if(aTool.is("[type=NAVIGATION]")){
                             aTool.css({width:"500px",height:"50px"});
@@ -244,11 +288,13 @@ $(document).on("initializationComplete",function(){
                                 left.remove();
                             }
                            
-                        } else if(aTool.is("[type=INPUT]")){
-                            if(aTool.attr("type") == "INPUT"){
-                                setUpGroupContainer(aTool);
-
-                                //aTool.trigger("dragstop");
+                        } else if(aTool.is("[type=FIELD]")){
+                            if(aTool.attr("type") == "FIELD"){
+                                //alert("Calling group container ")
+                               setUpGroupContainer(aTool,true);
+                               //Trigger input on label so that the placeholder is set for the control
+                               aTool.find("[class*=-label]").css({"font-family":"lato"}).trigger("input")
+                               aTool.trigger("dragstop");
                              }
 
                         }
@@ -346,15 +392,21 @@ $(document).on("initializationComplete",function(){
        
 
             case "resize": $(".template").click();break;
-            case "javascript": if(currentCtx.attr("type") != "canvas"){         
+            case "javascript": if(currentCtx.attr("type") != "canvas"){   
+                    NOTES_delete();
+                    $("#editSpace").mouseleave();
+                    MAKE_JAVASCRIPT_BOX_for (currentCtx)     
                     //remove submenu class because we don't need it anymore
+                    /* 
                 $( ".adialog" ).data({"theClickedElement":$(hotObj),"actionType":$(this).attr("data-action")});
                     currentCtx.removeClass("submenu")
                 //Signal open and set title
                 $( "#jsdialog" ).dialog( "open" ).dialog("option","title","Enter Javascript for element #" 
                         + $(hotObj).attr("id"));
-
-                    }break;
+                    
+                    }*/
+                }
+                    break;
            
             case "fulledit": hotObj = $(currentCtx);
                 if($(this).html().indexOf("Open Inspector...") > -1 ){
@@ -372,10 +424,11 @@ $(document).on("initializationComplete",function(){
                 break;  
                 // $(currentCtx).find("img")[0].click();break;
             case "preview": CUSTOM_pressEscapeKey(); closeMenu(); PREVIEW_togglePreview(editing);  break;
-            case "delete": if(currentCtx.attr("type") != "canvas"){if(currentCtx.is(".ghost")){GHOST_delete(currentCtx)};deleteElement(currentCtx,true); NOTES_delete();} break;
+            case "delete": if(currentCtx.attr("type") != "canvas"){if(currentCtx.is(".ghost")){GHOST_delete(currentCtx)};deleteWithPrompt(currentCtx,true); NOTES_delete();} break;
             case "scroller": convertToScroller(); break;
         }
       
+        $(window).trigger(editing ? "editing" :"preview")
         // Hide it AFTER the action was triggered
         $(".custom-menu").hide(100);
       });
@@ -555,8 +608,8 @@ log.debug("CONTEXTMENU.js: I am writing fields of length " + fields.length)
                     copiesModified = true;
                 }
         }).on("change",function(evnt){
-            $(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-            $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+            //$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
+            $(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
             //only used to write class info here.  Everything else should use on.input
             if(label == "class" && $(currentCtx.attr("user-classes") && $(currentCtx).attr("user-classes").trim().length > 0)){
                 //$(currentCtx).attr("class",$(currentCtx).attr("user-classes"))

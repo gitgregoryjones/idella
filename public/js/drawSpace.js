@@ -249,7 +249,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	})
 
 	ds.css({
-		height:$(wp).height() * .75,
+		height:$(wp).height()*.75,
 		width:$(window).width(),
 		"overflow-y":"scroll",
 		"overflow-x":"hidden",
@@ -262,8 +262,9 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		"background-repeat":"repeat"
 	})
 
+
 	es.css({
-		height:$(wp).height() *.25,
+		height:$(wp).height()*.25,
 		width:"100%",
 		top:$(ds).height(),
 		position:"absolute",
@@ -271,13 +272,24 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		border:"3px solid yellow"
 		
 	}).show().on("mouseenter",function(){
+				 
+				 $(document).off("keydown")
+
 				if($(".active-message").is(":visible")){
 					//alert("visible " + $(".active-message").attr("msg-parent"))
 					$("#" + $(".active-message").attr("msg-parent")).trigger("mouseenter");
 				}
-//				DRAW_SPACE_advancedShowing = true;
+
 			}).on("mouseleave",function(){
-				DRAW_SPACE_advancedShowing = false;
+				$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+				
+				$("#drawSpace").css({height:$(document).height()});
+		        $("#editSpace").css("transtion-duration","0.6s").fadeOut();
+		        $("*").removeClass("disabledElements").removeClass("submenu_on")
+		        SAVE_okToSave=true;
+				//CUSTOM_pressEscapeKey()
+				console.log("Pressed escape key");
+				
 			})
 
 
@@ -359,6 +371,15 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	addEditMode()
 
+		DRAW_SPACE_advancedShowing = false;
+				userHoveringOverNote = false;
+				   $("#drawSpace").css({height:$(document).height()});
+        $("#editSpace").css("transtion-duration","0.6s").fadeOut();
+        $("*").removeClass("disabledElements").removeClass("submenu_on")
+        SAVE_okToSave=true;
+				//CUSTOM_pressEscapeKey()
+				console.log("Pressed escape key");
+
 
 	$(".responsive-design-tab").on("click",makeOrBreakpoint)
 
@@ -396,6 +417,8 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	var sliderp = $("<div id='sliderp'></div>").css("width","400px");
 	
 	$("#editSpace").prepend(sliderp);
+
+
 
 	var origWidth = $("[alias=theCanvas]").width();
 	var origHeight = $("[alias=theCanvas]").height();
@@ -448,8 +471,8 @@ function DRAW_SPACE_addWorkSpaceToBody(){
     	CUSTOM_ON_RESIZE_LOGIC(target,ui);
     });
 
-
-
+    //Hide Expanded Menu until we need it
+    
 	//$("#tabs").css("height","100%")
 
 }

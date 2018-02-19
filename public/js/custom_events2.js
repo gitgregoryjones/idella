@@ -5,7 +5,14 @@ var CUSTOM_currentlyMousingOverElementId = null;
 
 var CUSTOM_lastCopyElement = null;
 
+$(window).on("editing",function(){
 
+	
+})
+
+$(window).on("preview",function(){
+	
+})
 
 var menuFunc = function(){
 	log.info("User click zMenu")
@@ -17,7 +24,7 @@ function CUSTOM_pressEscapeKey(){
 
 	var e = jQuery.Event("keydown");
 	e.which = 27; // # Some key code value
-	$("input").trigger(e);
+	$(window).trigger(e);
 
 
 	//closeMenu();
@@ -50,7 +57,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 	log.trace("Pressed Key " + event.which)
 
 	if(userHoveringOverNote){
-		console.log("Ignoring user actions because hovering over note field")
+		log.debug("Ignoring user actions because hovering over note field")
 		return;
 	}
 
@@ -63,6 +70,8 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 	
 
 	key = event.which;
+
+	console.log(`saw key ${key} and advance is ${DRAW_SPACE_advancedShowing}`)
 	//Escape Key
 	if(key == 27 && !DRAW_SPACE_advancedShowing){
 
@@ -70,9 +79,10 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 		$("[data-action=fulledit]").html("Open Inspector...");
         $("#drawSpace").css({height:$(document).height()});
-        $("#editSpace").html("").hide()
+        $("#editSpace").css("transtion-duration","0.6s").fadeOut();
         $("*").removeClass("disabledElements").removeClass("submenu_on")
         SAVE_okToSave=true;
+
         return;        
 	} else if(DRAW_SPACE_advancedShowing){
 
@@ -111,7 +121,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		//$(document).click();
 
 		//Show Javascript Window SHIFT+J
-	}else if(key == 74 && event.shiftKey){
+	}else if((key == 74 && event.shiftKey) ){
 
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
@@ -119,19 +129,40 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$(document).click();
 		event.preventDefault()
 
+
+	//if left arrow key 
+	} else if(key == 37 && event.shiftKey ||  key == 38 && event.shiftKey ){
+
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		$("[data-action=insertBefore]").click();
+		$(document).click();
+		event.preventDefault()
+		NOTES_makeNote(hotObj)
+
 	//if delete key 
+	} else if(key == 39 && event.shiftKey || key == 40 && event.shiftKey){
+
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		$("[data-action=insertAfter]").click();
+		$(document).click();
+		event.preventDefault()
+		NOTES_makeNote(hotObj)
+
+	//if delete key 
+	}  // Shift + DELETE Automatically delete
+		else if(key == 8 && event.shiftKey){
+		NOTES_delete();	//alert('hi')
+		deleteElement(hotObj)
+		
 	} else if(key == 8 ){
-		console.log("User clicked delete key")
+		log.debug("User clicked delete key")
 		NOTES_delete()
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
 		$("[data-action=delete]").click();
 		$(document).click();
-		
-	} // NO LONGER NEEDED SHIFT+T
-		else if(key == 84 && event.shiftKey){
-			//alert('hi')
-		$(document).trigger("contextmenu")
 		//Shift-R toggles draft mode
 	} else if(key == 82 && event.shiftKey){
 		NOTES_delete();
@@ -157,11 +188,13 @@ function setUpPopUpButtons(){
 		closeButton = $(closeButton);
 		if(closeButton.data("clickset") != "on"){
                             
-            closeButton.on("click",function(){
+            closeButton.off("click").on("click",function(){
+            	$(window).trigger("dialogClosed");
                 $(closeButton).parents("[data-popup-for]").hide();
-                enableScroll(); 
+                //enableScroll(); 
                 $("#greybox").remove();
-                $("#drawSpace").css({"overflow-y":"hidden"});
+                $("#drawSpace").css({"overflow-y":"scroll"});
+                userHoveringOverNote = false;
             })
             closeButton.data("clickset","on")
         }                 
@@ -171,17 +204,18 @@ function setUpPopUpButtons(){
 		submitButton = $(submitButton);
 		if(submitButton.data("clickset") != "on"){
                             
-            submitButton.on("click",function(){
-               var cereal = $(submitButton).parents("[data-popup-for]").find("form").serialize();
+            submitButton.off("click").on("click",function(){
+            	$(window).trigger("dialogClosed");
+               var cereal = $("[data-popup-for]:visible").find("form").serialize();
                
                if(editing){
-               		console.log("Serialize the form -->" + cereal )
+               		log.debug("Serialize the form -->" + cereal )
                		alert(`Submitted values will be ${cereal}`)
                }
-               $(submitButton).parents("[data-popup-for]").hide();
-               enableScroll(); 
+               $("[data-popup-for]:visible").hide();
+               //enableScroll(); 
                 $("#greybox").remove();
-                $("#drawSpace").css({"overflow-y":"hidden"});
+                $("#drawSpace").css({"overflow-y":"scroll"});
                 
             })
             submitButton.data("clickset","on")
@@ -192,17 +226,46 @@ function setUpPopUpButtons(){
 function setUpGroupContainer(aTool,rebuild){
 	
 
+	if(rebuild){
+		//aTool.resizable("destroy").resizable()
+		//aTool.find("[class*=-control],[class*=-label]").resizable("destroy").resizable()
+		if(aTool.resizable("instance")){
+            aTool.resizable("destroy");
+        }
+        if(aTool.draggable("instance")){
+            aTool.draggable("destroy");
+        }
 
-	console.log("Input here...")
+		aTool.off("resize resizestop dragstop");
+		if(aTool.resizable("instance")){
+			aTool.resizable("destroy").resizable();
+		}
+		
+		aTool.find("[class*=-control],[class*=-label],[type]").each(function(idx,it){
+			it = $(it);
+			if(it.resizable("instance")){
+				it.resizable("destroy").resizable();
+			}
+
+			if(it.draggable("instance")){
+				it.draggable("destroy").draggable();
+			}
+		})
+		aTool.removeData("eventsCreated");
+	}
+
+	log.debug("Input here...")
 	//aTool.data("original-background-image",aTool.css("background-image"));
-    aTool.css({"background-image":'url("http://www.orserumsik.se/webb/wp-content/themes/shoestrap-3/assets/img/patterns/rough_diagonal.png")',"background-size":"auto","font-weight":"600","font-family":"GT America, Helvetica Neue, Helvetica, Arial, sans-serif", "padding":"20px"})
+    //aTool.css({"background-image":'url("http://www.orserumsik.se/webb/wp-content/themes/shoestrap-3/assets/img/patterns/rough_diagonal.png")',"background-size":"auto","font-weight":"600","font-family":"GT America, Helvetica Neue, Helvetica, Arial, sans-serif", "padding":"20px"})
     //aTool.css({"background-color":"rgb(255, 255, 0,.2)","font-weight":"600","font-family":"GT America, Helvetica Neue, Helvetica, Arial, sans-serif", "padding":"20px"})
     
-
-    aTool.find("[class*=-control]").css({width:aTool.find("[type]").width()})
-    var theWidth =  Math.max.apply(null,$.map(aTool.find("[type]"),function(it,i){return $(it).width()}))
-    //alert(theWidth)
-    aTool.css({width:theWidth + parseInt(aTool.css("padding-top"))});
+    //aTool.find("[id*=-control]").css({width:aTool.find("[type]").width() + parseInt(aTool.css("padding-top"))})
+    //aTool.find("[type]").css({width:aTool.width() + parseInt(aTool.css("padding-top"))})
+    var theWidth =  Math.max.apply(null,$.map(aTool.find("[class*=-control],[type]"),function(it,i){return $(it).width()}))
+    log.debug(`The calc width is ${theWidth} for id ${aTool.find("[class*=-control]").attr("id")}`)
+    //alert(aTool.find("[type]").width())
+   	aTool.find("[class*=-control]").css({width:theWidth});
+   	aTool.css({width:theWidth});
 
     aTool.find("[class*=-label]").on("input",function(evnt){
     	
@@ -211,58 +274,66 @@ function setUpGroupContainer(aTool,rebuild){
 
 
 
-    if(aTool.data("eventsCreated") != "on"){
 
-	    aTool.on("resize",CUSTOM_ON_RESIZE_GROUP_CONTAINER)
-	    	.on("resizestop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
-	    	.on("dragstop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
-	    aTool.find("[class*=-control],[class*=-label]")
-	    	.on("resize",CUSTOM_ON_RESIZE_FIELD_CONTAINER)
-	    	
-	    aTool.find("[class*=-control],[class*=-label]")
-	    	.on("resizestop dragstop",CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER)
-	    	//.on("dragstop",CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER)
-	   
-	    aTool.data("eventsCreated","on");
+    aTool.off("resize").on("resize",CUSTOM_ON_RESIZE_GROUP_CONTAINER)
+    	.off("resizestop").on("resizestop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
+    	.off("dragstop").on("dragstop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
+    //Child Elements	
+    aTool.find("[class*=-control],[class*=-label]")
+    	.off("resize").on("resize",CUSTOM_ON_RESIZE_FIELD_CONTAINER)    	
+    	.off("resizestop").on("resizestop dragstop",CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER)
 
-	}
-
-    var zMaxHeightArr = $.map(aTool.find(".dropped-object"), function(d,idx){
-   							return $(d).height()
-   						})
    
+	
 
-    var totalHeight = zMaxHeightArr.reduce(reducer);
+    var zMaxHeightArr = $.map(aTool.find("[class*=-control],[class*=-label]"), function(d,idx){
+   							if($(d).height() != ""){
+   								return $(d).height();
+   							}
+   						})
+    if(zMaxHeightArr.length > 0){
+ 		var totalHeight = zMaxHeightArr.reduce(reducer);
 
-    aTool.css({height:totalHeight})
-
+    	aTool.css({height:totalHeight})
+    }
     //CUSTOM_PXTO_VIEWPORT(aTool);
 
-    aTool.trigger("dragstop");
+    var isGroupContainer = aTool;
+
+    
+
+    //For special Form Field types, do more processing before returning here.
+    //trigger CUSTOM_ON_RESIZE_GROUP_CONTAINER
+
+    isGroupContainer.trigger("resizestop",[{element:isGroupContainer,
+        width:isGroupContainer.height(),width:isGroupContainer.width()}])
 }
 
 CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER = function(event,u){
 
-	if(!u){
-		u = {element:$(event.target)};
+	//log.debug(`Element ${u.element.attr('id')} helper ${u.helper.attr('id')} target ${event.target}`)
+
+	if(!u || !u.element){
+		u = {element:$(event.target)}
 	}
 
-	var zMaxHeightArr = $.map(u.element.find("[id*=-label],[id*=-control]"), function(d,idx){
+	var zMaxHeightArr = $.map(u.element.find("[id*=-label],[id*=-control],[type]"), function(d,idx){
    							return $(d).height()
    						})
    
 
-    var totalHeight = zMaxHeightArr.reduce(reducer);
-
-    u.element.css({height:totalHeight})
-
     u.element.find("[id*=-label],[id*=-control],[type]").each(function(idx,copy){
     	copy = $(copy);
     	
-    	CUSTOM_PXTO_VIEWPORT(copy)
+    	EXTENSIONS_delaySaving_PXTO_VIEWPORT(copy)
     })
 
-    CUSTOM_PXTO_VIEWPORT(u.element);
+    //Do Parent Elem
+   // if(u.element.is("[type=FIELD]")){
+    	EXTENSIONS_delaySaving_PXTO_VIEWPORT(u.element);
+   // } 
+
+    
 }
 
 
@@ -270,32 +341,22 @@ CUSTOM_ON_RESIZE_GROUP_CONTAINER = function(evnt,u){
 
 		var theWidth = u.size.width;
 
-		console.log("The width is " + theWidth); 
+		log.debug("The width is " + theWidth); 
 
-		//do height calculations
-		
-		if((u.size.height - u.originalSize.height) > 0 ){
-			$.map(u.element.find("[id*=-label],[id*=-control]"), function(it,i){
+	
+
+		$.map(u.element.find("[id*=-label],[id*=-control]"), function(it,i){
 				it = $(it);
-				$(it).css({"font-size":parseInt($(it).css("font-size"))+1 ,height:parseInt($(it).height()) + 1 })
+
+				var origHeightRatio = parseInt(it.attr("original-height")) /  parseInt(u.element.attr("original-height"));
+
+				$(it).css({"font-size":(origHeightRatio * u.size.height) *.85 + "px" ,height:origHeightRatio * u.size.height})
+
 				if(it.is("[class*=-control]")){
-						it.find("[type]").css({"font-size":it.height() *.5 + "px",height:"100%"})
+						it.find("[type=TEXT],[type=INPUT]").css({"font-size":it.height() *.85 + "px",height:"100%"})
 				}
 				return it;
-			})
-		} else if((u.size.height - u.originalSize.height) < 0 ){
-			
-			$.map(u.element.find("[id*=-label],[id*=-control]"), function(it,i){
-				it = $(it);
-				$(it).css({"font-size":parseInt($(it).css("font-size"))-1 ,height:parseInt($(it).height()) - 1 })
-				if(it.is("[class*=-control]")){
-						it.find("[type]").css({"font-size":it.height() *.5 + "px",height:"100%"})
-				}
-				return it;
-			})
-			
-		}
-
+		})
 
 
 		//do width calculations
@@ -310,6 +371,8 @@ CUSTOM_ON_RESIZE_GROUP_CONTAINER = function(evnt,u){
 CUSTOM_ON_RESIZE_FIELD_CONTAINER = function(evnt,ui){
 
 	var container = ui.element;
+
+	log.debug(`container is ${container.attr("id")}`)
 
 	var inputField = container.find("[type]");
 
@@ -335,6 +398,10 @@ CUSTOM_ON_RESIZE_FIELD_CONTAINER = function(evnt,ui){
 
 }
 
+/*
+*
+*	Once user finishes resizing field or label, do any special stuff here
+*/
 CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER = function(evnt,ui){
 
 	//ui.size.height
@@ -342,12 +409,23 @@ CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER = function(evnt,ui){
 
 	var container = ui.helper;
 
-	CUSTOM_PXTO_VIEWPORT(container,$(container).position().left,$(container).position().top)
+	//CUSTOM_PXTO_VIEWPORT(container,$(container).position().left,$(container).position().top)
 
 	if(container.is("[class*=-control]")){
 		var inputText = container.find("[type]").css({"font-size":container.height() *.5 + "px"})
-		CUSTOM_PXTO_VIEWPORT(inputText,$(inputText).position().left,$(inputText).position().top)
+		//container.css({height:container.find("[type]").height()})
+		//CUSTOM_PXTO_VIEWPORT(inputText,$(inputText).position().left,$(inputText).position().top)
 	}
+
+	log.trace("RESIZE WAS STOPPED for container " + container.attr("id"))
+
+	//Now Call Resize Group Which will make this field child and parent responsive
+	
+	evnt.target = container.parent("[type=FIELD]");
+	ui.element = container.parent("[type=FIELD]");
+
+	CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER(evnt,ui)
+	    
 
 }
 
@@ -355,10 +433,9 @@ CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER = function(evnt,ui){
 CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 
-	
 	if($(event.target).hasClass("ui-resizable-handle")){
 		//alert($(event.target).parents(".dropped-object").first().attr("id"))
-		$(event.target).parents(".dropped-object").first().mouseenter();
+		$(event.target).parents(".dropped-object:visible").first().mouseenter();
 		//$(event.target).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 		
 		return;	
@@ -366,7 +443,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 	if($(event.target).parent().is("[id*=-control]")){
 		//alert('hi')
-		$(event.target).parents(".dropped-object").first().mouseenter();
+		$(event.target).parents(".dropped-object:visible").first().mouseenter();
 		//$(event.target).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 		
 		return;	
@@ -374,14 +451,14 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 
 	if($(event.target).is("[type=text]")){
-		$(event.target).parent(".dropped-object").mouseenter();
+		$(event.target).parent(".dropped-object:visible").mouseenter();
 		return;
 	}
 	//NOTES_delete()
 
 	//enableHoverEvents();
 
-	if(DRAW_SPACE_isEditing() ){
+	if(DRAW_SPACE_isEditing() || !$(event.target).hasClass("dropped-object")){
 
 		event.stopPropagation()
 
@@ -437,7 +514,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 			log.info("Changing target to dropped-object");
 			//theElem = $(theElem).parents(".dropped-object").first();
 			log.info(theElem)
-			$(theElem).parents(".dropped-object").first().mouseenter();
+			$(theElem).parents(".dropped-object:visible").first().mouseenter();
 			return;
 		}	
 
@@ -452,7 +529,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 		
 		if(CUSTOM_currentlyMousingOverElementId !=null){
-			//$(theElem).parent().trigger("mouseleave")
+			$(theElem).parents(".dropped-object:visible").first().mouseleave()
 			
 		}	
 			
@@ -474,7 +551,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	} else {
 		log.debug("Entering bad child bad node")
 		$(".dropped-object").not(event.target).removeClass("submenu")
-		$(event.target).parents().first().mouseenter();
+		$(event.target).parents(".dropped-object:visible").first().mouseenter();
 		return;
 	}
 }
@@ -504,12 +581,12 @@ function addPlusButton(elem){
 
 	} else {
 
-		plus.css({top:10, position:"relative","border-color":"white","text-align":"center",
-			"font-size":"40px","border-radius":"50px",
+		plus.css({top:0, position:"absolute","border-color":"white","text-align":"center",
+			"font-size":"30px","border-radius":"0px",
 				"background-color":"silver","margin":"10px","padding":"10px"
 				,"color":"white","z-index":30000})
 
-		plus.css({left:$(elem).width()/2 - plus.width()/2})
+		plus.css({left:$(elem).width() - plus.width()*2.5})
 
 	}
 
@@ -547,7 +624,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 	} else {
 		$("#"+event.target.id).removeClass("submenu")
 
-		//$(event.target).parent(".dropped-object").trigger("mouseenter")
+		$(event.target).parents(".dropped-object:visible").first().mouseenter();
 	}
 
 }
@@ -573,8 +650,8 @@ _DEFAULT_CLOSE_CODE = function(event,ui){
 	}
 	copiesModified = false;
 
-	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	
+	$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 }
 
@@ -750,7 +827,7 @@ CUSTOM_TXT_RESIZE = function(event,ui){
 		h = ui.element.height() * (100 / document.documentElement.clientWidth);
 
 		elems= ui.element.find("span").css({height:h+"vw",width:w+"vw", "font-size":h+"vw"})
-		console.log("Resized " +elems.length)
+		log.debug("Resized " +elems.length)
 	}
 }
 
@@ -786,9 +863,11 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 	event.stopPropagation()
 	event.preventDefault();
 
-	log.trace("Group Resize Enabled is " + groupResizeEnabled + "ID " + ui.element.attr("id"))
+	
 
-	groupResizeEnabled = $("#group-resize").is(":checked")
+	var groupResizeEnabled = $("#group-resize").is(":checked")
+
+	log.trace("Group Resize Enabled is " + groupResizeEnabled + "ID " + ui.element.attr("id"))
 
 	if(groupResizeEnabled && ui.originalSize){
 		 
@@ -805,7 +884,7 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 //Called after parent node is in process of resizing and child nodes need to copy that effect
 //relative to parent
 function growOrShrinkChildren(node,ui){
-console.log($(node).children("[type]").length + " leng")
+log.debug($(node).children("[type]").length + " leng")
 
 
 
@@ -850,10 +929,10 @@ console.log($(node).children("[type]").length + " leng")
 		}
 
 		if(child.children("[type]").length > 0){
-			console.log("I'm doing the small stuff " + child.attr("id"))
+			log.debug("I'm doing the small stuff " + child.attr("id"))
 			growOrShrinkChildren(child,{originalSize:originalSize,size:newSize})
 		} else {
-			console.log("I'm doing the big stuff " + child.attr("id"))
+			log.debug("I'm doing the big stuff " + child.attr("id"))
 		}
 	})
 
@@ -863,7 +942,7 @@ console.log($(node).children("[type]").length + " leng")
 function onResizeEffectEnded(element){
 	//On Resize Stop...reset ratio of this node in relation to it's parent
 	if($(element).parent("[type]").length > 0){
-		console.log("I need to resize")
+		log.debug("I need to resize")
 
 		var parent = $(element).parent("[type]");
 		var node = $(element);
@@ -979,8 +1058,9 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 
 CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 
-	userHoveringOverNote = false;
-
+	
+    $(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+    
 	//log.debug("CUSTOMEVENTS.js:Triggered Done Editing Notes for parent " + $(event.target).attr("parent"))
 
 	var parentId = $(event.target).attr("parent")
@@ -1018,8 +1098,8 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 	}
 	copiesModified = false;
 	//bind document listener keydown again
-	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	
+	$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 	writeTabs(parent,true)
 
@@ -1048,8 +1128,8 @@ CUSTOM_CLOSE_LOGIC = function(event,ui){
 
 
 	//bind document listener keydown again
-	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	
+	$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 
 }
@@ -1098,7 +1178,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 				log.debug("CUSTOMEVENTS.js:Overwriting event target with new target ")
 				myParent = $(event.target).parents("[type=T]").first();
 				log.debug("CUSTOMEVENTS.js:Making note for " + $(myParent).attr("id"))
-				console.log(myParent)
+				log.debug(myParent)
 				//return;
 			} 
 
@@ -1209,8 +1289,8 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 
 
 				//reenable keydown logic and save input
-				$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-				$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+				
+				$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 				
 					var tokens = $(input).val().split("\n");
 
@@ -1229,7 +1309,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 							//see if User gave us comma separated line.  If so, treat as images and text in menu item
 							var imgTxtTok = tokens[it].split(",")
 							log.debug("CUSTOMEVENTS.js:SPLITTING ON ,")
-							console.log(imgTxtTok)
+							log.debug(imgTxtTok)
 							if(imgTxtTok.length > 0){
 
 							
@@ -1440,7 +1520,7 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 
 
 		log.debug("CUSTOMEVENTS.js:immediate parent is " + immediateParent.attr("id") + " with offsets " + immediateParent.position().left)
-		console.log({left:leftPos,top:immediateParent.offset().top});
+		log.debug({left:leftPos,top:immediateParent.offset().top});
 		
 		a.css({align:"center",display:"inline-block",left:leftPos,width:immediateParent.width(),height:immediateParent.height()
 			,"position":"absolute", top:topPos});				
@@ -1450,10 +1530,10 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 		//
 		if(a.attr("href").startsWith("#")){
 			var fragmentId = a.attr("href").substring(1);
-			console.log("fragmentId is " + fragmentId);
+			log.debug("fragmentId is " + fragmentId);
 			var linkTo = $("[alias="+fragmentId+"]").attr("id")
 			if(linkTo){
-				console.log("LinkTo is " + linkTo)
+				log.debug("LinkTo is " + linkTo)
 				a.attr("href","#"+linkTo);
 			}
 		}
@@ -1688,7 +1768,16 @@ function setUpDiv(div){
 	
 	div.not("body,[type=MENU]").on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
-					.on("click",writeTabs)
+					.on("click",function(evt){
+						if($(evt.target).hasClass("dropped-object")){
+							$("#drawSpace").css({height:"75%"})
+							$("#editSpace").fadeIn(function(){
+							writeTabs(evt)
+							})
+						}
+						
+						
+					})
 					
 
 	//Setup Menu Divs
@@ -1713,7 +1802,7 @@ function setUpDiv(div){
 				log.debug("CUSTOMEVENTS.js:ServerContent is " + serverContent)
 				if(serverContent){
 					log.debug("CUSTOMEVENTS.js:ServerContent is below for alias " + div.attr("alias"))
-					console.log(serverContent)
+					log.debug(serverContent)
 
 					for(responseKey in serverContent){
 						log.debug("CUSTOMEVENTS.js:ServerContent Looking for alias with key " + responseKey)
@@ -1747,8 +1836,8 @@ function setUpDiv(div){
 	//fix bug in jquery which forces position to relative on draggable() init
 	div.css("position",oldPos);
 
-	if(div.is(".group-container")){
-		setUpGroupContainer(div);
+	if(div.is("[type=FIELD]")){
+		setUpGroupContainer(div,true);
 	}
 
 	return div;
@@ -1768,7 +1857,7 @@ function parseStyleClassFromString(theStr){
 		theOldHo = oldHos[i];
 		lilOldHos = theOldHo.split(":")
 		log.debug("CUSTOMEVENTS.js:Do I have old hos!")
-		console.log(lilOldHos);
+		log.debug(lilOldHos);
 		if(lilOldHos.length > 1){
 			
 			theOldLabel = lilOldHos[0];
@@ -1789,7 +1878,7 @@ function initialize(){
 
 	$(":text,div,span,img").on("mouseenter",function(e){
 		//$(this).parents().trigger("mouseleave");
-		console.log("Template MODE Entering " + $(e.target).attr("id"))
+		log.debug("Template MODE Entering " + $(e.target).attr("id"))
 			
 			//NOTES_delayShowingNote($(this))
 		}).on("mouseleave",function(e){
@@ -1815,7 +1904,7 @@ function initialize(){
 				var img = configuredTool(tmp)
 				img.addClass("from-template")
 				style = CONVERT_STYLE_TO_CLASS_OBJECT($(this))
-				console.log("SRC IS " + $(this).attr("src"))
+				log.debug("SRC IS " + $(this).attr("src"))
 				$(this).replaceWith(img.css(style))
 
 				theImgSrc = $(this).prop("tagName") == "IMG" ? "url("+$(this).attr("src") + ")" : $(this).css("background-image")
@@ -1890,6 +1979,23 @@ function initialize(){
 				log.debug("CUSTOMEVENTS.js:Ignoring " + $("#jsdialog").find("textarea").val());
 				$(this).dialog("close");
 			},
+			"Delete Function": function(){
+				
+			
+				//disable all events before adding new user events	
+
+				$(this).data().theClickedElement.off("click")
+				//test and add new user events
+				
+
+				//Now that we are sure code is good.  Write it to storage
+				saveJs($(this).data().theClickedElement,"");
+
+				$(this).dialog("close");
+
+				//Always Renable Drag events
+				initDraggableObject($(this).data().theClickedElement);
+			},
 			"Save Function": function(){
 				var error = false;
 				try {
@@ -1963,7 +2069,7 @@ function initialize(){
 					$(this).data().theClickedElement.removeAttr("hasjs")	
 				}
 
-				theId = $(this).data().theClickedElement.attr("id")
+				
 				//Always Renable Drag events
 				initDraggableObject($(this).data().theClickedElement);
 			}
@@ -2013,8 +2119,8 @@ function initialize(){
 	//Determine which popup to call based on Key User Pressed
 	//Note: Unbind called while user is entering values on dialog so that we don't
 	//interfere with Shift or Ctrl keys needed while in JS view
-	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-   	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	
+   	$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 
    	//setupGhosts
@@ -2075,7 +2181,7 @@ function recursiveCpy(obj, plusButtonPushed){
 	//var goodChildren = $(obj).children(".dropped-object"); 
 
    	log.trace("CUSTOMEVENTS2.js : bad children after copy");
-   //	console.log($(obj).children(".dropped-object")); 
+   //	log.debug($(obj).children(".dropped-object")); 
 
    	$(obj).find(".dropped-object").each(function(idx,elem){
    		
@@ -2130,6 +2236,8 @@ function recursiveCpy(obj, plusButtonPushed){
    	 clone.insertAfter(obj);
    	 CUSTOM_PXTO_VIEWPORT($(clone),clone.position().left,clone.position().top)
 	}
+
+
 
    	//clone.css({top:obj.offset().top + 10, left:obj.offset().left+10})
 

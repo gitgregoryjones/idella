@@ -1,13 +1,7 @@
 
 function PREVIEW_makeSaveableView(page){
 
-		$(".group-container").each(function(idx,it){
-			it = $(it);
-			//it.data("original-background-image",it.css("background-image"))
-			it.css("background-image","none");
-		})
-
-		$("form").css({"background-color":"transparent"})
+		$(window).trigger(editing ? "editing" :"preview")
 
 		$("#greybox").hide();
 
@@ -47,7 +41,6 @@ function PREVIEW_makeSaveableView(page){
 		//DRAW_SPACE_deleteWorkspaceFromBody();
 		$(page).find(".ui-icon").hide();
 
-	
 }
 
 
@@ -58,17 +51,23 @@ function PREVIEW_togglePreview(showPreview){
 					
 		$(".dropped-object").not(".tool").removeClass("debug-border-style").removeClass("squarepeg");
 		$(".dropped-object,[class=submenu]").removeClass("submenu")
-		$("form").css({"background-color":"transparent"})
-		$(".group-container").each(function(idx,it){
-			it = $(it);
-			//it.data("original-background-image",it.css("background-image"))
-			it.css("background-image","none");
-			
-		})
-		try {$(".dropped-object").resizable("destroy");}catch(e){
+		
+		/*  Commented out because I want user to be able to resize in preview mode but not live mode
+
+		try {
+			$(".dropped-object").each(function(idx,i){
+				i = $(i)
+				if(i.resizable("instance")){
+					i.resizable("destroy");
+				}
+
+			})
+
+		}catch(e){
 			
 			log.info("PREVIEW.js: " + e.stack)
 		}
+		*/
 		
 		$(".dropped-object").is(function(){
 			log("border is " + $(this).css("border"))
@@ -101,15 +100,13 @@ function PREVIEW_togglePreview(showPreview){
 		$(".ghost").hide();
 		$("#myp").hide();
 		$(".dropped-object").css("touch-action","auto")
+		$(window).trigger(editing ? "editing" :"preview")
 
 	}else {
-		$(".group-container").each(function(idx,it){
-
-			setUpGroupContainer($(it));
-
-		})
+		
+		
 		$(".dropped-object").not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg").removeClass("noborder");
-		$(".dropped-object").resizable().on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
+		$(".dropped-object").resizable().off("resizestop").on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
 		$(".ui-droppable").resizable({disabled:false})
 		$(".dropped-object").is(function(){
 			$(this).css("border-top-width") == "0" ? $(this).css({"border":"3px dashed black"}) : "";
@@ -121,6 +118,8 @@ function PREVIEW_togglePreview(showPreview){
 		DRAW_SPACE_addWorkSpaceToBody();
 		$(".ui-icon").show();
 		$(".ghost").show();
+		$(window).trigger(editing ? "editing" :"preview")
+
 
 	}
 }

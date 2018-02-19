@@ -11,8 +11,8 @@ function saveJs(theElem, script){
 	console.log("Entering save JS with id " + id)
 
 
-	theFunction = "<!-- BEGIN " + id + " //-->\n\n$(document).ready(\n\tfunction(){\n" + script.trim() + "\n})<!-- END "+ id + "//-->";
-
+	//theFunction = "<!-- BEGIN " + id + " //-->\n\n$(document).ready(\n\tfunction(){\n" + script.trim() + "\n})<!-- END "+ id + "//-->";
+	theFunction = "<!-- BEGIN " + id + " //-->\n" + script.trim() + "\n<!-- END "+ id + "//-->";
 	//eval(theFunction)
 
 	//test to see if style is not found, add it.  If found, replace it
@@ -41,20 +41,28 @@ function getJs(theElem){
 
 	log.debug("SAVJS.js: After applying regex " + re + " groups is " + groups);
 
+	var exampleFunc = "$(\"#"+theElem.attr("id") + "\").on(\"click\",\n\tfunction(event){\n\t\t\/\/Enter Code Below\n\n\t}\n)";
+
 	if(groups != null){
+		//old format
+		if(groups[1].trim().indexOf("$(document).ready(\n\tfunction(){") > -1){
+			content = groups[1].trim().replace("$(document).ready(\n\tfunction(){\n","");
+			lastBrace = content.lastIndexOf("})");
+			content = content.substring(0,lastBrace);
+		} else {
+			content = groups[1]
+		}
+		
 
-		content = groups[1].trim().replace("$(document).ready(\n\tfunction(){\n","");
-		lastBrace = content.lastIndexOf("})");
-
-		content = content.substring(0,lastBrace);
+		
 
 		log.debug("SAVJS.js: Really Returning " + content)
 
-		return content;
+		return content.trim().length > 0 ? content : exampleFunc;
 
 	} else {
 		//try to read from localStorage		
-		return localStorage.getItem("javaScript_"+id);
+		return exampleFunc;
 		
 	}
 

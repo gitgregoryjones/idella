@@ -54,6 +54,14 @@ function setCaretPosition(elem, caretPos) {
 
 function NOTES_makeNote(element,isActive){
 
+	
+	if(!$(element).hasClass("dropped-object")){
+		NOTES_delete()
+		return;
+	}
+
+	
+
 	var blurInitialized = false;
 
 
@@ -81,7 +89,7 @@ function NOTES_makeNote(element,isActive){
 	}
 
 
-	console.log("CUSTOM_currentlyMousingOverElementId != $(element).attr(\"id\") is " + CUSTOM_currentlyMousingOverElementId + " ==? " + $(element).attr("id") )
+	log.debug("CUSTOM_currentlyMousingOverElementId != $(element).attr(\"id\") is " + CUSTOM_currentlyMousingOverElementId + " ==? " + $(element).attr("id") )
 
 	if(GHOST_isForElement(element)){
 		return msgcoords;
@@ -123,24 +131,26 @@ function NOTES_makeNote(element,isActive){
 			fontFamily  = $(element).css("font-family")
 			href = $(element).attr("href") != undefined ? $(element).attr("href") : "none" ;
 
-			if(element.is("[id*=-control]")){
+			if(element.is("[type=FIELD]")){
+				//visible txt, hidden value
 				var stype = $("<select>").append(new Option("checkbox","checkbox"))
 							.append(new Option("text area","textarea"))
-							.append(new Option("input field","text"))
-							.append(new Option("radio group","radio"));
+							.append(new Option("input field","input"))
+							.append(new Option("radio group","radio"))
+							.append(new Option("select field","select"));
 					theMsg.append($("<div style='display:inline-block; margin-right:10px'>Type:</div>").append(stype));
 
 					//AutoSelect option based on what user chose last
-					if(element.find("[type]").length > 0){
-						var theType = element.find("[type]").attr('type').toLowerCase();
-						console.log(`Looking for archType of ${theType}`)
+					if(element.children("[id*=-control]").find("[type]").length > 0){
+						var theType = element.children("[id*=-control]").find("[type]").attr('type').toLowerCase();
+						log.debug(`Looking for archType of ${theType}`)
 						stype.find(`[value=${theType}]`).attr('selected','selected');
 					}
 
 					stype.on('change',function(){
-						var archType = $(this).find(":selected").attr("value")
-						CONTROLS_makeFormFieldFor(element,archType);
-						element.resizable("enable");
+						var archType = $(this).find(":selected").attr("value").trim().toUpperCase();
+						CONTROLS_makeFormFieldFor(element.children("[id*=-control]"),archType);
+						//element.resizable("enable");
 						//element.resizable();
 					})
 			} else {
@@ -259,7 +269,7 @@ function NOTES_makeNote(element,isActive){
 				select.append(new Option(plugin.alias,plugin.file))
 			}
 			log.debug("NOTES.js: This is cool")
-			console.log(select)
+			log.debug(select)
 			theMsg.append($("<div style='display:inline-block'>Library:</div>").append(select));
 			
 			select.on('change',function(){
@@ -270,7 +280,7 @@ function NOTES_makeNote(element,isActive){
 		}
 		
 		theMsg.on('mouseenter',function(){
-			userHoveringOverNote = true;
+			$(document).unbind("keydown",CUSTOM_KEYDOWN_LOGIC)
 		}).on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);
 
 	
@@ -282,16 +292,18 @@ function NOTES_makeNote(element,isActive){
 
 		//position bar in correct place so it does not overrun the screen
 		if(parseInt($(element).offset().left) + $(".msg").width()  > $("body").width()){
-			console.log("Slide Left " + $(element).attr("id")) 
+			log.debug("Slide Left " + $(element).attr("id")) 
 			$(".msg").css({position:"absolute",top:parseInt($(element).offset().top- $(".msg").height() - 40), left:parseInt($(element).offset().left)-160})
 			$(".peak").css({position:"absolute",top:parseInt($(element).offset().top)-20, left:parseInt($(element).offset().left)+20})
 		} else {
-			console.log("Default Slide Left " + $(element).attr("id")) 
+			log.debug("Default Slide Left " + $(element).attr("id")) 
 			$(".msg").css({position:"absolute",top:parseInt($(element).offset().top)- $(".msg").height() - 40, left:parseInt($(element).offset().left)})
 			$(".peak").css({position:"absolute",top:parseInt($(element).offset().top)-20, left:parseInt($(element).offset().left)+20})
 		}
-
-		
+/*
+		$(".msg").css({left:myPage.X-20, top:myPage.Y - $(".msg").height() -40})
+		$(".peak").css({left:myPage.X + 20,top:myPage.Y - $(".peak").height() - 20})
+		*/
 		if(element.id == "drawSpace"){
 			//just delete messaging for now. It does not look good onscreen
 			/*
@@ -309,11 +321,11 @@ function NOTES_makeNote(element,isActive){
 			if(parseInt($(element).offset().top) + $(element).height() + $(".msg").height() + 20 > $("#drawSpace").height()){
 
 				//Place in bottom left corner of element
-				console.log("Bottom Left " + $(element).attr("id")) 
+				log.debug("Bottom Left " + $(element).attr("id")) 
 				$(".peak").css({position:"absolute",top:parseInt(($(element).offset().top + $(element).height()) - 20 )})
 				$(".msg").css({position:"absolute",top:parseInt($(".peak").offset().top - $(".msg").height() - 20)})
 			} else {
-				console.log("Top Left " + $(element).attr("id")) 
+				log.debug("Top Left " + $(element).attr("id")) 
 					$(".msg").css({position:"absolute",top:parseInt($(element).offset().top) + $(element).height() + 20 })
 					
 					//flip vertically
@@ -329,6 +341,8 @@ function NOTES_makeNote(element,isActive){
 		msgcoords = {top:($(".msg").	offset().top * pxToVWAdjuster) + "vw", 
 						left:($(".msg").offset().left * pxToVWAdjuster) + "vw"
 		}
+
+		
 
 		log.debug("MsgCOORDS")
 		log.debug(msgcoords)
@@ -375,7 +389,7 @@ function NOTES_makeNote(element,isActive){
 
 
 							if($(et.target).attr("name") != "value"){
-								console.log("Not a text type...returning")
+								log.debug("Not a text type...returning")
 								return;
 							}
 
@@ -412,7 +426,7 @@ function NOTES_makeNote(element,isActive){
 							var parent = $("#" + $(evnt.target).attr("parent"));
 							//parent.resizable("disable").resizable();
 
-							console.log("CHANGING IT UP BABY")
+							log.debug("CHANGING IT UP BABY")
 
 
 							//Moved to QUICK_EDIT
@@ -479,7 +493,7 @@ function QUICK_EDIT(evnt){
 				
 			} else if(label == "value"){
 
-					console.log("User changing text to " + $(evnt.target).val())
+					log.debug("User changing text to " + $(evnt.target).val())
 
 					var idx =0;
 

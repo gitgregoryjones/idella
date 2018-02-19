@@ -19,9 +19,10 @@ function writeTabs(currentCtx,forceWrite){
 
 
 
+
 	currentCtx = currentCtx.target ? currentCtx.target : currentCtx;
 
-	console.log("Writing tab for " + $(currentCtx).attr("id") + " and generatedTabsForId " + generatedTabsForId)
+	log.debug("Writing tab for " + $(currentCtx).attr("id") + " and generatedTabsForId " + generatedTabsForId)
 
 	if(generatedTabsForId == $(currentCtx).attr("id")){
 
@@ -29,7 +30,7 @@ function writeTabs(currentCtx,forceWrite){
 			//continue;
 		
 		} else {
-			console.log( "Quick return. Nothing to do for " + generatedTabsForId)
+			log.debug( "Quick return. Nothing to do for " + generatedTabsForId)
 			return generatedTabsForId;
 		}
 	}
@@ -44,7 +45,7 @@ function writeTabs(currentCtx,forceWrite){
 		return;
 	}
 
-	console.log("Still Writing tab for " + $(currentCtx).attr("id") )
+	log.debug("Still Writing tab for " + $(currentCtx).attr("id") )
 
 	styleMeta = CONVERT_STYLE_TO_CLASS_OBJECT(parent,true);
 
@@ -244,9 +245,7 @@ function writeTabs(currentCtx,forceWrite){
 		}
 					
 		f.on('input',function(evnt){
-				//evnt.preventDefault();
-				
-				
+
 				if(label == "class"){
 					//do nothing.  wait until class is complete
 					$(parent).addClass($(evnt.target).val())
@@ -258,7 +257,7 @@ function writeTabs(currentCtx,forceWrite){
 							//$(parent).attr(label,$(event.target).val())
 					}*/
 
-					console.log("Src is true and value is " + $(evnt.target).val() + " pID " + $(parent).attr("id") + " type is ["+ $(parent).attr("type") + "]")
+					log.debug("Src is true and value is " + $(evnt.target).val() + " pID " + $(parent).attr("id") + " type is ["+ $(parent).attr("type") + "]")
 
 					if($(parent).is("[type=VID]")){
 						$(parent).find("video").first().attr(label,$(evnt.target).val())
@@ -347,7 +346,7 @@ function writeTabs(currentCtx,forceWrite){
 
 					//test to see if this is a custom attribute instead of class
 					if($(parent).css(label) == undefined){
-						console.log("STYLETABS2.js :" + label + " is not a style " + " overwriting with label " + $(event.target).val())
+						log.debug("STYLETABS2.js :" + label + " is not a style " + " overwriting with label " + $(event.target).val())
 						//User modified an an attribute
 						$("#"+originalParentId).attr(label,$(event.target).val())
 						$("[extends='"+originalParentId+"']").not($(parent)).attr(label,$(event.target).val());
@@ -356,14 +355,18 @@ function writeTabs(currentCtx,forceWrite){
 					}
 					copiesModified = true;
 				}
-		}).on("mouseleave",function(){
-			userHoveringOverNote = false;
+		}).on("mouseleave",function(evnt){
 
-		}).on("change",function(evnt){
-			userHoveringOverNote = false;
+			var theTarget = $(evnt.target);
+			
+
+			if(originalFieldValue  == theTarget.val()){
+				log.debug(`no save needed for ${theTarget.attr("id")}`)
+				return;
+			}
 
 			if($(evnt.target).attr('type') == "checkbox" && $(event.target).attr("id") == "dialog-dialog-enabled"){
-				var jsString = !$(evnt.target).is(":checked")? `$("#${$(parent).attr('id')}").on("click",function(){})`: `$("#${$(parent).attr('id')}").on("click",popup)`;
+				var jsString = !$(evnt.target).is(":checked")? `$("#${$(parent).attr('id')}").on("click",function(){})`: `$("#${$(parent).attr('id')}").on("click",POPUP_win)`;
 				$(parent).off("click");
 				//if(getJs($(evnt.target)) == null){
 					eval(jsString)
@@ -390,7 +393,11 @@ function writeTabs(currentCtx,forceWrite){
 				$(parent).find("video")[0].load()
 			}
 
+			//alert(`Leaving parent ${$(parent).attr('id')}`)
+
 			CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
+
+			
 			if(copiesModified){
 				log.debug("STYLETABS2.js:I'm in the copies bruh!")
 				//Finally Find all copies of this element and do viewport stuff.  In viewport stuff, we also save any 
@@ -430,9 +437,13 @@ function writeTabs(currentCtx,forceWrite){
 			//NOTES_makeNote($(parent));
 			STYLESTABS_forceRewrite = false;
 
+		}).on("change-placeholder-not-used",function(evnt){
+			
 
-		}).on("mouseenter",function(){
-			userHoveringOverNote = true;
+
+		}).on("mouseenter",function(evnt){
+			
+			originalFieldValue = $(evnt.target).val();
 		})
 
 		//Don't write id field again. We already manually added to each tab for consistency above
@@ -551,7 +562,18 @@ function writeTabs(currentCtx,forceWrite){
 		$(".rocket-save").on('click',function(){
 
 			if(website == "default"){
-				text = prompt("Please enter a name for your new site")
+				//text = prompt("Please enter a name for your new site")
+				 MAKE_PROMPT_FOR_INPUT_BOX_for({promptMsg:"What is new site name?"},function(text){
+
+						if(text && text.trim().length > 0){
+							$('html').attr("x-site-name",text);
+							$('title').text(text);
+							LOGIC_redirectNeeded = true;
+							SAVEJS_goInactive()
+						}
+
+				 })
+				/*
 				if(text && text.trim().length > 0){
 					$('html').attr("x-site-name",text);
 					$('title').text(text);
@@ -559,9 +581,9 @@ function writeTabs(currentCtx,forceWrite){
 					//theSiteObj.name = text;
 					//theSiteObj.redirect = true;
 					SAVEJS_goInactive()
-				}
+				}*/
 			} else {
-				console.log("Pressed Key for saving ")
+				log.debug("Pressed Key for saving ")
 				SAVE_okToSave = true;
 				SAVEJS_goInactive()
 			}

@@ -217,13 +217,16 @@ function computeDimensions(theClassObj,Query,cWidth){
 
 }
 
+function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){ 
 
+	EXTENSIONS_timer = setTimeout(function() {
+	 CUSTOM_PXTO_VIEWPORT(moveMe,X,Y); 
+	}, 200) 
+} 
 
 
   var CUSTOM_PXTO_VIEWPORT = function( moveMe,X,  Y ) {
   	
-	//$(moveMe).removeClass("submenu");
-	moveMe = $(moveMe);
 
 	X = moveMe.position().left;
 

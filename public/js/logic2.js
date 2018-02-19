@@ -70,7 +70,12 @@ return (s)
 }
 
 
+
 $(document).ready(function() {
+
+
+	saveJs($("body").first(),`function silent(){}`)
+
 
 	$(document).mousemove(function(event){
 		myPage.X = event.pageX;
@@ -456,7 +461,7 @@ function whichTool (tool){
 
 	type = (tool).toUpperCase();
 
-	_debug&&log(`User chose tool [${tool}]`);
+	log.trace(`User chose tool [${tool}]`);
 
 	var theTool = {}
 
@@ -578,18 +583,16 @@ function whichTool (tool){
 			
 		break;
 
-		case "INPUT":
+		case "FIELD":
 		
 	
 		theTool = new GenericTool({
 			type:type,
 			class:"texttool",
 			friendlyName : "Input Field",
-			droppedModeHtml:"<div class='group-container  helper-wrapper'><div class='dropped-object' type='T'>Field Label</div><div class='dropped-object field-container' type='DIV'><input  width='100%' height='100%' type=\"text\" placeholder=\"Enter field value\"></div></div>"
+			droppedModeHtml:"<div class='group-container  helper-wrapper'><div class='dropped-object' type='T'>Field Label</div><div class='dropped-object field-container' type='DIV'><input  width='100%' height='100%' type=\"input\" placeholder=\"Enter field value\"></div></div>"
 		});
 		break;
-
-
 
 		default:
 		
@@ -660,7 +663,7 @@ function configuredTool(options){
 
 		var div = setUpDiv(this.node)
 
-		if(div.attr("type") == "INPUT"){
+		if(div.attr("type") == "FIELD"){
 			div.find(".dropped-object").each(function(idx,n){
 				n = $(n);
 				console.log("ID IS " + $(div).attr("id"))
