@@ -4,6 +4,8 @@ var NOTES_timer = null;
 var userHoveringOverNote = false;
 var userEditing = false;
 
+var LOCKED = false;
+
 function NOTES_delayShowingNote(target){ 
 
 	NOTES_timer = setTimeout(function() {
@@ -51,16 +53,200 @@ function setCaretPosition(elem, caretPos) {
     }
 }
 
+//Repositions all slashes to location of parent object in case they moved
+function refreshSlashes(){
+
+	$("[slash-for").each(function(idx,it){
+		it = $(it);
+		var parentObject = $(it.attr("slash-for"));
+
+		parentObject.show();
+		it.css({left:parentObject.offset().left, 
+								top:parentObject.offset().top + parentObject.height()/2 })
+
+		parentObject.hide();
+
+
+	})
+
+}
+
 
 function NOTES_makeNote(element,isActive){
 
 	
-	if(!$(element).hasClass("dropped-object")){
+	if(!$(element).hasClass("dropped-object") && !$(element).attr("[type=option]")){
 		NOTES_delete()
 		return;
 	}
 
 	
+	var theElem = $(element);
+
+	//$(".fa-lock").remove();
+
+	$(".widget-off").remove();
+
+	var key = "#" + $(theElem).attr("id") + "-widget";
+
+	var lock = "#" + $(theElem).attr("id") + "-lock";
+
+	var widgets = $(key);	
+
+	var widgetWidth = 0;
+
+	log.debug(`The key to the lock is ${key}`)
+
+	if(widgets.length == 0){
+
+		log.debug("Making lock")
+
+		widgets = $("<div>",{color:"yellow", class:"widget-off",id:$(theElem).attr("id")+"-widget"})
+				.css({border:"1px solid navy","text-align":"center","background-color":"black"})
+
+		lock = $("<div>",{class:"fa fa-lock",id:$(theElem).attr("id")+"-lock"}).appendTo(widgets)
+
+
+		widgets.appendTo($(theElem));
+
+		
+
+		lock.on("click",function(event){
+						event.stopPropagation();
+
+						var myParent = $(event.target).parents(".dropped-object").first();
+
+						currentCtx = myParent;
+						
+						var unLocked = $(this).is(".fa-unlock");
+
+						
+
+						if(unLocked){
+							NOTES_delete();
+							
+							$("[data-action=lessOptions]").click();
+							$(this).removeClass("fa-unlock").addClass("fa-lock")
+							widgets.removeClass("widget-on").addClass("widget-off")
+							return;
+							//$(document).click();
+						} else {
+							$(".widget-on").remove()
+							$("[data-action=moreOptions]").click();
+							$(this).removeClass("fa-lock").addClass("fa-unlock")
+							widgets.removeClass("widget-off").addClass("widget-on")
+							
+							var lilEye = $("<div>",{class:"fa fa-eye",id:$(theElem).attr("id")+"-plus"}).appendTo(widgets).css({"padding-left":"5px"})
+
+							lilEye.off().on("click",function(evnt){
+
+								evnt.stopPropagation();
+
+								var slash = $("<div>",{class:"fa fa-eye-slash",id:$(theElem).attr("id")+"-plus"}).appendTo($("body"))
+
+								slash.attr("slash-for",`#${theElem.attr("id")}`)
+
+								slash.css({"font-size":"32px","text-align":"center","background-color":"silver","color":"white",position:"absolute"})
+												
+								//now position it
+								
+
+								slash.attr("title",`click to show ${theElem.attr("id")}`)
+
+								slash.on("mouseenter",function(){
+
+									theElem.fadeIn();
+
+								}).on("mouseleave",function(){
+
+									theElem.fadeOut();
+
+								}).on("click",function(evnt){
+
+									theElem.hide();
+									theElem.fadeIn();
+									//Remove This
+									$(evnt.target).remove();
+								})
+
+								theElem.hide();
+
+								refreshSlashes();
+
+								widgets.remove();
+
+								NOTES_delete();
+
+							})
+
+							lilEye.attr("title",`click to hide ${theElem.attr("id")} from view`)
+
+							
+							//$(document).click();
+							NOTES_makeNote(myParent,true)
+							//If Text Type, give more room in UI by removing the helper
+							if(myParent.is("[type=T]")){
+								//widgets.remove();
+							}
+							return;
+						}
+					
+						
+						
+						
+						//NOTES_makeNote($(theElem),true);
+						
+				
+						
+		})
+
+		if(objectIsReordable($(theElem))){
+							currentCtx = $(theElem);
+							
+							$(widgets).append($("<div>",{class:"fa fa-caret-up",id:$(theElem).attr("id")+"-before"})
+									.off("click").on("click",function(event){
+
+										event.stopPropagation();
+										$("[data-action=insertBefore]").click();
+										NOTES_makeNote($(theElem))
+										refreshSlashes();
+									}))
+							$(widgets).append($("<div>",{class:"fa fa-caret-down",id:$(theElem).attr("id")+"-after"})
+								.off("click").on("click",function(event){
+										event.stopPropagation();
+										$("[data-action=insertAfter]").click();
+										NOTES_makeNote($(theElem))
+										refreshSlashes();
+									}))
+		}
+
+		var title = $(theElem).attr("alias") ? $(theElem).attr("alias") : $(theElem).attr("id");
+
+		//lock.wrap(`<a href=\"#\" title=\"${title}\"></a>`)
+		lock.attr("title",title)
+
+		
+		widgets.children().each(function(idx,it){
+			it = $(it).css({width:"30px"});
+			if(idx > 0 ){
+				it.css({"padding-left":"5px"})
+			}
+			widgetWidth += it.outerWidth();
+			log.debug(`width of index ${idx} is ${it.width()}`)
+		})
+
+		widgets.css({position:"absolute", left:$(theElem).width()/2 - parseInt(widgetWidth)/2, top:0
+				,"-webkit-text-fill-color":"gold",color:"gold","font-size":"30px"})
+
+		log.debug(`Widget is on or off?  It is ${widgets.attr("class")} and total width is ${widgetWidth}`);
+			
+	} 
+	
+	
+
+	if(!widgets.is(".widget-on")){
+		return
+	} 
 
 	var blurInitialized = false;
 
@@ -96,6 +282,7 @@ function NOTES_makeNote(element,isActive){
 	}
 	
 	if($(element).hasClass("dropped-object")){
+
 		writeTabs(element)
 	}
 	//NOTES_delete()
@@ -113,13 +300,13 @@ function NOTES_makeNote(element,isActive){
 	var pxToVWAdjuster = (100 / document.documentElement.clientWidth);
 
 
+	
+
+
 	if(element.id){
 		log.debug("NOTES.js: Entering parent " + element.id + " with X, Y " + $(element).css("left") + "," + $(element).css("top"))
 
-	
-		//$(element).addClass("submenu");
-
-		theMsg = $("<div class='msg' msg-parent='" + element.id + "'>&nbsp;&nbsp;"+$(element).attr("type") + "#" + $(element).attr("id") + " " + ($(element).attr("alias") != undefined ? " [alias= " + $(element).attr("alias") +"]" : "") + "</div></div>" );
+		theMsg = $("<div class='msg' msg-parent='" + element.id + "'>"+$(element).attr("type") + "#" + $(element).attr("id") + " " + ($(element).attr("alias") != undefined ? " [alias= " + $(element).attr("alias") +"]" : "") + "</div>" );
 
 		theMsg.append("<div>Left : " + $(element).offset().left + ", Top: "+ $(element).offset().top + ", Height: "+ $(element).height() + ", Width: "+ $(element).width() +"</div>")
 		
@@ -154,7 +341,7 @@ function NOTES_makeNote(element,isActive){
 						//element.resizable();
 					})
 			} else {
-				theMsg.append(" <div>href: <input type='text' class='quick-disabled' name='href' parent='" + element.id + "' value='" + href + "'></div>")
+				theMsg.append(" <div>Link To Page: <input type='text' class='quick-disabled' name='href' parent='" + element.id + "' value='" + href + "'></div>")
 			}
 			
 /*
@@ -179,6 +366,7 @@ function NOTES_makeNote(element,isActive){
 					
 					theMsg.append(" <div style='display:inline-block'> Value: <input type='text' class='quick-disabled' name='value' parent='" + element.id + "' value='" + content + "'></div>").append("<br>")
 
+					/*
 					stype = $("<select>").append(new Option("paragraph","paragraph")).append(new Option("menutext","menutext"));
 					theMsg.append($("<div style='display:inline-block; margin-right:10px'>Type:</div>").append(stype));
 
@@ -190,15 +378,17 @@ function NOTES_makeNote(element,isActive){
 					stype.on('change',function(){
 					
 						if($(this).find(":selected").attr("value") == "menutext"){
+							element.attr("archType","BUTTON")
 							element.find("p").remove();
 							element.find("[type=MENU-ITEM]").css("margin-left","20px").addClass("menutext");
 						} else {
-							element.find("[type=MENU-ITEM]").css("margin-left",0).removeClass("menutext").append($("<p>"))
+							element.removeAttr("archType")
+							element.find("[type=MENU-ITEM]").css("margin-left",0).removeClass("menutext").append($("<p>")).removeAttr("archType")
 							//:not(:last)
 						}
 						//element.resizable();
 					})
-
+					*/
 
 
 				} else {
@@ -251,15 +441,43 @@ function NOTES_makeNote(element,isActive){
 				}
 
 			} else {
-				theMsg.append(" <div>Source: <input type='text' class='quick-disabled quick-disabled-image-field' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
+				theMsg.append(" <div>Image: <input type='text' class='quick-disabled quick-disabled-image-field' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
 			}
 
-			theMsg.append("<div style='display:inline-block'></div>BgColor: <div style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ color + "'/>")
+			theMsg.append("<div style='display:inline-block'></div>Bckgrnd Color: <div background-color-for='#"+element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ color + "'/>")
 			theMsg.append(" <div style='display:inline-block'><input type='text' class='quick-disabled quick-color' name='background-color' parent='" + element.id + "' value='" + color + "'></div>")
 			
-			theMsg.append(" <div>Font: <input type='text' class='quick-disabled' name='font-family' parent='" + element.id + "' value='" + fontFamily + "'></div>")
-			theMsg.append(" <div style='display:inline-block'> Text Color: <input type='text' class='quick-disabled' name='color' parent='" + element.id + "' value='" + txtColor + "'></div>")
+			//theMsg.append(" <div>Font: <select name='font-family' parent='" + element.id + "' value='" + fontFamily + "'></div>")
+			
+			//Do Font Stuff
+			var ftype = $(`<select name='font-family' parent='${element.id}'>`);
 
+					
+
+
+					var fonts = $("html").attr("fonts").split(",");
+
+					fonts.forEach(function(font){
+						var option = new Option(font,font);
+						$(option).css("font-family",font);
+						ftype.append(option)
+					})
+
+					//AutoSelect option based on what user chose last
+					if(element.css("font-family")){
+						ftype.find(`[value="${$(element).css("font-family").replace(/"/g,"")}"]`).attr('selected','selected');
+					}
+
+					ftype.on('change',function(){
+						element.css("font-family",$(this).find(":selected").attr("value"));
+					})
+
+			theMsg.append(ftype)
+			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="start" class="fa fa-align-left"></div>`))
+			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="center"  class="fa fa-align-center"></div>`))
+			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="right"  class="fa fa-align-right"></div>`))
+			theMsg.append(" <div style='display:inline-block'> Text Color: <div color-for='#" +element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;color:"+ color + "'/><input type='text' class='quick-disabled' name='color' parent='" + element.id + "' value='" + txtColor + "'></div>")
+			
 		
 		} else {
 			list = PLUGINS_getPluginList();
@@ -279,7 +497,8 @@ function NOTES_makeNote(element,isActive){
 			})
 		}
 		
-		theMsg.on('mouseenter',function(){
+		theMsg.off().on('mouseenter',function(){
+			userHoveringOverNote = true;
 			$(document).unbind("keydown",CUSTOM_KEYDOWN_LOGIC)
 		}).on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);
 
@@ -288,6 +507,39 @@ function NOTES_makeNote(element,isActive){
 
 
 		$("body").append("<div class=\"peak\" msg-parent='" + element.id + "'>&nbsp;</div>")
+
+		//Now Add Events to Text Alignment Editor Icons since they are finally part of the DOM
+		$('[editor-icon-for]').each(function(idx,it){
+
+				var key = $(it).attr("editor-icon-for")
+
+				var theParent = $(key);
+
+				var alignment = theParent.css("text-align")
+
+				if($(it).attr("orientation") == alignment){
+					$(it).css({"background-color":"navy"})
+				}
+
+		})
+
+
+		$('[editor-icon-for]').on("click",function(){
+
+			
+				element.css({"text-align":$(this).attr('orientation')})
+
+				$('[editor-icon-for]').css("background-color","initial")
+				$(this).css("background-color","navy");
+				$(this).attr("off","navy")
+
+		}).on("mouseenter",function(){
+				$(this).attr("off",$(this).css("background-color"))
+				$(this).css({"background-color":"black"})
+		}).on("mouseleave",function(){
+
+				$(this).css({"background-color":$(this).attr("off")})
+		})
 
 
 		//position bar in correct place so it does not overrun the screen
@@ -299,7 +551,9 @@ function NOTES_makeNote(element,isActive){
 			log.debug("Default Slide Left " + $(element).attr("id")) 
 			$(".msg").css({position:"absolute",top:parseInt($(element).offset().top)- $(".msg").height() - 40, left:parseInt($(element).offset().left)})
 			$(".peak").css({position:"absolute",top:parseInt($(element).offset().top)-20, left:parseInt($(element).offset().left)+20})
+
 		}
+
 /*
 		$(".msg").css({left:myPage.X-20, top:myPage.Y - $(".msg").height() -40})
 		$(".peak").css({left:myPage.X + 20,top:myPage.Y - $(".peak").height() - 20})
@@ -310,7 +564,7 @@ function NOTES_makeNote(element,isActive){
 			$(".msg").css({position:"absolute",top:parseInt($(element).offset().top) + $(element).height() - $(".msg").height() - 20, left:parseInt($(element).offset().left)+10})
 			$(".peak").css({position:"absolute",top:parseInt($(element).offset().top) + $(element).height() -20, left:parseInt($(element).offset().left)+20})
 			*/
-			$(".msg,.peak").remove();
+			//$(".msg,.peak").remove();
 		} else
 
 		//last check, if rendered bar too close to top. move bar and peak again
@@ -330,17 +584,18 @@ function NOTES_makeNote(element,isActive){
 					
 					//flip vertically
 					$(".peak").css({"-ms-transform": "rotate(180deg)","-webkit-transform": "rotate(180deg)","transform": "rotate(180deg)"})
-					$(".peak").css({position:"absolute",top:parseInt($(".msg").offset().top) - 40})
+					$(".peak").css({position:"absolute",top:parseInt($(".msg").offset().top) - 35})
 				}
 
 		}
 
-		
+		//$(".msg").css({top:myPage.Y - $(".msg").height()*1.1,left:myPage.X})
 	
 
-		msgcoords = {top:($(".msg").	offset().top * pxToVWAdjuster) + "vw", 
+		msgcoords = {top:($(".msg").offset().top * pxToVWAdjuster) + "vw", 
 						left:($(".msg").offset().left * pxToVWAdjuster) + "vw"
 		}
+
 
 		
 
@@ -376,7 +631,7 @@ function NOTES_makeNote(element,isActive){
 
 		noteShowing = true;
 
-	
+
 
 		//write changes to parent object
 		$(".quick-disabled").on("input",QUICK_EDIT)
@@ -476,10 +731,14 @@ function QUICK_EDIT(evnt){
 			}else if(label.startsWith("font") || label.startsWith("text")){
 				$(parent).css(label,$(evnt.target).val())
                 // $(parent).find("[type]").css(label,$(evnt.target).val())  
-            }else if(label == "color"){
+            }  else if(label == "color"){
 					$(parent).css("-webkit-text-fill-color",$(evnt.target).val())
 					
 					$(parent).find("[type]").css("-webkit-text-fill-color",$(evnt.target).val())
+
+					var opt = $(evnt.target).parents(".active-message").find("[color-for]").css("background-color",$(evnt.target).val())
+
+					console.log(`Found color parent for ${opt.length}`)
 
 			}  else if(label == "background-image" && !($(evnt.target).val().startsWith("url(")) ){
 
@@ -522,6 +781,14 @@ function QUICK_EDIT(evnt){
 				} else {
 				$(parent).css(label,$(evnt.target).val())
 				//if this is a custom css option. ie how we define components, write as attribute
+				}
+
+				if(label == "background-color"){
+					
+
+					var opt = $(evnt.target).parents(".active-message").find("[background-color-for]").css("background-color",$(evnt.target).val())
+
+					
 				}
 			}
 

@@ -15,7 +15,11 @@ var memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: 60 * 30/
 
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
-var files = ["https://fonts.googleapis.com/css?family=Dancing+Script|Roboto|Lato|Broadway|Open+Sans|Pacifico:n,b,i,bi|Lora:n,b,i,bi|Anton:n,b,i,bi|Basic:n,b,i,bi|Caudex:n,b,i,bi|Chelsea+Market:n,b,i,bi|Corben:n,b,i,bi|EB+Garamond:n,b,i,bi|Enriqueta:n,b,i,bi|Forum:n,b,i,bi|Fredericka+the+Great:n,b,i,bi|Jockey+One:n,b,i,bi|Josefin+Slab:n,b,i,bi|Jura:n,b,i,bi|Kelly+Slab:n,b,i,bi|Marck+Script:n,b,i,bi|Lobster:n,b,i,bi|Mr+De+Haviland:n,b,i,bi|Cinzel:n,b,i,bi|Niconne:n,b,i,bi|Noticia+Text:n,b,i,bi|Overlock:n,b,i,bi|Patrick+Hand:n,b,i,bi|Play:n,b,i,bi|Sarina:n,b,i,bi|Signika:n,b,i,bi|Spinnaker:n,b,i,bi|Monoton:n,b,i,bi|Sacramento:n,b,i,bi|Cookie:n,b,i,bi|Raleway:n,b,i,bi|Open+Sans+Condensed:300:n,b,i,bi|Amatic+SC:n,b,i,bi|Cinzel:n,b,i,bi|Sail:n,b,i,bi|Playfair+Display:n,b,i,bi|Libre+Franklin:n,b,i,bi|Libre+Baskerville:n,b,i,bi|&subset=latin-ext,cyrillic,japanese,korean,arabic,hebrew,latin","jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","textArea.js","logic2.js"]
+
+var googleFonts = "https://fonts.googleapis.com/css?family=Dancing+Script|Roboto|Lato|Broadway|Open+Sans|Pacifico:n,b,i,bi|Lora:n,b,i,bi|Anton:n,b,i,bi|Basic:n,b,i,bi|Caudex:n,b,i,bi|Chelsea+Market:n,b,i,bi|Corben:n,b,i,bi|EB+Garamond:n,b,i,bi|Enriqueta:n,b,i,bi|Forum:n,b,i,bi|Fredericka+the+Great:n,b,i,bi|Jockey+One:n,b,i,bi|Josefin+Slab:n,b,i,bi|Jura:n,b,i,bi|Kelly+Slab:n,b,i,bi|Marck+Script:n,b,i,bi|Lobster:n,b,i,bi|Mr+De+Haviland:n,b,i,bi|Cinzel:n,b,i,bi|Niconne:n,b,i,bi|Noticia+Text:n,b,i,bi|Overlock:n,b,i,bi|Patrick+Hand:n,b,i,bi|Play:n,b,i,bi|Sarina:n,b,i,bi|Signika:n,b,i,bi|Spinnaker:n,b,i,bi|Monoton:n,b,i,bi|Sacramento:n,b,i,bi|Cookie:n,b,i,bi|Raleway:n,b,i,bi|Open+Sans+Condensed:300:n,b,i,bi|Amatic+SC:n,b,i,bi|Cinzel:n,b,i,bi|Sail:n,b,i,bi|Playfair+Display:n,b,i,bi|Libre+Franklin:n,b,i,bi|Libre+Baskerville:n,b,i,bi|&subset=latin-ext,cyrillic,japanese,korean,arabic,hebrew,latin";
+//var googleFonts = "nothing.js";
+
+var files = [googleFonts,"jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","logic2.js"]
 var version = 1;
 
 var $ = null;
@@ -435,6 +439,9 @@ function getRevision(req,res,next){
 
 	console.log("THE PATH IS [" + site + "] and computedFile is " + computedFile)
 
+
+
+
 	if(site.length == 0){
 		console.log("User needs default revision")
 		revDir =process.env.HOMEDIR;
@@ -450,7 +457,42 @@ function getRevision(req,res,next){
 			} else {
 				res.setHeader('Content-type','text/html');
 				res.set('x-site-name',site)
-				res.end(htmlOrError);
+				/* Do Fonts */
+				$ = cheerio.load(htmlOrError);
+
+				var fonts = googleFonts.split("|")
+
+				console.log(`Yo mama length is ${fonts.length}`)
+
+				var cleanFont = [];
+
+				fonts.forEach(function(font){
+					console.log(`Yo mama reading font ${font}`)
+					var tmp = font;
+
+					if(tmp.indexOf("=") > -1){
+						tmp.substr(tmp.indexOf("=")+1) 
+					}
+
+					tmp = tmp.substr(0, tmp.indexOf(":"));
+
+					console.log(`clean font is ${tmp}`)
+					if(tmp.trim().length > 0 && tmp.indexOf("http") == -1 ){
+						cleanFont.push(tmp)
+					}
+					
+
+				})
+
+				console.log(`Zoo Final cleanFont is ${cleanFont}`);
+
+				var yomama = cleanFont.sort().toString().replace(/\+/g," ").replace(/"/g,"");
+
+				yomama = yomama.indexOf("=") > -1 ? yomama.substr(yomama.indexOf("=")+1) : yomama;
+
+				console.log(`Yo mama is ${yomama}`)
+				$("html").attr("fonts",yomama);
+				res.end($.html());
 				
 			}
 		});
@@ -503,12 +545,51 @@ function getRevision(req,res,next){
 					 					$("[alias=notification]").css({"height":0})
 					 					$("[alias=header]").css({"top":0})
 					 					$(".dropped-object").addClass("noborder");
+
+					 					var fonts = googleFonts.split("|")
+
+					 					console.log(`Yo mama length is ${fonts.length}`)
+
+					 					var cleanFont = [];
+
+										fonts.forEach(function(font){
+											console.log(`Yo mama reading font ${font}`)
+											var tmp = font;
+
+											if(tmp.indexOf("=") > -1){
+												tmp.substr(tmp.indexOf("=")+1) 
+											}
+
+											tmp = tmp.substr(0, tmp.indexOf(":"));
+
+											console.log(`clean font is ${tmp}`)
+											if(tmp.trim().length > 0 && tmp.indexOf("http") == -1 ){
+												cleanFont.push(tmp)
+											}
+											
+
+										})
+
+										console.log(`Final cleanFont is ${cleanFont}`);
+
+										var yomama = cleanFont.sort().toString().replace(/\+/g," ").replace(/"/g,"");
+
+										
+
+										yomama = yomama.indexOf("=") > -1 ? yomama.substr(yomama.indexOf("=")+1) : yomama;
+
+										console.log(`Yo mama is ${yomama}`)
+										$("html").attr("fonts",yomama);
+
 					 					res.end($.html());
 				 					} else {
 				 						res.setHeader('Content-type','application/json');
 				 						$ = cheerio.load(htmlOrError);
 										str = persist.getSectionFromSheet($,$("[alias=theCanvas]"))
 										console.log("My String " + str)
+
+										
+				 						
 				 						res.end(JSON.stringify(str))
 				 						
 
@@ -693,6 +774,7 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 		$('html').attr('x-site-name',site)
 		$('html').attr('x-current-date',dateGMTString)
 		$('html').attr('x-current-page-name',simplePageName);
+
 
 
 		q = (url.parse(originalUrl).query)

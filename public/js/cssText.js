@@ -64,6 +64,45 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj,justTestI
 
 
 
+function getClassFromIdella(className, callback){
+
+	var re = new RegExp(className.replace(".","\\.")+'(\\s+\\{[^}]+\\})','img')
+
+	var thescript = "";
+
+	var exists = false;
+
+	$.get("/css/idella.css",function(data){
+
+		console.log(`Data is ${data}`)
+		let m = null;
+
+	
+
+		if ((m = re.exec(data)) !== null) {
+
+			console.log(`returning ${m}`);
+
+			callback(m);
+
+			return;
+
+		} else {
+
+			console.log(`I didn't find a match in idella`)
+
+			callback("");
+		}
+	})
+
+	
+
+
+	
+
+}
+
+
 function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExists){
 
 
@@ -118,7 +157,7 @@ function doWebkitHoverColor(div){
 	    
 	   var color=m[3];
 
-	   LOGLEVEL=DEBUG;
+	   
 
 	   log.debug("Value of M")
 	   log.debug(m);

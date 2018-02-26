@@ -82,7 +82,7 @@ body.editing a[type=anchor] {
 	background-color: transparent;
 	color:inherit;
 	text-overflow: ellipsis;
-	width:100px;
+	width:200px;
 	
 }
 
@@ -110,6 +110,7 @@ body.editing a[type=anchor] {
     display:inline;
     z-index:9999999;
 }
+
 
 
 .msg, .active-message {
@@ -331,22 +332,7 @@ div.styleValue > input, #imgwin {
 	display:inline-block;
 	width:50%;
 }
-.button {
-	color:white;
-	text-transform:uppercase;
-	font-size:1.5vw;
-	width: 12vw;
-	height:2vw;
-	text-align: center;
-	display: inline-block;
-	border:2px solid;
-	border-radius: 25px;
-	//position:absolute;
 
-  
-
-	align-content: middle;
-}
 
 .filmbutton {
 	border:solid;
@@ -529,7 +515,7 @@ div.container {
 	//-webkit-text-stroke-color:#FFD700  !important;
 	//-webkit-text-stroke-width:1px !important;
 
-	border: solid #3164EB !important;
+	--border-color: #3164EB !important;
 	//border: solid silver !important;
 	//opacity: 50% !important;
 	//background-color: #3164EB !important;
@@ -635,7 +621,8 @@ textarea {
     overflow: hidden;
     border: 1px solid #CCC;
     white-space: nowrap;
-    font-family: sans-serif;
+    font-family: lato;
+    font-size:14px;
     background: #FFF;
    // color: #333;
     border-radius: 5px;
@@ -689,6 +676,16 @@ textarea {
 	height:154px;
 	width: 275px	;
 	background-size: cover;
+}
+
+[archType=BUTTON] {
+
+	text-align: center;
+	padding:20px;
+	background-color: navy
+	color:white;
+	background-color: navy !important;
+	border-radius:20px;
 }
 
 
@@ -790,6 +787,20 @@ form.editing {
 	--background-color: silver !important;
 	background-image:url("http://www.orserumsik.se/webb/wp-content/themes/shoestrap-3/assets/img/patterns/rough_diagonal.png") !important
 }
+
+.group-container > [id*=-label] {
+	
+	
+	padding-top:10px;
+	padding-bottom: 10px;
+}
+
+.group-container > [id*=-control] {
+	
+	
+
+	padding-bottom: 10px;
+}
 /*
 Edit box
 */
@@ -807,6 +818,15 @@ Edit box
 	background-color:navy;
 }
 
+
+.button {
+	border-radius:20px;
+	background-color: red;
+	color:white;
+	font-family: Play;
+	text-align: center;
+	padding:20px;
+}
 
 
 @media (max-width: 700px) {

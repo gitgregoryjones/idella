@@ -271,7 +271,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 		"z-index": 999999,
 		border:"3px solid yellow"
 		
-	}).show().on("mouseenter",function(){
+	}).show().off("mousenter").on("mouseenter",function(){
 				 
 				 $(document).off("keydown")
 
@@ -280,15 +280,15 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 					$("#" + $(".active-message").attr("msg-parent")).trigger("mouseenter");
 				}
 
-			}).on("mouseleave",function(){
+			}).off("mouseleave").on("mouseleave",function(){
 				$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 				
-				$("#drawSpace").css({height:$(document).height()});
-		        $("#editSpace").css("transtion-duration","0.6s").fadeOut();
-		        $("*").removeClass("disabledElements").removeClass("submenu_on")
-		        SAVE_okToSave=true;
+				//$("#drawSpace").css({height:$(document).height()});
+		        //$("#editSpace").css("transtion-duration","0.6s").fadeOut();
+		        //$("*").removeClass("disabledElements").removeClass("submenu_on")
+		        //SAVE_okToSave=true;
 				//CUSTOM_pressEscapeKey()
-				console.log("Pressed escape key");
+				//console.log("Pressed escape key");
 				
 			})
 
@@ -378,12 +378,12 @@ function DRAW_SPACE_addWorkSpaceToBody(){
         $("*").removeClass("disabledElements").removeClass("submenu_on")
         SAVE_okToSave=true;
 				//CUSTOM_pressEscapeKey()
-				console.log("Pressed escape key");
+				log.debug("Pressed escape key");
 
 
 	$(".responsive-design-tab").on("click",makeOrBreakpoint)
 
-	$(window).on('resize',drawResponsiveTab)
+	$(window).off("resize").on('resize',drawResponsiveTab)
 
 	$("#tabs").append('<div class="setarea"></div>')
 	
@@ -407,7 +407,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 
 
-	$(".mini-responsive-design-tab").on('click',makeOrBreakpoint)
+	$(".mini-responsive-design-tab").off("click").on('click',makeOrBreakpoint)
 
 	
 
@@ -435,7 +435,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	}
 
-    $( "#sliderp" ).slider({value:100}).on('slide',function(event,ui){
+    $( "#sliderp" ).slider({value:100}).off("slide").on('slide',function(event,ui){
     	//console.log("This is it ");
     	//console.log(ui);
     	//console.log((ui.value/100) * origWidth)

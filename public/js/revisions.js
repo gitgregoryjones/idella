@@ -302,11 +302,30 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 			}).done(function(){
 				console.log("Revision created");
 				$(".saveImage").hide();
-				REVISION_anchors = [];
-				if(redirect){
-					
-					window.location = URI.joinPaths("",object.siteName,object.pageName);
-				} 
+
+
+				//Give User Visual Indicator They are in preview mode
+				POPUP_greyOver({target:"window",callerType:"save-window"},function(greyBox){
+
+					greyBox.find("[data-message-for-greybox]").text(` Saving ${object.siteName}...`).addClass("fa fa-save")
+					.css({"background-color":"green","text-align":"center",transform:"rotate(-10deg)"})
+					//Auto destroy greybox after 700 milliseconds by fading out and finally deleting from DOM and
+					//stylesheet if added					
+					setTimeout(function(){
+
+						REVISION_anchors = [];
+						if(redirect){
+							
+							window.location = URI.joinPaths("",object.siteName,object.pageName);
+						} 
+
+						greyBox.fadeOut(function(){
+							deleteElement($(this))
+						})
+
+					},2000)					
+				})
+			
 				
 			}).fail(function(x,t,e){
 				alert("Failure is here:")

@@ -40,8 +40,10 @@ function OVERLAY_setUp(element,isTemplate){
 	}
 
 	overlay.attr("overlay-for","#"+element.attr("id"))
+
 	if(isTemplate){
 		overlay.attr("template",true)
+		overlay.attr("focus-overlay-for","#"+element.attr("id"))
 	}
 	element.attr("overlay","#"+overlay.attr('id'))
 	overlay.attr("type","OVERLAY")
@@ -53,6 +55,8 @@ function OVERLAY_setUp(element,isTemplate){
 	}
 
 	coords = NOTES_makeNote(overlay);
+
+	return overlay;
 	//alert(JSON.stringify(coords))
 
 }

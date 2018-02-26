@@ -4,6 +4,16 @@ var currentX = 0;
 var currentY = 0;
 var currentCtx = {};
 
+/*
+*  Can this object be moved before or after it's sibling?
+*  Currently, the criteria is "Is this object the child of a list or SELECT type"
+*
+*/
+
+function objectIsReordable(obj){
+
+    return obj.parent(".dropped-object").is("[type=LIST],[type=SELECT]")
+}
 
 
 <!-- language: lang-js -->
@@ -67,6 +77,9 @@ $(document).on("initializationComplete",function(){
 
         $("[data-action=drop][type=FIELD]").hide()
 
+        $("#editSpace").is(":visible") ? $("[data-action=lessOptions]").show() 
+                    && $("[data-action=moreOptions]").hide() : $("[data-action=moreOptions]").show() && $("[data-action=lessOptions]").hide()
+
         if(editing){
 
                //only show convert to scroller option for list types
@@ -78,9 +91,8 @@ $(document).on("initializationComplete",function(){
                     $("[data-action=drop][type=FIELD]").show()
                 } 
             }
-             else if( currentCtx.parent().is("[type=LIST],[type=SELECT]")){
-                $("[data-action*=insert]").show();
-                
+             else if( objectIsReordable(currentCtx) ){
+                $("[data-action*=insert]").show();          
             } else
 
           
@@ -162,7 +174,18 @@ $(document).on("initializationComplete",function(){
        // $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
         // This is the triggered action name
         switch($(this).attr("data-action")) {
-            
+            case "moreOptions":        
+                $("#drawSpace").css({height:"75%"})
+                $("#editSpace").fadeIn(function(){
+                    //writeTabs(currentCtx)
+                })
+            break;
+
+            case "lessOptions":
+                $("#drawSpace").css({height:$(document).height()});
+                $("#editSpace").css("transtion-duration","0.6s").fadeOut();
+                
+            break;
             // A case for each action. Your actions here
             case "first": alert("first"); break;
             case "insertBefore": 
@@ -298,6 +321,8 @@ $(document).on("initializationComplete",function(){
                              }
 
                         }
+
+                        aTool.css("font-family","inherit")
 
                         break;
                         

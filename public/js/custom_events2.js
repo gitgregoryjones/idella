@@ -71,7 +71,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 	key = event.which;
 
-	console.log(`saw key ${key} and advance is ${DRAW_SPACE_advancedShowing}`)
+	log.debug(`saw key ${key} and advance is ${DRAW_SPACE_advancedShowing}`)
 	//Escape Key
 	if(key == 27 && !DRAW_SPACE_advancedShowing){
 
@@ -152,8 +152,8 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 	//if delete key 
 	}  // Shift + DELETE Automatically delete
-		else if(key == 8 && event.shiftKey){
-		NOTES_delete();	//alert('hi')
+		else if(key == 68 && event.shiftKey){
+		NOTES_delete();
 		deleteElement(hotObj)
 		
 	} else if(key == 8 ){
@@ -173,6 +173,19 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$("[data-action=preview]").click();
 		$(document).click();
 
+	} else if(key == 69 && event.shiftKey){
+	
+		//$("#id_toolset").find(".mastertools").find("img").click();
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		if($("#editSpace").is(":visible")){
+			$("[data-action=lessOptions]").click();
+		} else {
+			$("[data-action=moreOptions]").click();
+		}
+		
+		$(document).click();
+
 	} else {
 		log(event.which)
 	}
@@ -190,14 +203,16 @@ function setUpPopUpButtons(){
                             
             closeButton.off("click").on("click",function(){
             	$(window).trigger("dialogClosed");
-                $(closeButton).parents("[data-popup-for]").hide();
+                $(closeButton).parents("[data-popup-for]").hide().css({"z-index":"1"});
+
                 //enableScroll(); 
                 $("#greybox").remove();
                 $("#drawSpace").css({"overflow-y":"scroll"});
                 userHoveringOverNote = false;
             })
             closeButton.data("clickset","on")
-        }                 
+        }
+
 	})
 
 	$("[data-send-button-for]").each(function(idx,submitButton){
@@ -226,6 +241,11 @@ function setUpPopUpButtons(){
 function setUpGroupContainer(aTool,rebuild){
 	
 
+	if(!aTool.is(":visible")){
+			console.log("Dont work on hidden objects");
+			return;
+	}
+
 	if(rebuild){
 		//aTool.resizable("destroy").resizable()
 		//aTool.find("[class*=-control],[class*=-label]").resizable("destroy").resizable()
@@ -240,6 +260,8 @@ function setUpGroupContainer(aTool,rebuild){
 		if(aTool.resizable("instance")){
 			aTool.resizable("destroy").resizable();
 		}
+
+		aTool.resizable();
 		
 		aTool.find("[class*=-control],[class*=-label],[type]").each(function(idx,it){
 			it = $(it);
@@ -275,13 +297,13 @@ function setUpGroupContainer(aTool,rebuild){
 
 
 
-    aTool.off("resize").on("resize",CUSTOM_ON_RESIZE_GROUP_CONTAINER)
-    	.off("resizestop").on("resizestop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
-    	.off("dragstop").on("dragstop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
+    aTool.on("resize",CUSTOM_ON_RESIZE_GROUP_CONTAINER)
+    	.on("resizestop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
+    	.on("dragstop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
     //Child Elements	
     aTool.find("[class*=-control],[class*=-label]")
-    	.off("resize").on("resize",CUSTOM_ON_RESIZE_FIELD_CONTAINER)    	
-    	.off("resizestop").on("resizestop dragstop",CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER)
+    	.on("resize",CUSTOM_ON_RESIZE_FIELD_CONTAINER)    	
+    	.on("resizestop dragstop",CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER)
 
    
 	
@@ -322,7 +344,7 @@ CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER = function(event,u){
    						})
    
 
-    u.element.find("[id*=-label],[id*=-control],[type]").each(function(idx,copy){
+    u.element.find("[id*=-label],[id*=-control]").each(function(idx,copy){
     	copy = $(copy);
     	
     	EXTENSIONS_delaySaving_PXTO_VIEWPORT(copy)
@@ -353,7 +375,7 @@ CUSTOM_ON_RESIZE_GROUP_CONTAINER = function(evnt,u){
 				$(it).css({"font-size":(origHeightRatio * u.size.height) *.85 + "px" ,height:origHeightRatio * u.size.height})
 
 				if(it.is("[class*=-control]")){
-						it.find("[type=TEXT],[type=INPUT]").css({"font-size":it.height() *.85 + "px",height:"100%"})
+						it.find("[type]").not("select,option").css({"font-size":it.height() *.85 + "px",height:origHeightRatio * u.size.height})
 				}
 				return it;
 		})
@@ -361,7 +383,7 @@ CUSTOM_ON_RESIZE_GROUP_CONTAINER = function(evnt,u){
 
 		//do width calculations
 		u.element.find("[id*=-label],[id*=-control]").css({width:theWidth + "px"})
-		u.element.find("[type]").css({width:theWidth + "px"})
+		u.element.find("[type]").css({width:theWidth })
 
 		return;
 
@@ -393,7 +415,7 @@ CUSTOM_ON_RESIZE_FIELD_CONTAINER = function(evnt,ui){
 	zParent.css({width:zMaxWidth,height:totalHeight})
 
 	if(container.is("[class*=-control]")){
-		container.find("[type]").css({"font-size":container.height() *.5 + "px", height:container.height(), width:container.width()})
+		container.find("[type]").not("select,option").css({"font-size":container.height() *.5 + "px", height:container.height(), width:container.width()})
 	}
 
 }
@@ -431,6 +453,10 @@ CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER = function(evnt,ui){
 
 
 CUSTOM_MOUSEENTER_LOGIC = function(event){
+
+	//Make new Lock for this element
+	event.stopPropagation();
+
 
 
 	if($(event.target).hasClass("ui-resizable-handle")){
@@ -489,7 +515,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		return;
 	}
 
-	$("*").removeClass("submenu")
+	//$("*").removeClass("submenu")
 
 	if(theElem.id){
 
@@ -527,11 +553,11 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 			addPlusButton($(theElem));
 		}	
 
-		
+		/*
 		if(CUSTOM_currentlyMousingOverElementId !=null){
-			$(theElem).parents(".dropped-object:visible").first().mouseleave()
+		//	$(theElem).parents(".dropped-object:visible").first().mouseleave()
 			
-		}	
+		}*/	
 			
 		
 
@@ -541,6 +567,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 		$(theElem).addClass("submenu")
 
+		
 
 		NOTES_delayShowingNote(theElem);
 
@@ -614,6 +641,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 	OVERLAY_deleteInstructions();
 
 
+
 	log.debug("Leaving LOGIC ")
 	log.debug(event.target)
 	if(!event.target.id){
@@ -624,7 +652,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 	} else {
 		$("#"+event.target.id).removeClass("submenu")
 
-		$(event.target).parents(".dropped-object:visible").first().mouseenter();
+		$(event.target).parent(".dropped-object:visible").mouseenter();
 	}
 
 }
@@ -1032,7 +1060,8 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 	//log.debug("Triggered Done Dragging parent " + event.target.id)
-
+	//Don't show POPUP that somehow gets triggered
+	$(window).trigger("userDragEnded")
 
 	event.stopPropagation();
 	
@@ -1058,6 +1087,7 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 
 CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 
+	userHoveringOverNote = false;
 	
     $(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
     
@@ -1706,7 +1736,7 @@ function setUpDiv(div){
 		disableHoverEvents()
 
 	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("resize",function(e){
-		
+
 		NOTES_makeNote(this);
 		OVERLAY_showInstructions(e.target)
 
@@ -1766,18 +1796,9 @@ function setUpDiv(div){
 
 	log.debug("doing Divs")
 	
-	div.not("body,[type=MENU]").on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+	div.not("body,[type=MENU]").off("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
-					.on("click",function(evt){
-						if($(evt.target).hasClass("dropped-object")){
-							$("#drawSpace").css({height:"75%"})
-							$("#editSpace").fadeIn(function(){
-							writeTabs(evt)
-							})
-						}
-						
-						
-					})
+					
 					
 
 	//Setup Menu Divs
@@ -2094,7 +2115,7 @@ function initialize(){
 
 	//$('.ui-draggable').draggable({snap:false});
 	
-	$("#drawSpace").droppable(DROPPER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+	$("#drawSpace").droppable(DROPPER_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).find(".hotspot").css({height:0,width:0}).hide()
 	
 	
@@ -2285,8 +2306,8 @@ DROPPER_LOGIC = {
         		//clone.css({left:$(event.target).position().left -	10,top:$(event.target).position().top -10})
         		//$('body').append(clone);
         		
-				$(clone).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
-							.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
+				$(clone).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+							.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
 							
 
         		log.debug("CUSTOMEVENTS.js:Copy")

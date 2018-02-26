@@ -8,11 +8,11 @@ function saveJs(theElem, script){
 	re = new RegExp('<!-- BEGIN\\s'+id+'\\s//-->([\\s\\S]+)<!-- END\\s'+id+'//-->','img')
 
 	
-	console.log("Entering save JS with id " + id)
+	log.info("Entering save JS with id " + id)
 
 
-	//theFunction = "<!-- BEGIN " + id + " //-->\n\n$(document).ready(\n\tfunction(){\n" + script.trim() + "\n})<!-- END "+ id + "//-->";
-	theFunction = "<!-- BEGIN " + id + " //-->\n" + script.trim() + "\n<!-- END "+ id + "//-->";
+	theFunction = "<!-- BEGIN " + id + " //-->\n\n$(document).ready(\n\tfunction(){\n\t" + script.trim() + "\n\t})<!-- END "+ id + "//-->";
+	//theFunction = "<!-- BEGIN " + id + " //-->\n" + script.trim() + "\n<!-- END "+ id + "//-->";
 	//eval(theFunction)
 
 	//test to see if style is not found, add it.  If found, replace it
@@ -41,7 +41,7 @@ function getJs(theElem){
 
 	log.debug("SAVJS.js: After applying regex " + re + " groups is " + groups);
 
-	var exampleFunc = "$(\"#"+theElem.attr("id") + "\").on(\"click\",\n\tfunction(event){\n\t\t\/\/Enter Code Below\n\n\t}\n)";
+	var exampleFunc = "$(\"#"+theElem.attr("id") + "\").on(\"click\",\n\tfunction(event){\n\t\/\/Enter Code Below\n\n\t}\n)";
 
 	if(groups != null){
 		//old format
@@ -58,7 +58,7 @@ function getJs(theElem){
 
 		log.debug("SAVJS.js: Really Returning " + content)
 
-		return content.trim().length > 0 ? content : exampleFunc;
+		return content.trim().length > 0 ? content.replace("\t","") : exampleFunc;
 
 	} else {
 		//try to read from localStorage		
@@ -69,7 +69,7 @@ function getJs(theElem){
 }
 
 function loadAllJs(){
-	console.log("loadAllJs called but this method should be deprecated")
+	log.warn("loadAllJs called but this method should be deprecated")
 	$(".dropped-object,.plugin").each(function(index,elem){
 
 		thejs = getJs(elem);

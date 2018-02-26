@@ -121,6 +121,9 @@ function writeTabs(currentCtx,forceWrite){
 
 	})
 
+
+	var theParentId = $(parent).attr("id") ? $(parent).attr("id") : parent.id
+
 	//Add Id to each section
 	for(tabIdx in writtenTabs){
 
@@ -128,7 +131,7 @@ function writeTabs(currentCtx,forceWrite){
 		//if not reusing already visible field from last element user inspected
 		if(reWritingEditSpace){
 
-			styleValue = $('<div class="styleValue" id="' + tab + '-id"></div>').append(parent.id).css({"border-bottom":"1px solid yellow","width":"250px"});
+			styleValue = $('<div class="styleValue" id="' + tab + '-id"></div>').append(theParentId).css({"border-bottom":"1px solid yellow","width":"250px"});
 
 			styleLabel = $('<div class="styleLabel"><div>').append("id");
 
@@ -142,9 +145,9 @@ function writeTabs(currentCtx,forceWrite){
 			
 
 		} else {
-			log.debug("STYLETABS2.js:Parent is is now " + parent.id)
+			log.debug("STYLETABS2.js:Parent is is now " + parent.id  + " or it is " + theParentId)
 
-			$("#"+tab + "-id").html(parent.id)
+			$("#"+tab + "-id").html(theParentId)
 		}
 
 	}
@@ -231,12 +234,14 @@ function writeTabs(currentCtx,forceWrite){
 			theType = "checkbox"
 		}
 
+
+
 		f = $("<input>",{type:theType,id:tabLabel+"-"+label,value:theValue});
 
 		//If this is a dialog Box
 		if(label == "dialog-enabled"){
-			
-			if(theValue == "true"){
+			log.debug(`Dialog enabled is ${$(parent).attr("id")} enabled is ${theValue}`)
+			if(theValue == "on"){
 				$(parent).attr("hasjs","true");
 				f.prop("checked",$(parent).attr(label))
 			} else {
@@ -358,26 +363,35 @@ function writeTabs(currentCtx,forceWrite){
 		}).on("mouseleave",function(evnt){
 
 			var theTarget = $(evnt.target);
-			
 
-			if(originalFieldValue  == theTarget.val()){
+				if(originalFieldValue  == theTarget.val()){
 				log.debug(`no save needed for ${theTarget.attr("id")}`)
 				return;
 			}
 
 			if($(evnt.target).attr('type') == "checkbox" && $(event.target).attr("id") == "dialog-dialog-enabled"){
-				var jsString = !$(evnt.target).is(":checked")? `$("#${$(parent).attr('id')}").on("click",function(){})`: `$("#${$(parent).attr('id')}").on("click",POPUP_win)`;
+				var jsString = "";
+
+				if(!$(evnt.target).is(":checked")){
+					console.log(`The checkbox value is now ${$(evnt.target).is(":checked")}`)
+					$(parent).removeAttr("dialog-enabled");
+					$(parent).removeAttr("hasjs")
+					jsString = !$(evnt.target).is(":checked")? `$("#${$(parent).attr('id')}").on("click",function(){})`: `$("#${$(parent).attr('id')}").on("click",POPUP_win)`;
+				} else {
+					$(parent).attr("dialog-enabled",$(evnt.target).val());
+					$(parent).attr("hasjs",true)
+					jsString = `$("#${$(parent).attr('id')}").on("click",POPUP_win)`
+				}
+				
 				$(parent).off("click");
-				//if(getJs($(evnt.target)) == null){
-					eval(jsString)
-				//}
-				saveJs($(parent),jsString);
-
-				$(parent).attr("dialog-enabled",$(evnt.target).prop("checked"));
-
-				!$(evnt.target).prop("checked") ? $(parent).removeAttr("hasjs") : $(parent).attr("hasjs",true)
+				eval(jsString)
+				saveJs($(parent),jsString);			
 
 			}
+
+			
+		
+
 
 			//only used to write class info here.  Everything else should use on.input
 			if(label == "class" &&  $(parent).attr("user-classes").trim().length > 0){
@@ -444,6 +458,8 @@ function writeTabs(currentCtx,forceWrite){
 		}).on("mouseenter",function(evnt){
 			
 			originalFieldValue = $(evnt.target).val();
+
+
 		})
 
 		//Don't write id field again. We already manually added to each tab for consistency above

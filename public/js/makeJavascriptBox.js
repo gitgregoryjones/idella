@@ -16,9 +16,9 @@ $(window).off("_jsbeforeDialogShow").on("_jsbeforeDialogShow",function(evnt,box,
         var control = field.find("[id*=-control]")
         var actionRow = box.find("[data-control-row-for]");
         var label = field.find("[id*=-label]")
-        var winTitleArea = box.find("[data-title-for]");
+        var winTitleArea = box.find("[data-title-for]").css({"background-color":"orange"});
 
-        var title = box.find("[data-title-string-for]").css({"font-size":winTitleArea.height() *.6})
+        var title = box.find("[data-title-string-for]").css({"font-size":winTitleArea.height() *.3})
                 .text(`${ element.attr("alias")   ? element.attr("alias") : displayId }`).fadeIn();
                   //  title.css({"font-size":title.height()*.30});
 
@@ -73,38 +73,40 @@ $(window).off("_jsbeforeDialogShow").on("_jsbeforeDialogShow",function(evnt,box,
 
             box.css({height:form.height() + winTitleArea.height() + actionRow.height(), "padding-bottom":"30px"})
 
-            if(box.resizable("instance")){
-                box.resizable("destroy")          
-            }
-
-            if(box.draggable("instance")){
-                box.draggable("destroy")
-            }
-
-            box.removeClass("submenu").removeClass("dropped-object")
-                    .off().removeClass("squarepeg").css({"border":"none"});
-
-            //Do children
-            
-             box.find(".dropped-object").each(function(idx,it){
-
-                    it = $(it);
-                    if(it.draggable("instance")){
-                        it.draggable("destroy");
-                    }
-
-                    if(it.resizable("instance")){
-                        it.resizable("destroy")   
-                    }
-                    it.removeClass("submenu")
-                    .css({"border":"none"})
-                    .removeClass("squarepeg").removeClass("dropped-object");
-
-                 })
-                  //box.find(".dropped-object:not([data-cancel-button-for],[data-close-button-for])").off("mouseenter");
-            box.find(".dropped-object").removeClass("dropped-object");        
-            
         }
+
+
+        if(box.resizable("instance")){
+            box.resizable("destroy")          
+        }
+
+        if(box.draggable("instance")){
+            box.draggable("destroy")
+        }
+
+        box.removeClass("submenu").removeClass("dropped-object")
+                .off().removeClass("squarepeg").css({"border":"none"});
+
+        //Do children
+        
+        box.find(".dropped-object").each(function(idx,it){
+
+            it = $(it);
+            if(it.draggable("instance")){
+                it.draggable("destroy");
+            }
+
+            if(it.resizable("instance")){
+                it.resizable("destroy")   
+            }
+            it.removeClass("submenu")
+            .css({"border":"none"})
+            .removeClass("squarepeg").removeClass("dropped-object");
+
+         })
+              //box.find(".dropped-object:not([data-cancel-button-for],[data-close-button-for])").off("mouseenter");
+        box.find(".dropped-object").removeClass("dropped-object");        
+            
 
         //SetUp Text Area
         TEXTAREA_init(control.find("textarea").first())
@@ -114,6 +116,7 @@ $(window).off("_jsbeforeDialogShow").on("_jsbeforeDialogShow",function(evnt,box,
         //Reset TextArea in case of errors
         textarea.off("click").on("click",function(){
             title.text(`${ element.attr("alias")   ? element.attr("alias") : displayId }`).css({"text-decoration":"none"})
+            winTitleArea.css({"background-color":"orange"})
 
         })
 
@@ -142,6 +145,8 @@ function MAKE_JAVASCRIPT_BOX_for(element){
         box.find("form").addClass("editing")
 
          var title = box.find("[data-title-string-for]")
+
+         var winTitleArea = box.find("[data-title-for]")
         //After box is rendered  Override Click event on save button
 
          //Do Save Button
@@ -223,6 +228,7 @@ function MAKE_JAVASCRIPT_BOX_for(element){
             }catch(error){
                 title.hide();
                 title.css({"text-decoration":"underline"}).text(error).fadeIn();
+                winTitleArea.css({"background-color":"red"})
                 //box.find("textarea").val(error)
                 
             }

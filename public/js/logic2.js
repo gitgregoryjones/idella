@@ -26,7 +26,7 @@ WARN = {level:3,label:"WARN"}
 TRACE = {level:2,label:"TRACE"}
 DEBUG = {level:1,label:"DEBUG"}
 
-var LOGLEVEL = WARN;
+var LOGLEVEL = ERROR;
 
 
 
@@ -161,6 +161,7 @@ $(document).ready(function() {
 
 				CUSTOM_pressEscapeKey(); 
 				PREVIEW_togglePreview(false);
+			
 		   	})
 		 } else {
 
@@ -603,9 +604,7 @@ function whichTool (tool){
 			type:type,
 			class:"texttool",
 			friendlyName : "generic",
-			droppedModeHtml:`<${type} type="${type}"></${type}>`,
-			//droppedModeHtml:"<div>Enter Text Here<div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
-			//droppedModeHtml:"<div><div type=\"MENU\"><div type=\"MENU-ITEM\"  style=\"display: inline-block; padding-left: 0px;\" edittxt=\"Enter Text Here\">Enter Text Here</div></div></div>",
+			droppedModeHtml:`<${type} width="100%" height="100%" type="${type}"></${type}>`,
 			class:"generictext"
 
 		});

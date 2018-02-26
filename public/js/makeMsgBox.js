@@ -24,7 +24,7 @@ $(window).off("_msgbeforeDialogShow").on("_msgbeforeDialogShow",function(evnt,bo
 
         var form = box.find("form")
         var controlRow = box.find("[data-control-row-for]");
-        var winTitleArea = box.find("[data-title-for]");
+        var winTitleArea = box.find("[data-title-for]").css({"background-color":"#CE1D25"});
 
         var title = box.find("[data-title-string-for]")
                 .text(`${ element.attr("alias")   ? element.attr("alias") : displayId }`).fadeIn();
@@ -79,7 +79,7 @@ $(window).off("_msgbeforeDialogShow").on("_msgbeforeDialogShow",function(evnt,bo
             }
 
             box.removeClass("submenu").removeClass("dropped-object")
-                    .off().removeClass("squarepeg").css({"border":"none"});
+                    .off().removeClass("squarepeg").css({"border":"1px solid black"});
 
             //Do children
             
@@ -102,6 +102,8 @@ $(window).off("_msgbeforeDialogShow").on("_msgbeforeDialogShow",function(evnt,bo
             box.find(".dropped-object").removeClass("dropped-object");        
             
         }
+
+
 
         title.text(config.options.promptMsg ? config.options.promptMsg : "Prompt")
   

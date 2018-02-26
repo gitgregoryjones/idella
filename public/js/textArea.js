@@ -4,7 +4,7 @@ var TEXTAREA_init = function(textarea){
 
     $(textarea).keydown(function(e) {
 
-       $(document).unbind("keydown");
+       
 
         var area = $(e).data("textareaset")
 
@@ -38,9 +38,11 @@ var TEXTAREA_init = function(textarea){
             $(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
         
 
+    }).on("focusin",function(){
+        $(document).unbind("keydown");
     })
 }
 
-$("textarea").each(function(idx,it){
+$("textarea, input").each(function(idx,it){
     TEXTAREA_init(it);
 })

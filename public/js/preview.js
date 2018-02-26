@@ -1,6 +1,16 @@
 
 function PREVIEW_makeSaveableView(page){
 
+		$(".widget-on,.widget-off").remove();
+
+		$("[slash-for]").each(function(idx,it){
+			var pkey = $(it).attr("slash-for");
+			var parentObject = $(pkey);
+			parentObject.show();
+		})
+
+		$("[slash-for]").remove();
+
 		$(window).trigger(editing ? "editing" :"preview")
 
 		$("#greybox").hide();
@@ -48,9 +58,17 @@ function PREVIEW_togglePreview(showPreview){
 
 
 	if(showPreview){
-					
+		$(".widget-on,.widget-off").remove();
+
 		$(".dropped-object").not(".tool").removeClass("debug-border-style").removeClass("squarepeg");
 		$(".dropped-object,[class=submenu]").removeClass("submenu")
+
+		$("[slash-for]").each(function(idx,it){
+			var pkey = $(it).attr("slash-for");
+			var parentObject = $(pkey);
+			parentObject.show();
+			$(this).hide();
+		})
 		
 		/*  Commented out because I want user to be able to resize in preview mode but not live mode
 
@@ -100,24 +118,78 @@ function PREVIEW_togglePreview(showPreview){
 		$(".ghost").hide();
 		$("#myp").hide();
 		$(".dropped-object").css("touch-action","auto")
+
+		//Give User Visual Indicator They are in preview mode
+		POPUP_greyOver({target:"window",callerType:"information"},function(greyBox){
+
+			greyBox.find("[data-message-for-greybox]").text(" Preview Mode").addClass("fa fa-file-o")
+			.css({"background-color":"navy","text-align":"center",transform:"rotate(-10deg)"})
+
+			//Auto destroy greybox after 700 milliseconds by fading out and finally deleting from DOM and
+			//stylesheet if added
+			setTimeout(function(){
+
+				greyBox.fadeOut(function(){
+					deleteElement($(this))
+				})
+			},700)
+		})
+
 		$(window).trigger(editing ? "editing" :"preview")
 
 	}else {
 		
+	
+		//$(".dropped-object").not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg").removeClass("noborder");
+		//$(".dropped-object").resizable().off("resizestop").on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
+		//$(".dropped-object").resizable({disabled:false});
+		$(".dropped-object").each(function(idx,it){
+			it = $(it);			
+			
+			it.off("resizestop").on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 		
-		$(".dropped-object").not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg").removeClass("noborder");
-		$(".dropped-object").resizable().off("resizestop").on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
-		$(".ui-droppable").resizable({disabled:false})
-		$(".dropped-object").is(function(){
-			$(this).css("border-top-width") == "0" ? $(this).css({"border":"3px dashed black"}) : "";
-			return true;
+			it.not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg").removeClass("noborder");
+			//
+			it.is(function(){
+				$(this).css("border-top-width") == "0" ? $(this).css({"border":"3px dashed black"}) : "";
+				return true;
+			})
 		})
+		
 		//$(".dropped-object").removeClass("noborder")
 		$(".responsive-design-tab").show()
 		editing = true;
 		DRAW_SPACE_addWorkSpaceToBody();
 		$(".ui-icon").show();
 		$(".ghost").show();
+
+		$("[slash-for]").each(function(idx,it){
+			var pkey = $(it).attr("slash-for");
+			var parentObject = $(pkey);
+			parentObject.hide();
+			$(it).show().css({"z-index":parentObject.css("z-index")});
+		})
+
+
+		//Give User Visual Indicator They are in preview mode
+		POPUP_greyOver({target:"window",callerType:"edit-information"},function(greyBox){
+
+			greyBox.find("[data-message-for-greybox]").text(" Preparing Edit Mode...").addClass("fa fa-edit")
+			.css({"background-color":"black","text-align":"center",transform:"rotate(-10deg)"})
+
+			//Auto destroy greybox after 700 milliseconds by fading out and finally deleting from DOM and
+			//stylesheet if added
+			
+			setTimeout(function(){
+
+				greyBox.fadeOut(function(){
+					deleteElement($(this))
+				})
+			},1000)
+			
+		})
+
+
 		$(window).trigger(editing ? "editing" :"preview")
 
 

@@ -180,12 +180,13 @@ function SAVEJS_goInactive() {
    //if(autoSaveEnabled && !userHoveringOverNote && !$("#jsdialog").dialog("isOpen") && !$("#dialog").dialog("isOpen") && !$("#smalldialog").dialog("isOpen")){
    if(SAVE_okToSave && editing){	
 
+   		/*
 		var saveImage = $("<div>",{class:"saveImage"})
 		$("body").append(saveImage);
 		$(saveImage).css("left",$(document).width()/2 - $(".saveImage").width());
 		$(saveImage).css("top",$(document).height()/8 - $(".saveImage").height()/2);
 		$(saveImage).show();
-		
+		*/
 
 		$(document).trigger("REVISION_NEEDED_EVENT",[LOGIC_redirectNeeded]);
 

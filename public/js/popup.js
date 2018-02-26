@@ -1,6 +1,13 @@
 var grayOver = {};
 
-$(window).on("previews",function(){
+var noShow = false;
+
+$(window).on("userDragEnded",function(){
+
+    noShow = true;
+})
+
+$(window).on("preview",function(){
     
      $("form").removeClass("editing")
 
@@ -13,12 +20,13 @@ $(window).on("previews",function(){
         
         it.removeClass("editing")
         
+        /*
         if(it.resizable("instance")){
             it.resizable("destroy");
         }
         if(it.draggable("instance")){
             it.draggable("destroy");
-        }
+        }*/
     })
 
 
@@ -28,7 +36,7 @@ $(window).on("editing",function(){
     
     //$("form").addClass("editing")
 
-    /*
+    
     $("textarea").each(function(idx,it){
         TEXTAREA_init(it)
      })
@@ -36,7 +44,7 @@ $(window).on("editing",function(){
     $(".group-container").each(function(idx,it){
         $(it).addClass("editing");
        setUpGroupContainer($(it),true);
-    })*/
+    })
    
 })
 
@@ -65,6 +73,12 @@ function report (){
 *   Event object {target:"",options:{promptMsg:""}}
 */
 function POPUP_win(evnt,callback){
+
+    if(noShow){
+
+        noShow = false;
+        return;
+    }
 
     var popId = evnt.callerType ? evnt.callerType : $(evnt.target).attr('id');
 
@@ -101,25 +115,9 @@ function POPUP_win(evnt,callback){
     var form = box.find("[data-form-for]")
    // var iFrame = $(`[data-iframe-for=${box.attr("id")}]`)
 
-   var grayOver = $("#greybox")
+   var grayOver = POPUP_greyOver(evnt)
 
-    if($("#greybox").length == 0){
-
-        grayOver = configuredTool(whichTool("div")).appendTo("body").css({
-            width:$(document).width(),
-            height:$(document).height(),
-            position:"absolute",
-            "overflow-y":"scroll",
-            border:"none",
-            top:0,
-            left:0,
-            "background-color":"rgba(0,0,0,.5)",
-            "z-index":"40000"
-        }).attr("id","greybox")
-
-    }
-
-    grayOver.removeClass("debug-border-style").droppable("disable")
+   deleteElement(grayOver.find("[data-message-for-greybox]"));
 
    // alert(closeButton.length)
     //Do initial setup if this notification has not been created before
@@ -127,7 +125,7 @@ function POPUP_win(evnt,callback){
 
         lap("before box")
     
-        box = configuredTool(whichTool("div")).appendTo("#body").css({
+        box = configuredTool(whichTool("div")).appendTo(grayOver).css({
                         "width":$(window).width() * .90,
                         height:$(window).height() * .70,
                         "overflow-y":"scroll",
@@ -135,7 +133,7 @@ function POPUP_win(evnt,callback){
                         position:"absolute",
                         top:$(window).height() * .90,
                         left:$(window).width()/2 - $(window).width()/2/2,
-                        "z-index":9999999,
+                        
                         "border-radius":"10px"
 
                     }).attr("data-popup-for",popId);
@@ -317,7 +315,7 @@ function POPUP_win(evnt,callback){
          
      }
 
-
+     box.css({"border":"1px solid black"})
     //Only Call specific callers
     //ie 
     //_js
@@ -325,6 +323,7 @@ function POPUP_win(evnt,callback){
     //_alert
     //_contact
     
+    box.css({"z-index":99999999})
 
     if(evnt.callerType){
   
@@ -345,12 +344,17 @@ function POPUP_win(evnt,callback){
                     //Now that box has rendered.  Draw Child Elements and save positions
                     }).fadeIn(function(){
 
+
+
                          lap("positioning after fadeIn");
 
+                         NOTES_delete();
+
+                         /*
                          box.find(".group-container").each(function(idx,it){
                             it = $(it).removeClass("editing")
                             setUpGroupContainer($(it),true);
-                        })
+                        })*/
 
                       
                         
@@ -388,7 +392,7 @@ function POPUP_win(evnt,callback){
                         CUSTOM_PXTO_VIEWPORT($("#greybox"))
                         CUSTOM_PXTO_VIEWPORT(form)
 
-                        //$(window).trigger(editing ? "editing" :"preview")
+                        $(window).trigger(editing ? "editing" :"preview")
 
 
                         eTime = new Date().getTime();
