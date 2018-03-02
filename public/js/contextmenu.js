@@ -4,6 +4,8 @@ var currentX = 0;
 var currentY = 0;
 var currentCtx = {};
 
+OVERRIDE_CTX_MENU = true;
+
 /*
 *  Can this object be moved before or after it's sibling?
 *  Currently, the criteria is "Is this object the child of a list or SELECT type"
@@ -19,14 +21,46 @@ function objectIsReordable(obj){
 <!-- language: lang-js -->
 $(document).on("initializationComplete",function(){
 
-    $("[data-action=drop]").css("opacity",".50")
+    $("[data-action]").on("mouseenter",function(){
+        if(!$(this).parent().is(".mini-me")){
+            $(".mini-me").hide();
+        }
+        
+    })
+
+    
+    $("[submenu]").on("mouseenter",function(){
+
+            var menu = $(`.${$(this).attr("submenu")}`).show();
+
+            menu.css(
+                {top:$(this).offset().top + $("#drawSpace").scrollTop(),
+                    left:$(this).offset().left + menu.width()
+            })
+    })
+
+
+
 
    
     $("[data-action=drop]").on("mouseenter",function(){
         
         $(this).css({"opacity":"1"})
-        $(this).parent().css({"background-color":"white"})
+        $(this).parent().css({"background-color":"transparent"})
+        $(this).css("color","#0060FF")
 
+        $(".mini-me").hide();
+
+        /*
+        $(".mini-me").hide();
+
+        if($(this).is("[submenu]")){
+            //$(".mini-me").show();
+            $(".mini-me").css(
+                {top:$("[submenu]").offset().top - $(".custom-menu").offset().top,
+                    left:$("[submenu]").offset().left - $(".custom-menu").offset().left + $(".mini-me").width()
+            })
+        }*/
 
     }).on("mouseleave",function(){
         
@@ -39,6 +73,11 @@ $(document).on("initializationComplete",function(){
 
     // Trigger action when the contexmenu is about to be shown
     $(document).off("contextmenu").bind("contextmenu", function (event) {
+
+
+        if(!OVERRIDE_CTX_MENU){
+            return;
+        }
 
 
         if(DRAW_SPACE_advancedShowing ){
@@ -138,7 +177,10 @@ $(document).on("initializationComplete",function(){
             "z-index":10000000000
         });
        
-    
+        
+
+
+
 
     });
 
@@ -153,12 +195,16 @@ $(document).on("initializationComplete",function(){
         if (!$(e.target).parents(".custom-menu").length > 0) {
             
             // Hide it
-            $(".custom-menu").hide(100);
+            $(".custom-menu").hide(100,function(){
+                $(".mini-me").hide();
+            });
+            
         }
     });
 
     $(document).bind("droppedEvent",function(e){
         $(".custom-menu").hide(100)
+         $(".mini-me").hide(100);
     }).on("deleteEvent",function(event,args){
         log.trace("Caught deleteEvent " + args)
         log.trace(args)
@@ -189,6 +235,7 @@ $(document).on("initializationComplete",function(){
             // A case for each action. Your actions here
             case "first": alert("first"); break;
             case "insertBefore": 
+                        
                         currentCtx.insertBefore(currentCtx.prevAll(":not(.ui-resizable-handle)").first())
                         if(currentCtx.is("[type=FIELD]")){
 
@@ -321,6 +368,49 @@ $(document).on("initializationComplete",function(){
                              }
 
                         }
+
+
+                        if($(event.target).parents("[data-action]").first().is("[archType]")){
+                            var archType = $(event.target).parents("[data-action]").first().attr("archType")
+                            addIdellaClassToElementWithCallback(`.${archType}`,aTool,function(button){
+                                //Do anything here with rendered button
+                               
+                            })
+                           
+                        }
+
+                        /*
+                        if(aTool.is("[type=T]")){
+                            aTool.off("click")
+                            .on("click",function(){
+                                        $(this).attr("contenteditable","true"); 
+                                        $(document).unbind("keydown",CUSTOM_KEYDOWN_LOGIC);
+                                        $(this).focus();
+                            }).on("mouseleave",function(){
+                                        $(this).attr("contenteditable","false"); 
+                                        $(document).bind("keydown",CUSTOM_KEYDOWN_LOGIC)
+                                        //Do some parsing logic for fontawesome txt
+                                        $(this).contents().filter(function() { 
+                                    //Node.TEXT_NODE === 3
+                                    return (this.nodeType === 3);
+                                }).each(function () {
+                                    // for each text node, do something with this.nodeValue
+                                    
+    
+                                     //   const regex = /((fa-\w+)(?:-\w+)?)/igm;
+
+                                     //   const subst = `<div icon="$1" class="fa $1"></div>`;
+
+                                        //alert($(div).html())
+                                        //this.nodeValue = (this.nodeValue.replace(regex,subst))
+                                      //  $(this).replaceWith(this.nodeValue.replace(regex,subst))
+
+                                    
+                                });
+                            }).on("input",function(){
+
+                            })  
+                        }*/
 
                         aTool.css("font-family","inherit")
 
@@ -456,6 +546,7 @@ $(document).on("initializationComplete",function(){
         $(window).trigger(editing ? "editing" :"preview")
         // Hide it AFTER the action was triggered
         $(".custom-menu").hide(100);
+        $(".mini-me").hide(100);
       });
 
 })

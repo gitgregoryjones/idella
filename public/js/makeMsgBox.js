@@ -63,7 +63,7 @@ $(window).off("_msgbeforeDialogShow").on("_msgbeforeDialogShow",function(evnt,bo
 
             cancelButton.css({width:form.width()*.3,left:controlRow.width()/2})
             
-            sendButton.css({width:form.width()*.3,left:controlRow.width()/2 - $(controlRow).width() *.4,}).text("Yes")      
+            sendButton.css({width:form.width()*.3,left:controlRow.width()/2 - $(controlRow).width() *.4,}).text("Ok")      
       
 
             form.css({height:controlRow.height()})
@@ -115,6 +115,20 @@ $(window).off("_msgdialogClosed").on("_msgdialogClosed",function(){
       
 })
 
+
+function alert(msg,callbackWhichButtonPressed){
+
+    if(callbackWhichButtonPressed){
+        console.log("Alert was called with msg " + msg);
+        MAKE_MSG_BOX_for({promptMsg:msg,callbackWhichButtonPressed})
+    } else {
+        console.log("NO callback for msg "+msg)
+        MAKE_MSG_BOX_for({promptMsg:msg,function(btnText){
+            console.log(`Button text pressed was ${btnText}`);
+        }})
+    }
+    
+}
 
 
 function MAKE_MSG_BOX_for(options,callbackForTextResponse){

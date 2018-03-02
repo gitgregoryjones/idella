@@ -364,7 +364,7 @@ function NOTES_makeNote(element,isActive){
 
 					
 					
-					theMsg.append(" <div style='display:inline-block'> Value: <input type='text' class='quick-disabled' name='value' parent='" + element.id + "' value='" + content + "'></div>").append("<br>")
+					theMsg.append(" <div style='display:inline-block'> Value: <input type='text' class='quick-disabled' name='content' parent='" + element.id + "' value='" + content + "'></div>").append("<br>")
 
 					/*
 					stype = $("<select>").append(new Option("paragraph","paragraph")).append(new Option("menutext","menutext"));
@@ -643,7 +643,7 @@ function NOTES_makeNote(element,isActive){
 							$(et.target).attr("value") == 'url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif")' ? $(et.target).attr("value","") : "";
 
 
-							if($(et.target).attr("name") != "value"){
+							if($(et.target).attr("name") != "content"){
 								log.debug("Not a text type...returning")
 								return;
 							}
@@ -655,12 +655,16 @@ function NOTES_makeNote(element,isActive){
 							const regex = /<div (?:icon="fa\-\S+")? class="\s*fa\s+(fa\-\S+)"\s*(?:style=".*")?><\/div>/gim;
 
 							const str = `$1`
-
+							/*
 							if(parent.html()){
 								$(parent).html($(parent).html().replace(regex,str))
-							}
+							}*/
+							console.log(`Before Parent html is ${parent.text()}`)
+							console.log(`After Parent html is ${parent.text().replace(regex,str)}`)
 
-							$(et.target).val($(parent).text())
+							$(parent).contents().get(0).nodeValue = $(parent).text().replace(regex,str)
+
+							//$(et.target).val($(parent).text())
 
 						})
 
@@ -750,7 +754,7 @@ function QUICK_EDIT(evnt){
 
                     
 				
-			} else if(label == "value"){
+			} else if(label == "content"){
 
 					log.debug("User changing text to " + $(evnt.target).val())
 
@@ -770,7 +774,7 @@ function QUICK_EDIT(evnt){
 					    //}
 					});*/
 
-					$(parent).text($(evnt.target).val());
+					$(parent).contents().get(0).nodeValue = $(evnt.target).val();
 
 					
 			}else {
@@ -826,6 +830,7 @@ function QUICK_EDIT(evnt){
 				copiesModified = true;
 			}
 
+			
 			if(parent.is("[type=T]")){
 
 								if(parent.text().trim() == "fa-bars"){
@@ -841,17 +846,33 @@ function QUICK_EDIT(evnt){
 
 								}
 
+								const regex = /((fa-\w+)(?:-\w+)?)/igm;
+
+								const subst = `<div icon="$1" class="fa $1"></div>`;
+								
+								//$(parent).contents().get(0).replaceWith($(parent).text().replace(regex,subst));
+
+								/*
+								var matches = $(parent).text().match(regex)
+
+								if(matches && matches.length > 0){
+									console.log("Found matches " + matches)
+									$(parent).children("[icon]").remove();
+
+
+
+
+									$(parent).contents().get(0).replaceWith($(parent).text().replace(regex,subst))
+								}
+								*/
+
+								
 								$(parent).contents().filter(function() { 
 								    //Node.TEXT_NODE === 3
 								    return (this.nodeType === 3);
 								}).each(function () {
 								    // for each text node, do something with this.nodeValue
 								    
-	
-								    	const regex = /((fa-\w+)(?:-\w+)?)/igm;
-
-										const subst = `<div icon="$1" class="fa $1"></div>`;
-
 										//alert($(div).html())
 										//this.nodeValue = (this.nodeValue.replace(regex,subst))
 										$(this).replaceWith(this.nodeValue.replace(regex,subst))

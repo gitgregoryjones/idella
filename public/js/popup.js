@@ -77,6 +77,7 @@ function POPUP_win(evnt,callback){
     if(noShow){
 
         noShow = false;
+       alert('no show')
         return;
     }
 

@@ -25,11 +25,24 @@ function CUSTOM_pressEscapeKey(){
 	var e = jQuery.Event("keydown");
 	e.which = 27; // # Some key code value
 	$(window).trigger(e);
-
+	console.log(`Escape Key pressed!`)
 
 	//closeMenu();
 }
 
+function CUSTOM_showDebug(){
+
+
+	var e = jQuery.Event("keydown");
+
+	e.which = 18;
+	$(window).trigger(e);
+	e.which = 91;
+	$(window).trigger(e);
+	e.which = 73;
+	$(window).trigger(e);
+
+}
 
 function CUSTOM_incrementZIndex(){
 
@@ -1061,7 +1074,7 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 	//log.debug("Triggered Done Dragging parent " + event.target.id)
 	//Don't show POPUP that somehow gets triggered
-	$(window).trigger("userDragEnded")
+//	$(window).trigger("userDragEnded")
 
 	event.stopPropagation();
 	
@@ -1803,7 +1816,18 @@ function setUpDiv(div){
 
 	//Setup Menu Divs
 	if(div.is("[type=T]")){
-		setUpMenuItems(div);	
+		setUpMenuItems(div);
+		/*
+		div.off("click")
+			.on("click",function(){
+						$(this).attr("contenteditable","true"); 
+						$(document).unbind("keydown",CUSTOM_KEYDOWN_LOGIC);
+						$(this).focus();
+			}).off("mouseleave").on("mouseleave",function(){
+						$(this).attr("contenteditable","false"); 
+						$(document).bind("keydown",CUSTOM_KEYDOWN_LOGIC)
+						//Do some parsing logic for fontawesome txt
+			})	*/
 	} 
 
 	

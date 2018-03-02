@@ -275,6 +275,10 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 				 
 				 $(document).off("keydown")
 
+				 $(".custom-menu").hide(100);
+
+				 OVERRIDE_CTX_MENU = false;
+
 				if($(".active-message").is(":visible")){
 					//alert("visible " + $(".active-message").attr("msg-parent"))
 					$("#" + $(".active-message").attr("msg-parent")).trigger("mouseenter");
@@ -282,6 +286,8 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 			}).off("mouseleave").on("mouseleave",function(){
 				$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+
+				OVERRIDE_CTX_MENU = true;
 				
 				//$("#drawSpace").css({height:$(document).height()});
 		        //$("#editSpace").css("transtion-duration","0.6s").fadeOut();

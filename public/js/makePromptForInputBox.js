@@ -162,6 +162,12 @@ $(window).off("_promptdialogClosed").on("_promptdialogClosed",function(){
 
 
 
+function prompt(question,callbackAnswer){
+
+    MAKE_PROMPT_FOR_INPUT_BOX_for({target:$(window),callerType:"_prompt",promptMsg:question},callbackAnswer);
+}
+
+
 function MAKE_PROMPT_FOR_INPUT_BOX_for(options,callbackForTextResponse){
 
 

@@ -62,11 +62,9 @@ function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj,justTestI
 	return exists;
 }
 
+function addIdellaClassToElementWithCallback(className, element,callback){
 
-
-function getClassFromIdella(className, callback){
-
-	var re = new RegExp(className.replace(".","\\.")+'(\\s+\\{[^}]+\\})','img')
+	var re = new RegExp(className.replace(".","\\.")+'\\s+(\\{([^}]+)\\})','img')
 
 	var thescript = "";
 
@@ -77,13 +75,36 @@ function getClassFromIdella(className, callback){
 		console.log(`Data is ${data}`)
 		let m = null;
 
-	
-
 		if ((m = re.exec(data)) !== null) {
 
-			console.log(`returning ${m}`);
+			console.log(`returning ${m[2]}`);
 
-			callback(m);
+			var lines = m[2].trim().split(";")
+
+			for(idx in lines){
+				console.log(`Line was ${lines[idx].trim()}`)
+				if(lines[idx].length > 0){
+
+					var key = lines[idx].substr(0,lines[idx].indexOf(":")).trim();
+					var value = lines[idx].substr(lines[idx].indexOf(":") + 1).trim();
+
+					console.log(`Value is ${key},${value}`)
+
+					if(className.indexOf(":hover") > -1){
+
+						$(element).attr("onhover",($(element).attr("onhover")? $(element).attr("onhover"):"") + lines[idx] + ";");
+
+					} else if(className.indexOf(":active") > -1){
+
+						$(element).attr("onactive",$(element).attr("onhover") + lines[idx]);
+
+					} else {
+						element.css(key,value);
+					}
+				}				
+			}
+
+			callback(element);
 
 			return;
 
@@ -91,14 +112,17 @@ function getClassFromIdella(className, callback){
 
 			console.log(`I didn't find a match in idella`)
 
-			callback("");
+			callback(element);
 		}
 	})
 
-	
+	//Do hover and active
+	if(className.indexOf(":hover") == -1 && className.indexOf(":active") == -1){
 
+		addIdellaClassToElementWithCallback(className + ":hover", element,function(){});
+		addIdellaClassToElementWithCallback(className + ":active", element,function(){})
 
-	
+	}
 
 }
 

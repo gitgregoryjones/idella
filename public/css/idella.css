@@ -614,32 +614,50 @@ textarea {
     /* CSS3 */
 
 /* The whole thing */
-.custom-menu {
+.custom-menu, .mini-me {
+	overflow: visible;
     display: none;
     z-index: 1000;
     position: absolute;
-    overflow: hidden;
-    border: 1px solid #CCC;
+    border: 1px solid silver;
     white-space: nowrap;
-    font-family: lato;
+    font-family: basic;
     font-size:14px;
     background: #FFF;
+    background: #EFEFEF;
    // color: #333;
     border-radius: 5px;
+    box-shadow:1px 1px 1px silver;
+
     padding: 0;
 
 }
 
 /* Each of the items in the list */
-.custom-menu li {
+.custom-menu li, .mini-me li {
     padding: 8px 12px;
     cursor: pointer;
     list-style-type: none;
+    width:180px;
     transition: all .3s ease;
 }
 
 .custom-menu li:hover {
-    background-color: #DEF;
+
+    background-color: #0060FF;
+    color:white;
+
+
+}
+
+.mini-me li:hover {
+    background-color: #0060FF;
+    color:white;
+
+}
+
+.custom-menu li a {
+	text-decoration: none;
 }
 
 
@@ -707,8 +725,8 @@ textarea {
   height:25px;
   font-size:25px;
   //color:#5B7DB5;
-  color:navy;
-  opacity: .5;
+  color:black;
+  opacity: .8;
   vertical-align: top;
   top:0;
   left:0;
@@ -720,6 +738,7 @@ textarea {
   background-size: cover;
   background-repeat: no-repeat;
 }
+
 
 .ui-timepicker-wrapper {
 	position: absolute;
@@ -821,11 +840,24 @@ Edit box
 
 .button {
 	border-radius:20px;
-	background-color: red;
+	background-color: #FF8F69;
 	color:white;
 	font-family: Play;
 	text-align: center;
 	padding:20px;
+	border:none;
+	border-bottom:2px solid black;
+	border-right:2px solid black;
+
+}
+
+.button:hover:after {
+	transition-duration: 0.3s;
+	border-bottom-color:silver;
+	border-right-color:silver;
+	background-color:green;
+	transform:translateY(4px);
+	content:'yo';
 }
 
 
