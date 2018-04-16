@@ -18,8 +18,6 @@ GLOBAL_NO_EDIT = false;
 $(window).off("_promptbeforeDialogShow").on("_promptbeforeDialogShow",function(evnt,box,element,config){
       
 
-
-
         var displayId = element.attr("type") + "#" + element.attr("id");
 
         var form = box.find("form")
@@ -173,6 +171,11 @@ function MAKE_PROMPT_FOR_INPUT_BOX_for(options,callbackForTextResponse){
 
 
     POPUP_win({target:$(".dropped-object").first(),callerType:"_prompt",options:options},function(box){
+
+        
+         $("[data-action=lessOptions]").click();
+        $(".widget-off,.widget-on").remove();
+
 
         //After box is rendered  Override Click event on save button
         box.find("input").focus();

@@ -516,7 +516,7 @@ div.container {
 	//-webkit-text-stroke-width:1px !important;
 
 	--border-color: #3164EB !important;
-	//border: solid silver !important;
+	--border:  solid yellow !important;
 	//opacity: 50% !important;
 	//background-color: #3164EB !important;
 	
@@ -550,8 +550,10 @@ div.container {
 }
 
 .debug-border-style, .squarepeg {
-	border: 3px dashed;
-	border-color: black;
+	--border: 3px dashed;
+	--border-color: black;
+	background-color:rgba(255, 205, 0, 0.5);
+	border: 1px dashed;
 }
 
 .texttool{
@@ -622,7 +624,7 @@ textarea {
     border: 1px solid silver;
     white-space: nowrap;
     font-family: basic;
-    font-size:14px;
+    font-size:12px;
     background: #FFF;
     background: #EFEFEF;
    // color: #333;
@@ -633,6 +635,18 @@ textarea {
 
 }
 
+
+.menu-debug-info {
+	text-align: center;
+	background-color: transparent;
+	color:grey;
+	font-family: Play;
+	border-radius: 5px;
+	padding: 5px;
+}
+.menu-debug-info:hover{
+	color:white;
+}
 /* Each of the items in the list */
 .custom-menu li, .mini-me li {
     padding: 8px 12px;
@@ -642,13 +656,29 @@ textarea {
     transition: all .3s ease;
 }
 
-.custom-menu li:hover {
+.custom-menu li:not(.shapes):hover  {
 
     background-color: #0060FF;
     color:white;
+}
 
+li.header-row {
+	background-color: black;
+	-webkit-text-fill-color:white;
+	font-size:13px;
 
 }
+
+li.header-row:after {
+	content:'Click symbol below to add to site';
+}
+
+.custom-menu li.greyout {
+	background-color: transparent;
+	color:silver;
+}
+
+
 
 .mini-me li:hover {
     background-color: #0060FF;
@@ -720,25 +750,32 @@ textarea {
 
 
 .shapes div{
-  //border: 1px dashed black;
+  --border: 1px solid black;
   width:25px;
   height:25px;
   font-size:25px;
   //color:#5B7DB5;
   color:black;
-  opacity: .8;
+  opacity: 1;
   vertical-align: top;
   top:0;
   left:0;
   display:inline-block;
   position: relative;
-  margin-right:5px;
-  margin:left:3px;
+  --margin-right:5px;
+  --margin:left:5px;
+  padding-right: 10px;
   text-align: center
   background-size: cover;
   background-repeat: no-repeat;
 }
 
+.shapes div:hover {
+	color:#0060FF;
+	opacity: 1;
+	transform:scale(1.2);
+	background-color: transparent;
+}
 
 .ui-timepicker-wrapper {
 	position: absolute;
@@ -844,20 +881,31 @@ Edit box
 	color:white;
 	font-family: Play;
 	text-align: center;
+	opacity: 1;
 	padding:20px;
-	border:none;
-	border-bottom:2px solid black;
-	border-right:2px solid black;
+	--border: 3px solid yellow;
+	border-color: transparent;
+	border-bottom:3px solid grey;
+	border-right:3px solid grey;
 
 }
 
-.button:hover:after {
-	transition-duration: 0.3s;
-	border-bottom-color:silver;
-	border-right-color:silver;
+.button:hover {
+	transition-duration: 0.2s;
+	opacity:1;
+	--border-bottom-color:silver;
+	--border-right-color:silver;
+	border-bottom-width:1px;
+	border-right-width:1px;
+	background-color:red;
+	--text-shadow: 2px 2px #0080A0;
+	--transform:scaleX(1.025);
+}
+
+.button:active {
+	
 	background-color:green;
-	transform:translateY(4px);
-	content:'yo';
+	
 }
 
 

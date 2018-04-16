@@ -172,6 +172,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 	} else if(key == 8 ){
 		log.debug("User clicked delete key")
 		NOTES_delete()
+		
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
 		$("[data-action=delete]").click();
@@ -517,8 +518,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 	
 
-	if(!editing || $(".custom-menu").is(":visible") ){
-
+	//Commenting out... not needed with new menu logic if(!editing || $(".custom-menu").is(":visible") ){
+	if(!editing){
 
 		//OVERLAY_showOverlay(theElem);
 	
@@ -577,8 +578,18 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		log.debug("making note for " + CUSTOM_currentlyMousingOverElementId)
 
 	
-
+		//Do flash
+		/*
 		$(theElem).addClass("submenu")
+
+		 op = $(theElem).css("opacity");
+ 
+         $(theElem).css("opacity",".9");
+         $(theElem).animate({opacity:op},600,function(){
+         	$(theElem).removeClass("submenu")
+         })
+		*/
+
 
 		
 
@@ -657,7 +668,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 
 	log.debug("Leaving LOGIC ")
 	log.debug(event.target)
-	if(!event.target.id){
+	if(!event.target.id || $(".custom-menu").is(":visible")){
 		log.warn("CUSTOMEVENTS2.js: Bad Node Encountered-->\n " + $(event.target).html())
 		$(event.target).removeClass("submenu")
 		$(event.target).parent().removeClass("submenu")
@@ -1565,7 +1576,7 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 		log.debug("CUSTOMEVENTS.js:immediate parent is " + immediateParent.attr("id") + " with offsets " + immediateParent.position().left)
 		log.debug({left:leftPos,top:immediateParent.offset().top});
 		
-		a.css({align:"center",display:"inline-block",left:leftPos,width:immediateParent.width(),height:immediateParent.height()
+		a.css({align:"center",display:"inline-block",left:leftPos,width:immediateParent.outerWidth(),height:immediateParent.outerHeight()
 			,"position":"absolute", top:topPos});				
 		a.on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 		a.on("click",writeTabs)

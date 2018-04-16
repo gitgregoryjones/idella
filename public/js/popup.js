@@ -146,7 +146,7 @@ function POPUP_win(evnt,callback){
         form = configuredTool(whichTool("form")).attr("data-form-for",$(box).attr("id")).appendTo(box)
                     .css({width:($(window).width()*.85),height:($(window).height()*.65)});
 
-       
+        form.attr("action","#")
 
         lap("after form");
 
@@ -328,20 +328,19 @@ function POPUP_win(evnt,callback){
 
     if(evnt.callerType){
   
-
-
         $(window).trigger(`${evnt.callerType}beforeDialogShow`,[box,$(evnt.target),evnt]);
     }
 
 
+    var plusAdjustment = $("#drawSpace").length > 0 ? $("#drawSpace").scrollTop() : window.scrollY;
 
     box.css({"z-index":50000}).css({
                        // "width":$(window).width() * adjustedWidthPct,
                        // height:$(window).height()* adjustedHeightPct,
                         //"background-color":"purple",
                         position:"absolute",
-                        top:($(window).height()/2 - ($(window).height()* adjustedHeightPct)/2) + window.scrollY ,
-                        left:$(window).width()/2 - ($(box).width())/2
+                        top:($(window).height()/2 - ($(window).height()* adjustedHeightPct)/2) + plusAdjustment ,
+                        left:$(window).width()/2 - ($(box).width() )/2
                     //Now that box has rendered.  Draw Child Elements and save positions
                     }).fadeIn(function(){
 

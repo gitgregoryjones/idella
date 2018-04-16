@@ -264,7 +264,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 
 	es.css({
-		height:$(wp).height()*.25,
+		height:$(wp).height()*.20,
 		width:"100%",
 		top:$(ds).height(),
 		position:"absolute",
@@ -420,11 +420,12 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	userHoveringOverNote = false;
 	drawResponsiveTab()
 
+	/*
 	var sliderp = $("<div id='sliderp'></div>").css("width","400px");
 	
 	$("#editSpace").prepend(sliderp);
 
-
+	*/
 
 	var origWidth = $("[alias=theCanvas]").width();
 	var origHeight = $("[alias=theCanvas]").height();
@@ -440,7 +441,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	target.preventDefault = function(){
 
 	}
-
+	/*
     $( "#sliderp" ).slider({value:100}).off("slide").on('slide',function(event,ui){
     	//console.log("This is it ");
     	//console.log(ui);
@@ -476,7 +477,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
     	CUSTOM_ON_RESIZE_LOGIC(target,ui);
     });
-
+	*/
     //Hide Expanded Menu until we need it
     
 	//$("#tabs").css("height","100%")

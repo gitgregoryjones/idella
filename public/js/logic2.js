@@ -29,6 +29,22 @@ DEBUG = {level:1,label:"DEBUG"}
 var LOGLEVEL = ERROR;
 
 
+var MSG = "";
+
+
+function flushIt(){
+	console.log("I read message : " + MSG)
+	var instruction = MSG;
+	PROCESS_LINES_processInstruction(instruction);
+	MSG = ""
+}
+
+setInterval(function(){
+	if(MSG.endsWith(".") ) {
+		flushIt();
+	}
+},100)
+
 
 var log = function(consoleHandler, msg){
 	if(!msg){

@@ -3,6 +3,8 @@
 
 function OVERLAY_setUp(element,isTemplate){
 
+	
+
 	var adjuster = (100 / document.documentElement.clientWidth);
 
 	var units = "vw";
@@ -19,6 +21,10 @@ function OVERLAY_setUp(element,isTemplate){
 	overlay.children().remove();
 
 	overlay.text("")
+
+	if(overlay.attr("alias")){
+		overlay.attr("alias",`overlay for ${overlay.attr("alias")}`)
+	}
 	
 	//overlay.css({height:$(element).outerHeight(),width:$(element).outerWidth()})				
 

@@ -142,6 +142,10 @@ function MAKE_JAVASCRIPT_BOX_for(element){
 
     POPUP_win({target:element,callerType:"_js"},function(box){
 
+        console.log(`Closing edit space because javascript box does not need it`)
+        $("[data-action=lessOptions]").click();
+        $(".widget-off,.widget-on").remove();
+
         box.find("form").addClass("editing")
 
          var title = box.find("[data-title-string-for]")

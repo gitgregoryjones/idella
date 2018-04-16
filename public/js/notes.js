@@ -26,7 +26,7 @@ function NOTES_delete(element){
 
 	$(".msg,.active-message").remove();
 	$(".peak,.active-peak").remove();
-
+	//$(".widget-off,.widget-on").remove();
 	noteShowing = false;
 }
 
@@ -136,7 +136,14 @@ function NOTES_makeNote(element,isActive){
 							$(this).removeClass("fa-lock").addClass("fa-unlock")
 							widgets.removeClass("widget-off").addClass("widget-on")
 							
-							var lilEye = $("<div>",{class:"fa fa-eye",id:$(theElem).attr("id")+"-plus"}).appendTo(widgets).css({"padding-left":"5px"})
+							var lilEye = $("<div>",{class:"fa fa-eye",id:$(theElem).attr("id")+"-plus"})
+
+							if( $(`#${$(theElem).attr("id")+"-plus"}`).length == 0){
+								lilEye = $("<div>",{class:"fa fa-eye",id:$(theElem).attr("id")+"-plus"}).appendTo(widgets).css({"padding-left":"5px"})
+							} else {
+								lilEye = $(`#${$(theElem).attr("id")+"-plus"}`);
+							}
+							
 
 							lilEye.off().on("click",function(evnt){
 

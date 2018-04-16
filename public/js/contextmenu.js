@@ -2,7 +2,7 @@
 
 var currentX = 0;
 var currentY = 0;
-var currentCtx = {};
+currentCtx = {};
 
 OVERRIDE_CTX_MENU = true;
 
@@ -33,39 +33,52 @@ $(document).on("initializationComplete",function(){
 
             var menu = $(`.${$(this).attr("submenu")}`).show();
 
+
+            var mLeft = $(this).offset().left + menu.width();
+            var mTop = $(this).offset().top  - $(this).height() + $("#drawSpace").scrollTop();
+
+            console.log(`mLeft is ${mLeft} and top is ${mTop}`)
+            if(mLeft + $(".custom-menu").width() > $(document).width()){
+                mLeft = $(this).offset().left - menu.width();
+            }
+
+
+             if(mTop + menu.height() > $(document).height() + $("#drawSpace").scrollTop()){
+                mTop = mTop - menu.height() + $(this).height();
+            }
+
+            //Last Check is the menu going to overrun edit space
+            if($("#editSpace").is(":visible") && mTop + menu.height() > $("#editSpace").offset().top){
+                 mTop = mTop - menu.height() + $(this).height();
+            }
+
             menu.css(
-                {top:$(this).offset().top + $("#drawSpace").scrollTop(),
-                    left:$(this).offset().left + menu.width()
+                {left:mLeft,
+                    top:mTop,
+                    "z-index":99999991
             })
     })
 
 
 
 
-   
+   /*
     $("[data-action=drop]").on("mouseenter",function(){
         
-        $(this).css({"opacity":"1"})
-        $(this).parent().css({"background-color":"transparent"})
-        $(this).css("color","#0060FF")
+       
+            $(this).css({"opacity":"1"})
+            $(this).parent().css({"background-color":"transparent"})
+            $(this).css("color","#0060FF")
+            
+       
 
         $(".mini-me").hide();
-
-        /*
-        $(".mini-me").hide();
-
-        if($(this).is("[submenu]")){
-            //$(".mini-me").show();
-            $(".mini-me").css(
-                {top:$("[submenu]").offset().top - $(".custom-menu").offset().top,
-                    left:$("[submenu]").offset().left - $(".custom-menu").offset().left + $(".mini-me").width()
-            })
-        }*/
 
     }).on("mouseleave",function(){
         
-        $(this).css({"background-color": "initial",color:"initial","opacity":".5"})
-    })
+            $(this).css({"background-color": "initial",color:"initial","opacity":".5"})
+        
+    })*/
 
    
     log.debug("CONTEXTMENU.js: Caught Initialization done event");
@@ -74,7 +87,11 @@ $(document).on("initializationComplete",function(){
     // Trigger action when the contexmenu is about to be shown
     $(document).off("contextmenu").bind("contextmenu", function (event) {
 
+        $(".custom-menu").hide();
 
+        NOTES_delete();
+
+        //This flag is set in drawSpace.js when user hovering over editSpace area.  Just show default browser context menu
         if(!OVERRIDE_CTX_MENU){
             return;
         }
@@ -131,7 +148,8 @@ $(document).on("initializationComplete",function(){
                 } 
             }
              else if( objectIsReordable(currentCtx) ){
-                $("[data-action*=insert]").show();          
+                $("[data-action*=insert]").show();
+                $("[submenu=sort-menu]").show().removeClass("greyout");          
             } else
 
           
@@ -140,7 +158,10 @@ $(document).on("initializationComplete",function(){
             if(!currentCtx.parent().is("[type=LIST]")) {
                 log.debug("Hiding list option")
                 $("[data-action=scroller]").hide()
+                //Hide Insert Sub Menus
                 $("[data-action*=insert]").hide()
+                //Show Insert Main Menu
+                $("[submenu=sort-menu]").show().addClass("greyout");
 
             }
 
@@ -158,14 +179,36 @@ $(document).on("initializationComplete",function(){
         }
      
         //The top
-        var topOff = event.pageY - window.scrollY
+        var topOff = event.pageY - window.scrollY;
+
+        var leftPos = event.pageX;
 
         /*
         if( $("#editSpace").length > 0 && (event.pageY + parseFloat($(".custom-menu").height())) > $("#editSpace").offset().top){
             topOff = event.pageY - $(".custom-menu").height()
         }
         */
+
+        var contextMenuWidth = leftPos + $(".custom-menu").width();
+       
+        var contextMenu = $(".custom-menu");
+
+        console.log(`Context Menu width is ${contextMenuWidth} and doc width ${$(document).width()} left ${leftPos} `)
+        if(contextMenuWidth > $(document).width()){
+            
+            leftPos = leftPos - contextMenu.width()
+            contextMenu.css({left:leftPos - contextMenu.width()})
+        }
    
+        if(topOff + contextMenu.height() > $(document).height() + $("#drawSpace").scrollTop() ){
+                topOff = topOff - contextMenu.height();
+        }
+
+        //Last Check is the menu going to overrun edit space
+        if($("#editSpace").is(":visible") && topOff + contextMenu.height() > $("#editSpace").offset().top){
+             topOff = topOff - contextMenu.height();
+        }
+
         // Show contextmenu
         $(".custom-menu").finish().toggle(100).
         
@@ -173,30 +216,27 @@ $(document).on("initializationComplete",function(){
         css({
             top: topOff,
             position:"fixed",
-            left: event.pageX,
+            left: leftPos,
             "z-index":10000000000
         });
-       
-        
 
-
-
+         var uuid = currentCtx.attr("alias") ? currentCtx.attr("alias") : currentCtx.attr("id");
+         //Show Debug Menu Information 
+         //$("#menu-debug-info").text(`[${uuid}]`)
 
     });
 
 
     // If the document is clicked somewhere
     $(document).bind("mousedown", function (e) {
-
-        
-        //$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
-        
+     
+        //$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)        
         // If the clicked element is not the menu
         if (!$(e.target).parents(".custom-menu").length > 0) {
             
             // Hide it
             $(".custom-menu").hide(100,function(){
-                $(".mini-me").hide();
+                $(".mini-me").hide(200);
             });
             
         }
@@ -219,12 +259,17 @@ $(document).on("initializationComplete",function(){
     $("[data-action]").off("click").click(function(event){
        // $(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
         // This is the triggered action name
+
         switch($(this).attr("data-action")) {
+
             case "moreOptions":        
                 $("#drawSpace").css({height:"75%"})
                 $("#editSpace").fadeIn(function(){
-                    //writeTabs(currentCtx)
+                    writeTabs(currentCtx)
+                    //Unlock this element               
+                    $(".fa-lock").first().click();
                 })
+
             break;
 
             case "lessOptions":
@@ -235,7 +280,7 @@ $(document).on("initializationComplete",function(){
             // A case for each action. Your actions here
             case "first": alert("first"); break;
             case "insertBefore": 
-                        
+                        //alert('inserting before ' + currentCtx.attr("id"))
                         currentCtx.insertBefore(currentCtx.prevAll(":not(.ui-resizable-handle)").first())
                         if(currentCtx.is("[type=FIELD]")){
 
@@ -249,8 +294,9 @@ $(document).on("initializationComplete",function(){
                             
                         } else {
                             CUSTOM_PXTO_VIEWPORT(currentCtx)
-                        }                 
-                      
+                        }  
+                        //Unlock this element               
+                        $(".fa-lock").first().click();
                         break;
              case "insertAfter": 
                         currentCtx.insertAfter(currentCtx.nextAll(":not(.ui-resizable-handle)").first())
@@ -268,7 +314,8 @@ $(document).on("initializationComplete",function(){
                             CUSTOM_PXTO_VIEWPORT(currentCtx)
                         }
                        
-
+                        //Unlock this element               
+                        $(".fa-lock").first().click();
                       
                         break;
             case "drop": 
@@ -372,11 +419,8 @@ $(document).on("initializationComplete",function(){
 
                         if($(event.target).parents("[data-action]").first().is("[archType]")){
                             var archType = $(event.target).parents("[data-action]").first().attr("archType")
-                            addIdellaClassToElementWithCallback(`.${archType}`,aTool,function(button){
-                                //Do anything here with rendered button
-                               
-                            })
-                           
+                            addIdellaClassToElement("idella",`.${archType}`,aTool)
+                           CUSTOM_PXTO_VIEWPORT(aTool)
                         }
 
                         /*
@@ -414,6 +458,9 @@ $(document).on("initializationComplete",function(){
 
                         aTool.css("font-family","inherit")
 
+                        currentCtx = aTool;
+                        //Unlock this element               
+                        $(".fa-lock").first().click();
                         break;
                         
                     
@@ -423,7 +470,10 @@ $(document).on("initializationComplete",function(){
             case "unghost": GHOST_delete($(currentCtx))
             break;*/
             case "addoverlay":
-                OVERLAY_setUp($(currentCtx))
+                overlay = OVERLAY_setUp($(currentCtx))
+                currentCtx = overlay;
+                //Unlock this element               
+                $(".fa-lock").first().click();
                 break;
             case "addsection":
                  var aTool =  whichTool("DIV");
@@ -449,12 +499,15 @@ $(document).on("initializationComplete",function(){
                         $("#drawSpace").animate({
                             scrollTop: $(aTool).offset().top
                         }, 1000);
+                        //Unlock this element               
+                        $(".fa-lock").first().click();
                         break;
 
             case "edit": 
                 $("#quick-edit").remove();
                 writeFields(currentCtx); 
-
+                //Unlock this element               
+                $(".fa-lock").first().click();
                 break;
             case "copy": if(currentCtx.attr("type") != "canvas"){
                     CUSTOM_lastCopyElement = recursiveCpy(currentCtx);
@@ -472,6 +525,8 @@ $(document).on("initializationComplete",function(){
                     console.log(str);
 
                     localStorage.setItem('copy-buffer',str)
+                    //Unlock this element               
+                    $(".fa-lock").first().click();
 
                 } break;
             case "paste": if(currentCtx.hasClass("dropped-object"))
@@ -502,6 +557,8 @@ $(document).on("initializationComplete",function(){
                     }
                     //alert(myPage.Y) 
                 } 
+                //Unlock this element               
+               // $(".fa-lock").first().click();
                 break;
 
        
@@ -529,24 +586,32 @@ $(document).on("initializationComplete",function(){
                         $("#editSpace").css({height:"30%","overflow-y":"scroll"})
                         writeTabs(currentCtx); 
 
-
+                        //Unlock this element               
+                        $(".fa-lock").first().click();
                         $(this).html("Close Inspector")
                 } else {
                         $(this).html("Open Inspector...")
                         $("#drawSpace").css({height:"100%","overflow-y":"none"});
                         $("#editSpace").css({height:"0%","overflow-y":"none"}) 
-                }           
+                }
+
                 break;  
                 // $(currentCtx).find("img")[0].click();break;
             case "preview": CUSTOM_pressEscapeKey(); closeMenu(); PREVIEW_togglePreview(editing);  break;
             case "delete": if(currentCtx.attr("type") != "canvas"){if(currentCtx.is(".ghost")){GHOST_delete(currentCtx)};deleteWithPrompt(currentCtx,true); NOTES_delete();} break;
-            case "scroller": convertToScroller(); break;
+            case "scroller": convertToScroller(); 
+                  //Unlock this element               
+                    $(".fa-lock").first().click();
+                    break;
         }
       
         $(window).trigger(editing ? "editing" :"preview")
+
+        
+        
         // Hide it AFTER the action was triggered
         $(".custom-menu").hide(100);
-        $(".mini-me").hide(100);
+       // $(".mini-me").hide(100);
       });
 
 })

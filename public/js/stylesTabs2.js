@@ -105,7 +105,7 @@ function writeTabs(currentCtx,forceWrite){
 			
 
 			
-			header = $("<div  id=\"t_" +tabLabel +"\"></div>").css("height","80%").css("overflow","scroll")
+			header = $("<div  id=\"t_" +tabLabel +"\"></div>").css("height","75%").css("overflow","scroll")
 
 			if(reWritingEditSpace){
 

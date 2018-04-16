@@ -1,5 +1,7 @@
 function GHOST_setUpElement(element,event){
 
+	
+
 	var adjuster = (100 / document.documentElement.clientWidth);
 
 	var units = "vw";

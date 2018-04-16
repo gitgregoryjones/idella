@@ -22,3 +22,5 @@ rgb(202, 36, 39)
 .active-peak {
 	border-top-color:rgb(49, 100, 235);
 }
+
+https://docs.aws.amazon.com/translate/latest/dg/examples-polly.html

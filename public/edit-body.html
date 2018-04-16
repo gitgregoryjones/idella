@@ -26,9 +26,9 @@
 </ul>
 
 <ul class="mini-me css-js-menu" style="postion:absolute">
- 	<li data-action="moreOptions" class="editonly">More CSS...[Shift+E]</li>
-	<li data-action="lessOptions" class="editonly">Less CSS [Shift+E]</li>
-	<li data-action="javascript" class="editonly">Edit JS [Shift+J]</li>	
+ 	<li data-action="moreOptions" class="editonly">Open CSS Panel...[Shift+E]</li>
+	<li data-action="lessOptions" class="editonly">Close CSS Panel[Shift+E]</li>
+	<li data-action="javascript" class="editonly">Open JS Editor [Shift+J]</li>	
 </ul>
 
 <ul class="mini-me effects-menu" style="postion:absolute">
@@ -36,16 +36,18 @@
 </ul>
 
 <ul class='custom-menu'>
-	
+	  <li class="editonly header-row"><div id="menu-debug-info" class="menu-debug-info"></div></li>
+	  
+
 	  <li  class="editonly shapes">
-	  	<div data-action="drop" type="T" title="Add Text" style="width:50px;"><div class="fa fa-magic"></div><div class="fa fa-font"></div></div>
+	  	<div data-action="drop" type="T" title="Add Text"><!-- <div class="fa fa-magic" ></div>//--><div class="fa fa-font" ></div></div>
 	  	<div data-action="drop" type="IMG" style="background-image:none" title="insert image"><div class="fa fa-image">&nbsp;</div></div>
-	  	<div data-action="drop" type="VID" title="drop video"><div class="fa fa-file-video-o">&nbsp;</div></div>
+	  	<div data-action="drop" type="VID" title="drop video"><div class="fa fa-toggle-right">&nbsp;</div></div>
 	  	<div data-action="drop" type="DIV" title="drop square"><div class="fa fa-square-o">&nbsp;</div></div>
 	  	<div data-action="drop" type="CIRCLE" title="drop circle"><div class="fa fa-circle-o">&nbsp;</div></div>
 	  </li>
 	    <li  class="editonly shapes">
-	  <div data-action="drop" type="T" archType="button" title="add push button" style="width:32	px"><img style="width:32px;height:32px" src="/push-button.png"></div>
+	  <div data-action="drop" type="T" archType="button" title="add push button" ><div class="fa fa-hand-o-down"></div></div>
 	  <div data-action="drop" type="NAVIGATION" title="add menu"><div class="fa fa-navicon">&nbsp;</div></div>
 	  	<!-- <div data-action="drop" type="BTN" class="fa fa-toggle-on"></div>//-->
 	  	<!-- <div data-action="drop" type="ICON" class="fa fa-twitter"></div>//-->
@@ -56,14 +58,12 @@
 	  	<div data-action="drop" type="FIELD" title="textfield">
 	  		<div class="fa fa-server"></div>
 	  	</div>
+	  	<hr>
 	  </li>
 	  
-	  
-	  <li class="editonly"><hr></li>
-	 
-	  <!-- <li data-action="scroller" class="editonly">Convert to Scroller</li> //-->
-	  <li data-action="preview" class="ghostok">Toggle Preview Mode [Shift+R]</li>
-	  <li data-action="css-jss-options" submenu="css-js-menu" class="editonly">CSS/JS&nbsp;<div class="fa fa-css3" style="width:130px;text-align:right"></div></li>
+
+	  <li data-action="preview" class="ghostok"><div class="fa fa-arrow-right"></div>&nbsp; Toggle Preview Mode [Shift+R]</li>
+	  <li data-action="css-jss-options" submenu="css-js-menu" class="editonly"><div class="fa fa-css3" style="background-color: orange;text-align: center;border-radius:10px; padding:5px;"></div>&nbsp;CSS/JS&nbsp;<div class="fa fa-caret-right" style="width:120px;text-align:right; font-size:14px"></div></li>
 	
 	
 	  
@@ -71,9 +71,9 @@
 	  <li data-action="fulledit" class="editonly">Open Inspector...</li>//-->
 	 <!--  <li data-action="ghost" class="editonly">Hide</li> //-->
 	 <!-- <li data-action="unghost" class="editonly">Show</li>//-->
-	  <li data-action="paste-options" submenu="copy-paste-menu" class="editonly">Copy/Paste&nbsp;<div class="fa fa-files-o" style="width:100px;text-align:right"></div></li>
-	    <li data-action="insert" submenu="sort-menu" class="editonly">Sort &nbsp;<div class="fa fa-sort" style="width:140px;text-align:right"></div></li>
-	  <li data-action="effects-options" submenu="effects-menu" class="editonly">Effects&nbsp;<div class="fa fa-flash" style="width:130px;text-align:right"></div></li>
+	  <li data-action="paste-options" submenu="copy-paste-menu" class="editonly"><div class="fa fa-files-o" style="background-color: #07B34C;color:white;text-align: center;border-radius:10px; padding:5px;"></div>&nbsp;Copy/Paste&nbsp;<div class="fa fa-caret-right" style="width:95px;text-align:right; font-size:14px"></div></li>
+	    <li data-action="insert" submenu="sort-menu" class="editonly"><div class="fa fa-sort" style="background-color: #BEBEBE;text-align: center;border-radius:10px; padding:5px; width:12px;"></div>&nbsp;Sort &nbsp;<div class="fa fa-caret-right" style="width:129px;text-align:right; font-size:14px"></div></li>
+	  <li data-action="effects-options" submenu="effects-menu" class="editonly"><div class="fa fa-flash" style="background-color: #75C6EF;text-align: center;border-radius:10px; width:12px;padding:5px;"></div>&nbsp;Effects&nbsp;<div class="fa fa-caret-right" style="width:118px;text-align:right; font-size:14px"></div></li>
 	   <!-- <li data-action="addsection" class="editonly">Add Section</li>//-->
 	  
 	  <!-- <li data-action="resize" class="editonly">Toggle Group Resize</li>//-->

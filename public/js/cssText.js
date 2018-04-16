@@ -127,6 +127,94 @@ function addIdellaClassToElementWithCallback(className, element,callback){
 }
 
 
+function addIdellaClassToElement(styleSheetName,selector, element,styleSheetSource){
+
+	console.log(`User wants to read classname ${selector}`)
+
+	var re = new RegExp(selector.replace(".","\\.")+'\\s+(\\{([^}]+)\\})','img')
+
+	var thescript = "";
+
+	var exists = false;
+
+	var sheet = $(`link[href*=${styleSheetName}]`);
+
+	console.log(`I found exactly ${sheet.length} matches for ${styleSheetName} calling ${sheet.attr("href")}`)
+
+	if(!styleSheetSource){
+		console.log(`Stylesheet source was not passed for class ${selector}`);
+		$.get({url:sheet.attr("href"), async:false})
+		.done(function(data){
+			console.log("I'm back")
+			styleSheetSource = data;
+		})
+	} 
+
+	console.log("source is " + styleSheetSource)
+
+	if ( (m = re.exec(styleSheetSource) )!== null  ) {
+
+			console.log(`returning ${m}`);
+
+			var lines = m[2].trim().split(";")
+
+			for(idx in lines){
+				console.log(`Line was ${lines[idx].trim()}`)
+				if(lines[idx].length > 0){
+
+					var key = lines[idx].substr(0,lines[idx].indexOf(":")).trim();
+					var value = lines[idx].substr(lines[idx].indexOf(":") + 1).trim();
+
+					console.log(`Value is ${key},${value}`)
+
+					if(selector.indexOf(":hover") > -1){
+
+						$(element).attr("onhover",($(element).attr("onhover")? $(element).attr("onhover"):"") + lines[idx] + ";");
+
+					} else if(selector.indexOf(":active") > -1){
+
+						$(element).attr("onactive",$(element).attr("onhover") + lines[idx]);
+
+					} else {
+						element.css(key,value);
+					}
+				}				
+			}
+
+			var result = [];
+
+			result.push(m[2])
+
+			//Do hover and active
+			if(selector.indexOf(":hover") == -1 && selector.indexOf(":active") == -1){
+
+				var hoverClassDef  = addIdellaClassToElement(styleSheetName, selector + ":hover", element,styleSheetSource);
+				var activeClassDef = addIdellaClassToElement(styleSheetName,selector + ":active", element,styleSheetSource)
+
+				if(hoverClassDef.length > 0){
+					result.push(hoverClassDef.pop())
+				}
+
+				if(activeClassDef.length > 0){
+					result.push(activeClassDef.pop())
+				}
+				
+
+			}
+
+			return result;
+
+	} else {
+
+		console.log(`I didn't find a match in ${styleSheetSource} for ${selector}`)
+
+		return [];
+	}
+
+}
+
+
+
 function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExists){
 
 
@@ -224,10 +312,12 @@ function CSS_TEXT_saveCss(div, theClassObj) {
 			outStr += "}";
 			theClassObj.cssRule = outStr;
 
-			writeClassToBreakPointCSSFile(div,"body.hover "+ myCSSLookupKey+":hover",theClassObj);	
+			writeClassToBreakPointCSSFile(div,"body.hover "+ myCSSLookupKey+":hover",theClassObj);
+
+			
 		} else {
-			theClassObj.cssRule = "";
-			writeClassToBreakPointCSSFile(div,"body.hover "+myCSSLookupKey + ":hover",theClassObj);		
+			//theClassObj.cssRule = "";
+			//writeClassToBreakPointCSSFile(div,"body.hover "+myCSSLookupKey + ":hover",theClassObj);		
 		}
 
 	} else {
@@ -251,8 +341,8 @@ function CSS_TEXT_saveCss(div, theClassObj) {
 
 
 		} else {
-			theClassObj.cssRule = "";
-			writeClassToMasterCSSFile(div,"body.hover " + myCSSLookupKey + ":hover",theClassObj);		
+			//theClassObj.cssRule = "";
+			//writeClassToMasterCSSFile(div,"body.hover " + myCSSLookupKey + ":hover",theClassObj);		
 		}
 
 		
@@ -260,7 +350,9 @@ function CSS_TEXT_saveCss(div, theClassObj) {
 
 	log.debug("CSSTEXT.js: Style before is " + div.attr("style"))
 
-	div.removeAttr("style")
+	div.removeAttr("style");
+	div.removeAttr("onhover");
+	div.removeAttr("onactive")
 	log.debug("CSSTEXT.js: Style is " + div.attr("style"))
 
 	
