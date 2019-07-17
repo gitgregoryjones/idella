@@ -1,3 +1,4 @@
+//THis is cool
 const regex = new RegExp("(\\w+)\//+((?:\\w+)(?:-?\\w+)+).html","g");
 const str = `//www.cartoonnetwork.com//games//ren-stimpy.html`;
 let m;
@@ -14,3 +15,4 @@ while ((m = regex.exec(str)) !== null) {
         console.log(`Found match, group ${groupIndex}: ${match}`);
     });
 }
+//Fixed a bug that Jared Found!
