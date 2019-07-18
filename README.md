@@ -26,8 +26,10 @@ rgb(202, 36, 39)
 }
 
 https://docs.aws.amazon.com/translate/latest/dg/examples-polly.html
-
+POLLY WANT A CRACKER AGAIN
+POLLY STILL WANT A CRACKER
 
 MADE A CHANGE HERE
 =======
 
+POLLY IS A CRACKER EATING FOOL

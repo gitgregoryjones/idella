@@ -10,6 +10,7 @@ while ((m = regex.exec(str)) !== null) {
         regex.lastIndex++;
     }
     
+	//This result is cool
     //// The result can be accessed through the `m`-variable.
     m.forEach((match, groupIndex) => {
         console.log(`Found match, group ${groupIndex}: ${match}`);
@@ -17,3 +18,4 @@ while ((m = regex.exec(str)) !== null) {
 }
 //Fixed a bug that Jared Found!
 //ABC
+//Found another
