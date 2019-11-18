@@ -1,5 +1,7 @@
 var hoverOverNote = false;
 
+var LAYER_TOOL = [];
+
 var CUSTOM_currentlyMousingOverElementId = null;
 
 
@@ -1690,11 +1692,13 @@ function addEditMode(){
 		$("body").addClass("editing")
 		$("[type=anchor]").css("border","1px solid red")
 	}
+	$("#layer-menu").show();
 }
 
 function removeEditMode(){
 	$("body").removeClass("editing")
 	$("[type=anchor]").css("border","none")
+	$("#layer-menu").hide();
 }
 
 function enableHoverEvents(){
@@ -1738,11 +1742,24 @@ function setUpDiv(div){
 		}
 		
 	})
-	var oldPos = div.css("position");
+
+	var oldPos = "relative";
+
+	try {
+
+		oldPos = div.css("position");
+
+
+	}catch(e){
+		
+		log.warn(e);
+		
+
+	}
 
 	div.find(".hotspot").css({height:0,width:0}).hide()
 
-	div.not("#drawSpace,body").resizable().on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
+	div.not("#drawSpace,body,.template-layer").resizable().on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 		.not("[type=TXT],[type=ICON],[type=BTN]").on("resize",CUSTOM_ON_RESIZE_LOGIC);
 
 
@@ -2318,9 +2335,14 @@ DROPPER_LOGIC = {
         drop: function(event, ui) {
 
 
-
         	//remove class which highlights element when hovering over it in inspect mode
         	$(ui.draggable).removeClass("submenu")
+
+        	if($(ui.draggable).attr("id") == "layer-menu"){
+
+			console.log("Menu shouldn't be here...returning");
+
+		}
 
         	//event.preventDefault();
         	log.trace("Showing hiddenItems")
@@ -2518,6 +2540,16 @@ DROPPER_LOGIC = {
 					}
 
 					
+			if($(ui.draggable).attr("id") == 'layer-menu'){
+
+				console.log("Leaving here because I shouldn't be here");
+				return;
+
+			} else {
+
+			console.log(`A tool is ${$(aTool).attr("id")}`);
+
+		}
 
 
 					if($("[alias=zMenuContent]").width() > 0 && $("#zMenu").attr("open") == "open"){
@@ -2601,16 +2633,22 @@ function dropTool(aTool,dropInfo){
 		        	$(aTool).addClass("debug-border-style");
 		      		$(aTool).addClass("dropped-object");
 
-		        	log.info("CUSTOMEVENTS2.js: Handle length is " + aTool.children(".ui-resizable-handle").length)
+		        	log.info("CUSTOMEVENTS2.jsppp: Handle length is " + aTool.children(".ui-resizable-handle").length)
 		        	
-        	
+		        	log.debug("GREGZ.js: Handle length is " + aTool.children(".ui-resizable-handle").length)
 
-		        //if(aTool.children(".ui-resizable-handle").length == 0){
+
 		        	aTool.resizable({disabled:false}).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
+
 		        	if(aTool.is("[type=VID]")){
 		        		aTool.find("video")[0].play()
 		        	}
-		        	
+
+				//Update Layers Tool
+				//import layers_menu.js
+				updateLayersTool($(aTool).attr("id"));
+				
+
 }
 
 

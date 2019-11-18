@@ -135,7 +135,16 @@ function NOTES_makeNote(element,isActive){
 							$("[data-action=moreOptions]").click();
 							$(this).removeClass("fa-lock").addClass("fa-unlock")
 							widgets.removeClass("widget-off").addClass("widget-on")
+
+						 	NOTES_makeNote(myParent,true)
+
+							//Highlight the layer on the Layers Menu (if shown)
+							//import layers-menu.js
+							//updateLayersTool($(myParent).attr("id"));
 							
+
+							
+							/*
 							var lilEye = $("<div>",{class:"fa fa-eye",id:$(theElem).attr("id")+"-plus"})
 
 							if( $(`#${$(theElem).attr("id")+"-plus"}`).length == 0){
@@ -188,13 +197,17 @@ function NOTES_makeNote(element,isActive){
 
 							lilEye.attr("title",`click to hide ${theElem.attr("id")} from view`)
 
+						*/
+
 							
 							//$(document).click();
-							NOTES_makeNote(myParent,true)
+						// 	NOTES_makeNote(myParent,true)
 							//If Text Type, give more room in UI by removing the helper
 							if(myParent.is("[type=T]")){
 								//widgets.remove();
 							}
+							updateLayersTool($(myParent).attr("id"));
+							console.log("Calling update Layers Tool");
 							return;
 						}
 					

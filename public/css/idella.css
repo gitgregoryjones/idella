@@ -259,7 +259,7 @@ ul.tabul {
 }
 
 
-.responsive-design-tab {
+.responsive-design-tab  {
 	height:3.8029386343993083vw;
 	width:18.15038893690579vw;
 	z-index:5011;
@@ -627,6 +627,7 @@ textarea {
     font-size:12px;
     background: #FFF;
     background: #EFEFEF;
+    background: #464D5D;
    // color: #333;
     border-radius: 5px;
     box-shadow:1px 1px 1px silver;
@@ -639,7 +640,7 @@ textarea {
 .menu-debug-info {
 	text-align: center;
 	background-color: transparent;
-	color:grey;
+	color:white;
 	font-family: Play;
 	border-radius: 5px;
 	padding: 5px;
@@ -658,7 +659,8 @@ textarea {
 
 .custom-menu li:not(.shapes):hover  {
 
-    background-color: #0060FF;
+    #background-color: #0060FF;
+    background-color: black;
     color:white;
 }
 
@@ -753,9 +755,10 @@ li.header-row:after {
   --border: 1px solid black;
   width:25px;
   height:25px;
-  font-size:25px;
+  font-size:20px;
   //color:#5B7DB5;
   color:black;
+  color:white;
   opacity: 1;
   vertical-align: top;
   top:0;
@@ -764,14 +767,15 @@ li.header-row:after {
   position: relative;
   --margin-right:5px;
   --margin:left:5px;
-  padding-right: 10px;
+  --padding-right: 10px;
   text-align: center
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 .shapes div:hover {
-	color:#0060FF;
+	//color:#0060FF;
+	color:white;
 	opacity: 1;
 	transform:scale(1.2);
 	background-color: transparent;
@@ -916,3 +920,62 @@ Edit box
 }
 
 
+
+#layer-menu {
+	margin-top:20px;
+	width:250px;
+	height:300px;
+	background-color: #474E5D;
+	color:white;
+	z-index:99999;
+	overflow:auto;
+	right: 1vw;
+	top: 12vw;
+	position:fixed;
+}
+
+.example-layer {
+	top:0px;	
+	left:0px;
+	background-color:black;
+	position:relative;
+	width:99%;
+	height:60px;
+	border:1px solid grey;
+}
+
+.example-layer:hover { 
+        border:1px solid white;
+}
+
+
+
+.example-layer > .preview-window {
+	width:50px;
+	height:50px;
+	//border: 1px solid white;
+	top:2px;
+	left:2px;
+	overflow:hidden;
+        white-space: nowrap;
+	position:relative;
+	align:center;
+	font-size:28px;
+	text-align:center;
+}
+.example-layer > .details {
+	width auto:
+	font-size:12px;
+	color:white;
+	text-overflow: ellipsis;	
+	margin-top: 20px;
+	overflow:hidden;
+	padding-left:10px;
+	white-space: nowrap;
+}
+
+.highlight {
+
+	border: 1px solid yellow;
+
+}

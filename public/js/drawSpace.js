@@ -219,6 +219,7 @@ function getHelp(url){
 
 }
 
+
 function DRAW_SPACE_addWorkSpaceToBody(){
 
 	NOTES_delete();
@@ -230,17 +231,14 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	var ds = $("<div>",{id:"drawSpace",class:"dropped-object",type:"canvas"})
 	var es = $("<div>",{id:"editSpace"}).append('<div id="tabs"><ul class="tabul"></ul></div>');
 
-	
 
 	ds.append(body.children());
 
-	
-
 	wp.append(ds);
+
 	wp.append(es)
 
 	$(body).append(wp);
-	
 
 
 	wp.css({
@@ -419,6 +417,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	userHoveringOverNote = false;
 	drawResponsiveTab()
+
 
 	/*
 	var sliderp = $("<div id='sliderp'></div>").css("width","400px");

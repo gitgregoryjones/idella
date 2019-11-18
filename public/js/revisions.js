@@ -283,6 +283,10 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 
 	tempH.find('.saveImage').remove();
 
+	tempH.find("[id$=lock]").remove();
+
+	tempH.find("#layer-menu").hide();
+
 	object = {siteName:$('html').first().attr('x-site-name'),html:tempH.html(),css:""
 		,pageName:$('html').first().attr('x-current-page-name')
 		, anchors:REVISION_anchors,BREAKPOINTS:BREAKPOINTS

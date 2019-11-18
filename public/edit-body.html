@@ -40,20 +40,26 @@
 	  
 
 	  <li  class="editonly shapes">
+	  	<div data-action="drop" type="DIV" title="drop square"><div class="fa fa-square-o">&nbsp;</div></div>
 	  	<div data-action="drop" type="T" title="Add Text"><!-- <div class="fa fa-magic" ></div>//--><div class="fa fa-font" ></div></div>
 	  	<div data-action="drop" type="IMG" style="background-image:none" title="insert image"><div class="fa fa-image">&nbsp;</div></div>
-	  	<div data-action="drop" type="VID" title="drop video"><div class="fa fa-toggle-right">&nbsp;</div></div>
-	  	<div data-action="drop" type="DIV" title="drop square"><div class="fa fa-square-o">&nbsp;</div></div>
-	  	<div data-action="drop" type="CIRCLE" title="drop circle"><div class="fa fa-circle-o">&nbsp;</div></div>
+	  	  <div data-action="drop" title="add gallery/slideshow" type="LIST"  style="width:85px;zborder:1px solid white">
+			<span class="fa fa-caret-left"></span>
+			<span class="fa fa-image" style="padding-left:2px"></span>
+			<span class="fa fa-image"></span>
+			<span class="fa fa-image"></span>
+			<span class="fa fa-caret-right"></span>
+		  </div>
 	  </li>
 	    <li  class="editonly shapes">
+	  	<div data-action="drop" type="CIRCLE" title="drop circle"><div class="fa fa-circle-o">&nbsp;</div></div>
+	  	<div data-action="drop" type="VID" title="drop video"><div class="fa fa-toggle-right">&nbsp;</div></div>
 	  <div data-action="drop" type="T" archType="button" title="add push button" ><div class="fa fa-hand-o-down"></div></div>
 	  <div data-action="drop" type="NAVIGATION" title="add menu"><div class="fa fa-navicon">&nbsp;</div></div>
 	  	<!-- <div data-action="drop" type="BTN" class="fa fa-toggle-on"></div>//-->
 	  	<!-- <div data-action="drop" type="ICON" class="fa fa-twitter"></div>//-->
 	  <div data-action="drop" type="LIST" title="Add Expanding Box" class="adaptive"><div class="fa fa-expand"></div></div>
 	  	 
-	  	  <div data-action="drop" title="add gallery/slideshow" type="LIST"  style="width:40px;height: 40px;"><img style="width:40px;height:40px" src="https://cdn.iconscout.com/public/images/icon/premium/png-256/gallery-stack-picture-landscape-photo-collection-342705eb0cbe5c3d-256x256.png"/></div>
 	  	<!--  <div data-action="drop" type="PLUGIN" class="fa fa-puzzle-piece"></div> //-->
 	  	<div data-action="drop" type="FIELD" title="textfield">
 	  		<div class="fa fa-server"></div>
@@ -62,7 +68,7 @@
 	  </li>
 	  
 
-	  <li data-action="preview" class="ghostok"><div class="fa fa-arrow-right"></div>&nbsp; Toggle Preview Mode [Shift+R]</li>
+	  <li data-action="preview" class="ghostok"><div class="fa fa-arrow-right"></div>&nbsp;Preview Mode [Shift+R]</li>
 	  <li data-action="css-jss-options" submenu="css-js-menu" class="editonly"><div class="fa fa-css3" style="background-color: orange;text-align: center;border-radius:10px; padding:5px;"></div>&nbsp;CSS/JS&nbsp;<div class="fa fa-caret-right" style="width:120px;text-align:right; font-size:14px"></div></li>
 	
 	
@@ -79,3 +85,16 @@
 	  <!-- <li data-action="resize" class="editonly">Toggle Group Resize</li>//-->
 	
 </ul>
+
+<!----  Layers Menu ///---->
+
+<div id='layer-menu'>
+	
+</div>
+
+<!-- used as template before converted to sample layer in code //-->
+<div class='template-layer' style="display:none">
+	<div class="eye fa fa-eye" style="border-right:1px solid grey;display:block; height:max;font-size:18px;float:left; width:10%;padding-left:5px; padding-top:20px"></div>
+	<div class="preview-window" style="display:block; float:left; width:20%"> </div>
+	<div class="details" style="font-size:12px;display:block; float:left; width:50%"><div>
+</div>

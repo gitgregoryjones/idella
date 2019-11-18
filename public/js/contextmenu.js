@@ -263,12 +263,14 @@ $(document).on("initializationComplete",function(){
         switch($(this).attr("data-action")) {
 
             case "moreOptions":        
-                $("#drawSpace").css({height:"75%"})
+         //       $("#drawSpace").css({height:"75%"})
+		
                 $("#editSpace").fadeIn(function(){
                     writeTabs(currentCtx)
                     //Unlock this element               
                     $(".fa-lock").first().click();
                 })
+		
 
             break;
 
