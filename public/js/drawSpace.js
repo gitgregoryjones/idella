@@ -338,25 +338,40 @@ function DRAW_SPACE_addWorkSpaceToBody(){
                                
         dropTool(theImage,{target:theBody,clientX:theBody.offset().left + 50,clientY:theBody.offset().top + 250});
 
+        console.log(`Number of footers is ${$("[alias=footer]").length}`);
+
         theFooter = configuredTool(whichTool("DIV"));
                      
-        theFooter.css({"width":$(document).outerWidth(),height:"350px","background-color":"grey"}).attr('alias',"footer")
+        
                                
         dropTool(theFooter,{target:theExpandableArea,clientX:0,clientY:0});
+
+        theFooter.css({"width":$(document).outerWidth(),height:"350px","background-color":"grey"}).attr('alias',"footer")
 		
+        console.log(`Number of footers is now ${$("[alias=footer]").length}`);
+
         theNotice.css({"width":"100%",height:"25%","background-color":"yellow"}).attr('alias',"notification")
                         
         //dropTool(theNotice,{target:theBody,clientX:0,clientY:0});
+        console.log(`Number of headers is ${$("[alias=header]").length}`);
 
 		  //Make empty page
+		
 		theHead = configuredTool(whichTool("DIV"));
                                             
         dropTool(theHead,{target:theBody,clientX:0,clientY:theNotice.height()});
      
 		//Now Setup the head
 		theHead.css({"position":"fixed","width":$(document).outerWidth(),height:"15%","background-color":"black",top:theNotice.height()}).attr('alias',"header")
-		//getHelp();
 
+
+			//$("[alias=header]").appendTo($("[alias=body]"))
+		    //.css({"overflow":"hidden","z-index":CUSTOM_incrementZIndex(),top:$("[alias=notification]").height()})
+
+			//getHelp();
+		
+
+		 console.log(`Number of headers is now ${$("[alias=header]").length}`);
 
 	} 
 
@@ -366,9 +381,6 @@ function DRAW_SPACE_addWorkSpaceToBody(){
   
 	$("[alias=notification]").appendTo($("[alias=body]"))
 	    .css({overflow:"hidden","position":"fixed",zheight:"100px","z-index":CUSTOM_incrementZIndex(),top:0})
-	
-	$("[alias=header]").appendTo($("[alias=body]"))
-    .css({"overflow":"hidden","z-index":CUSTOM_incrementZIndex(),top:$("[alias=notification]").height()})
 
     //$("[alias=notification]").css({"height":"100px"})
     
@@ -417,7 +429,6 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	userHoveringOverNote = false;
 	drawResponsiveTab()
-
 
 	/*
 	var sliderp = $("<div id='sliderp'></div>").css("width","400px");

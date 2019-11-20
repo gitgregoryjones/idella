@@ -152,6 +152,8 @@ function writeRevision(revisionDirectory,currentRevision,revDate,callback,siteNa
 	$('body').find('#myp').remove();
 	$('body').find('[type=anchor]').css('border','none')
 	$("body").find('.ui-helper-hidden-accessible,.ui-autocomplete,#ghostery-purple-box').remove();
+	$("body").find('#layer-menu').remove();
+
 	$(".generated").each(function(it,scr){
 		scr = $(scr);
 		console.log("replacing some script "+it)
@@ -823,13 +825,13 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 
 						var response = serverContent[idx];
 
-						console.log("ServerContent Looking for alias with key " + response.alias)
+						console.log("ServerContent Looking for alias with key " + div.attr("alias"))
 						/*
 						if(div.is("[type=LIST]")) {
 							$(div).children("[type=IMG]").not(":first").remove();
 						}*/
 					
-						INGEST_populateObject(response, $("[alias=" + response.alias + "]"))
+						INGEST_populateObject(response, $("[alias=" + div.attr("alias") + "]"))
 						/*
 						if(div.is("[type=LIST]")) {
 							$(div).children("[type=IMG]").first().remove();

@@ -2202,6 +2202,9 @@ function initialize(){
    		GHOST_init(ghost);
    	})
 
+   	//alert(`Length of layer-menu is ${$("#layer-menu").length}`);
+   	//import layers.js
+   	reLoadLayers();
 
 
    	log.debug("CUSTOMEVENTS.js:all done")

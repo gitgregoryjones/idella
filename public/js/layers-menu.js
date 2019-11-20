@@ -2,12 +2,32 @@ var LAYER_TOOL = [];
 
 $(document).ready(function(){
 
+	//reLoadLayers();
 	console.log("Loaded layers");
+
 });
+
+
+function reLoadLayers(){
+
+	console.log(`Layer menu is ${$("#layer-menu").length}`);
+
+	$(".dropped-object").not('#drawSpace,#editSpace,#workspace').each(function(index){
+
+				updateLayersTool($(this).attr("id"));
+	});
+
+}
 
 
 
 function updateLayersTool(aToolId){
+
+				//first Add Layer Menu Div if it does not exist
+				//var menu = $("#layer-menu").length == 0 ? $("<div>",{id:"layer-menu"}) : $("#layer-menu");
+
+				//$("#drawSpace").append(menu);
+
 
 				var aTool = $(`#${aToolId}`);
 
@@ -27,12 +47,9 @@ function updateLayersTool(aToolId){
 					console.log("Did not find " + "[layer="+$(aTool).attr("id")+"]");
 
 				}
+                //From edit-body.html
 
-
-
-                                //From edit-body.html
-
-                                layer = $(".template-layer").first().clone(false).css({display:"block"}).addClass("example-layer").removeClass("template-layer");
+                layer = $(".template-layer").first().clone(false).css({display:"block"}).addClass("example-layer").removeClass("template-layer");
 
 				//setup layer unique id using aTool id
 				$(layer).attr("layer",$(aTool).attr("id"));
@@ -71,27 +88,36 @@ function updateLayersTool(aToolId){
 
 				$(pwindow).off("click");
 
-
-                                $(layer).on('mouseover',function(){
-                                        $(aTool).attr('previous-style',$(aTool).css("border"));
-                                        $(aTool).css({border:"solid white"});
+				$(layer).on('mouseover',function(){
+					$(aTool).attr('previous-style',$(aTool).css("border"));
+					$(aTool).css({border:"solid white"});
 					$(aTool).mouseover();
 					NOTES_delete();
-                                }).on('mouseout',function(){
-                                        $(aTool).css('border',$(aTool).attr("previous-style"));
+				}).on('mouseout',function(){
+					$(aTool).css('border',$(aTool).attr("previous-style"));
 					$(aTool).mouseout();
 
-                                }).on("click",function(){
+				}).on("click",function(){
 					$(aTool).mouseover();
 					$(aTool).find("[id$=lock]").click();
 					$(".example-layer").removeClass("highlight");
 					$(this).addClass("highlight");
-	var jump = $(aTool);
-    var new_position = $(jump).offset();
-    $('#drawSpace').stop().animate({ scrollTop: new_position.top }, 500,function(){
-		NOTES_makeNote($(aTool),false);
-	});
-    e.preventDefault();
+					var jump = $(aTool);
+					//CUSTOM_pressEscapeKey();
+					var new_position = $(jump).offset().top;
+
+					var final_position = new_position + $("#drawSpace").scrollTop();
+
+					
+					console.log(`New Position is ${new_position} and final is ${final_position}`);
+					$('#drawSpace').stop().animate({ scrollTop: final_position}, 500,function(){
+						NOTES_makeNote($(aTool),true);
+						
+						$(aTool).mouseover();
+						CUSTOM_pressEscapeKey();
+					});
+    
+    				//e.preventDefault();
 
 				});
 

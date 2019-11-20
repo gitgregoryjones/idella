@@ -118,6 +118,7 @@ $(document).ready(function() {
 
 			   try {
 
+
 			   		
 					log.debug("Before Current Site")
 
@@ -177,6 +178,7 @@ $(document).ready(function() {
 
 				CUSTOM_pressEscapeKey(); 
 				PREVIEW_togglePreview(false);
+
 			
 		   	})
 		 } else {
@@ -228,6 +230,8 @@ $(document).ready(function() {
 
     			}
 			})
+
+		  
 		
 });
 

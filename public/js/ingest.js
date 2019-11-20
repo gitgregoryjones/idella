@@ -28,7 +28,7 @@ function INGEST_populateObject(content, object){
 	
 	if($(object).length == 0){
 
-		console.log("Skipping this alias " + content.alias + " because Element not found on page");
+		console.log("Skipping this alias " + $(object).attr("alias") + " because Element not found on page");
 
 	} else {
 		//Do simple copy

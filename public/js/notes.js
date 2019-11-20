@@ -620,7 +620,7 @@ function NOTES_makeNote(element,isActive){
 		
 
 		log.debug("MsgCOORDS")
-		log.debug(msgcoords)
+		log.debug(msgcoords.top)
 
 
 		//Convert Coords to VW
