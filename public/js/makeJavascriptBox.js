@@ -139,6 +139,9 @@ $(window).off("_jsdialogClosed").on("_jsdialogClosed",function(){
 
 function MAKE_JAVASCRIPT_BOX_for(element){
 
+    //alert(element.attr("id"))
+
+    
 
     POPUP_win({target:element,callerType:"_js"},function(box){
 

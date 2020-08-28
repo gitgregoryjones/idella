@@ -6,6 +6,9 @@ currentCtx = {};
 
 OVERRIDE_CTX_MENU = true;
 
+var ignoreDoublePasteEvent = "";
+ignoreDoubleCopyEvent = ""
+
 /*
 *  Can this object be moved before or after it's sibling?
 *  Currently, the criteria is "Is this object the child of a list or SELECT type"
@@ -14,7 +17,7 @@ OVERRIDE_CTX_MENU = true;
 
 function objectIsReordable(obj){
 
-    return obj.parent(".dropped-object").is("[type=LIST],[type=SELECT]")
+    return obj.parent(".dropped-object").is("[type=LIST],[type=SELECT]") || obj.hasClass("section")
 }
 
 
@@ -324,6 +327,11 @@ $(document).on("initializationComplete",function(){
                         var aTool =  whichTool($(this).attr("type"));
                         aTool = configuredTool(aTool);
 
+                         currentCtx = CUSTOM_currentlyMousingOverElementId ? $("#"+CUSTOM_currentlyMousingOverElementId) : $(event.target)
+                         
+                         currentY = event.clientY + window.scrollY
+
+
                         dropTool(aTool,{target:currentCtx,clientX:currentX,clientY:currentY});
                         
                         if(aTool.is("[type=NAVIGATION]")){
@@ -385,27 +393,7 @@ $(document).on("initializationComplete",function(){
                                 CUSTOM_PXTO_VIEWPORT(bImg,bImg.offset().left,bImg.offset().top)
                             }
                         
-                            aTool.addClass("gallery");
-                            aTool.css("height",aTool.height() * 1.25);
-                            aTool.css("white-space",whiteSpace);
-                            duration = (aTool.css("transition-duration"))
-                
-                            duration = parseFloat(duration) == 0 ? "0.6s" : duration;
-                            aTool.css({overflow:"hidden","transition-duration":duration})
-                            
-                            SLIDER_init(aTool);
-
-                            if($(this).hasClass("adaptive")){
-                                aTool.removeClass("gallery");
-                                aTool.css("white-space","normal");
-                                aTool.css({overflow:"auto","transition-duration":"0s"})
-                                SLIDER_deInit(aTool);
-                                aTool.css({"overflow":"visible",
-                                    "width":aTool.children("[type=IMG]").first().width()*2.25, "height":aTool.children("[type=IMG]").first().height()*2.25})
-                                
-                                right.remove();
-                                left.remove();
-                            }
+                           CUSTOM_PXTO_VIEWPORT(aTool,aTool.offset().left,aTool.offset().top)
                            
                         } else if(aTool.is("[type=FIELD]")){
                             if(aTool.attr("type") == "FIELD"){
@@ -415,6 +403,10 @@ $(document).on("initializationComplete",function(){
                                aTool.find("[class*=-label]").css({"font-family":"lato"}).trigger("input")
                                aTool.trigger("dragstop");
                              }
+
+                        } else if(aTool.is("[type=AUDIO]")){
+    
+                            Equalizer.initJS(8,5);
 
                         }
 
@@ -480,29 +472,40 @@ $(document).on("initializationComplete",function(){
             case "addsection":
                  var aTool =  whichTool("DIV");
                         aTool = configuredTool(aTool);
-                        //$("#drawSpace").append(aTool);
-                        var lastChildTop = 0;
-                        var lastChildHeight = 0;
-                        $(currentCtx).children(".dropped-object").each(function(idx,child){
-                            child = $(child);
-                            if(child.offset().top > lastChildTop){
-                                lastChildTop = child.offset().top + child.height();
-                                //lastChildHeight = child.height();
-                            }
-                        })
+                        aTool.addClass("section")
+                            .css({
+                                width:$("body").width(),
+                                height:"500px",
+                                position:"relative",
+                                display:"inline-block",
+                                "background-image": "linear-gradient(red, yellow)"
+
+                            });
+
+                        h1 = $("<h1>",{"font-color":"white"}).text("Drop Content Here")
+
+                        aTool.append(h1);
                         
-                        $(aTool).css({"height":"300px","width":"100%","background-color":"#F0F0F0"})
-                        dropTool(aTool,{target:$(currentCtx),clientX:0,clientY:lastChildTop});
-                        if(!currentCtx.is(["type=LIST"])){
-                            aTool.css("top",lastChildTop);
-                        }else {
-                            aTool.css("top",0);
+                        //$("#drawSpace").append(aTool);
+                        if($(".section").length == 0){
+                            //dropTool(aTool,{target:$("#content"),clientX:0,clientY:0});
+                            $("#content").append(aTool);
+                        } else {
+                            $("#content").attr("type","LIST");
+                            $("#content").append(aTool);
+                            //dropTop = $("#content").find(".section").last().offset().top+ $("#content").find(".section").last().height();
+                            //dropLeft =  dropX = $("#content").find(".section").last().offset().left;
+                            //dropTool(aTool,{target:$("#content"),clientX:0,clientY:0});
                         }
-                        $("#drawSpace").animate({
-                            scrollTop: $(aTool).offset().top
-                        }, 1000);
-                        //Unlock this element               
-                        $(".fa-lock").first().click();
+                        var total = 0;
+                        $("#content").find(".section").each((idx,obj)=>{
+                            console.log(idx)
+                             total += $(obj).height();
+                        })
+                        $("#content,body").css("height",total + 50);
+                        updateLayersTool($(aTool).attr("id"));
+                        setUpDiv(aTool);
+                        CUSTOM_PXTO_VIEWPORT(aTool);
                         break;
 
             case "edit": 
@@ -512,27 +515,46 @@ $(document).on("initializationComplete",function(){
                 $(".fa-lock").first().click();
                 break;
             case "copy": if(currentCtx.attr("type") != "canvas"){
+
+                    if(ignoreDoubleCopyEvent == $(currentCtx).attr("id")){
+                        return;
+                    }
+
                     CUSTOM_lastCopyElement = recursiveCpy(currentCtx);
+
+
+                    ignoreDoubleCopyEvent = $(currentCtx).attr("id");
+                    
                     op = $(currentCtx).css("opacity");
-                     
-                     //var myClass = CONVERT_STYLE_TO_CLASS_OBJECT($(CUSTOM_lastCopyElement));
-                     //copy = $(CUSTOM_lastCopyElement).clone(true);
-                     //var myClass = CONVERT_STYLE_TO_CLASS_OBJECT(CUSTOM_lastCopyElement);
-                     //CUSTOM_lastCopyElement.css(myClass);
-
-                     var str = $(CUSTOM_lastCopyElement).clone().wrap('<div>').parent().html();
-                    $(currentCtx).css("opacity","0");
-                    $(currentCtx).animate({opacity:op},600)
-                   
-                    console.log(str);
-
-                    localStorage.setItem('copy-buffer',str)
+                  
                     //Unlock this element               
                     $(".fa-lock").first().click();
 
-                } break;
+                    $(currentCtx).animate({opacity:.3},600, function(){
+                        $(currentCtx).css({opacity:op});
+                        
+                        var str = $(CUSTOM_lastCopyElement).clone().wrap('<div>').parent().html();
+                        localStorage.setItem('copy-buffer',str)                        
+                    });
+
+
+                } 
+                break;
             case "paste": if(currentCtx.hasClass("dropped-object"))
                 { 
+                    
+                    if(ignoreDoublePasteEvent == CUSTOM_lastCopyElement){
+                        return;
+                    }
+
+
+                    ignoreDoublePasteEvent = CUSTOM_lastCopyElement;
+
+
+                    console.log(`Pasted ${$(CUSTOM_lastCopyElement).attr("id")}`);
+
+
+
                     c = recursiveCpy(CUSTOM_lastCopyElement) ;  
 
 
@@ -541,7 +563,7 @@ $(document).on("initializationComplete",function(){
                     }
 
                    
-
+                    
                     c.appendTo(currentCtx).css(
                         {top:myPage.Y - currentCtx.offset().top - ($(".custom-menu").height()/2),left:myPage.X - currentCtx.offset().left }
                     );
@@ -552,7 +574,7 @@ $(document).on("initializationComplete",function(){
                         currentCtx.attr("overlay",c.attr("id"));
                     }
 
-                    CUSTOM_PXTO_VIEWPORT($(c),$(c).position().left ,$(c).position().top); 
+                    //CUSTOM_PXTO_VIEWPORT($(c),$(c).position().left ,$(c).position().top); 
 
                      if(c.attr("type") == "LIST"){
                          SLIDER_init(c)
@@ -567,9 +589,11 @@ $(document).on("initializationComplete",function(){
 
             case "resize": $(".template").click();break;
             case "javascript": if(currentCtx.attr("type") != "canvas"){   
-                    NOTES_delete();
-                    $("#editSpace").mouseleave();
+                    console.log(`Current Context greg is ${$(currentCtx).attr("id")}`);
+
                     MAKE_JAVASCRIPT_BOX_for (currentCtx)     
+                    //NOTES_delete();
+                    //$("#editSpace").mouseleave();
                     //remove submenu class because we don't need it anymore
                     /* 
                 $( ".adialog" ).data({"theClickedElement":$(hotObj),"actionType":$(this).attr("data-action")});

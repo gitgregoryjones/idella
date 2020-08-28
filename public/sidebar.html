@@ -1,0 +1,163 @@
+<ul class="babynav navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+      <!-- Sidebar - Brand -->
+     
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <!-- <i class="fas fa-shapes"></i> //-->
+        </div>
+        <div class="sidebar-brand-text mx-3">I<sup>2</sup></div>
+      </a>
+
+   
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        <li class="starthere nav-item active section-control">
+          <a class="nav-link sectionnav" href="#">
+            <i class="far fa-map fa-rotate-90"></i>
+            <span> > </span>
+            <span>Add</span>
+            <span>Section</span>
+          </a>
+         
+        </li>
+        <script>
+          $(document).ready(function() {
+          
+          if($(".section").length == 0 ){
+            $(".section-control").on("click",(e)=>{$(".babynav").remove();$(".notyet").removeClass("notyet");});
+          } else {
+            console.log("removing navs!");
+            $(".babynav").remove();$(".notyet").removeClass("notyet");
+          }
+        });
+
+
+        </script>
+  </ul>
+
+<!-- Sidebar invisible until first element is placed -->
+    <ul class="notyet navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+      <!-- Sidebar - Brand -->
+     
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <!-- <i class="fas fa-shapes"></i> //-->
+        </div>
+        <div class="sidebar-brand-text mx-3">I<sup>2</sup></div>
+      </a>
+       <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        
+        
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item active shapes">
+         <a class="nav-link" href="#" type="T" title="drag text to content area">
+          <i class="fas fa-font"></i>
+        </a>
+      </li>
+      <li class="nav-item active shapes">
+         <a class="nav-link" href="#" type="PICTURE" title="drag picture to content area">
+          <i class="far fa-image"></i>
+        </a>
+      </li>
+      <li class="nav-item active shapes">
+        <a class="nav-link" href="#" type="DIV" title="drag square to content area">
+          <i class="far fa-square"></i>
+        </a>
+      </li>
+      <li class="nav-item active shapes">
+         <a class="nav-link" href="#" type="CIRCLE" title="drag circle to content area">
+          <i class="far fa-circle"></i>
+        </a>
+      </li>
+      <li class="nav-item active shapes">
+        <a class="nav-link" href="#" type="AUD" title="drag sound to content area">
+          <i class="fas fa-volume-up"></i>
+        </a>
+      </li>
+       <li class="nav-item active shapes">
+        <a class="nav-link" href="#" type="LIST" title="drag gallery to content area">
+          <i class="fab fa-slideshare"></i>
+        </a>
+      </li>
+      <li class="nav-item active shapes">
+         <a class="nav-link" href="#" type="VID" title="drag video to content area">
+          <i class="fas fa-video"></i>
+        </a>
+       
+      </li>
+      <li class="nav-item active shapes section-control">
+          <a class="nav-link sectionnav" href="#">
+            <i class="far fa-map fa-rotate-90"></i>
+            <span> > </span>
+            <span>Add</span>
+            <span>Section</span>
+          </a>
+         
+        </li>  
+    </ul>
+         <script type="text/javascript">
+
+        
+
+           $(".section-control").on("click",(e)=>{ e.preventDefault();$("[data-action=addsection]").click()})
+
+          option = $("li.shapes > a ").draggable({
+            stopper:(event,ui)=>{
+
+              console.log("STOPPED")
+              console.log(`GREG UI position is top ${ui.position.top}, ${ui.position.left}, ${ui.offset.top}`)
+              
+                        currentX = ui.offset.left;
+                        currentY = ui.offset.top;
+                        var tmpType = ui.helper.attr('type');
+                        if(tmpType == "PICTURE"){
+                          tmpType = "IMG";
+                        }
+                        console.log(`Tmp Type is ${tmpType}`);
+                        var tTool = whichTool(tmpType);
+                        tTool = configuredTool(tTool);
+                        console.loDg(`DONE ${CUSTOM_currentlyMousingOverElementId}`);
+
+                        //if(tmpType == "LIST"){
+                          tTool = new Gallery();
+
+                        //}
+
+                        dropTool(tTool,{target:`#${CUSTOM_currentlyMousingOverElementId}`,
+                          clientY:ui.position.top,
+                          clientX:ui.position.left})
+                      //  $(`[data-action=drop][type=${tmpType}]`).click();
+
+            },
+            helper:function( event ) {
+            var nClone = $(this).clone(true);
+                          
+            nClone.css({'background-color':"#01587C",opacity:"0.7","z-index":80000})
+
+            return nClone;
+        }})
+
+
+        //onscrollstop move the menu
+        $.fn.scrollStopped = function(callback) {
+          var that = this, $this = $(that);
+          $this.scroll(function(ev) {
+            clearTimeout($this.data('scrollTimeout'));
+            $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
+          });
+        };
+      
+        $(window).scrollStopped((fun)=>{
+            $(".sidebar").animate({"padding-top":window.pageYOffset});
+            
+        })
+
+
+     
+      </script>
+      <input type="file" id="fileElem" multiple accept="image/*" style="display:none" onclick="window.myim = CUSTOM_currentlyMousingOverElementId" onchange="CUSTOM_HANDLEFILES(this.files)">
+    <input type="file" id="audioElem" multiple accept="audio/*" style="display:none" onclick="window.myim = CUSTOM_currentlyMousingOverElementId" onchange="CUSTOM_HANDLEFILES(this.files,true)">
+    <!-- End of Sidebar -->

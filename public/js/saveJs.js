@@ -9,7 +9,7 @@ function saveJs(theElem, script){
 
 	
 	log.info("Entering save JS with id " + id)
-
+	
 
 	theFunction = "<!-- BEGIN " + id + " //-->\n\n$(document).ready(\n\tfunction(){\n\t" + script.trim() + "\n\t})<!-- END "+ id + "//-->";
 	//theFunction = "<!-- BEGIN " + id + " //-->\n" + script.trim() + "\n<!-- END "+ id + "//-->";
@@ -25,11 +25,26 @@ function saveJs(theElem, script){
 
 	//localStorage.setItem("javaScript_"+id,script)
 
-	log.debug("SAVJS.js: Leaving save JS with id " + id)
+	log.info("SAVJS.js: Leaving save JS with id " + id)
 
 }
 
 function getJs(theElem){
+
+
+
+	if($(theElem).attr("id") == undefined){
+		log.debug("Short circuit because div was undefined");
+		return "";
+	} else {
+		theElem = $(theElem);
+	}
+
+
+
+	try {
+
+	log.debug(` In getJS ${$(theElem).attr("id")}`);
 
 	id = $(theElem).attr("id")
 
@@ -53,9 +68,6 @@ function getJs(theElem){
 			content = groups[1]
 		}
 		
-
-		
-
 		log.debug("SAVJS.js: Really Returning " + content)
 
 		return content.trim().length > 0 ? content.replace("\t","") : exampleFunc;
@@ -65,19 +77,38 @@ function getJs(theElem){
 		return exampleFunc;
 		
 	}
+}catch(e){
+	console.log("Something bad happened ")
+	console.log(`Error is ${e}`);
+	return "";
+}
+	
+	
 
 }
 
 function loadAllJs(){
-	log.warn("loadAllJs called but this method should be deprecated")
-	$(".dropped-object,.plugin").each(function(index,elem){
 
-		thejs = getJs(elem);
-		log.debug("SAVJS.js: The JS is " + thejs)
+	log.warn("loadAllJs called but this method should be deprecated")
+	$.each($(".dropped-object,.plugin"),(index,value)=>{
+		log.debug(`looping over ${$(value).attr('id')}`)
+		thejs = getJs(value);
+		log.debug(`Greg is cool ${thejs}`);
+		//console.log(`retrieved js ${thejs}`)
+	});
+	/*
+	$.each($(".dropped-object,.plugin"),function(index,elem){
+		//console.log(`whatup greg ${index}`);
+		/*
+		log.debug("Do IT")
+		theJs = "pappa";
+		//thejs = getJs(elem);
+		console.log("SAVJS.js: The JS is " + thejs)
+
 		if(thejs != null && thejs.length > 0){
 			//eval(thejs)
 			//saveJs(elem,thejs);
 		}
 	})
-
+	*/
 }

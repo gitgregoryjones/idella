@@ -20,6 +20,24 @@ function setup() {
 }
 setup();
 
+function SAVE_savePrompt(){
+
+	//website is a GLOBAL var.  I need to rewrite this whole thing to use classes ugh.
+	if(website == "default"){
+				//text = prompt("Please enter a name for your new site")
+				 MAKE_PROMPT_FOR_INPUT_BOX_for({promptMsg:"What is new site name?"},function(text){
+
+						if(text && text.trim().length > 0){
+							$('html').attr("x-site-name",text);
+							$('title').text(text);
+							LOGIC_redirectNeeded = true;
+							SAVEJS_goInactive()
+						}
+				 })
+				 
+	}
+}
+
 function startTimer() {
     // wait 2 seconds before calling goInactive
   
@@ -166,7 +184,7 @@ function SAVEJS_goInactive() {
 
 
 	if(editing) {
-		if($("#drawSpace").find(".dropped-object").length == 0){
+		if($("#content").find(".dropped-object").length == 0){
 			log.debug("Nothing to save")
 			return;
 		}

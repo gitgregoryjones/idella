@@ -135,6 +135,8 @@ function PREVIEW_togglePreview(showPreview){
 			},700)
 		})
 
+		$("#accordionSidebar,#idella-search").hide();
+
 		$(window).trigger(editing ? "editing" :"preview")
 
 	}else {
@@ -170,6 +172,13 @@ function PREVIEW_togglePreview(showPreview){
 			$(it).show().css({"z-index":parentObject.css("z-index")});
 		})
 
+		var total = 0;
+		var clength = $("#content > .section").length;
+	    $("#content > .section").each(function(index){
+	        total += $(this).width();
+	    })
+	    $("body,#content").css({width:parseInt(total/clength)+5});
+
 
 		//Give User Visual Indicator They are in preview mode
 		POPUP_greyOver({target:"window",callerType:"edit-information"},function(greyBox){
@@ -189,6 +198,7 @@ function PREVIEW_togglePreview(showPreview){
 			
 		})
 
+		$("#accordionSidebar,#idella-search").show();
 
 		$(window).trigger(editing ? "editing" :"preview")
 

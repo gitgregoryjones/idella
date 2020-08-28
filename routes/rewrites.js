@@ -85,7 +85,7 @@ router.get('/', function(req, res, next) {
 
 
 /* GET home page. */
-router.post('/', function(req, res, next) {
+router.post('/', async function(req, res, next) {
 
 		
 	console.log("Entering Revisions");
@@ -112,15 +112,15 @@ router.post('/', function(req, res, next) {
 
 	console.log(req.body)
 
-	writeRevision(dir,req.body,req.get('x-current-date'),function(ok,err){
+	var err = await writeRevision(dir,req.body,req.get('x-current-date'),req.get('x-site-name'))
 
-		if(err){
-			res.sendStatus(404)
-			console.log(err);
-		}else {
-			res.sendStatus(200);
-		}
-	});
+	if(err){
+		res.sendStatus(404)
+		console.log(err);
+	}else {
+		res.sendStatus(200);
+	}
+
 	
 	
 });

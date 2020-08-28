@@ -176,14 +176,42 @@ function writeDefaultSiteContents(site,page,revisionDir,callback){
 	currentTimePlus5Seconds.setTime(currentTimePlus5Seconds.getSeconds() + 5);
 
 
-	getRevisionFileContents(site,new Date().toString(),process.env.HOMEDIR,"template2.html","/",function(ok,contents){
+	getRevisionFileContents(site,new Date().toString(),process.env.HOMEDIR,"template2.html","/",async function(ok,contents){
 		var version = {html:contents,css:"",currentPage:page, date:new Date().toString(),bps:[]}
-		writeRevision(revisionDir,version,currentTimePlus5Seconds.toString(),callback,site);
+
+		var err = await writeRevision(revisionDir,version,currentTimePlus5Seconds.toString(),site)
+
 	});
 
 	//writeRevision(revisionDir,version,new Date().toString(),callback);
 
 }
+
+function latestDemoSiteNumber(siteDir){
+
+
+
+	var dirExists = true;
+
+	var number  = 0;
+
+	
+
+	do {
+
+		++number;
+
+		var realPath = path.join(process.env.SITEDIR,`${siteDir}-${number}`)
+
+		console.log(`Does ${realPath} exist?`)
+		dirExists = fs.existsSync(realPath);
+		console.log(`${siteDir}-${number} exists = ${dirExists}`)
+
+	} while(dirExists);
+
+	return `${siteDir}-${number}`;
+}
+
 
 function createSite(name,callback){
 
@@ -222,5 +250,6 @@ function createSite(name,callback){
 
 module.exports = router;
 module.exports.addPage = addPage;
+module.exports.latestDemoSiteNumber = latestDemoSiteNumber;
 module.exports.getAllSitePageNames = getAllSitePageNames;
 

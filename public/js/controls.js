@@ -165,12 +165,15 @@ function CONTROLS_makeFormFieldFor(wrapperElem,typeOfField){
                     oldCntrl = oldCntrl.remove();
                     val = toString(oldCntrl);
                     wrapperElem.append(tool);
-                    tool.css({"width":"100%","height":"100%"})
-                    TEXTAREA_init(tool)
-                    txt = wrapperElem.parent(".group-container").find("[class*=-label]").trigger("input")
+                    log.debug(`Width of wrapper ${wrapperElem.parents(".group-container").width()}`);
+                    tool.css({"width":wrapperElem.parents("form").width()-50,"height":"100%"})
+                    //TEXTAREA_init(tool)
+                    
+                    //txt = wrapperElem.parent(".group-container").find("[class*=-label]").trigger("input")
                     if(val.length > 0){
                         tool.val(val)
                     }
+                    tinymce.init({ selector:`${tool.attr("id")}` });
         break;
     }
 

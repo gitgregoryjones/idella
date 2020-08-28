@@ -134,7 +134,6 @@ function alert(msg,callbackWhichButtonPressed){
 function MAKE_MSG_BOX_for(options,callbackForTextResponse){
 
 
-
     POPUP_win({target:$(".dropped-object").first(),callerType:"_msg",options:options},function(box){
 
         

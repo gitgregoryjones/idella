@@ -1,16 +1,24 @@
+function isObject (value) {
+return value && typeof value === 'object' && value.constructor === Object;
+}
 
-function INGEST_populateList(child,list,idx){
 
-	var template = list.length > 0 ? $(list.children("[type]").not("[alias^=cntrl]").first()).clone() : whichTool("IMG");
+function INGEST_populateList(child,exampleObject,idx){
 
-	template.attr("extends",list.children("[type]").first().attr("id"))
 
-	template.attr("id",list.attr("id") + "-" + idx);
+	var template = exampleObject.clone()
+	// : whichTool("IMG");
 
+	console.log(`Template id after copy10 ${template.length}`);
+
+
+	template.attr("extends",exampleObject.attr("id"))
+
+	template.attr("id",exampleObject.attr("id") + "-" + idx);
 
 	INGEST_populateObject(child,template);
 
-	list.append(template);
+	exampleObject.parent().append(template);
 	//INGEST_populateObject()
 
 }
@@ -31,34 +39,53 @@ function INGEST_populateObject(content, object){
 		console.log("Skipping this alias " + $(object).attr("alias") + " because Element not found on page");
 
 	} else {
+		//prime delete
+		if(object.attr("type") == "LIST"){
+			
+				c =object.children("[type]").not("[alias^=cntrl]").first().clone();
+			
+				object.children("[type]").not("[alias^=cntrl]").remove();
+				object.append(c);
+			
+			console.log(`GOTCHA is ${object.children("[type]").length}`)
+		}
+
+
 		//Do simple copy
 		for(key in content){
 
-			if(Array.isArray(content[key])){
+			console.log(`Type for ${key} is ${object.attr("type")} and alias is ${object.attr("alias")} `);
+
+			if(object.attr("type") == "LIST"){
 
 				console.log("FOUND ARRAY FOR " + key)
 
 				if( object.attr("type") == "LIST"){
 
-					children = content[key];
+					child = content[key];
 					var before = object.children("[type]").not("[alias^=cntrl]").length;
 					console.log("BEFORE IS " + before)
-					for(childIdx in children){
-						child = children[childIdx];
-						//Populate Gallery
-						INGEST_populateList(child,object,childIdx);
-					}
+					console.log(JSON.stringify(child));
+					INGEST_populateList(child,object.children("[type]").not("[alias^=cntrl]").first(),key);
+					
+					//for(childIdx in children){
+					//	child = children[childIdx];
+					//	//Populate Gallery
+					//	INGEST_populateList(child,object,childIdx);
+					//}
 
 					var after = object.children("[type]").not("[alias^=cntrl]").length;
 					console.log("AFTER IS " + after)
-
+					
+					/*
 					for(i=0;i<before;i++){
 						c =object.children("[type]").not("[alias^=cntrl]").first();
 						c = $(c);
 						c.remove();
-					}
+					}*/
 
-				} else {
+				} else 
+				{
 					//populate list of simple objects
 					var lookupKey = key.toUpperCase();
 					if(lookupKey.endsWith("S")){
@@ -89,11 +116,17 @@ function INGEST_populateObject(content, object){
 
 				}
 
-			} else {
+			} else if(isObject(content[key])){
+
+				var childObject = object.find(`[alias=${key}]`);
+
+				INGEST_populateObject(content[key],childObject);
+
+			}else {
 
 				if(CSSTEXT_validStyles.hasOwnProperty(key)){
 					console.log("SETTING ANOTHER KEY AS CSS "+ key + " with value " + content[key]);
-					object.css(key,content[key])
+					$(object).css(key,content[key])
 				} else if(key.toLowerCase() != "id" && key.toLowerCase() !="alias"  && key.toLowerCase() != "type"){
 					console.log("SETTING ANOTHER KEY AS attribute "+ key + " with value " + content[key]);
 					if(key == "href") {
@@ -101,16 +134,22 @@ function INGEST_populateObject(content, object){
 					}
 
 					if(key == "text"){
-						object.text("text",content[key]);
-						object.attr("edittxt",content[key])
-
+						//object.text(content[key]);
+						console.log(`Writing text for alias ${$(object).attr("alias")}`)
+						$(object).text(content[key]);
+						//$(`#content[key]`).attr("edittxt",content[key]);
+						//object.attr("edittxt",content[key])
 					}
-					object.attr(key,content[key])
+					$(object).attr(key,content[key])
 				}
 			}
 
 
 
+		}
+
+		if(object.attr("type") == "LIST"){
+			object.children("[type]").not("[alias^=cntrl]").first().remove();
 		}
 
 		return;

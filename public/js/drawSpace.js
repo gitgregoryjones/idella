@@ -144,6 +144,7 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 		startVideo(vid);
 	})
 
+	
 	top = DRAW_SPACE_getMaxTopElement();
 
 //		$("body").css({height:"3000px"})
@@ -224,21 +225,24 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	NOTES_delete();
 
-	body = $("body")
+	body = $("#content");
+
+	//body.children().last().remove();
 
 	var wp = $("<div>",{id:"workspace",type:"workspace"}) ;
 
 	var ds = $("<div>",{id:"drawSpace",class:"dropped-object",type:"canvas"})
+
 	var es = $("<div>",{id:"editSpace"}).append('<div id="tabs"><ul class="tabul"></ul></div>');
 
 
-	ds.append(body.children());
+	//ds.append(body.children());
 
-	wp.append(ds);
+	//wp.append(ds);
 
-	wp.append(es)
+	//wp.append(es)
 
-	$(body).append(wp);
+	//$(body).append(wp);
 
 
 	wp.css({
@@ -247,14 +251,12 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	})
 
 	ds.css({
-		height:$(wp).height()*.75,
+		height:$(wp).height() * .7,
 		width:$(window).width(),
 		"overflow-y":"scroll",
 		"overflow-x":"hidden",
 		position:"absolute",
-		"background-image":"url(https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Cartesian_5mm..svg/2000px-Cartesian_5mm..svg.png)",
-		"background-image":"url(https://1.bp.blogspot.com/-J2JBT--3ssc/T6GusOoFtJI/AAAAAAAAAdg/bjmtYbAP6oE/s1600/pattern-dots-square-grid-01_xxl.png)",
-		"background-image":"url(http://udel.edu/~spfefer/website/dotgrid.png)",
+		"background-image":"url(/dotgrid.png)",
 		
 		
 		"background-repeat":"repeat"
@@ -262,7 +264,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 
 	es.css({
-		height:$(wp).height()*.20,
+		height:$(wp).height()*.40,
 		width:"100%",
 		top:$(ds).height(),
 		position:"absolute",
@@ -301,15 +303,19 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	body.id = "body";
 
+	/*
 	ds.scroll(function(){
 		//Kill any notes
 		NOTES_delete()
 	 })
 
+	*/
 	$("[type=VID]").each(function(id,div){
 		var vid = $(div).find("video")[0];
 		startVideo(vid);
 	})
+
+	/*
 
 	if($(".dropped-object").length <= 1){
 
@@ -375,13 +381,17 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	} 
 
-	$("[alias=body]").css("z-index",400)
+	*/
+
+	//$("[alias=body]").css("z-index",400)
 	
 
+	/*
   
 	$("[alias=notification]").appendTo($("[alias=body]"))
 	    .css({overflow:"hidden","position":"fixed",zheight:"100px","z-index":CUSTOM_incrementZIndex(),top:0})
 
+	*/
     //$("[alias=notification]").css({"height":"100px"})
     
 
@@ -405,7 +415,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	
 	if(CUSTOM_currentlyMousingOverElementId == null){
 		CUSTOM_currentlyMousingOverElementId = $(".dropped-object").not("#drawSpace,[alias=theCanvas]").first().attr("id");
-	
+	   //CUSTOM_currentlyMousingOverElementId = $("#content").addClass("dropped-object");
 		
 		_localElem = writeTabs(CUSTOM_currentlyMousingOverElementId,true)
 		//NOTES_makeNote($("#"+_localElem))
@@ -442,7 +452,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	var target = {};
 
-	target.target = $("#drawSpace").first();
+	target.target = $("#content").first();
 
 	target.stopPropagation = function(){
 

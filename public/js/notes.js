@@ -208,6 +208,10 @@ function NOTES_makeNote(element,isActive){
 							}
 							updateLayersTool($(myParent).attr("id"));
 							console.log("Calling update Layers Tool");
+							//impor layers.js scroll to layer
+							scrollToLayer($(myParent).attr("id"));
+							console.log("Calling scroll To Layers Tool");
+
 							return;
 						}
 					
@@ -328,12 +332,12 @@ function NOTES_makeNote(element,isActive){
 
 		theMsg = $("<div class='msg' msg-parent='" + element.id + "'>"+$(element).attr("type") + "#" + $(element).attr("id") + " " + ($(element).attr("alias") != undefined ? " [alias= " + $(element).attr("alias") +"]" : "") + "</div>" );
 
-		theMsg.append("<div>Left : " + $(element).offset().left + ", Top: "+ $(element).offset().top + ", Height: "+ $(element).height() + ", Width: "+ $(element).width() +"</div>")
+		theMsg.append("<div>Left : " + parseInt($(element).offset().left) + ", Top: "+ parseInt($(element).offset().top) + ", Height: "+ parseInt($(element).height()) + ", Width: "+ parseInt($(element).width()) +"</div>")
 		
 		if(!element.is("[type=PLUGIN]")){
 
 			color = $(element).css("background-color")
-			image =  $(element).is("[type=VID],[type=SITE]") ? $(element).find(".content-image").attr("src") : $(element).css("background-image")
+			image =  $(element).is("[type=VID],[type=AUDIO],[type=SITE]") ? $(element).find(".content-image").attr("src") : $(element).css("background-image")
 			txtColor = $(element).css("-webkit-text-fill-color")
 			fontFamily  = $(element).css("font-family")
 			href = $(element).attr("href") != undefined ? $(element).attr("href") : "none" ;
@@ -370,7 +374,7 @@ function NOTES_makeNote(element,isActive){
 			txtColor = $(element).css("-webkit-text-fill-color")
 			fontFamily  = $(element).css("font-family")*/
 
-			videoOrImage = $(element).is("[type=VID],[type=SITE]") ? "src" : "background-image";
+			videoOrImage = $(element).is("[type=VID],[type=AUDIO],[type=SITE]") ? "src" : "background-image";
 
 			if(element.is("[type=T], [type=LIST]")){
 
@@ -416,26 +420,31 @@ function NOTES_makeNote(element,isActive){
 					ltype = $("<select>").append(new Option("adaptive","adaptive")).append(new Option("gallery","gallery"));
 					theMsg.append($("<div style='display:inline-block; margin-right:10px'>Type:</div>").append(ltype));
 
+					//default to adaptive
+					element.css({overflow:"auto","transition-duration":"0s"})
+
 					//AutoSelect option based on what user chose last
 					if(element.hasClass("gallery")){
 						ltype.find("[value=gallery]").attr('selected','selected');
 					}
 
+					
+
 					ltype.on('change',function(){
 					
 						if($(this).find(":selected").attr("value") == "adaptive"){
 							element.removeClass("gallery");
-							element.css("white-space","normal");
-							element.css({overflow:"auto","transition-duration":"0s"})
+						
 							SLIDER_deInit(element);
+							//element.children(".dropped-object").css({left:"0px",position:"relative"})
 
 						} else {
-							element.addClass("gallery")
-							element.css("white-space","nowrap");
-							duration = (element.css("transition-duration"))
+							element.toggleClass("gallery")
+							//element.css("white-space","nowrap");
+							//duration = (element.css("transition-duration"))
 							
-							duration = parseFloat(duration) == 0 ? "0.6s" : duration;
-							element.css({overflow:"hidden","transition-duration":duration})
+							//duration = parseFloat(duration) == 0 ? "0.6s" : duration;
+							
 	
 							SLIDER_init(element);
 
@@ -461,7 +470,7 @@ function NOTES_makeNote(element,isActive){
 				}
 
 			} else {
-				theMsg.append(" <div>Image: <input type='text' class='quick-disabled quick-disabled-image-field' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
+				theMsg.append(" <div>Source: <input type='text' class='quick-disabled quick-disabled-image-field' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
 			}
 
 			theMsg.append("<div style='display:inline-block'></div>Bckgrnd Color: <div background-color-for='#"+element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ color + "'/>")
@@ -699,10 +708,19 @@ function NOTES_makeNote(element,isActive){
 								CUSTOM_DONE_NOTE_EDITING_LOGIC(et);
 							}
 
+
 						
 
 							userHoveringOverNote = false;
 							var parent = $("#" + $(evnt.target).attr("parent"));
+							if(parent.is("[type=AUDIO]")){
+								console.log("Audio playing")
+								try {
+									parent.find("audio")[0].play();
+								}catch(e){
+									console.log(`Failure playing audio for ${parent.attr("id")} ${e}`)
+								}
+							}
 							//parent.resizable("disable").resizable();
 
 							log.debug("CHANGING IT UP BABY")

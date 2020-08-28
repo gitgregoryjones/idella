@@ -63,6 +63,7 @@ app.use(rewrites.SEOUrlFilter)
 app.use(revisions.getRevision);
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public','adminbootstrap')));
 app.use(express.static(path.join(__dirname, 'public','sites')));
 
 

@@ -296,47 +296,49 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 
 		if(ok){
 			console.log("Sending a new revision")
-			$.ajax({
-			    type: "POST",
-			    url:  "/revisions",
-			    // The key needs to match your method's input parameter (case-sensitive).
-			    data: JSON.stringify(object),
-			    contentType: "application/json; charset=utf-8"
-		    	
-			}).done(function(){
-				console.log("Revision created");
-				$(".saveImage").hide();
 
-
-				//Give User Visual Indicator They are in preview mode
-				POPUP_greyOver({target:"window",callerType:"save-window"},function(greyBox){
+			POPUP_greyOver({target:"window",callerType:"save-window"},function(greyBox){
 
 					greyBox.find("[data-message-for-greybox]").text(` Saving ${object.siteName}...`).addClass("fa fa-save")
 					.css({"background-color":"green","text-align":"center",transform:"rotate(-10deg)"})
 					//Auto destroy greybox after 700 milliseconds by fading out and finally deleting from DOM and
-					//stylesheet if added					
-					setTimeout(function(){
+					//stylesheet if added
 
-						REVISION_anchors = [];
-						if(redirect){
+
+					 
+					$.ajax({
+						    type: "POST",
+						    url:  "/revisions",
+						    // The key needs to match your method's input parameter (case-sensitive).
+						    data: JSON.stringify(object),
+						    contentType: "application/json; charset=utf-8"
+					    	
+						}).done(function(){
+							console.log("Revision created");
+							$(".saveImage").hide();
+
+
+							REVISION_anchors = [];
+							if(redirect){
+								
+								window.location = URI.joinPaths("",object.siteName,object.pageName);
+							} 
+
+							greyBox.fadeOut(function(){
+								deleteElement(greyBox);
+							})
+						
 							
-							window.location = URI.joinPaths("",object.siteName,object.pageName);
-						} 
-
-						greyBox.fadeOut(function(){
-							deleteElement($(this))
-						})
-
-					},2000)					
-				})
+						}).fail(function(x,t,e){
+							alert("Failure is here:")
+							alert(e);
+							console.log("Error revising site :" + t)
+							console.log(e);
+					});
 			
-				
-			}).fail(function(x,t,e){
-				alert("Failure is here:")
-				alert(e);
-				console.log("Error revising site :" + t)
-				console.log(e);
-			});
+			})
+
+			
 
 
 		} 

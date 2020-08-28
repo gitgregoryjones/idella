@@ -53,9 +53,12 @@
 	  </li>
 	    <li  class="editonly shapes">
 	  	<div data-action="drop" type="CIRCLE" title="drop circle"><div class="fa fa-circle-o">&nbsp;</div></div>
-	  	<div data-action="drop" type="VID" title="drop video"><div class="fa fa-toggle-right">&nbsp;</div></div>
+	  	<div data-action="drop" type="VID" title="drop video"><div class="fa fa-toggle-right">&nbsp;
+	  	</div></div>
 	  <div data-action="drop" type="T" archType="button" title="add push button" ><div class="fa fa-hand-o-down"></div></div>
 	  <div data-action="drop" type="NAVIGATION" title="add menu"><div class="fa fa-navicon">&nbsp;</div></div>
+	  <div data-action="drop" type="AUD" title="drop audio file"><div class="fa fa-music">&nbsp;
+	  	</div></div>
 	  	<!-- <div data-action="drop" type="BTN" class="fa fa-toggle-on"></div>//-->
 	  	<!-- <div data-action="drop" type="ICON" class="fa fa-twitter"></div>//-->
 	  <div data-action="drop" type="LIST" title="Add Expanding Box" class="adaptive"><div class="fa fa-expand"></div></div>
@@ -80,21 +83,62 @@
 	  <li data-action="paste-options" submenu="copy-paste-menu" class="editonly"><div class="fa fa-files-o" style="background-color: #07B34C;color:white;text-align: center;border-radius:10px; padding:5px;"></div>&nbsp;Copy/Paste&nbsp;<div class="fa fa-caret-right" style="width:95px;text-align:right; font-size:14px"></div></li>
 	    <li data-action="insert" submenu="sort-menu" class="editonly"><div class="fa fa-sort" style="background-color: #BEBEBE;text-align: center;border-radius:10px; padding:5px; width:12px;"></div>&nbsp;Sort &nbsp;<div class="fa fa-caret-right" style="width:129px;text-align:right; font-size:14px"></div></li>
 	  <li data-action="effects-options" submenu="effects-menu" class="editonly"><div class="fa fa-flash" style="background-color: #75C6EF;text-align: center;border-radius:10px; width:12px;padding:5px;"></div>&nbsp;Effects&nbsp;<div class="fa fa-caret-right" style="width:118px;text-align:right; font-size:14px"></div></li>
-	   <!-- <li data-action="addsection" class="editonly">Add Section</li>//-->
+	   <li data-action="addsection" class="editonly">Add Section</li>
 	  
 	  <!-- <li data-action="resize" class="editonly">Toggle Group Resize</li>//-->
 	
 </ul>
+<div id="layer-menu">
 
-<!----  Layers Menu ///---->
 
-<div id='layer-menu'>
-	
+ <div id="header">
+<div class="fa fa-times-circle close-window" style="float:right; color:red; padding:5px;text-align:right;cursor:pointer;"></div>
+<div class="htab">
+   Layers
+</div>
+</div>
+<div id="maincontent">
+    <div class="layer">
+    	<div style="border-right:1px solid grey;display:block; height:max;font-size:18px;float:left; width:10%;padding-left:5px; padding-top:5px">
+    		<i class="eye fa fa-eye"></i>
+    		<i class="fas fa-arrows-alt-h"></i>
+    		<i class="runningman fas fa-running"></i>
+    	</div>
+    	
+    	<div class="preview-window" style="display:block; float:left;"></div>
+    	<div class="details" style="font-size:12px;display:block; float:left; width:50%"></div>
+    </div>
+    <!-- 
+    <div class="layer"></div>
+    <div class="layer"></div>
+    <div class="layer" id="scrollto"></div>
+    <div class="layer"></div>
+    <div class="layer"></div>
+    //-->
+</div>
+<div id="footer">
+<!--	<div class="duplicate-layer">JS</div>//-->
+</div>
 </div>
 
-<!-- used as template before converted to sample layer in code //-->
+
+<!----  Layers Menu ///---->
+<!-- <div id="layer-menu-container">
+	<div id="header-row">Hello</div>
+	<div id="child-menu">
+		<select style="background-color: green; ">
+			<option>One</option>
+			<option>Two</option>
+		</select>
+	</div>
+	<div id='layer-menu'>
+		
+	</div>
+	
+</div>
+ used as template before converted to sample layer in code 
 <div class='template-layer' style="display:none">
 	<div class="eye fa fa-eye" style="border-right:1px solid grey;display:block; height:max;font-size:18px;float:left; width:10%;padding-left:5px; padding-top:20px"></div>
 	<div class="preview-window" style="display:block; float:left; width:20%"> </div>
 	<div class="details" style="font-size:12px;display:block; float:left; width:50%"><div>
-</div>
+</div>//-->

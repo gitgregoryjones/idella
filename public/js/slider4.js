@@ -216,7 +216,7 @@ function goLeft(list){
 				log.debug("Called once")
 				for(i=0;i < numberToSlide;i++){
 					//alert("number to Slide is " + numberToSlide + " hola " + list.children(".dropped-object").not("[alias^=cntrl]").first().attr("id") + " after " + list.children(".dropped-object").not("[alias^=cntrl]").last().attr("id"))
-					list.children(".dropped-object").not("[alias^=cntrl]").first().insertAfter(list.children(".dropped-object").not("[alias^=cntrl]").last())
+					list	
 				}
 				list.children(".dropped-object").not("[alias^=cntrl]").css({left:0})
 			}

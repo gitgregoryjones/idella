@@ -1,48 +1,54 @@
+        function insertAtCursor(myField, myValue) {
+            //IE support
+            if (document.selection) {
+                myField.focus();
+                sel = document.selection.createRange();
+                sel.text = myValue;
+            }
+            //MOZILLA and others
+            else if (myField.selectionStart || myField.selectionStart == '0') {
+                var startPos = myField.selectionStart;
+                var endPos = myField.selectionEnd;
+                myField.value = myField.value.substring(0, startPos)
+                    + myValue
+                    + myField.value.substring(endPos, myField.value.length);
+                myField.selectionStart = startPos + myValue.length;
+                myField.selectionEnd = startPos + myValue.length;
+            } else {
+                myField.value += myValue;
+            }
+        }   
+
+        function addTabSupport(elementID, tabString) {
+            // Get textarea element
+            var myInput = document.getElementById(elementID);
+
+            // At keydown: Add tab character at cursor location
+            function keyHandler(e) {
+                var TABKEY = 9;
+                if(e.keyCode == TABKEY) {
+                    insertAtCursor(myInput, tabString);
+                    if(e.preventDefault) {
+                        e.preventDefault();
+                    }
+                    return false;
+                }
+            }           
+
+            // Add keydown listener
+            if(myInput.addEventListener ) {
+                myInput.addEventListener('keydown',keyHandler,false);
+            } else if(myInput.attachEvent ) {
+                myInput.attachEvent('onkeydown',this.keyHandler); /* damn IE hack */
+            }
+        }
+    
+    
+
 
 
 var TEXTAREA_init = function(textarea){
 
-    $(textarea).keydown(function(e) {
-
-       
-
-        var area = $(e).data("textareaset")
-
-       
-            if(e.keyCode === 9) { // tab was pressed
-                // get caret position/selection
-                var start = this.selectionStart;
-                var end = this.selectionEnd;
-
-                var $this = $(this);
-                var value = $this.val();
-
-                // set textarea value to: text before caret + tab + text after caret
-                $this.val(value.substring(0, start)
-                            + "\t"
-                            + value.substring(end));
-
-                // put caret at right position again (add one for the tab)
-                this.selectionStart = this.selectionEnd = start + 1;
-
-                // prevent the focus lose
-                e.preventDefault();
-            }
-            $(e).data("textareaset","on");
-
-        
-
-      
-    }).on("mouseleave",function(){
-       
-            $(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
-        
-
-    }).on("focusin",function(){
-        $(document).unbind("keydown");
-    })
+     addTabSupport($(textarea).attr("id"), "\t");
 }
 
-$("textarea, input").each(function(idx,it){
-    TEXTAREA_init(it);
-})

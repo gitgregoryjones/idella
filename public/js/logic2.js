@@ -26,7 +26,7 @@ WARN = {level:3,label:"WARN"}
 TRACE = {level:2,label:"TRACE"}
 DEBUG = {level:1,label:"DEBUG"}
 
-var LOGLEVEL = ERROR;
+var LOGLEVEL = TRACE;
 
 
 var MSG = "";
@@ -87,8 +87,11 @@ return (s)
 
 
 
-$(document).ready(function() {
+	
 
+
+
+$(document).ready(function() {
 
 	saveJs($("body").first(),`function silent(){}`)
 
@@ -112,6 +115,19 @@ $(document).ready(function() {
 
 	   if(editing) {
 
+	   		var simpleD = $('<div>');
+
+	   		simpleD.load("/sidebar.html",()=>{
+
+	   			$("#s1w").append(simpleD);
+	   		});
+
+	   		topNav = $('<div>');
+
+	   		topNav.load("/top-nav.html",function(){
+	   			$("#content").prepend(topNav);
+	   		})
+
 	   		containerDiv = $('<div id="misc-controls">')
 
 		   	$(containerDiv).load("/edit-body.html",function(){
@@ -134,7 +150,7 @@ $(document).ready(function() {
 
 						
 						website = $('html').attr('x-site-name');
-
+						
 						theSiteObj = {};
 						theSiteObj.bp = [];
 						theSiteObj.name = website;
@@ -144,6 +160,7 @@ $(document).ready(function() {
 						//loadAllJs();
 					}
 					loadAllBreakPoints();
+
 					loadAllJs();
 
 					theSiteObj.currentPage = location.pathname.replace("/"+website,"");
@@ -216,7 +233,9 @@ $(document).ready(function() {
 			loadAllBreakPoints()
 			
 			
-			$(window).on('resize',drawResponsiveTab)		   
+			$(window).on('resize',drawResponsiveTab)
+
+				CarWithAudio.initialize();		   
 		 }
 
 	
@@ -547,7 +566,20 @@ function whichTool (tool){
 		theTool = new GenericTool({
 			type:type,
 			droppedModeStyle:"",
-			droppedModeHtml:'<div><video preload="auto" autoplay><source class="content-image" src="http://brown-sugar.bouncemediallc.netdna-cdn.com/video/featured.mp4" type="video/mp4"/></video></div>',
+			droppedModeHtml:'<div><video controls preload="auto" autoplay><source class="content-image" src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4"/></video></div>',
+			droppable:true,
+			class:"squarepeg"
+		});
+		break;
+		case "AUD":
+		var audId = "ELEM_" + new Date().getTime();
+
+		theTool = new GenericTool({
+			type:"AUDIO",
+			droppedModeStyle:"",
+			id: audId,
+			//droppedModeHtml:'<div><audio controls title="sound file" class="content-image" src="http://soundbible.com/mp3/descending_craft-Sonidor-991848481.mp3" type="video/mp4">Your browser does not support the audio element.</audio></div>',
+			droppedModeHtml: new Equalizer(audId).asHTML(),
 			droppable:true,
 			class:"squarepeg"
 		});
@@ -584,7 +616,6 @@ function whichTool (tool){
 			type:type,
 			class:"texttool",
 			friendlyName : "Text Field",
-			//droppedModeHtml:"<div>Enter Text Here<div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
 			droppedModeHtml:"<div contenteditable=\"false\">Enter Text Here</div>",
 			class:"generictext"
 
@@ -595,8 +626,7 @@ function whichTool (tool){
 			theTool = new GenericTool({
 			type:type,
 			class:"texttool",
-			friendlyName : "Navigation Menu",
-			//droppedModeHtml:"<div>Enter Text Here<div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img  src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div>",
+			friendlyName : "Navigation Menu",			
 			droppedModeHtml:"<div></div>",
 			class:"squarepeg list"
 
@@ -617,9 +647,6 @@ function whichTool (tool){
 
 		default:
 		
-
-		//<div type="MENU-ITEM" id="ELEM_1491749916155-0" item="ELEM_1491749916155-0" style="display: inline-block; padding-left: 20px;"><div type="MENU-ITEM-TXT" edittxt="Modeis" style="display:inline-block">Modeis</div></div>	
-	
 		theTool = new GenericTool({
 			type:type,
 			class:"texttool",
@@ -643,8 +670,7 @@ function GenericTool(options){
 	this.name = "ELEM_" + new Date().getTime();
 	this.id = this.name;
 	this.droppedModeStyle = "";
-	//this.droppedModeHtml = "<div>&nbsp;<div class='hotspot'>E</div><div>&nbsp;</div></div>";
-	this.droppedModeHtml="<div><div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"http://www.fancyicons.com/free-icons/153/cute-file-extension/png/256/css_256.png\"></div><div class=\"hotspot js\"><img   src=\"http://www.seoexpresso.com/wp-content/uploads/2014/11/javascript.png\"></div></div></div>";
+	this.droppedModeHtml=`<div><div class=\"toolhotspot\"><div class=\"hotspot css\"><img src=\"/css.png\"></div><div class=\"hotspot js\"><img   src=\"/js.png\"></div></div></div>`;
 	this.editModeHtml = "<textarea>";
 	this.editModeStyle = "";
 	this.editModeAttribute = "value";
@@ -655,6 +681,7 @@ function GenericTool(options){
 
 
 
+	
 	/*
 	if(options.editFields)
 		$.merge(this.editFields,options.editFields);
@@ -663,6 +690,7 @@ function GenericTool(options){
 	*/
 	Object.assign(this,options);
 
+	
 	return this;
 }
 
@@ -675,7 +703,8 @@ function configuredTool(options){
 	{
 		me = this;
 
-		log(options)
+		console.log(`Options are ${JSON.stringify(options)}`)
+
 		this.node = $(options.droppedModeHtml).addClass(options.class).addClass("dropped-object").attr('id',this.name)
 
 			.css({zIndex: options.zIndex,display:"block"}).attr('type',options.type);
@@ -700,8 +729,13 @@ function configuredTool(options){
 		if(!options.droppable){
 			$(this.node).removeClass("ui-droppable").droppable("destroy")
 		}
+	
+		console.log(`hello`);
+		console.log(this.node)
 		//Note: since node has not been added to document, it can does not have a width or height yet
 		return this.node;
+
+
 	}
 	
 }

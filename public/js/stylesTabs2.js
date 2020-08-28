@@ -215,7 +215,7 @@ function writeTabs(currentCtx,forceWrite){
 			if($(parent).is("[type=IMG]")){
 				log.debug("STYLETABS2.js:I found the source")
 				theValue = $(parent).attr(label)
-			} else if($(parent).is("[type=SITE]")){
+			} else if($(parent).is("[type=SITE],[type=AUDIO]")){
 				theValue = $(parent).find(".content-image").attr(label)
 			}else {
 				log.debug("STYLETABS2.js:No Source Found. Overwriting with background-image if possible")
@@ -268,9 +268,13 @@ function writeTabs(currentCtx,forceWrite){
 						$(parent).find("video").first().attr(label,$(evnt.target).val())
 
 
+					} else if($(parent).is("[type=AUDIO]")){
+						$(parent).children(".content-image").attr(label,$(evnt.target).val());
+
 					} else
 					if($(parent).is("[type=SITE]")){
 						$(parent).children(".content-image").attr(label,$(evnt.target).val())
+
 					} else 
 					
 					if($(parent).is("[type=DIV],[type=IMG]")){
@@ -526,7 +530,8 @@ function writeTabs(currentCtx,forceWrite){
 		
 		
 
-		widget.append('<input type="file" id="fileElem" multiple accept="image/*" style="display:none" onclick="window.myim = CUSTOM_currentlyMousingOverElementId" onchange="CUSTOM_HANDLEFILES(this.files)">')
+		//widget.append('<input type="file" id="fileElem" multiple accept="image/*" style="display:none" onclick="window.myim = CUSTOM_currentlyMousingOverElementId" onchange="CUSTOM_HANDLEFILES(this.files)">')
+		//widget.append('<input type="file" id="audioElem" multiple accept="audio/*" style="display:none" onclick="window.myim = CUSTOM_currentlyMousingOverElementId" onchange="CUSTOM_HANDLEFILES(this.files,true)">')
 
 		$(".tabul").append("<li>").append(widget)
 	  
@@ -587,17 +592,8 @@ function writeTabs(currentCtx,forceWrite){
 							LOGIC_redirectNeeded = true;
 							SAVEJS_goInactive()
 						}
-
 				 })
-				/*
-				if(text && text.trim().length > 0){
-					$('html').attr("x-site-name",text);
-					$('title').text(text);
-					LOGIC_redirectNeeded = true;
-					//theSiteObj.name = text;
-					//theSiteObj.redirect = true;
-					SAVEJS_goInactive()
-				}*/
+				 
 			} else {
 				log.debug("Pressed Key for saving ")
 				SAVE_okToSave = true;

@@ -8,9 +8,12 @@ var fx = require('mkdir-recursive');
 url = require('url');
 var getJSON = require('get-json')
 var cacheManager = require('cache-manager');
+var latestDemoSiteNumber = require('./site').latestDemoSiteNumber
 var persist = require('../persist');
 var moment = require('moment');
+var link = require('fs-symlink')
 var memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: 60 * 30/*seconds*/});
+var http = require('http');
 //var addPage = require('./site').addPage;
 
 const dateformat = require('dateformat');
@@ -20,7 +23,7 @@ var googleFonts = "https://fonts.googleapis.com/css?family=Dancing+Script|Roboto
 //var googleFonts = "nothing.js";
 
 //var files = [googleFonts,"jquery-ui-1.12.1.custom/jquery-ui.css","fontawesome5.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
-var files = [googleFonts,"jquery-ui-1.12.1.custom/jquery-ui.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
+var files = [googleFonts,"https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i","jquery-ui-1.12.1.custom/jquery-ui.css","theme/vendor/fontawesome-free/css/all.min.css","theme/css/sb-admin-2.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css",	"theme/vendor/jquery/jquery.js","component/Equalizer.js","component/Gallery.js","carWithAudio.js","tinymce.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider5.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
 var version = 1;
 
 var $ = null;
@@ -137,137 +140,255 @@ function writeStyleSheetForElement(styleObject,Query,documentWidth,currentBreakP
 }
 
 //var $ = require('jquery')
-function writeRevision(revisionDirectory,currentRevision,revDate,callback,siteName){
-
-	ok = true;
-
-	console.log("Revision Directory is " + revisionDirectory)
-	console.log("passed Site Name is "+ siteName)
-
-	$ = cheerio.load(currentRevision.html.trim());
-	$('body').find('#misc-controls').remove();
-	$('body').find("[role=dialog]").remove()
-	$('body').find('ul.custom-menu').remove();
-	$('body').find('.responsive-design-tab').remove();
-	$('body').find('#myp').remove();
-	$('body').find('[type=anchor]').css('border','none')
-	$("body").find('.ui-helper-hidden-accessible,.ui-autocomplete,#ghostery-purple-box').remove();
-	$("body").find('#layer-menu').remove();
-
-	$(".generated").each(function(it,scr){
-		scr = $(scr);
-		console.log("replacing some script "+it)
-		scr.html(scr.html().replace(/\n{2,}/g,"\n"));
-	})
-	
-	$('html').attr("BREAKPOINTS",JSON.stringify(currentRevision.BREAKPOINTS))
+function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 
 
+	 new Promise((resolve,reject)=>{
 
-	try {
+		ok = true;
 
-		revDate = new Date(revDate)
-		console.log("Date is converted revision [" + revDate.toString() + "]")
-		if(revDate == "Invalid Date"){
+		console.log("Revision Directory is " + revisionDirectory)
+		
+		console.log("passed Site Name is "+ siteName)
+
+		if(siteName.trim() == ""){
+			console.log(`Empty siteName passed...Defaulting to default site name [default]`)
+			siteName = "default";
+		}
+
+		console.log(`Loading Cheerio Revision`)
+
+		$ = cheerio.load(currentRevision.html.trim());
+		$('body').find('#misc-controls,.css-js-menu').remove();
+		$('body').find("[role=dialog]").remove()
+		$('body').find('ul.custom-menu').remove();
+		$('body').find('.responsive-design-tab').remove();
+		$('body').find('#myp').remove();
+		$('body').find('[type=anchor]').css('border','none')
+		$("body").find('.ui-helper-hidden-accessible,.ui-autocomplete,#ghostery-purple-box').remove();
+		$("body").find('#layer-menu').remove();
+		$("body").find('.navbar-nav,#idella-search').remove();
+
+		console.log(`Loaded Cheerio Done`)
+
+		$(".generated").each(function(it,scr){
+			scr = $(scr);
+			console.log("replacing some script "+it)
+			scr.html(scr.html().replace(/\n{2,}/g,"\n"));
+		})
+		
+		$('html').attr("BREAKPOINTS",JSON.stringify(currentRevision.BREAKPOINTS))
+
+
+
+		try {
+
+			revDate = new Date(revDate)
+			console.log("Date is converted revision [" + revDate.toString() + "]")
+			if(revDate == "Invalid Date"){
+				revDate = new Date();
+			}
+		}catch(except){
+			console.log("Exception was " + except);
+			console.log("Converting to today " + new Date())
 			revDate = new Date();
 		}
-	}catch(except){
-		console.log("Exception was " + except);
-		console.log("Converting to today " + new Date())
-		revDate = new Date();
-	}
 
-	fname = dateformat(revDate, 'mmddyyyyHHMM');
+		fname = dateformat(revDate, 'mmddyyyyHHMM');
 
-	fname = path.join(revisionDirectory,fname)
+		fname = path.join(revisionDirectory,fname)
 
-	console.log("The siteName is " + siteName);
-	console.log("The site is " + process.env.SITEDIR);
+		console.log("The siteName is " + siteName);
 
-	var theImgPathDir = path.join(path.join(process.env.SITEDIR,siteName,"images"))
+		console.log("The site is " + process.env.SITEDIR);
 
-	console.log("Writing images to " + theImgPathDir)
+		var theImgPathDir = path.join(path.join(process.env.SITEDIR,siteName,"images"))
 
-	fx.mkdirSync(theImgPathDir);
+		var theAudioPathDir = path.join(path.join(process.env.SITEDIR,siteName,"sounds"))
 
-	var base64Img = require('base64-img');
+		console.log("Writing images to " + theImgPathDir)
 
-	$(".convertImage").each(function(it,div){
+		console.log("Writing audio to " + theAudioPathDir)
 
-		div = $(div);
+		fx.mkdirSync(theImgPathDir);
 
-		obj = getStyleSheetForElement(div.attr("id"),$)
+		fx.mkdirSync(theAudioPathDir);
 
-		if(obj["background-image"]){
+		var base64Img = require('base64-img');
 
-			var raw = obj["background-image"].substring(obj["background-image"].indexOf("data"),obj["background-image"].lastIndexOf("\""));
+		$(".convertImage").each(function(it,div){
 
-			console.log("Raw is " + raw)
+			div = $(div);
 
-			var newName = obj.alias ? obj.alias +"-image" : obj.id + "-image";
+			obj = getStyleSheetForElement(div.attr("id"),$)
 
-			var filepath = null;
+			if(obj["background-image"]){
 
-			if(raw.startsWith("data:")){
-				try {
-					filepath = base64Img.imgSync(raw, theImgPathDir, newName);
-				}catch(e){
-					console.log("Base64 error")
-					console.log(e);
-					div.removeClass("convertImage");
-				}
+				var raw = obj["background-image"].substring(obj["background-image"].indexOf("data"),obj["background-image"].lastIndexOf("\""));
 
+				console.log("Raw is " + raw)
 
-				if(filepath){
+				var newName = obj.alias ? obj.alias +"-image" : obj.id + "-image";
 
-					console.log("Wrote image to " + filepath);
+				var filepath = null;
 
-					div.css("background-image","url("+ filepath.substring(filepath.indexOf("/images")+1) + ")");
-
-					obj["background-image"] = div.css("background-image");
-
-					//now set CSS file correctly
-
-					$ = writeStyleSheetForElement(obj,$,currentRevision.documentWidth);
-
-					div.removeClass("convertImage");
-					
-				}
-			} else {
-				$ = writeStyleSheetForElement(obj,$,currentRevision.documentWidth);
-				div.removeClass("convertImage");
-			}
-		}
-		
-
-	})
-
-
-	fs.writeFile(fname,$.html(),function(err){
-
-		if(err){
-			callback(!ok,err);
-		} else {
-
-			//Do Revision Anchors
-			for(i=0; currentRevision.anchors && i < currentRevision.anchors.length; i++){
-				require('./site').addPage(currentRevision.siteName,currentRevision.anchors[i],function(ok,err){
-					if(!ok){
-						console.log(err)
-						//callback(!ok,err);
+				if(raw.startsWith("data:")){
+					try {
+						filepath = base64Img.imgSync(raw, theImgPathDir, newName);
+					}catch(e){
+						console.log("Base64 error")
+						console.log(e);
+						div.removeClass("convertImage");
 					}
-				})
-			}
 
-			callback(ok);
-		}
+
+					if(filepath){
+
+						console.log("Wrote image to " + filepath);
+
+						div.css("background-image","url("+ filepath.substring(filepath.indexOf("/images")+1) + ")");
+
+						obj["background-image"] = div.css("background-image");
+
+						//now set CSS file correctly
+
+						$ = writeStyleSheetForElement(obj,$,currentRevision.documentWidth);
+
+						div.removeClass("convertImage");
+						
+					}
+				} else {
+					$ = writeStyleSheetForElement(obj,$,currentRevision.documentWidth);
+					div.removeClass("convertImage");
+				}
+			}
+			
+
+		})
+
+
+
+		$(".convertAudio").each(function(it,div){
+
+			div = $(div)
+
+			console.log(`Looking at Audio element ${div.attr("src")}`)
+
+
+
+			audio64 = div.attr("src");
+
+			if(audio64){
+
+				var raw = audio64.split(';base64,').pop()
+
+				console.log("Audio 64 is " + raw.substring(0,30))
+
+				console.log("Audio Raw is " + raw.substring(0,30))
+
+				var newName = div.parent().alias ? div.parent().alias +"-sound" : div.parent().attr('id') + "-sound";
+
+				console.log("New Name is " + newName)
+				
+				var filepath = path.join(theAudioPathDir,newName);
+
+				console.log("New filepath is " + filepath);
+
+
+				fs.writeFileSync(filepath, raw, {encoding: 'base64'});
+
+				
+				console.log("Wrote audio to " + filepath);
+
+				div.attr("src",filepath.substring(filepath.indexOf("/sounds")+1));
+
+				console.log(`div src is now ${div.attr("src")}`)
+
+				$ = writeStyleSheetForElement(div,$,currentRevision.documentWidth);
+				console.log(`Convert Audio Length is now ${$("audio").length}`)
+				
+				div.removeClass("convertAudio");	
+				
+			}
+			
+
+		})
+
+
+		fs.writeFile(fname,$.html(),function(err){
+
+			if(err){
+				return reject(err);
+			} else {
+
+				//Do Revision Anchors
+				for(i=0; currentRevision.anchors && i < currentRevision.anchors.length; i++){
+					require('./site').addPage(currentRevision.siteName,currentRevision.anchors[i],function(ok,err){
+						if(!ok){
+							console.log(err)
+							//callback(!ok,err);
+						}
+					})
+				}
+
+				return resolve(ok);
+			}
+		})
+
 	})
-	
+
 }
 
 
+router.post('/audio',(req,res,next)=>{
+
+	console.log("GOT A POST")
+
+	if(req.get('x-site-name') == undefined){
+
+		res.error({error:`Invalid request. Please refer to documentation..Line 328 /audio`})
+	}
+
+	var audio64 = req.body.raw;
+
+	if(!audio64.startsWith("data:audio")){
+
+		res.error({error:`User sent an invalid audio type`});
+
+	} else {
+
+		console.log("Entering Audio Save");
+
+		console.log("Site Dir is " + process.env.SITEDIR)
+
+		console.log("x-site-name" + req.get('x-site-name'))
+
+		var theAudioPathDir = path.join(process.env.SITEDIR,req.get('x-site-name'),"sounds");
+
+		fs.mkdirSync(theAudioPathDir, {recursive:true});
+
+		theAudioPathDir = path.join(theAudioPathDir,req.body.filename);
+
+		console.log("Computed Audio Revision dir is " + theAudioPathDir);
+
+		var raw = audio64.split(';base64,').pop()
+
+		console.log("Audio Raw is " + raw.substring(0,30))
+
+		console.log(raw);
+
+		console.log(fs.writeFileSync(theAudioPathDir, raw, {encoding: 'base64'}));
+
+		res.send({sound:theAudioPathDir.substring(theAudioPathDir.indexOf("/sounds")+1)});
+
+	}
+
+	
+
+});
+
 /* GET home page. */
-router.post('/', function(req, res, next) {
+router.post('/', async function(req, res, next) {
 
 		
 	console.log("Entering Revisions");
@@ -278,7 +399,7 @@ router.post('/', function(req, res, next) {
 
 	console.log("x-current-page-name" + req.get('x-current-page-name'))
 
-//console.log("Path is " + url.parse(req.url).pathname)
+	//console.log("Path is " + url.parse(req.url).pathname)
 
 	var file = req.get('x-current-page-name');
 
@@ -297,16 +418,14 @@ router.post('/', function(req, res, next) {
 	
 	console.log("site name is still " + req.body.siteName)
 
-	writeRevision(dir,req.body,req.get('x-current-date'),function(ok,err){
+	var err = await writeRevision(dir,req.body,req.get('x-current-date'),req.body.siteName)
 
-		if(err){
-			res.sendStatus(404)
-			console.log(err);
-		}else {
-			res.sendStatus(200);
-		}
-	},req.body.siteName);
-	
+	if(err){
+		res.sendStatus(404)
+		console.log(err);
+	}else {
+		res.sendStatus(200);
+	}
 	
 });
 
@@ -377,8 +496,7 @@ function getRevisionFileName(fpath,dateGMTString,callback){
 
 
 
-
-function getRevision(req,res,next){
+async function getRevision(req,res,next){
 
 	console.log("Dooyah")
 
@@ -417,7 +535,7 @@ function getRevision(req,res,next){
 
 		next();
 		
-	} else if(file.endsWith("edit-body.html") || file.endsWith("settings.html")){ 
+	} else if(file.endsWith("top-nav.html") || file.endsWith("edit-body.html") || file.endsWith("settings.html") || file.endsWith("sidebar.html")){ 
 
 		next();
 
@@ -446,12 +564,69 @@ function getRevision(req,res,next){
 
 
 	if(site.length == 0){
-		console.log("User needs default revision")
-		revDir =process.env.HOMEDIR;
-		var template = req.query.template ? req.query.template : "blank.html";
 
+
+		console.log("User needs default revision")
+		
+		revDir =process.env.SITEDIR;
+		
+		var template = req.query.template ? req.query.template : "public/adminbootstrap/index.html";
 
 		console.log("Default Revision dir is " + revDir + " and template is " + template);
+
+		//AWAIT
+		//Read Default Format
+		var contents = fs.readFileSync(path.join(process.env.HOMEDIR,"public","adminbootstrap","index.html")).toString();
+
+		console.log(`Read Default site of length ${contents.length}`)
+
+		//Save to New Site Dir
+		var sDir = `${await latestDemoSiteNumber("playground")}`;
+
+		var theBody = {html:contents,css:"",currentPage:"index.html", date:new Date().toString(),bps:[]}
+
+		//console.log("Linking " + revDir+'js' + " to " + __dirname + '/../public/js')
+
+		fs.mkdirSync(path.join(revDir,sDir,"index-revisions"),{recursive:true});
+
+
+		await link(path.join(process.env.HOMEDIR,'/public/js'), path.join(revDir,sDir,'/js'), 'junction')
+			
+		await link(path.join(process.env.HOMEDIR,'/public/css'),  path.join(revDir,sDir,'/css'), 'junction')
+			
+
+		await link(path.join(process.env.HOMEDIR,'/public/adminbootstrap'), path.join(revDir,sDir,'/theme'), 'junction')
+			
+
+		await link(path.join(process.env.HOMEDIR,'/public/napkin'), path.join(revDir,sDir,'/napkin'), 'junction')
+			
+		await link(path.join(process.env.HOMEDIR,'/public/settings.html'), path.join(revDir,sDir,'/settings.html'), 'junction')
+
+		await link(path.join(process.env.HOMEDIR,'/public/sidebar.html'), path.join(revDir,sDir,'/sidebar.html'), 'junction')
+
+		await link(path.join(process.env.HOMEDIR,'/public/top-nav.html'), path.join(revDir,sDir,'/top-nav.html'), 'junction')
+			
+		await link(path.join(process.env.HOMEDIR,'/public/edit-body.html'), path.join(revDir,sDir,'/edit-body.html'), 'junction')
+			
+
+		
+
+			var err = writeRevision(path.join(revDir,sDir,"index-revisions"),theBody,req.get('x-current-date'),sDir)
+		
+			console.log(`Created site is ${err}`)
+			if(err){
+				res.sendStatus(404)
+				console.log(err);
+			}else {
+				console.log(`REDIRECTING TO ${sDir}/index.html`)
+				 res.redirect(`/${sDir}/index.html`);
+			}
+	
+
+		
+	
+		/*
+
 		//Show the default workspace html
 		getRevisionFileContents("default",new Date().toString(),revDir,template,req.url+"?x-template="+template,function(ok,htmlOrError){
 			if(!ok){
@@ -460,7 +635,7 @@ function getRevision(req,res,next){
 			} else {
 				res.setHeader('Content-type','text/html');
 				res.set('x-site-name',site)
-				/* Do Fonts */
+				
 				$ = cheerio.load(htmlOrError);
 
 				var fonts = googleFonts.split("|")
@@ -498,7 +673,7 @@ function getRevision(req,res,next){
 				res.end($.html());
 				
 			}
-		});
+		});*/
 
 	} else {
 
@@ -620,7 +795,7 @@ function loadFiles($){
 
 	$("head").find('style').not(".generated").remove();
 	$("head").find('script').not(".generated").remove();
-	$("head").find("link").remove();
+	$("head").find("link").not(".generate").remove();
 	console.log("Monkey")
 	console.log(files)
 	files.forEach(function(file){
@@ -641,7 +816,7 @@ function loadFiles($){
   			selectAttrValue = "[src='/js/"+file +"']";
   			selectorTag = "<script>";
   			selectAttrName = "src";
-  			srcLocation = "/js/" + file;
+  			srcLocation = (file.startsWith("theme") ? "" : "/js/") + file;
   			async = "false";
 
   		} else if(file.endsWith(".css")) {
@@ -649,7 +824,7 @@ function loadFiles($){
   			selectAttrValue = "[href='/css/"+file +"']";
   			selectorTag = "<link>";
   			selectAttrName = "href";
-  			srcLocation = "/css/" + file;
+  			srcLocation = (file.startsWith("theme") ? "" : "/css/") + file;
   			linkRel = "stylesheet";
   		} else {
   			
@@ -823,15 +998,17 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 
 					for(idx in serverContent){
 
+						console.log(`Looping with idx ${idx}`)
+
 						var response = serverContent[idx];
 
-						console.log("ServerContent Looking for alias with key " + div.attr("alias"))
+						console.log(`ServerContent Looking for alias with key ${idx}`)
 						/*
 						if(div.is("[type=LIST]")) {
 							$(div).children("[type=IMG]").not(":first").remove();
 						}*/
 					
-						INGEST_populateObject(response, $("[alias=" + div.attr("alias") + "]"))
+						INGEST_populateObject(response, $(`[alias=${idx}]`))
 						/*
 						if(div.is("[type=LIST]")) {
 							$(div).children("[type=IMG]").first().remove();

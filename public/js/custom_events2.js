@@ -50,10 +50,10 @@ function CUSTOM_incrementZIndex(){
 
 	var globI = 0;
 
-	$(".dropped-object").not("[alias^=cntrl],[alias^=header],[alias^=notification],[alias^=body]").each(function(idx,obj){
+	$(".dropped-object").not("[alias^=cntrl],[alias^=header],[alias^=notification],[alias^=body],.section,#layer-menu").each(function(idx,obj){
 
 		obj = $(obj);
-
+		//
 		if(obj.css("position") != "fixed"){
 			if(parseFloat(obj.css("z-index")) > parseFloat(globI)){
 
@@ -63,7 +63,7 @@ function CUSTOM_incrementZIndex(){
 
 	})
 
-	log.debug("CUSTOMEVENTS.js:Returing global Index globI " + globI)
+	log.debug(`CUSTOMEVENTS.js:Returing global Index globI ${globI}`)
 	return globI;
 }
 
@@ -123,6 +123,9 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$(".custom-menu").css("top","-3000px")
 		$("[data-action=paste]").click();
 		$(document).click();
+		event.stopPropagation();
+		return false;
+
 
 
 	//KEY C and Shift Key to COPY
@@ -644,12 +647,15 @@ function addPlusButton(elem){
 	}
 
 	plus.on('click',function(){
-		cpy = recursiveCpy($(elem),plusButtonPushed);
+		
 		/*$(elem).css("opacity","0");
         $(elem).animate({opacity:op},600)*/
        	op = $(currentCtx).css("opacity");
-        $(cpy).css("opacity","0");
-        $(cpy).animate({opacity:op},600)
+        $(currentCtx).css("opacity","1");
+       
+        $(currentCtx).animate({opacity:op},600, function(obj){
+        	recursiveCpy($(obj),plusButtonPushed);
+        })
 
 	}).on("mouseenter",function(){
 		$(this).css("background-color","navy")
@@ -1214,9 +1220,16 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 			event.preventDefault();
 			event.stopPropagation();
 
-			if($(event.target).is("[type=IMG],[type=DIV]")){
+			if($(event.target).is("[type=IMG],[type=DIV],[type=CIRCLE]")){
 				log.debug("starting image upload")
+
 				$("#fileElem").click();
+
+				log.debug("Done uploading image")
+				userHoveringOverNote = false;
+				return;
+			} else if($(event.target).is("[type=AUDIO]")){
+				$("#audioElem").click();
 
 				log.debug("Done uploading image")
 				userHoveringOverNote = false;
@@ -1652,27 +1665,39 @@ function setUpAnchors(div){
 
 //file input field is actually created in stylesTabs2.js dynamically
 //attached it here because it was too much trouble attaching it in normal HTML and hiding/rewriting after autoSave feature enabled
-function CUSTOM_HANDLEFILES(files) {
+function CUSTOM_HANDLEFILES(files,audio) {
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
-    var imageType = /^image\//;
     
-    if (!imageType.test(file.type)) {
-      continue;
-    }
-    //CUSTOM_currentlyMousingOverElementId
     var img = $("#"+window.myim);
     
     img.file = file;
     
     
     var reader = new FileReader();
-    reader.onload = (function(aImg) { return function(e) { 
+
+
+    if(audio){
+	   	reader.onload =  (function(aImg) { return async function(e) { 
+	   		//Set Request and Send to Backend
+	   		var result = await Equalizer.convertRawToURL(e.target.result,theSiteObj.name,$(img).attr("id"))
+	   		//$(aImg).find("audio").remove();	
+
+	    	$(img).find("audio").attr("src",`${result.sound}?v=${Math.floor(Math.random() * Math.floor(1000))}`)[0].play();
+	    	
+	    	 //$(aImg).find("audio").addClass("convertAudio");
+	    	 CUSTOM_PXTO_VIEWPORT($(img),$(img).position().left, $(img).position().top) 
+	    }; })(img);
+    } else {
+
+    	reader.onload = (function(aImg) { return function(e) { 
     	 $(aImg).css({"background-image":"url(" + e.target.result + ")","background-size":"cover"})
     	 $(aImg).addClass("convertImage");
     	 CUSTOM_PXTO_VIEWPORT($(aImg),$(aImg).position().left, $(aImg).position().top) 
-    }; })(img);
+    	}; })(img);
+    }
+
     reader.readAsDataURL(file);
     
 
@@ -1692,13 +1717,33 @@ function addEditMode(){
 		$("body").addClass("editing")
 		$("[type=anchor]").css("border","1px solid red")
 	}
+
+	//Stop Cars From Moving
+
+	
+
+	CarWithAudio.stopVehicles();
+
+	CarWithAudio.seeMe();
+	
+
 	$("#layer-menu").show();
 }
 
 function removeEditMode(){
+
+	
+
 	$("body").removeClass("editing")
 	$("[type=anchor]").css("border","none")
 	$("#layer-menu").hide();
+	//Delete old references to CarsWithAudio
+	//delete window.CarWithAudio;
+
+
+	Equalizer.initJS(8,5);
+	CarWithAudio.initialize();
+
 }
 
 function enableHoverEvents(){
@@ -1759,13 +1804,13 @@ function setUpDiv(div){
 
 	div.find(".hotspot").css({height:0,width:0}).hide()
 
-	div.not("#drawSpace,body,.template-layer").resizable().on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
+	div.not("#drawSpace,body,.template-layer,#content").resizable().on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 		.not("[type=TXT],[type=ICON],[type=BTN]").on("resize",CUSTOM_ON_RESIZE_LOGIC);
 
 
 		
 
-	div.not("[alias=notification],[alias=header]").draggable().on("drag",function(e){
+	div.not("[alias=notification],[alias=header],#content").draggable().on("drag",function(e){
 		
 		//e.stopPropagation()
 		NOTES_makeNote(this);
@@ -1817,19 +1862,19 @@ function setUpDiv(div){
 		
 		if(div.hasClass("gallery")){
 			div.css("white-space","nowrap");
-			duration = (div.css("transition-duration"))
+			//duration = (div.css("transition-duration"))
 			
-			duration = parseFloat(duration) == 0 ? "0.6s" : duration;
-			div.css({overflow:"hidden","transition-duration":duration})
+			//duration = parseFloat(duration) == 0 ? "0.6s" : duration;
+			//div.css({overflow:"hidden","transition-duration":duration})
 
-			SLIDER_init(div);
+			//SLIDER_init(div);
 		}
 	
 
 	} 
 
 	
-	if(div.is("[type=IMG],[type=DIV]")){
+	if(div.is("[type=IMG],[type=DIV],[type=AUDIO],[type=CIRCLE],[type=VID],#content")){
 		//$.event.trigger("translateTxt",[div])
 		div.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 	}
@@ -1947,7 +1992,7 @@ function parseStyleClassFromString(theStr){
 
 function initialize(){
 
-	if(LOGIC_TEMPLATE_MODE){
+	/*if(LOGIC_TEMPLATE_MODE){
 
 	$(":text,div,span,img").on("mouseenter",function(e){
 		//$(this).parents().trigger("mouseleave");
@@ -2016,11 +2061,13 @@ function initialize(){
 			}
 
 		})	 
-	}
+	}*/
 	
 
 
  	$("body").attr("id","body").addClass("body").addClass("hover");
+
+ 	/*
 
  	$("#smalldialog").dialog({
  		autoOpen: false, 
@@ -2149,7 +2196,7 @@ function initialize(){
 		}
 
  	});
-
+	*/
 
    	
    	//Reinitialize resizable that may have been saved during autosave or manual save process
@@ -2216,7 +2263,7 @@ function recursiveCpy(obj, plusButtonPushed){
 
 	obj.removeClass("submenu")
 
-	log.trace("Copying")
+	console.log(`Copying id is ${obj.attr("id")}` );
 	//temporarily disable dragging on parent
 	//obj.draggable("destroy").find(".ui-droppable").draggable("destroy")
 
@@ -2252,7 +2299,6 @@ function recursiveCpy(obj, plusButtonPushed){
    	clone.removeClass(obj.attr("id")) 
 
    	clone.off();
-
 	
 	//var goodChildren = $(obj).children(".dropped-object"); 
 
@@ -2295,12 +2341,6 @@ function recursiveCpy(obj, plusButtonPushed){
    	
    	})
 
-  
-   	
-   
-
-	
-
    	//then parent
    	setUpDiv($(clone))
 
@@ -2337,15 +2377,32 @@ DROPPER_LOGIC = {
 		
         drop: function(event, ui) {
 
+        	var fromSideNav = false;
+
+        	if($(ui.draggable).hasClass("nav-link")){
+        		console.log(`User is dragging on of the nav items, ignore because dropTool() will place it for us`);
+        		var tmpType = ui.draggable.attr('type');
+                      if(tmpType == "PICTURE"){
+                        tmpType = "IMG";
+                      } 
+                      console.log(`Tmp Type is ${tmpType}`);
+                      var tTool = whichTool(tmpType);
+
+                      console.log(`UI offset ${ui.draggable.offset().left}`)
+                      tTool = configuredTool(tTool);
+                      
+                      ui.draggable = tTool;
+                      fromSideNav = true;
+        	}
 
         	//remove class which highlights element when hovering over it in inspect mode
         	$(ui.draggable).removeClass("submenu")
 
         	if($(ui.draggable).attr("id") == "layer-menu"){
 
-			console.log("Menu shouldn't be here...returning");
+				console.log("Menu shouldn't be here...returning");
 
-		}
+			}
 
         	//event.preventDefault();
         	log.trace("Showing hiddenItems")
@@ -2426,10 +2483,18 @@ DROPPER_LOGIC = {
 		        	
 		        	theTarget = $(event.target);
 
+                    //Edge Case: sections can only be inserted over sections not child content in another section
+                    if($(ui.draggable).hasClass("section") && !theTarget.hasClass("section") && theTarget.parents(".section").length > 0){
+                    	theTarget = theTarget.parents(".section").first();
+                    }
 
-		        	if(theTarget.parent().is("[type=LIST]") && $(ui.draggable).parent().is("[type=LIST]")){
-		        			alert('hello ' + theTarget.attr('id'))
+                    //Now that we caught this edge case, allow the general section logic to continue
+
+
+		        	if(theTarget.hasClass("section") && $(ui.draggable).hasClass("section") ) {
+		        			console.log('swapping sections ' + theTarget.attr('id'))
 							$(ui.draggable).insertBefore(theTarget);
+
 							//CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
 							return;
 					
@@ -2497,6 +2562,8 @@ DROPPER_LOGIC = {
 						$(ui.draggable).css("white-space","pre-line")
 					}
 
+
+
 					if($(parent).children(child).length > 0  && $(parent).is("[type=LIST]")){
 						return;
 
@@ -2535,15 +2602,18 @@ DROPPER_LOGIC = {
 
 			        	aTool =  whichTool($(ui.draggable).text());
 			        	
-			        	log.warn("UI draggable offset is ")
-						log.warn($(ui.draggable).offset())
+			        	log.warn(`UI draggable offset is ${ui.draggable.offset().left}`)
+						log.warn(JSON.stringify($(ui.draggable).offset()))
+						console.log(`a Tool is ${aTool.id}`)
 
 			        	aTool = configuredTool(aTool);
+
+			        	console.log(`A tool is jquery obj now ${$(aTool).attr('id')}`)
 			        	createdTool = true;
 					}
 
 					
-			if($(ui.draggable).attr("id") == 'layer-menu'){
+			if($(ui.draggable).attr("id") == 'layer-menu' || $(ui.draggable).attr("id") == 'header-row'){
 
 				console.log("Leaving here because I shouldn't be here");
 				return;
@@ -2561,7 +2631,13 @@ DROPPER_LOGIC = {
 
                      }else {
                      	
-                           dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
+                     	if(fromSideNav){
+                     		 dropTool(aTool,{target:event.target,clientX:ui.offset.left,clientY:ui.offset.top});
+                     	} else {
+                     		 dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
+                     	}
+
+                          
                      }
 
 
@@ -2601,12 +2677,15 @@ DROPPER_LOGIC = {
 function dropTool(aTool,dropInfo){
 
 		var target = dropInfo.target;
-		var yOffset = dropInfo.clientY + window.scrollY;
+		var yOffset = dropInfo.clientY;
 		var xOffset = dropInfo.clientX;
 
+		vid = $(target).attr("id");
+
+		console.log(`ID for target is ${vid}`);
 
 		log.debug("CUSTOMEVENTS.js:A tool is ")
-		        	log(aTool)
+		        	log.trace((aTool.attr('id')));
 
 		        	
 		        	$(aTool).css({position:"absolute"})
@@ -2623,6 +2702,8 @@ function dropTool(aTool,dropInfo){
 					//$(target).append(aTool);	
 					//log.warn("target is ")
 					//log.warn(target)
+
+					console.log(` X and Y offset is ${xOffset} and ${yOffset}`)
 
 					$(target).append(aTool);
 					aTool.offset({left:xOffset,top:yOffset})

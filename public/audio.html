@@ -1,0 +1,24 @@
+<script src="https://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous">
+	
+</script>
+<script src="http://localhost:3000/js/carWithAudio.js"></script>
+<script>
+$(document).ready(()=>{
+
+	
+
+	$("#ELEM_1596839799618").on("click",
+		function(event){
+
+			var car = new CarWithAudio('https://media.hungama.com/c/4/9b3/09c/24556838/24556838_128.mp3?aZLMg_7aiHOxL86mxqKHXf1SZvzh7Su4Q2gIAubmvm2xla4muKFQMPLplrf6XCb9ydyda6P-QuVV31xdZcx_6wVwGn1Jx2HYYSKM64cB5Ra3oIBE0s58aXKuWCke9CibUEuRTQ',$(this).attr("id"));
+	
+		}
+	)
+
+});	
+
+
+</script>
+<div id="ELEM_1596839799618" style="top:200px; left:1300px; position: relative">
+	<img id="dope" src="http://localhost:3000/stickupkids/images/cars-image.png">
+</div>
