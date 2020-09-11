@@ -5,7 +5,7 @@ var currentNode = {}
 
 var lastComputed = 0;
 
-var standardFields = "id:0;extends:none;alias:none;background-image:none;display:block;src:none;text:none;class:none;type:none;width:0;height:0";
+var standardFields = "id:0;extends:none;alias:none;border:none;border-radius:0px;background-image:none;display:block;src:none;text:none;class:none;type:none;width:0;height:0";
 
 var simple = (CSSTEXT_HARDCODEDCSSTEXT + standardFields).split(";")
 
@@ -43,10 +43,36 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 	   myValue = !$(element).css(key) ? $(element).attr(key) : $(element).css(key)	
 
 	   if(key == "text"){
-			var innerTxt = element.contents().filter(function(){return this.nodeType == 3})[0]
+	   		/*
+			var innerTxt = element.contents().filter(function(){
+				return this.nodeType == 3
+			})[0]*/
+			var innerTxt =  "";
+			
+			element.contents().each(function(){
+				switch (this.nodeType) {
+					case 1:
+						console.log(`JQ ${this.outerHTML} class = ${$(this).attr("class")}`);
+						var jq = $(this.outerHTML);
+						//console.log(`JQ is ${this.id}`)
+						if(jq.attr("class") && jq.attr("class").match(/(?<!\<i class="fa\s|\<div class="fa\s)((fa-\w+)(?:(?:-\w+)+)?)/ig))
+							innerTxt += jq.attr("class").match(/(?<!\<i class="fa\s|\<div class="fa\s)((fa-\w+)(?:(?:-\w+)+)?)/ig)[0];
+					break;
+					case 3:
+						console.log(`JQ: Found some txt nodes ${this.nodeValue}`);
+						innerTxt +=this.nodeValue;
+					break;
+					default:
+					break;
+
+				}
+			})
+			console.log(`JQ: Found Overwriting ${key} with value ${innerTxt}`)
+			theClassObj[key] = innerTxt;
+			/*
 			if(innerTxt && innerTxt.nodeValue && innerTxt.nodeValue.trim().length > 0){
 				theClassObj[key] = innerTxt.nodeValue;
-			}			
+			}	*/		
 		} else if(key == "src"){
 			theClassObj[key] = element.find(".content-image").attr("src")
 
@@ -55,6 +81,15 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 		  		theClassObj[key] = myValue;	  		
 		} else if(key.indexOf("border") > -1 ){
 			log.debug("EXTENSIONS2.js: Key is " + key + " and value is " + myValue)
+		} 
+
+		if(key == "transition-duration"){
+			theClassObj["-webkit-transition-duration"] = $(element).css(key);
+			theClassObj["-moz-transition-duration"] = $(element).css(key);
+			//theClassObj["-o-transition-duration"] = $(element).css(key);
+			console.log(`Wrote a ${key} directly to HTML`)
+			$(element).attr("transition-duration",myValue)
+			console.log(`Wrote a transition-duration directly to HTML ${$(element).attr("id")} ${element.attr(key)}`)
 		}
 	})
 
@@ -252,6 +287,11 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
 	$(moveMe).attr("style","");
 
 	delete theClassObj;
+
+	//Scroll To Layer in UI
+	reLoadLayers();
+
+	scrollToLayer(moveMe.attr("id"));
 
 	return moveMe;
 }

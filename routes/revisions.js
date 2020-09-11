@@ -9,7 +9,7 @@ url = require('url');
 var getJSON = require('get-json')
 var cacheManager = require('cache-manager');
 var latestDemoSiteNumber = require('./site').latestDemoSiteNumber
-var persist = require('../persist');
+var persist = require('../public/js/persist');
 var moment = require('moment');
 var link = require('fs-symlink')
 var memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: 60 * 30/*seconds*/});
@@ -19,11 +19,11 @@ var http = require('http');
 const dateformat = require('dateformat');
 var mappings = require("./mappings");
 
-var googleFonts = "https://fonts.googleapis.com/css?family=Dancing+Script|Roboto|Lato|Broadway|Open+Sans|Pacifico:n,b,i,bi|Lora:n,b,i,bi|Anton:n,b,i,bi|Basic:n,b,i,bi|Caudex:n,b,i,bi|Chelsea+Market:n,b,i,bi|Corben:n,b,i,bi|EB+Garamond:n,b,i,bi|Enriqueta:n,b,i,bi|Forum:n,b,i,bi|Fredericka+the+Great:n,b,i,bi|Jockey+One:n,b,i,bi|Josefin+Slab:n,b,i,bi|Jura:n,b,i,bi|Kelly+Slab:n,b,i,bi|Marck+Script:n,b,i,bi|Lobster:n,b,i,bi|Mr+De+Haviland:n,b,i,bi|Cinzel:n,b,i,bi|Niconne:n,b,i,bi|Noticia+Text:n,b,i,bi|Overlock:n,b,i,bi|Patrick+Hand:n,b,i,bi|Play:n,b,i,bi|Sarina:n,b,i,bi|Signika:n,b,i,bi|Spinnaker:n,b,i,bi|Monoton:n,b,i,bi|Sacramento:n,b,i,bi|Cookie:n,b,i,bi|Raleway:n,b,i,bi|Open+Sans+Condensed:300:n,b,i,bi|Amatic+SC:n,b,i,bi|Cinzel:n,b,i,bi|Sail:n,b,i,bi|Playfair+Display:n,b,i,bi|Libre+Franklin:n,b,i,bi|Libre+Baskerville:n,b,i,bi|&subset=latin-ext,cyrillic,japanese,korean,arabic,hebrew,latin";
+var googleFonts = "https://fonts.googleapis.com/css?family=Dancing+Script|Roboto|Lato|Broadway|Open+Sans|Pacifico:n,b,i,bi|Lora:n,b,i,bi|Anton:n,b,i,bi|Basic:n,b,i,bi|Caudex:n,b,i,bi|Chelsea+Market:n,b,i,bi|Corben:n,b,i,bi|EB+Garamond:n,b,i,bi|Enriqueta:n,b,i,bi|Forum:n,b,i,bi|Fredericka+the+Great:n,b,i,bi|Jockey+One:n,b,i,bi|Josefin+Slab:n,b,i,bi|Jura:n,b,i,bi|Kelly+Slab:n,b,i,bi|Marck+Script:n,b,i,bi|Lobster:n,b,i,bi|Mr+De+Haviland:n,b,i,bi|Cinzel:n,b,i,bi|Niconne:n,b,i,bi|Noticia+Text:n,b,i,bi|Overlock:n,b,i,bi|Patrick+Hand:n,b,i,bi|Play:n,b,i,bi|Sarina:n,b,i,bi|Signika:n,b,i,bi|Spinnaker:n,b,i,bi|Monoton:n,b,i,bi|Sacramento:n,b,i,bi|Cookie:n,b,i,bi|Raleway:n,b,i,bi|Open+Sans+Condensed:300:n,b,i,bi|Amatic+SC:n,b,i,bi|Cinzel:n,b,i,bi|Sail:n,b,i,bi|Playfair+Display:n,b,i,bi|Libre+Franklin:n,b,i,bi|Libre+Baskerville:n,b,i,bi|&subset=latin-ext,cyrillic,japanese,korean,arabic,hebrew,latin&display=swap";
 //var googleFonts = "nothing.js";
 
-//var files = [googleFonts,"jquery-ui-1.12.1.custom/jquery-ui.css","fontawesome5.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
-var files = [googleFonts,"https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i","jquery-ui-1.12.1.custom/jquery-ui.css","theme/vendor/fontawesome-free/css/all.min.css","theme/css/sb-admin-2.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css",	"theme/vendor/jquery/jquery.js","component/Equalizer.js","component/Gallery.js","carWithAudio.js","tinymce.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider5.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
+//var files = [googleFonts,"jquery-ui-1.12.1.custom/jquery-ui.css","fontawesome5.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","tinymce.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
+var files = [googleFonts,"https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&display=swap","jquery-ui-1.12.1.custom/jquery-ui.css","theme/vendor/fontawesome-free/css/all.min.css","theme/css/sb-admin-2.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css",	"theme/vendor/jquery/jquery.js","component/Equalizer.js","component/Gallery.js","carWithAudio.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider5.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
 var version = 1;
 
 var $ = null;
@@ -168,6 +168,7 @@ function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 		$("body").find('.ui-helper-hidden-accessible,.ui-autocomplete,#ghostery-purple-box').remove();
 		$("body").find('#layer-menu').remove();
 		$("body").find('.navbar-nav,#idella-search').remove();
+		$("body").find(".toolhotspot,.ui-resizable-handle, .ui-resizable-e").remove();
 
 		console.log(`Loaded Cheerio Done`)
 
@@ -221,6 +222,10 @@ function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 			div = $(div);
 
 			obj = getStyleSheetForElement(div.attr("id"),$)
+
+			if(obj["background-image"] == "none"){
+				delete obj["background-image"];
+			}
 
 			if(obj["background-image"]){
 
@@ -463,24 +468,25 @@ function getRevisionFileName(fpath,dateGMTString,callback){
 			callback(!ok,"");
 		}
 
-		list.reverse();
+		list = list.map(function(item){ return {item:item,num:parseInt(item)} }).sort(function(a,b){return parseInt(a.num)-parseInt(b.num)}).reverse();
 
 		var fileName = "";
 
 		//console.log("List is  " + list )
 
 		for(i=0; i < list.length; i++){
-			fileName = list[i];
+			fileName = list[i].item;
 
-			var fileAsMs = new Date(moment(fileName,"MMDDYYYYHHmm").format()).getTime();
-			console.log("Doobears" + fileAsMs	+ " filename " + fileName)
-
-			//console.log("comparing todayAsNumber > list[i] : " + todayAsNumber + " > " + (list[i]))
-			console.log("comparing todayAsNumber > list[i] : " + todayAsMs + " > " + (fileAsMs))
+			
+			//console.log("comparing todayAsNumber <= list[i] : " + todayAsNumber + " > " + (list[i]))
+			console.log(`comparing todayAsNumber: ${todayAsNumber}(${parseInt(todayAsNumber)})  >=  list[${i}]: ${list[i].num} `)
+			//console.log("comparing todayAsNumber > list[i] : " + todayAsMs + " > " + (fileAsMs))
 			//if(new Date(todayAsNumber >= parseFloat(list[i])){
-			if(parseFloat(todayAsMs) >= parseFloat(fileName)){
-			//if(todayAsNumber >= list[i]){
-				if(fileAsMs !=0)
+			//if(parseFloat(todayAsMs) <= parseFloat(fileName)){
+			if(parseInt(todayAsNumber) >= list[i].num){
+				//if(fileAsMs !=0)
+				console.log(`Picked day ${list[i].item} because ${parseInt(todayAsNumber)} is >= ${list[i].num}`);
+				//fileName was set at the top of this loop. It will be sent to callback a few lines below here
 				break;
 			} 
 		}
@@ -715,11 +721,12 @@ async function getRevision(req,res,next){
 				 					res.sendStatus(404);
 				 					console.log(htmlOrError);
 				 				} else {
+				 					$ = cheerio.load(htmlOrError);
 				 					console.log("THE FILE IS " + file)
 				 					if(!file.endsWith(".json")){
 					 					res.setHeader('Content-type','text/html');
 					 					res.set('x-site-name',site)
-					 					$ = cheerio.load(htmlOrError);
+					 					
 					 					$("[alias=notification]").css({"height":0})
 					 					$("[alias=header]").css({"top":0})
 					 					$(".dropped-object").addClass("noborder");
@@ -762,10 +769,10 @@ async function getRevision(req,res,next){
 					 					res.end($.html());
 				 					} else {
 				 						res.setHeader('Content-type','application/json');
-				 						$ = cheerio.load(htmlOrError);
-										str = persist.getSectionFromSheet($,$("[alias=theCanvas]"))
-										console.log("My String " + str)
-
+				 						console.log(`Text is ${$("#ELEM_1599052458134")}`);
+										str = persist.getSectionFromSheet($,$("#content"))
+										console.log("My JSON " + JSON.stringify(str))
+										//str = {};
 										
 				 						
 				 						res.end(JSON.stringify(str))
@@ -809,12 +816,12 @@ function loadFiles($){
   		var selectAttrName = null;
   		var srcLocation = null;
   		var linkRel = null;
-  		var async = null;
+  		var async = '';
   		var tag = null;
   		if(file.endsWith(".js")){
   			ext = ".js";
   			selectAttrValue = "[src='/js/"+file +"']";
-  			selectorTag = "<script>";
+  			selectorTag = `<script ${async} todd=smith>`;
   			selectAttrName = "src";
   			srcLocation = (file.startsWith("theme") ? "" : "/js/") + file;
   			async = "false";
@@ -822,7 +829,7 @@ function loadFiles($){
   		} else if(file.endsWith(".css")) {
   			ext = ".css";
   			selectAttrValue = "[href='/css/"+file +"']";
-  			selectorTag = "<link>";
+  			selectorTag = `<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">`;
   			selectAttrName = "href";
   			srcLocation = (file.startsWith("theme") ? "" : "/css/") + file;
   			linkRel = "stylesheet";
@@ -832,7 +839,7 @@ function loadFiles($){
   			ext = file
   			selectAttrValue = "[href='" + myKey +"'']";
 
-  			selectorTag = "<link>";
+  			selectorTag = `<link rel="preconnect">`;
   			selectAttrName = "href";
   			srcLocation =  file;
   			linkRel = "stylesheet";

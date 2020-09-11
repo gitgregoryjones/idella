@@ -16,7 +16,7 @@ version = "1.0";
 
 
 //var autoSaveEnabled = true;
-var editing = true	;
+
 //var copiesModified = false;
 //var groupResizeEnabled = false;
 var smartId = 0;
@@ -26,7 +26,11 @@ WARN = {level:3,label:"WARN"}
 TRACE = {level:2,label:"TRACE"}
 DEBUG = {level:1,label:"DEBUG"}
 
-var LOGLEVEL = TRACE;
+var LOGLEVEL = WARN;
+
+var editing = false;
+
+
 
 
 var MSG = "";
@@ -85,16 +89,66 @@ return (s)
 : jQuery("&lt;p&gt;").append(this.eq(0).clone()).html();
 }
 
+//https://css-tricks.com/snippets/jquery/move-cursor-to-end-of-textarea-or-input/
+jQuery.fn.putCursorAtEnd = function() {
 
+  return this.each(function() {
+    
+    // Cache references
+    var $el = $(this),
+        el = this;
 
+    // Only focus if input isn't already
+    if (!$el.is(":focus")) {
+     $el.focus();
+    }
+
+    // If this function exists... (IE 9+)
+    if (el.setSelectionRange) {
+
+      // Double the length because Opera is inconsistent about whether a carriage return is one character or two.
+      var len = $el.val().length * 2;
+      
+      // Timeout seems to be required for Blink
+      setTimeout(function() {
+        el.setSelectionRange(len, len);
+      }, 1);
+    
+    } else {
+      
+      // As a fallback, replace the contents with itself
+      // Doesn't work in Chrome, but Chrome supports setSelectionRange
+      $el.val($el.val());
+      
+    }
+
+    // Scroll to the bottom, in case we're in a tall textarea
+    // (Necessary for Firefox and Chrome)
+    this.scrollTop = 999999;
+
+  });
+
+};
 	
 
 
 
 $(document).ready(function() {
+	
+
+
+
+	$("link").removeAttr("disabled");
 
 	saveJs($("body").first(),`function silent(){}`)
 
+	$(window).on("click",function(){
+
+		CUSTOM_pressEscapeKey();
+	
+
+	})
+	
 
 	$(document).mousemove(function(event){
 		myPage.X = event.pageX;
@@ -112,8 +166,20 @@ $(document).ready(function() {
 	} else {
 		$.event.trigger("disableDebug",[_debug])
 	}
+	
+	
 
-	   if(editing) {
+
+	
+
+	if(pageState.params){
+		console.log(`Editing: [${pageState.params.editing}] and editing is [${editing}]`);
+		editing = pageState.params.editing;
+	}
+
+	   if(editing == "true") {
+
+	   		console.log(`I AM ONLY HERE IF lil Editing: is true`)
 
 	   		var simpleD = $('<div>');
 
@@ -144,6 +210,7 @@ $(document).ready(function() {
 						$('body').append(containerDiv);
 						getCurrentSite();
 						log.debug("After Current Site")
+
 						//load scripts now that body has been written
 						
 					} else {
@@ -157,7 +224,7 @@ $(document).ready(function() {
 						theSiteObj.currentPage = location.pathname.replace("/"+website,"");
 
 						$('body').append(containerDiv)
-						//loadAllJs();
+//loadAllJs();
 					}
 					loadAllBreakPoints();
 
@@ -181,6 +248,7 @@ $(document).ready(function() {
 					log.error(e)
 			   }
 
+
 		   		initialize();
 		   		$(document).trigger("pageReloaded",pageState,currentBreakPoint);
 				$.event.trigger("initializationComplete",[]);
@@ -190,11 +258,18 @@ $(document).ready(function() {
 				genericClass = CONVERT_STYLE_TO_CLASS_OBJECT(meDiv)
 				meDiv.remove();
 
+				if($(".section").length == 0){
+							//alert("hello")
+							$(".section-control").click();
+							$(".section-control").click();
+				}
+
 				log.debug("GENERIC IS " + JSON.stringify(genericClass));
 				//$('body').show();
 
 				CUSTOM_pressEscapeKey(); 
 				PREVIEW_togglePreview(false);
+
 
 			
 		   	})
@@ -208,14 +283,14 @@ $(document).ready(function() {
 
 		  	
 		  	//$("[type=anchor]").css("border","none")
-		  	$("*").prop("contenteditable",false).css("-webkit-user-modify","read-only")
+		  	//$("*").prop("contenteditable",false).css("-webkit-user-modify","read-only")
 		  	$(".ghost").hide();
 		   	$('body').show().addClass("hover");
 		 
-		   	$("[type=LIST]").each(function(it,div){
+		   	$("[type=LIST]").each(function(){
 		   		//console.log("LISTING IT")
-		   		div = $(div)
-		   		if(div.hasClass("gallery")){
+		   		div = $(this)
+		   		if(div.attr("slider-auto-slide") == "true"){
 		   			SLIDER_init(div);
 		   		}
 		   	})
@@ -616,7 +691,7 @@ function whichTool (tool){
 			type:type,
 			class:"texttool",
 			friendlyName : "Text Field",
-			droppedModeHtml:"<div contenteditable=\"false\">Enter Text Here</div>",
+			droppedModeHtml:"<div contenteditable=\"false\">Text</div>",
 			class:"generictext"
 
 		});

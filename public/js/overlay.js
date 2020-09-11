@@ -79,7 +79,7 @@ function OVERLAY_disableOverlays(){
 
 function OVERLAY_areOverlaysEnabled(){
 
-	return $(".showOverlays").is(":checked");
+	return $("#content .showOverlays").is(":checked");
 
 }
 
@@ -110,6 +110,8 @@ function OVERLAY_showInstructions(theElem){
 
 function OVERLAY_showOverlay(theElem){
 
+	theElem = $(theElem)
+
 	if(editing){
 
 		if(OVERLAY_areOverlaysEnabled()) {
@@ -128,7 +130,7 @@ function OVERLAY_showOverlay(theElem){
 	if(!editing){
 
 
-		if(theElem.hasAttribute("overlay") ){
+		if(theElem[0].hasAttribute("overlay") ){
 
 				//$("[type=OVERLAY]").trigger("mouseleave");
 				var olay = $(theElem).children("[type=OVERLAY]").first();
@@ -212,11 +214,16 @@ function OVERLAY_showOverlay(theElem){
 
 				//overlay.off()
 
-				olay.on("mouseleave",function(){
+				olay.unbind("mouseleave").on("mouseleave",function(){
+					console.log(`Overlay Exited Time to Go! Id ${theElem.attr("id")} Alias = ${theElem.attr("alias")}`);
+					theElem.mouseleave();
+					
 					if($(theElem).find("video").length > 0){
 						$(theElem).find("video")[0].pause();
 
 					}
+					
+
 					if(!OVERLAY_areOverlaysEnabled() || !editing){
 						if(olay.attr("bigun")){
 							$(this).fadeOut(function(){
@@ -231,12 +238,14 @@ function OVERLAY_showOverlay(theElem){
 									close.remove();
 							})
 						} else {
-							$(this).fadeOut();
+							$(this).fadeOut(function(e){
+								
+							});
 						}
 					
 					}
 				}).on("click",function(){
-					$(this).mouseleave();
+					//
 				})
 		} else {
 

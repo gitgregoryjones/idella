@@ -1,16 +1,16 @@
-<ul class="babynav navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<!-- <ul class="babynav navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-      <!-- Sidebar - Brand -->
+   
      
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
         <div class="sidebar-brand-icon rotate-n-15">
-          <!-- <i class="fas fa-shapes"></i> //-->
+         
         </div>
         <div class="sidebar-brand-text mx-3">I<sup>2</sup></div>
       </a>
 
    
-        <!-- Divider -->
+       
         <hr class="sidebar-divider my-0">
         <li class="starthere nav-item active section-control">
           <a class="nav-link sectionnav" href="#">
@@ -35,9 +35,9 @@
 
         </script>
   </ul>
-
+//-->
 <!-- Sidebar invisible until first element is placed -->
-    <ul class="notyet navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <ul class="notyet babynav navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
      
@@ -88,7 +88,7 @@
         </a>
        
       </li>
-      <li class="nav-item active shapes section-control">
+      <li style="visibility:hidden" class="nav-item active shapes section-control">
           <a class="nav-link sectionnav" href="#">
             <i class="far fa-map fa-rotate-90"></i>
             <span> > </span>
@@ -98,8 +98,9 @@
          
         </li>  
     </ul>
+   
          <script type="text/javascript">
-
+           $(document).ready(function() {
         
 
            $(".section-control").on("click",(e)=>{ e.preventDefault();$("[data-action=addsection]").click()})
@@ -139,21 +140,55 @@
 
             return nClone;
         }})
-
+            });
 
         //onscrollstop move the menu
+        
         $.fn.scrollStopped = function(callback) {
           var that = this, $this = $(that);
           $this.scroll(function(ev) {
             clearTimeout($this.data('scrollTimeout'));
-            $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
+            $this.data('scrollTimeout', setTimeout(callback.bind(that), 200, ev));
           });
         };
       
         $(window).scrollStopped((fun)=>{
-            $(".sidebar").animate({"padding-top":window.pageYOffset});
+            //$(".sidebar").animate({"padding-top":window.pageYOffset});
+            /*
+            if(window.pageYOffset > 200){
+              $('#content .navshowing').css({"height":"0",position:"fixed","z-index":99999}).animate({width:"100%",height:"4.375rem"}).removeClass("navshowing")
+            } else{
+              
+                 $('nav').addClass("navshowing").css({position:"static"})
+                 //.animate({width:"100%",height:100})
+              
+            }
+
+            if ($(window).scrollTop() >= $( 
+              'body').offset().top + $('body'). 
+                outerHeight() - window.innerHeight) { 
+                
+               // alert('You reached the end of the DIV'); 
+              if($("#content > .section").last().find(".dropped-object").length > 0 ){
+                  $(".section-control").click();
+              } else {
+                console.log(`No need to automagically extend body since user is still working on previous section`);
+              }
+              
+            } */
             
         })
+        
+
+        /*
+         $(window).on('scroll', function() { 
+            if ($(window).scrollTop() >= $( 
+              'body').offset().top + $('body'). 
+                outerHeight() - window.innerHeight) { 
+                
+                alert('You reached the end of the DIV'); 
+            } 
+        });*/
 
 
      

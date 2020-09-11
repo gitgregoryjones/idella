@@ -76,15 +76,7 @@ body.editing a[type=anchor] {
 }
 
 
-.quick-disabled {
-
-	border:none;
-	background-color: transparent;
-	color:inherit;
-	text-overflow: ellipsis;
-	width:200px;
-	
-}
+.quick-disabled {border:none;background-color: transparent;color:inherit;text-overflow: ellipsis;width:200px;display: inline-block;}
 
 .quick-disabled-image-field {
 	width:250px;
@@ -195,12 +187,16 @@ ul.tabul {
 
 
 .ui-widget.ui-widget-content, #imgwin, div.styleValue > input {
-	//background-color: #232323;
-	//background-color: #484F5D;
-	background-color: rgba(0,0,0,0.9);
-	//background-color: #288BC3;
+	//
+	background-color: #232323;
+	background-color: transparent;
+	background-color: #6D74C1;
+	background-color: t;
+	//
+	background-color: #288BC3;
 	border:0px;
-	//height:100%;
+	//
+	height:100%;
 }
 
 
@@ -317,10 +313,14 @@ ul.tabul {
 }
 .styleLabel {
 	display:inline-block;
-	width:30%;
+	width:18%;
 	font-family:Arial,Helvetica,sans-serif;
 	color:silver;
 	font-size:14px;
+}
+
+.babynav {
+	display:none;
 }
 
 div.styleValue > input, #imgwin {
@@ -524,9 +524,12 @@ div.tool:hover {
 
 .project-control {
 	padding-top: 5px;
-	padding-left: 80px;
+	padding-left: 20px;
 	padding-right: 20px;
 	border-right:1px solid #D1D3E2;
+	font-size: 12px;
+	font-weight:bold;
+	font-family: "Open Sans Condensed";
 }
 
 
@@ -655,16 +658,20 @@ div.tool:hover {
 
 .over {
 	opacity: .80;
-	//border: dashed;
-	border-color :red !important;
-	
+	//
+	border: dashed;
+	/* border-color :red !important; */
 }
 
 .debug-border-style, .squarepeg {
-	--border: 3px dashed;
-	--border-color: black;
-	--background-color:rgba(255, 205, 0, 0.5);
+	/* --border: 3px dashed; */
+	/* --border-color: black; */
+	/* --background-color:rgba(255, 205, 0, 0.5); */
 	border: 2px dashed #3057C9;
+}
+
+.greggy {
+	border: 5px solid gold;
 }
 
 .squarepeg.max{
@@ -732,23 +739,20 @@ textarea {
 
 /* The whole thing */
 .custom-menu, .mini-me {
-	overflow: visible;
-    display: none;
-    z-index: 1000;
-    position: absolute;
-    border: 1px solid silver;
-    white-space: nowrap;
-    font-family: basic;
-    font-size:12px;
-    background: #FFF;
-    background: #EFEFEF;
-    background: #464D5D;
-   // color: #333;
-    border-radius: 5px;
-    box-shadow:1px 1px 1px silver;
-
-    padding: 0;
-
+	position: absolute;
+    display: inline-block;
+    min-width: 13em;
+    max-width: 26em;
+    padding: .25em 0;
+    margin: .3em;
+    font-family: "Proxima Nova", "Helvetica Neue", Arial, sans-serif;
+    font-size: inherit;
+    list-style-type: none;
+    background: #fff;
+    border: 1px solid #bebebe;
+    border-radius: .2em;
+    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, .5);
+    box-shadow: 0 2px 5px rgba(0, 0, 0,0.5);
 }
 
 
@@ -1073,12 +1077,12 @@ Edit box
 }
 
 #layer-menu {
-  width:300px;
-  height:400px;
+  width:400px;
+  height: 450px;
   background-color:transparent;
   color:white;
   position: fixed;
-  right:100;
+  right:0;
   top:200;
 }
 #header, #footer
@@ -1117,12 +1121,11 @@ Edit box
 
 #maincontent
 {
-    height:250px;
+    height: 90%;
     width: 99%;
-    overflow: auto;
+    overflow: scroll;
     background-color: rgba(0,0,0,0.8);
     --border: solid 1px #f00;
-
 }
 .layer
 {
@@ -1182,6 +1185,26 @@ Edit box
 }
 
 
+.textarea {
+  display: block;
+  width: 100%;
+  --overflow: hidden;
+  resize: both;
+  min-height: 40px;
+  min-width:200px;
+  --line-height: 20px;
+  border:0px solid transparent;
+    border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 1px 6px;
+}
+
+[contenteditable] {
+  outline: 0px solid transparent;
+}
+
+
 .layer > .details {
 	width auto:
 	font-size:12px;
@@ -1196,8 +1219,10 @@ Edit box
 
 .highlight {
 
-	border: 1px solid yellow;
-	background-color: rgb(40, 139, 195)
+	border: 1px solid yellow !important;
+	//background-color: rgb(40, 139, 195)
+	
+	transform: scale(1.05) !important;
 
 }
 

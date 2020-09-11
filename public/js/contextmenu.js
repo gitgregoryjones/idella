@@ -88,7 +88,7 @@ $(document).on("initializationComplete",function(){
     // JAVASCRIPT (jQuery)
 
     // Trigger action when the contexmenu is about to be shown
-    $(document).off("contextmenu").bind("contextmenu", function (event) {
+    $(document).contextmenu( function (event) {
 
         $(".custom-menu").hide();
 
@@ -325,19 +325,26 @@ $(document).on("initializationComplete",function(){
                         break;
             case "drop": 
                         var aTool =  whichTool($(this).attr("type"));
+
                         aTool = configuredTool(aTool);
+
+                        if(aTool.is("[type=NAVIGATION]")){
+                            aTool.addClass("navigation-list");
+                            setUpDiv(aTool);
+                        }
 
                          currentCtx = CUSTOM_currentlyMousingOverElementId ? $("#"+CUSTOM_currentlyMousingOverElementId) : $(event.target)
                          
                          currentY = event.clientY + window.scrollY
 
+                        
 
                         dropTool(aTool,{target:currentCtx,clientX:currentX,clientY:currentY});
                         
                         if(aTool.is("[type=NAVIGATION]")){
-                            aTool.css({width:"500px",height:"50px"});
+                            aTool.css({width:"100%",height:"150px"});
                             for(i=0;i<2;i++){
-                                var item = configuredTool(whichTool("SPAN"));
+                                var item = configuredTool(whichTool("T"));
                                 item.html("menu "+(i+1));
                                 aTool.append(item);
                                 item.addClass("menutext")
@@ -352,7 +359,9 @@ $(document).on("initializationComplete",function(){
                             //now convert to regular list for simplicity.
                             //Note IF Condition will be skipped because we are already in this IF statement. Ugly code
                             //but saves lines of code later
-                            aTool.attr("type","LIST")
+                            aTool.attr("type","LIST").addClass("navigation-list");
+
+
                             
 
                         } else
@@ -417,6 +426,8 @@ $(document).on("initializationComplete",function(){
                            CUSTOM_PXTO_VIEWPORT(aTool)
                         }
 
+
+
                         /*
                         if(aTool.is("[type=T]")){
                             aTool.off("click")
@@ -452,6 +463,10 @@ $(document).on("initializationComplete",function(){
 
                         aTool.css("font-family","inherit")
 
+                        if(aTool.is("[type=T]")){
+                            aTool.css({"text-align":"center"});
+                        }
+
                         currentCtx = aTool;
                         //Unlock this element               
                         $(".fa-lock").first().click();
@@ -475,16 +490,17 @@ $(document).on("initializationComplete",function(){
                         aTool.addClass("section")
                             .css({
                                 width:$("body").width(),
-                                height:"500px",
+                                height:"700px",
                                 position:"relative",
                                 display:"inline-block",
-                                "background-image": "linear-gradient(red, yellow)"
+                                "background-image": "linear-gradient(navy, white)"
+                                //"background-color":"transparent"
 
                             });
 
-                        h1 = $("<h1>",{"font-color":"white"}).text("Drop Content Here")
+                       // h1 = $("<h1>",{"font-color":"white"}).text("Drop Content Here")
 
-                        aTool.append(h1);
+                        //aTool.append(h1);
                         
                         //$("#drawSpace").append(aTool);
                         if($(".section").length == 0){
@@ -542,7 +558,7 @@ $(document).on("initializationComplete",function(){
                 break;
             case "paste": if(currentCtx.hasClass("dropped-object"))
                 { 
-                    
+                    /*
                     if(ignoreDoublePasteEvent == CUSTOM_lastCopyElement){
                         return;
                     }
@@ -561,12 +577,34 @@ $(document).on("initializationComplete",function(){
                      if(c.attr("type") == "LIST"){
                          c.css("transition-duration","0s")
                     }
-
+                    */
                    
+                    c = $(localStorage.getItem("copy-buffer"));
+
                     
-                    c.appendTo(currentCtx).css(
-                        {top:myPage.Y - currentCtx.offset().top - ($(".custom-menu").height()/2),left:myPage.X - currentCtx.offset().left }
-                    );
+                    c = $(c[0].outerHTML.replace(/id="(\w+_\d+)"/gm,function(oldId){
+
+                        console.log(`Old Id is ${oldId}`)
+                        var numberPart = oldId.replace(/"/g,"").substring(oldId.indexOf("_"));
+                        console.log(`Nubmer Part is ${numberPart}`)
+                        var backwardsNumber = parseInt(Array.from(numberPart).reverse().join(""));
+                        console.log(`Nubmer Part Reversed is ${backwardsNumber}`)
+                        backwardsNumber = backwardsNumber + (Math.ceil(Math.random() * 10) );
+                        console.log(`Final Id is ${backwardsNumber}`)
+                        return `id="ELEM_${backwardsNumber}"`;
+
+                    }));
+
+
+                    console.log(`WHAT New ID is ${c.attr("id")}`)
+
+                    
+
+                    c.find(".ui-resizable-handle, .widget-on, .widget-off").remove();
+
+                    c = setUpDiv(c);
+
+                    c.find(".dropped-object").each(function(idx){setUpDiv(this)});
 
                     if(c.is("[type=OVERLAY]")){
                         c.css({left:0,top:0,"width":currentCtx.width(),"height":currentCtx.height()})
@@ -574,10 +612,23 @@ $(document).on("initializationComplete",function(){
                         currentCtx.attr("overlay",c.attr("id"));
                     }
 
+                    CUSTOM_PXTO_VIEWPORT(c);
+
+                    if(currentCtx.is("[type=LIST]")){
+                         c.insertAfter(currentCtx.children(".dropped-object").last()).css({top:0,left:0});
+                    } else {
+                         c.appendTo(currentCtx).css(
+                        {top:myPage.Y - currentCtx.offset().top - ($(".custom-menu").height()/2),left:myPage.X - currentCtx.offset().left }
+                        );
+
+                    }
+                    
+                   
+                    //reloadLayers();
                     //CUSTOM_PXTO_VIEWPORT($(c),$(c).position().left ,$(c).position().top); 
 
                      if(c.attr("type") == "LIST"){
-                         SLIDER_init(c)
+                        // SLIDER_init(c)
                     }
                     //alert(myPage.Y) 
                 } 

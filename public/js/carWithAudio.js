@@ -32,9 +32,9 @@ class CarWithAudio {
 
 				this.car.find("[type=AUDIO]").show();
 				
-				this.car.attr("old-z",this.car.css("zIndex"));
+				//this.car.attr("old-z",this.car.css("zIndex"));
 
-				this.car.css("zIndex",600);
+				//this.car.css("zIndex",600);
 
 				CarWithAudio.stopMe(this.car.attr("id"));
 
@@ -43,9 +43,9 @@ class CarWithAudio {
 				this.car.find("[type=AUDIO]").hide();
 
 
-				this.car.css("zIndex",this.car.attr("old-z"));
+				//this.car.css("zIndex",this.car.attr("old-z"));
 
-				CarWithAudio.startMe(this.car.attr("id"));
+				//CarWithAudio.startMe(this.car.attr("id"));
 
 			}).find("audio").hide()
 
@@ -181,6 +181,8 @@ class CarWithAudio {
 		$("[type=AUDIO]").each((idx,elem)=>{
 
 			elem = $(elem).parent();
+
+			elem.css({"z-index":"50000"})
 
 			elem.removeAttr("brake");
 

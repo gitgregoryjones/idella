@@ -90,7 +90,7 @@ function PREVIEW_togglePreview(showPreview){
 		$(".dropped-object").is(function(){
 			log("border is " + $(this).css("border"))
 			hasDefaultBorder = $(this).css("border-top-style").indexOf("dashed") > -1
-			if(hasDefaultBorder){
+			if(hasDefaultBorder ){
 				$(this).addClass("noborder");
 			}
 			return hasDefaultBorder;

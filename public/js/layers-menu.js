@@ -18,10 +18,19 @@ function reLoadLayers(){
 		}
 	})
 
-	$(".dropped-object").not('#drawSpace,#editSpace,#workspace').each(function(index){
+
+	$("#content .dropped-object").each(function(){
+
+		updateLayersTool(this.id);
+
+	})
+
+
+	/*
+	$(".dropped-object").not('#drawSpace,#editSpace,#workspace,#content').each(function(index){
 
 				updateLayersTool($(this).attr("id"));
-	});
+	});*/
 
 	
 	$("#maincontent").children(".layer").each(function(it){
@@ -30,6 +39,7 @@ function reLoadLayers(){
 		}
 	})
 	
+	$("#layer-menu").css({"z-index":99999})
 
 	
 	//bId = $("body").attr("type","body").attr("id");
@@ -54,16 +64,18 @@ function scrollToLayer(aToolId){
 		);
 }
 
-function updateLayersTool(aToolId){
+function updateLayersTool(aToolId,aParentId){
 
 				//first Add Layer Menu Div if it does not exist
 				//var menu = $("#layer-menu").length == 0 ? $("<div>",{id:"layer-menu"}) : $("#layer-menu");
 
 				//$("#drawSpace").append(menu);
-				$(".close-window").off().on("click",()=>{
-					console.log(`Close Window Called`)
-					$(".layer-control").click();
-				})
+				 $(".close-window").unbind("click").on("click",(e)=>{
+		            
+		            console.log(`Close Window Called`)
+		            $(".iilayers").click();
+		            
+          		 })
 
 
 				var aTool = $(`#${aToolId}`);
@@ -122,9 +134,11 @@ function updateLayersTool(aToolId){
                 			if($(e.target).hasClass("fa-stop-circle")) {
                 				SLIDER_deInit(aTool);
                 				$(e.target).removeClass("fa-stop-circle");
+                				//e.stopPropogation()
                 			} else {
                 				SLIDER_init(aTool);
                 				$(e.target).addClass("fa-stop-circle");
+                				//e.stopPropogation();
                 			}
                 			
                 		}
@@ -173,33 +187,37 @@ function updateLayersTool(aToolId){
 
 				$(layer).removeClass("dropped-object");
 
+			     
 
-                                $("#maincontent").prepend(layer);
+                $(miniObj).css({float:"left", width:$(pwindow).width()-5, height:$(pwindow).height()-5, top:0, left:0}).find('[class^=ui]').remove();
 
-                                $(miniObj).css({float:"left", width:$(pwindow).width()-5, height:$(pwindow).height()-5, top:0, left:0}).find('[class^=ui]').remove();
+				$("#maincontent").unbind("click");
 
-				$("#maincontent").off("click");
+				$(pwindow).unbind("click")
 
-				$(pwindow).off("click")
-
-				$(layer).on('mouseover',function(){
+				$(layer).unbind("mouseover").on('mouseover',function(){
 					
 					$(aTool).attr('previous-style',$(aTool).css("border"));
-					$(aTool).css({border:"solid red"});
+					//$(aTool).css({border:"solid red"});
+					$(aTool).addClass('highlight');
 					$(aTool).mouseover();
 					
 					
-				}).on('mouseout',function(){
+				}).unbind("mouseout").on('mouseout',function(){
 					$(aTool).css('border',$(aTool).attr("previous-style"));
 					$(aTool).mouseout();
-					
+					$(aTool).removeClass('highlight');
 
-				}).on("click",function(){
+				}).unbind("click").on("click",function(e){
 
-					$(aTool).mouseover();
-					$(aTool).find("[id$=lock]").click();
+					//$(aTool).mouseover();
+					$(aTool).find("[id$=lock]").addClass("alreadyscrolled").click();
 					$(".layer").removeClass("highlight");
 					$(this).addClass("highlight");
+
+					//$(".layer").not($(this)).hide();
+
+					
 					var jump = $(aTool);
 					//CUSTOM_pressEscapeKey();
 					var new_position = $(jump).offset().top;
@@ -223,13 +241,17 @@ function updateLayersTool(aToolId){
 
 				    );
 
+
+
     
     				//e.preventDefault();
 
 				});
 
-				$(layer).find(".details").on("click",
+				$(layer).find(".details").on("clicker",
 					(e)=>{
+						
+						$(document).unbind("keydown");
 						txt = $(e.target).text(); 
 						$(e.target).html(""); 
 						txt = $(`<input type='text' value='${txt}' pid='${aToolId}'>`);
@@ -237,10 +259,29 @@ function updateLayersTool(aToolId){
 							$(`#${aToolId}`).attr("alias",$(inp.target).val());
 							$(e.target).html($(inp.target).val());
 							txt.remove();
+							$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
-						});
+						})
+
 						$(e.target).append(txt);
+						txt.putCursorAtEnd();
+						e.stopPropogation();
+						
 				})
+
+				//Append The Layer Finally
+				if(aParentId){
+					console.log(`Layer ${layer.id} Parent was found ${aParentId}`);
+					console.log(`Running $("layer.insertAfter("[layer=${aParentId}]")`);
+					
+					layer.insertAfter(`[layer=${aParentId}]`);
+					
+						
+				} else {
+					console.log(`Layer Parent was NOT found ${aParentId}`);
+					$("#maincontent").append(layer);
+				}
+               
 
 				$(layer).find(".dropped-object").css({"margin-top":"0px","margin-left":"0px","width":"100%",height:"100%"})
 
@@ -248,7 +289,7 @@ function updateLayersTool(aToolId){
 
 					var key = $(this).attr("id");
 
-					console.log(`Looking for this layer to remove #${key} from #layer-menu`);
+					log.debug(`Looking for this layer to remove #${key} from #layer-menu`);
 	
 					$("#maincontent").find(`[layer=${key}]`).remove();
 

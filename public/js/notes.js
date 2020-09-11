@@ -112,6 +112,7 @@ function NOTES_makeNote(element,isActive){
 		
 
 		lock.on("click",function(event){
+						
 						event.stopPropagation();
 
 						var myParent = $(event.target).parents(".dropped-object").first();
@@ -133,10 +134,15 @@ function NOTES_makeNote(element,isActive){
 						} else {
 							$(".widget-on").remove()
 							$("[data-action=moreOptions]").click();
+							//$("#editSpace").animate({top:$(currentCtx).offset().top})
 							$(this).removeClass("fa-lock").addClass("fa-unlock")
 							widgets.removeClass("widget-off").addClass("widget-on")
 
 						 	NOTES_makeNote(myParent,true)
+
+						 	$("#editSpace").css({top:0,left:0,width:"99%",height:"99%",display:"inline-block",position:"relative"})
+							$("#editSpace").insertAfter($("#maincontent").find(`[layer=${myParent.attr('id')}]`)).css("top");
+
 
 							//Highlight the layer on the Layers Menu (if shown)
 							//import layers-menu.js
@@ -206,11 +212,18 @@ function NOTES_makeNote(element,isActive){
 							if(myParent.is("[type=T]")){
 								//widgets.remove();
 							}
+
 							updateLayersTool($(myParent).attr("id"));
+
 							console.log("Calling update Layers Tool");
 							//impor layers.js scroll to layer
-							scrollToLayer($(myParent).attr("id"));
-							console.log("Calling scroll To Layers Tool");
+							if(!$(this).is(".alreadyscrolled")){
+								scrollToLayer($(myParent).attr("id"));
+								$(this).removeClass("alreadyscrolled");
+							}
+							
+							
+							
 
 							return;
 						}
@@ -259,8 +272,22 @@ function NOTES_makeNote(element,isActive){
 			log.debug(`width of index ${idx} is ${it.width()}`)
 		})
 
-		widgets.css({position:"absolute", left:$(theElem).width()/2 - parseInt(widgetWidth)/2, top:0
+		if(!theElem.is("[type=T]")){
+			widgets.css({position:"absolute", visibility:"visible", left:$(theElem).width()/2 - parseInt(widgetWidth)/2, top:0
 				,"-webkit-text-fill-color":"gold",color:"gold","font-size":"30px"})
+
+		} else {
+			
+			widgets.css({position:"absolute", visibility:"visible",left:$(theElem).width()/2, top:0
+				,"-webkit-text-fill-color":"gold",color:"gold","font-size":"30px"})
+
+			//widgets.remove();
+			
+			//NOTES_delete()
+			//NOTES_makeNote(theElem);
+			//lock.click();
+		}
+		//lock.click();	
 
 		log.debug(`Widget is on or off?  It is ${widgets.attr("class")} and total width is ${widgetWidth}`);
 			
@@ -420,8 +447,6 @@ function NOTES_makeNote(element,isActive){
 					ltype = $("<select>").append(new Option("adaptive","adaptive")).append(new Option("gallery","gallery"));
 					theMsg.append($("<div style='display:inline-block; margin-right:10px'>Type:</div>").append(ltype));
 
-					//default to adaptive
-					element.css({overflow:"auto","transition-duration":"0s"})
 
 					//AutoSelect option based on what user chose last
 					if(element.hasClass("gallery")){
@@ -505,7 +530,7 @@ function NOTES_makeNote(element,isActive){
 			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="start" class="fa fa-align-left"></div>`))
 			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="center"  class="fa fa-align-center"></div>`))
 			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="right"  class="fa fa-align-right"></div>`))
-			theMsg.append(" <div style='display:inline-block'> Text Color: <div color-for='#" +element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;color:"+ color + "'/><input type='text' class='quick-disabled' name='color' parent='" + element.id + "' value='" + txtColor + "'></div>")
+			theMsg.append(" <div style='display:inline-block'>Text Color:&nbsp;</div><div color-for='#" +element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ txtColor + "'></div>&nbsp;<input type='text' class='quick-disabled' name='color' parent='" + element.id + "' value='" + txtColor + "'>")
 			
 		
 		} else {
@@ -526,10 +551,10 @@ function NOTES_makeNote(element,isActive){
 			})
 		}
 		
-		theMsg.off().on('mouseenter',function(){
+		theMsg.unbind("on").on('mouseenter',function(){
 			userHoveringOverNote = true;
 			$(document).unbind("keydown",CUSTOM_KEYDOWN_LOGIC)
-		}).on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);
+		}).unbind("off").on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);
 
 	
 		$("body").append(theMsg);
@@ -553,7 +578,7 @@ function NOTES_makeNote(element,isActive){
 		})
 
 
-		$('[editor-icon-for]').on("click",function(){
+		$('[editor-icon-for]').unbind("click").on("click",function(){
 
 			
 				element.css({"text-align":$(this).attr('orientation')})
@@ -562,10 +587,10 @@ function NOTES_makeNote(element,isActive){
 				$(this).css("background-color","navy");
 				$(this).attr("off","navy")
 
-		}).on("mouseenter",function(){
+		}).unbind("on").on("mouseenter",function(){
 				$(this).attr("off",$(this).css("background-color"))
 				$(this).css({"background-color":"black"})
-		}).on("mouseleave",function(){
+		}).unbind("mouseleave").on("mouseleave",function(){
 
 				$(this).css({"background-color":$(this).attr("off")})
 		})
@@ -731,7 +756,9 @@ function NOTES_makeNote(element,isActive){
 						})
 						
 						
-	} 
+	}
+
+
 
 	return msgcoords;
 }
@@ -871,6 +898,41 @@ function QUICK_EDIT(evnt){
 			
 			if(parent.is("[type=T]")){
 
+				  $(parent).html($(parent).html().replace(/(?<!'fa\s)(fa-\w+)(?:(?:-\w+)+)?/gim,`<i class='fa $1'></i>`))
+
+/*	
+				$("#content [type=T]").unbind("click").on("click",function(e){$("<textarea>").appendTo($(this)).val($(this).text()); $(this).unbind("click");
+})})			on("mouseleave",function(e){ $(this).unbind("mouseleave"); $(this).text($(this).children("textarea").val()); $(this).children("textarea").remove(); setUpDiv($(this));
+
+				
+				 var textfield = $(evnt.target);
+
+				 var currentHeight = $(parent).height();
+
+				 var padding = $(parent)[0].getBoundingClientRect().height - currentHeight;
+			 	
+			 	//var heightOfEachCharacter = textfield.height() / parseInt(textfield.css("font-size"));
+			 	//var widthOfEachCharacter = Math.ceil(parseInt(textfield.css("font-size"))/heightOfEachCharacter);
+			 	var numberOfCharsPerLine = Math.round(parent.width() / parseInt(parent.css("font-size")) * 1.2);
+			 	
+			 	console.log(`textfield: numberOfCharsPerLine is ${numberOfCharsPerLine} and width is ${parent.width()}`)
+
+			 	console.log(`textfield: textvalue length is ${textfield.val().length}`)
+
+			 	var numberOfLines = 1;
+
+			 	if(textfield.val().length > numberOfCharsPerLine){
+
+			 		numberOfLines = Math.ceil(textfield.val().length / numberOfCharsPerLine);
+
+			 	} 
+
+			 	console.log(`textfield: currentHeight ${currentHeight} padding ${padding}, rect ${parent[0].getBoundingClientRect().height} TextBox Height: pHeight ${parent.height()} numberOfLines is ${numberOfLines} `)
+				
+				$(parent).css({height:(currentHeight * numberOfLines) +  padding}); 
+				
+				console.log(`textfield: number of Lines is ${numberOfLines} length ${textfield.val().length} and height ${parent.height()} == ${currentHeight * numberOfLines + padding}`)
+*/
 								if(parent.text().trim() == "fa-bars"){
 									//Write JS
 									$(parent).attr("id","zMenu")
@@ -903,7 +965,7 @@ function QUICK_EDIT(evnt){
 									$(parent).contents().get(0).replaceWith($(parent).text().replace(regex,subst))
 								}
 								*/
-
+								/*
 								
 								$(parent).contents().filter(function() { 
 								    //Node.TEXT_NODE === 3
@@ -914,14 +976,35 @@ function QUICK_EDIT(evnt){
 										//alert($(div).html())
 										//this.nodeValue = (this.nodeValue.replace(regex,subst))
 										$(this).replaceWith(this.nodeValue.replace(regex,subst))
-
 								    
 								});
+								*/
+
 
 
 
 								
 			} 
+			/*
+
+	$(".section [type=T]")
+	.unbind("dblclick")
+	.on("dblclick",
+	function(e){ 
+		console.log(`HTML IS ${$(this).html().replace(/<\i class='fa\s+(fa-\w+)'\>\<\/i\>/gm,"$1")}`);
+		$(this).html(  $(this).html().replace(/<\i class="fa\s+(fa-\w+)"\>\<\/i\>/g,"$1")   );
+		$(this).attr("contenteditable","true")
+		.css({right:"unset","bottom":"unset",height:"auto"}).focus();
+
+		$(this).on("mouseleave",function(e){
+			//$(this).unbind("mouseleave");
+			$(this).html($(this).html().replace(/(?<!'fa\s)(fa-\w+)(?:(?:-\w+)+)?/gm,`<i class='fa $1'></i>`))
+			$(this).attr("contenteditable","false");
+			
+		})
+	})
+	*/
+	
 
 
 	
@@ -939,3 +1022,13 @@ function QUICK_EDIT(evnt){
 	parent.trigger("input")
 }
 
+function makeTextAwesome(string){
+
+
+	words = string.split(/\s+/);
+
+
+
+
+
+}

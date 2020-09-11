@@ -25,7 +25,7 @@
    
      <div class="iicon iiexplore">
       <span class="itool fas fa-running"></span>
-      <div class="title">run</div>
+      <div class="title">play</div>
     </div>
 <!--
     <span class="itool far fa-layer-group"></span>
@@ -34,7 +34,12 @@
   </div>
   <script>
 
-          $(".iilayers").on("click",(e)=>{e.preventDefault();$("#layer-menu").toggleClass("layer-hide").css("z-index",8000)});
+          $(".iilayers").on("click",(e)=>{
+              //e.preventDefault();
+              $("#layer-menu").toggleClass("layer-hide").css({"z-index":8000,right:"0"})
+            });
+
+         
 
           $(".iisave").on("click",()=>{
           SAVEJS_goInactive();
@@ -70,7 +75,29 @@
 
           </form>
 
-          
+          <!--
+          $(".tabul").append('<li style="50px; padding:5px">&nbsp;&nbsp;Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">&nbsp;&nbsp;Disable Hover <input type="checkbox" name="disableHoverEvents" id="disableHoverEvents">&nbsp;&nbsp;Show Overlays <input type="checkbox" name="showOverlays" id="showOverlays" class="showOverlays">&nbsp;&nbsp;');
+    $(".tabul").append('<li style="50px; padding:5px">&nbsp;Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">&nbsp;&nbsp;Resize Group <input type="checkbox" name="group-resize" id="group-resize"></li>');
+
+          //-->
+          <div class="project-control">
+              <li style="padding:5px;list-style: none;display: inline-block;">
+                Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">
+              </li>
+              <li style="padding:5px;list-style: none;display: inline-block;">
+                Disable Hover <input type="checkbox" name="disableHoverEvents" id="disableHoverEvents">
+              </li>
+              <li style="padding:5px;list-style: none;display: inline-block;">
+                Show Overlays <input type="checkbox" name="showOverlays" id="showOverlays" class="showOverlays">
+              </li>
+              <li style="padding:5px;list-style: none;display: inline-block;"> 
+                Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">
+              </li>
+              <li style="padding:5px;list-style: none;display: inline-block;">
+                Resize Group <input type="checkbox" name="group-resize" id="group-resize">
+              </li>
+              
+          </div>
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">
 
@@ -96,7 +123,7 @@
 
             </li>
            
-           
+       <!--    
             <div class="project-control">
               
     <div class="iicon iisection">
@@ -107,21 +134,13 @@
       <span class="itool fab fa-css3-alt"></span>
       <div class="title">css</div>
     </div>
-    <!-- 
-    <div class="iicon iiexplore">
-      <span class="itool fab fa-css3-alt"></span>
-      <div class="title">css</div>
-    </div>
-    <div class="iicon iiexplore">
-      <span class="itool fab fa-js-square"></span>
-      <div class="title">script</div>
-    </div>
-    //-->
+   
    
      <div class="iicon iijs">
       <span class="itool fab fa-js-square "></span>
       <div class="title">script</div>
     </div>
+    //-->
 <!--
     <span class="itool far fa-layer-group"></span>
     <span class="itool far fa-street-view"></span>//-->

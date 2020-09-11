@@ -16,6 +16,9 @@ $(window).on("preview",function(){
 	
 })
 
+
+
+
 var menuFunc = function(){
 	log.info("User click zMenu")
 	onMenu();
@@ -174,7 +177,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		NOTES_delete();
 		deleteElement(hotObj)
 		
-	} else if(key == 8 ){
+	/*} else if(key == 8 ){
 		log.debug("User clicked delete key")
 		NOTES_delete()
 		
@@ -183,6 +186,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$("[data-action=delete]").click();
 		$(document).click();
 		//Shift-R toggles draft mode
+		*/
 	} else if(key == 82 && event.shiftKey){
 		NOTES_delete();
 		OVERLAY_deleteInstructions();
@@ -613,7 +617,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 }
 
 function addPlusButton(elem){
-
+	//Not doing this anymore...stop working anyway
+	return;
 
 	var plusButtonPushed = true;
 
@@ -711,7 +716,7 @@ _DEFAULT_CLOSE_CODE = function(event,ui){
 	copiesModified = false;
 
 	
-	$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 }
 
@@ -797,7 +802,9 @@ CUSTOM_ON_QUICK_INPUT = function(evnt){
 
 			}else if(label.startsWith("font") || label.startsWith("text")){
 				$(parent).css(label,$(evnt.target).val())
-                // $(parent).find("[type]").css(label,$(evnt.target).val())  
+                // $(parent).find("[type]").css(label,$(evnt.target).val()) 
+		       
+
             }else if(label == "color"){
 					$(parent).css("-webkit-text-fill-color",$(evnt.target).val())
 					
@@ -866,29 +873,102 @@ CUSTOM_TXT_RESIZE = function(event,ui){
 		ui = $(ui)
 		log.trace("Resziing and ui " + ui.attr("id") + " : " + ui.height() + " <==> " + ui.weight())
 		log.trace("Up in here today " + ui.css("font-size"))
-		ui.css("font-size",ui.height())
+		ui.css("font-size",ui.height()/1.5)
 		
 		w = ui.width() * (100 / document.documentElement.clientWidth);
 		h = ui.height() * (100 / document.documentElement.clientWidth);
 
 
-		ui.find("span").css({height:h+"vw",width:w+"vw"})
-		ui.element.find("span").css({height:h+"vw",width:w+"vw", "font-size":h+"vw"})
+		//ui.find("span").css({height:h+"vw",width:w+"vw"})
+		//ui.element.find("span").css({height:h+"vw",width:w+"vw", "font-size":h+"vw"})
 		//CUSTOM_PXTO_VIEWPORT(ui,ui.position().left,ui.position().top)
+		//ui.element.css("height",parseInt(ui.element.css("font-size") *1.5));
 		
 
 	} else {
-		ui.element.css("font-size",ui.size.height)/*
+
+		
+
+		var fontSize = parseFloat( ui.element.css("font-size") );
+		
+		/*
+		if(ui.originalSize.height > ui.element.height()){
+			 --fontSize;
+		} else if(ui.originalSize.height < ui.element.height() && ui.element.width() == ui.originalSize.width){
+			++fontSize;
+		} 
+
+		if(fontSize > 10)
+			ui.element.css({height:"auto","font-size":fontSize,right:"unset",bottom:"unset"})
+
+
+		ui.element.css({height:"auto","font-size":fontSize,right:"unset",bottom:"unset"})
+
+			/*
+		
+
+
+
 		ui.element.find("[resize]").each(function(idx,child){
 			CUSTOM_PXTO_VIEWPORT(child,$(child).position().left,$(child).position().top)
 		
-		})*/
+
+		})
+		/*
+*/
 		w = ui.element.width() * (100 / document.documentElement.clientWidth);
 		h = ui.element.height() * (100 / document.documentElement.clientWidth);
 
-		elems= ui.element.find("span").css({height:h+"vw",width:w+"vw", "font-size":h+"vw"})
-		log.debug("Resized " +elems.length)
+		 
+		var ratioFont = parseFloat( ui.element.css("font-size") ) /( parseInt(ui.originalSize.height) * parseInt(ui.originalSize.width) )
+
+		//var fontMultiplier = parseInt(ui.originalSize.height) / ui.element.height();
+
+		var fontSize = ratioFont * Math.round(ui.element.height() * ui.element.width());
+
+		console.log(`FontSize ${fontSize} ratio ${ratioFont} height ${ui.element.height()}`)
+
+		//if(fontSize > 10)
+
+		//elems= ui.element.css({height:"auto",right:"unset",bottom:"unset","font-size":h+"vw"})
+			
+		if(ui.element.width() == ui.originalSize.width)
+			elems= ui.element.css({height:"auto", right:"unset",bottom:"unset","font-size":h/1.5 + "vw"})
+		//log.debug("Resized " +elems.length)
+
+		//ui.element.css("height",parseInt(ui.element.css("font-size") *1.5));
+		
+	
 	}
+
+
+/*
+	array1.forEach(	
+		function(element) {
+			var g = element.match(/fa-\w+(-\w+)?/);
+			if( g != undefined )
+			{
+				$("<i>",{class:`fa ${g[0]}`}).appendTo($(parent));
+				parent.append($(`<i class='fa ${g[0]}></i>`));
+				console.log(`appended ${g[0]} to parent`)
+			}else {
+				console.log(`element ${element} did not match regex`)
+				//parent.text(parent.text() + " " + element);
+				parent.append(`<span>${element}&nbsp;</span>`);
+			}
+			//console.log(element)
+		}
+	);*/
+
+	/*
+	 var textfield = ui.element;
+	 var heightOfEachCharacter = ui.element.height() / parseInt(ui.element.css("font-size"));
+	 var widthOfEachCharacter = Math.ceil(parseInt(ui.element.css("font-size"))/heightOfEachCharacter);
+	 var numberOfCharsPerLine = Math.round(ui.element.width() / widthOfEachCharacter) * 1.5;
+	 var numberOfLines = Math.round(ui.element.text().length / numberOfCharsPerLine);
+	 */
+
+
 }
 
 CUSTOM_ICON_RESIZE = function(event,ui){
@@ -1121,7 +1201,7 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 
 	userHoveringOverNote = false;
 	
-    $(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+    $(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
     
 	//log.debug("CUSTOMEVENTS.js:Triggered Done Editing Notes for parent " + $(event.target).attr("parent"))
 
@@ -1133,24 +1213,8 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 	}
 	var parent = $("#"+parentId)
 
-	/* Moved to QUICK_INPUT
-
-	var parent = $("#"+parentId)
-
-	if(parent.attr("href") != undefined){
-		//alert('hrefs is ' + parent.attr('href'))
-			var loc = parent.attr("href");
-		
-			if(loc.trim().length  > 0){
-
-				createAnchorFor(parent);
-		
-			}
-	}
-	*/
-
 	if(parent.position()){
-		CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
+		//CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
 	}
 
 	if(copiesModified){
@@ -1161,7 +1225,7 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 	copiesModified = false;
 	//bind document listener keydown again
 	
-	$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 	writeTabs(parent,true)
 
@@ -1191,7 +1255,7 @@ CUSTOM_CLOSE_LOGIC = function(event,ui){
 
 	//bind document listener keydown again
 	
-	$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 
 }
@@ -1359,7 +1423,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 
 				//reenable keydown logic and save input
 				
-				$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+				$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 				
 					var tokens = $(input).val().split("\n");
 
@@ -1769,19 +1833,21 @@ function setUpDiv(div){
 
 
 	try {
-		div.off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
-			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy");
+		div.unbind("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).unbind("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+			.unbind("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).unbind("click",writeTabs).resizable("destroy");
 	} catch(destroy){
 		log.debug("ignoring warning while destroying system generated events tied to div " + div.attr("id"));
 	}
 
 
 	log.debug("Setting up my DIV " + div.attr("id"))
-	div.not("[type=OVERLAY]").on("mouseenter",function(event){
+	div.not("[type=OVERLAY]").unbind("mouseenter").on("mouseenter",function(event){
 		
 		if($(this).attr("overlay") && !$(this).children("[type=OVERLAY]").first().is(":visible") ) {
 			log.error("Entered MOUSE CUSTOM_EVENTS2.js: " + event.target.id)
-			OVERLAY_showOverlay(event.target)
+			OVERLAY_showOverlay(event.target);
+
+
 		} else if(div.is("[type=IMG]")) {
 			OVERLAY_showInstructions(event.target);
 		}
@@ -1847,13 +1913,63 @@ function setUpDiv(div){
 	
 
 	if(attr == "T" || attr == "BTN"){
-		$.event.trigger("translateTxt",[div])
+		$.event.trigger("translateTxt",[div]);
 
-		div.css({outline: "0px solid transparent","white-space":"pre-line"});
+		
+	    div.on("click",
+	    function(e){ 
+	    	DRAW_SPACE_advancedShowing = true;
+			SAVE_okToSave = false;
+			$(this)[0].style.caretColor=$(this).css("color");
+	        //console.log(`HTML IS ${$(this).html().replace(/<\i class="fa\s+(fa-\w+(?:-\w+)*?)"\>\<\/i\>/gim,"$1")}`);
+	        $(this).html(  $(this).html().replace(/<\i class="fa\s+(fa-\w+(?:-\w+)*?)"\>\<\/i\>/gim,"$1")   );
+	        $(this).attr("contenteditable","true").css({right:"unset","bottom":"unset",height:"auto"}).focus();
+	        //CUSTOMEVENTS_placeCaretAtEnd(e.target);
+			var cell = this;
+			// select all text in contenteditable
+			// see http://stackoverflow.com/a/6150060/145346
+			var range, selection;
+			if (document.body.createTextRange) {
+			range = document.body.createTextRange();
+			range.moveToElementText(cell);
+			range.select();
+			} else if (window.getSelection) {
+			selection = window.getSelection();
+			range = document.createRange();
+			range.selectNodeContents(cell);
+			selection.removeAllRanges();
+			selection.addRange(range);
+			}
+
+
+			//$(this).find(".fa-lock").click();
+	       
+	        $(this).on("mouseleave",function(e){
+	        	$(this).css({"caret-color":"black"});
+	        	DRAW_SPACE_advancedShowing = false;
+				SAVE_okToSave = true;
+	            $(this).unbind("mouseleave");
+	            $(this).html($(this).html().replace(/(?<!\<i class="fa\s|\<div class="fa\s)((fa-\w+)(?:(?:-\w+)+)?)/gim,`<i class="fa $1"></i>`))
+	            $(this).attr("contenteditable","false");
+	            $(this).resizable("destroy").resizable();
+	            CUSTOM_PXTO_VIEWPORT($(this))
+	        })
+	    });
+
+		//div.css({outline: "2px dashed gold","text-align":"center"});
 
 		div.on("resize",CUSTOM_TXT_RESIZE)
-		.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
+		.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).addClass("debug-border-style");
+		//.css("text-align","center");
 		
+		//if(parseInt(div.css("font-size") != 0 )){
+			/*	div.css({
+			height:parseInt(div.css("font-size"))*3.5, 
+			width:parseInt(div.css("font-size")*300)})*/
+		//}
+		
+                      
+
 		
 	}
 
@@ -1883,9 +1999,48 @@ function setUpDiv(div){
 	log.debug("doing Divs")
 	
 	div.not("body,[type=MENU]").off("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
-					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
+					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC);
 					
+	if(div.is(".navigation-list")){
+		div.on("click",function(e){
+
+			if(div.children(".dropped-object").length > 0){
+				return;
+			}
+
+			div.text("")
+			div.attr("previous-style",`'background-color':'${div.css("background-color")}',color:'${div.css("color")}'`)
+			div.css({"background-color":"white",color:"black"}).attr("contenteditable",true);
+			div.focus();
+			div.on("mouseleave",function(){
+				//div.unbind("mouseleave");
+				div.css(`${div.attr("previous-style")}`);
+				div.removeAttr("contenteditable");
+				var options = div.text().split(",");
+				console.log(`OPTIONS=${options.length}`)
+				if(div.children(".dropped-object").length == 0){
+				if(options.length > 0){
+					div.text("")
+					options.forEach(function(token){
+						var item = configuredTool(whichTool("T"));
+	                    item.html(token);
+	                    div.append(item);
+	                    item.addClass("menutext")
+	                    item.css({height:"30px", "margin-top":"30px","font-family":"inherit","font-weight":"inherit","text-transform":"inherit",color:"inherit",display:"inline-block","position":"relative","text-align":"center"})
+	                    //item.attr("onhover","background-color:navy;color:white")
+	                  
+	                    setUpDiv(item);
+
+	                    CUSTOM_PXTO_VIEWPORT(item,item.offset().left,item.offset().top)
+					})
 					
+				}
+			}
+			})
+		
+
+	})		
+	}		
 
 	//Setup Menu Divs
 	if(div.is("[type=T]")){
@@ -1958,10 +2113,25 @@ function setUpDiv(div){
 		setUpGroupContainer(div,true);
 	}
 
+
+
 	return div;
 	
 }
 
+function CUSTOMEVENTS_placeCaretAtEnd(el){
+
+    
+    if (typeof el.selectionStart == "number") {
+        el.selectionStart = el.selectionEnd = el.value.length;
+    } else if (typeof el.createTextRange != "undefined") {
+        el.focus();
+        var range = el.createTextRange();
+        range.collapse(false);
+        range.select();
+    }
+        
+}
 
 
 
@@ -2249,6 +2419,10 @@ function initialize(){
    		GHOST_init(ghost);
    	})
 
+   	//layer tool menu
+
+   
+
    	//alert(`Length of layer-menu is ${$("#layer-menu").length}`);
    	//import layers.js
    	reLoadLayers();
@@ -2286,9 +2460,12 @@ function recursiveCpy(obj, plusButtonPushed){
 
 	clone.removeAttr("hasjs")
 
+	console.log(`Extending original copy ${obj.attr("id")}`)
 	clone.attr("extends",obj.attr("id"))
 
 	clone.attr("id","ELEM_"+ new Date().getTime())
+
+	console.log(`Wrote new ID during copy ${clone.attr("id")}`)
 
 	log.trace(clone)
 	
@@ -2298,7 +2475,7 @@ function recursiveCpy(obj, plusButtonPushed){
 
    	clone.removeClass(obj.attr("id")) 
 
-   	clone.off();
+   	clone.unbind();
 	
 	//var goodChildren = $(obj).children(".dropped-object"); 
 
@@ -2333,7 +2510,7 @@ function recursiveCpy(obj, plusButtonPushed){
    		//cpy.css("position")
    		cpy.removeClass(id)
 
-   		cpy.off();
+   		cpy.unbind();
 
    		cpy.removeData();
    		
@@ -2382,14 +2559,20 @@ DROPPER_LOGIC = {
         	if($(ui.draggable).hasClass("nav-link")){
         		console.log(`User is dragging on of the nav items, ignore because dropTool() will place it for us`);
         		var tmpType = ui.draggable.attr('type');
+
                       if(tmpType == "PICTURE"){
                         tmpType = "IMG";
                       } 
+
                       console.log(`Tmp Type is ${tmpType}`);
                       var tTool = whichTool(tmpType);
 
                       console.log(`UI offset ${ui.draggable.offset().left}`)
                       tTool = configuredTool(tTool);
+
+                      if(tmpType == "T"){
+                      	tTool.css("text-align","center");
+                      }
                       
                       ui.draggable = tTool;
                       fromSideNav = true;
@@ -2401,6 +2584,7 @@ DROPPER_LOGIC = {
         	if($(ui.draggable).attr("id") == "layer-menu"){
 
 				console.log("Menu shouldn't be here...returning");
+				return;
 
 			}
 
@@ -2423,8 +2607,8 @@ DROPPER_LOGIC = {
         		//clone.css({left:$(event.target).position().left -	10,top:$(event.target).position().top -10})
         		//$('body').append(clone);
         		
-				$(clone).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
-							.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
+				$(clone).unbind("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+							.unbind("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
 							
 
         		log.debug("CUSTOMEVENTS.js:Copy")
@@ -2564,11 +2748,14 @@ DROPPER_LOGIC = {
 
 
 
+
 					if($(parent).children(child).length > 0  && $(parent).is("[type=LIST]")){
+						console.log(`No Need to Add Child to the list again. It is already attached to the list..returning `)
 						return;
 
 					} else if($(parent).children(child).length > 0  )
 	        		{
+
 	        	
 	        			CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
 	     
@@ -2576,7 +2763,7 @@ DROPPER_LOGIC = {
 	        		} 
 
 
-
+	        		console.log(`Is this ever reached????`)
 
 					/* Not needed since on dragstop event is already active
 	        		if($(parent).children(child).length > 0  )
@@ -2730,7 +2917,7 @@ function dropTool(aTool,dropInfo){
 
 				//Update Layers Tool
 				//import layers_menu.js
-				updateLayersTool($(aTool).attr("id"));
+				updateLayersTool($(aTool).attr("id"),target.id);
 				
 
 }

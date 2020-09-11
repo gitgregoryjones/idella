@@ -156,6 +156,8 @@ function writeTabs(currentCtx,forceWrite){
 
 	$.each(styleMeta,function(label,value){
 		log.debug("The label is " + label + " and value " + value)
+
+		let originalFieldValue = "";
 		
 		var common = null;
 
@@ -181,13 +183,13 @@ function writeTabs(currentCtx,forceWrite){
 
 		//tabLabel = tabLabel.toUpperCase();
 
-		styleRow = $('<div class="styleRow" id="row-'+ label + '"></div>');
+		var styleRow = $('<div class="styleRow" id="row-'+ label + '"></div>');
 
 		var lowLab = label.replace(tabLabel.toLowerCase()+"-","")
 
 		var styleLabel = "";
 
-		sAnchor =  $("<a>",{href:"yahoo.com", title:lowLab}).append(lowLab);
+		var sAnchor =  $("<a>",{href:"yahoo.com", title:lowLab}).append(lowLab);
 
 		sAnchor.on('click',function(e){
 			
@@ -204,11 +206,15 @@ function writeTabs(currentCtx,forceWrite){
 			styleLabel = $('<div class="styleLabel"><div>').append(lowLab);
 		}
 
-		theValue = !$(parent).css(label) ? $(parent).attr(label) : $(parent).css(label);
+		let theValue = !$(parent).css(label) ? $(parent).attr(label) : $(parent).css(label);
 
 		//f = $("<input>",{value:theValue})
-
-
+		
+		if(label == "transition-duration"){
+			//console.log(`Reading transition-duration Before ${parent.attr("id")}`);
+			theValue = getTransitionDuration($(parent));
+			console.log(`Reading transition-duration After ${theValue}`);
+		}
 
 
 		if(label == "src" || label == "align"){
@@ -236,7 +242,7 @@ function writeTabs(currentCtx,forceWrite){
 
 
 
-		f = $("<input>",{type:theType,id:tabLabel+"-"+label,value:theValue});
+		var f = $("<input>",{type:theType,id:tabLabel+"-"+label,value:theValue,for:theParentId});
 
 		//If this is a dialog Box
 		if(label == "dialog-enabled"){
@@ -248,8 +254,12 @@ function writeTabs(currentCtx,forceWrite){
 				$(parent).removeAttr("hasjs")
 			}
 		}
+
+		f.unbind("dblclick").on("dblclick",function(e){
+			$(e.target).val("");
+		})
 					
-		f.on('input',function(evnt){
+		f.unbind("input").on('input',function(evnt){
 
 				if(label == "class"){
 					//do nothing.  wait until class is complete
@@ -298,6 +308,9 @@ function writeTabs(currentCtx,forceWrite){
 
 				}else if(label.startsWith("font") || label.startsWith("text")){
 					$(parent).css(label,$(evnt.target).val())
+					if($(parent).is("[type=LIST],[type=NAVIGATION]")){
+						$(parent).children(".dropped-object").css(label,$(evnt.target).val())
+					}
                     // $(parent).find("[type]").css(label,$(evnt.target).val())  
                 }else if(label == "color"){
 						$(parent).css("-webkit-text-fill-color",$(evnt.target).val())
@@ -339,16 +352,16 @@ function writeTabs(currentCtx,forceWrite){
 					log.trace(myStyle)
 					//delete myStyle.top;
 					//delete myStyle.left;
-					log.trace("I see this many copies of " + $(parent).attr("id") + " : " + $("[extends='"+$(parent).attr("id")+ "']").not($(parent)).length)
+					log.trace("I see this many copies of " + $(parent).attr("id") + " : " + $(`[extends=${$(parent).attr("id")}]`).not($(parent)).length)
 					//Any copies of this parent
-					$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).css(myStyle);
+					$(`[extends=${$(parent).attr("id")}]`).not($(parent)).css(myStyle);
 
 					//Any copies currently being edited
 
 					//copy to others just in case we are editing a copy
 					originalParentId = $(parent).attr("extends");
 
-					$("[extends='"+originalParentId+"']").not($(parent)).css(myStyle);
+					$(`[extends=${originalParentId}]`).not($(parent)).css(myStyle);
 
 					//Copy to parent in case we are editing a copy and not the parent directly
 					$("#"+originalParentId).css(myStyle)
@@ -358,13 +371,14 @@ function writeTabs(currentCtx,forceWrite){
 						log.debug("STYLETABS2.js :" + label + " is not a style " + " overwriting with label " + $(event.target).val())
 						//User modified an an attribute
 						$("#"+originalParentId).attr(label,$(event.target).val())
-						$("[extends='"+originalParentId+"']").not($(parent)).attr(label,$(event.target).val());
-						$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).attr(label,$(event.target).val())
+						$(`[extends=${originalParentId}]`).not($(parent)).attr(label,$(event.target).val());
+						$(`[extends=${$(parent).attr("id")}]`).not($(parent)).attr(label,$(event.target).val())
 
 					}
 					copiesModified = true;
 				}
-		}).on("mouseleave",function(evnt){
+
+		}).unbind("mouseleave").on("mouseleave",function(evnt){
 
 			var theTarget = $(evnt.target);
 
@@ -459,9 +473,13 @@ function writeTabs(currentCtx,forceWrite){
 			
 
 
-		}).on("mouseenter",function(evnt){
+		}).unbind("mouseenter").on("mouseenter",function(evnt){
 			
-			originalFieldValue = $(evnt.target).val();
+			originalFieldValue = $(evnt.target).val()
+
+			console.log(`Searching for ${originalFieldValue} `)
+
+			//originalFieldValue = $(correctId).css(label); 
 
 
 		})
@@ -517,10 +535,9 @@ function writeTabs(currentCtx,forceWrite){
 		$(".tabul").append("<li style='width:10px'>&nbsp;</li>")
 		$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;More Styles : <input type="search" id="tags" value=""></div></li>');
 		$(".tabul").append('<li style="50px; padding:5px" class="mini-responsive-design-tab"><div class="fa fa-desktop"></div></li>');
-		$(".tabul").append('<li style="50px; padding:5px" class="rocket-save"><div style="display:inline">&nbsp;&nbsp;Save: </div><div class="fa fa-save"></div></li>');
-		$(".tabul").append('<li style="50px; padding:5px" class="rocket-settings"><div style="display:inline">&nbsp;&nbsp;Options: </div><div class="settings-icon fa fa-angle-double-up"></div></li>');
-		$(".tabul").append('<li style="50px; padding:5px">&nbsp;&nbsp;Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">&nbsp;&nbsp;Disable Hover <input type="checkbox" name="disableHoverEvents" id="disableHoverEvents">&nbsp;&nbsp;Show Overlays <input type="checkbox" name="showOverlays" id="showOverlays" class="showOverlays">&nbsp;&nbsp;Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">&nbsp;&nbsp;Resize Group <input type="checkbox" name="group-resize" id="group-resize"></li>');
-
+		//$(".tabul").append('<li style="50px; padding:5px" class="rocket-save"><div style="display:inline">&nbsp;&nbsp;Save: </div><div class="fa fa-save"></div></li>');
+		//$(".tabul").append('<li style="50px; padding:5px" class="rocket-settings"><div style="display:inline">&nbsp;&nbsp;Options: </div><div class="settings-icon fa fa-angle-double-up"></div></li>');
+		
 		//$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;Search Styles : <input type="search" id="tags" value=""></div></li>');
 		
 		

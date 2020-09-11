@@ -55,7 +55,7 @@ function DRAW_SPACE_showSettings(){
 
 	$(".setarea").load("/settings.html");
 
-	$("#editSpace").animate({height:$(document).height(),top:20},function(){
+	$("#editSpace").animate({height:$(document).height(),top:0},function(){
 		//$("#drawSpace").hide();
 		
 	})
@@ -225,7 +225,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	NOTES_delete();
 
-	body = $("#content");
+	content = $("body");
 
 	//body.children().last().remove();
 
@@ -235,6 +235,8 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	var es = $("<div>",{id:"editSpace"}).append('<div id="tabs"><ul class="tabul"></ul></div>');
 
+	//$(ds).append(content);
+
 
 	//ds.append(body.children());
 
@@ -242,7 +244,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	//wp.append(es)
 
-	//$(body).append(wp);
+	
 
 
 	wp.css({
@@ -264,14 +266,19 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 
 	es.css({
-		height:$(wp).height()*.40,
-		width:"100%",
-		top:$(ds).height(),
+		height:"30%",
+		width:400,
+		top:100,
 		position:"absolute",
-		"z-index": 999999,
-		border:"3px solid yellow"
+		"z-index": 9999999,
+		border:"3px solid white",
+		"box-shadow":"2px 2px 2px black",
+		"border-radius":"5px",
+		overflow:"none"
 		
-	}).show().off("mousenter").on("mouseenter",function(){
+
+		
+	}).show().unbind("mousenter").on("mouseenter",function(){
 				 
 				 $(document).off("keydown")
 
@@ -284,7 +291,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 					$("#" + $(".active-message").attr("msg-parent")).trigger("mouseenter");
 				}
 
-			}).off("mouseleave").on("mouseleave",function(){
+			}).unbind("mouseleave").on("mouseleave",function(){
 				$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 				OVERRIDE_CTX_MENU = true;
@@ -302,6 +309,10 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	body = $("body");
 
 	body.id = "body";
+
+
+	//body.append(content);
+	body.append(es.hide());
 
 	/*
 	ds.scroll(function(){
@@ -397,14 +408,14 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	addEditMode()
 
-		DRAW_SPACE_advancedShowing = false;
-				userHoveringOverNote = false;
-				   $("#drawSpace").css({height:$(document).height()});
-        $("#editSpace").css("transtion-duration","0.6s").fadeOut();
-        $("*").removeClass("disabledElements").removeClass("submenu_on")
-        SAVE_okToSave=true;
-				//CUSTOM_pressEscapeKey()
-				log.debug("Pressed escape key");
+	DRAW_SPACE_advancedShowing = false;
+			userHoveringOverNote = false;
+	$("#drawSpace").css({height:$(document).height()});
+    $("#editSpace").css("transtion-duration","0.6s").fadeOut();
+    $("*").removeClass("disabledElements").removeClass("submenu_on")
+    SAVE_okToSave=true;
+			//CUSTOM_pressEscapeKey()
+	log.debug("Pressed escape key");
 
 
 	$(".responsive-design-tab").on("click",makeOrBreakpoint)
