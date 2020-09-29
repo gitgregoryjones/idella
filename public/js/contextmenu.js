@@ -40,7 +40,7 @@ $(document).on("initializationComplete",function(){
             var mLeft = $(this).offset().left + menu.width();
             var mTop = $(this).offset().top  - $(this).height() + $("#drawSpace").scrollTop();
 
-            console.log(`mLeft is ${mLeft} and top is ${mTop}`)
+            log.debug(`mLeft is ${mLeft} and top is ${mTop}`)
             if(mLeft + $(".custom-menu").width() > $(document).width()){
                 mLeft = $(this).offset().left - menu.width();
             }
@@ -123,7 +123,7 @@ $(document).on("initializationComplete",function(){
 
             $(".editonly").show()
             if(!CUSTOM_lastCopyElement && localStorage.getItem('copy-buffer')){
-                console.log("I see a copy buffer");
+                log.debug("I see a copy buffer");
                CUSTOM_lastCopyElement =  $(localStorage.getItem('copy-buffer'))
 
             }
@@ -196,7 +196,7 @@ $(document).on("initializationComplete",function(){
        
         var contextMenu = $(".custom-menu");
 
-        console.log(`Context Menu width is ${contextMenuWidth} and doc width ${$(document).width()} left ${leftPos} `)
+        log.debug(`Context Menu width is ${contextMenuWidth} and doc width ${$(document).width()} left ${leftPos} `)
         if(contextMenuWidth > $(document).width()){
             
             leftPos = leftPos - contextMenu.width()
@@ -286,7 +286,8 @@ $(document).on("initializationComplete",function(){
             case "first": alert("first"); break;
             case "insertBefore": 
                         //alert('inserting before ' + currentCtx.attr("id"))
-                        currentCtx.insertBefore(currentCtx.prevAll(":not(.ui-resizable-handle)").first())
+                        //currentCtx.insertBefore(currentCtx.prevAll(":not(.ui-resizable-handle)").first())
+                        currentCtx.insertBefore(currentCtx.prev());
                         if(currentCtx.is("[type=FIELD]")){
 
                             var isGroupContainer = currentCtx;
@@ -304,7 +305,8 @@ $(document).on("initializationComplete",function(){
                         $(".fa-lock").first().click();
                         break;
              case "insertAfter": 
-                        currentCtx.insertAfter(currentCtx.nextAll(":not(.ui-resizable-handle)").first())
+                        //currentCtx.insertAfter(currentCtx.nextAll(":not(.ui-resizable-handle)").first())
+                        currentCtx.insertAfter(currentCtx.next());
                         if(currentCtx.is("[type=FIELD]")){
 
                             var isGroupContainer = currentCtx;
@@ -515,7 +517,7 @@ $(document).on("initializationComplete",function(){
                         }
                         var total = 0;
                         $("#content").find(".section").each((idx,obj)=>{
-                            console.log(idx)
+                            log.debug(idx)
                              total += $(obj).height();
                         })
                         $("#content,body").css("height",total + 50);
@@ -546,7 +548,7 @@ $(document).on("initializationComplete",function(){
                     //Unlock this element               
                     $(".fa-lock").first().click();
 
-                    $(currentCtx).animate({opacity:.3},600, function(){
+                    $(currentCtx).animate({opacity:.3},600,"swing",function(){
                         $(currentCtx).css({opacity:op});
                         
                         var str = $(CUSTOM_lastCopyElement).clone().wrap('<div>').parent().html();
@@ -567,7 +569,7 @@ $(document).on("initializationComplete",function(){
                     ignoreDoublePasteEvent = CUSTOM_lastCopyElement;
 
 
-                    console.log(`Pasted ${$(CUSTOM_lastCopyElement).attr("id")}`);
+                    log.debug(`Pasted ${$(CUSTOM_lastCopyElement).attr("id")}`);
 
 
 
@@ -584,19 +586,19 @@ $(document).on("initializationComplete",function(){
                     
                     c = $(c[0].outerHTML.replace(/id="(\w+_\d+)"/gm,function(oldId){
 
-                        console.log(`Old Id is ${oldId}`)
+                        log.debug(`Old Id is ${oldId}`)
                         var numberPart = oldId.replace(/"/g,"").substring(oldId.indexOf("_"));
-                        console.log(`Nubmer Part is ${numberPart}`)
+                        log.debug(`Nubmer Part is ${numberPart}`)
                         var backwardsNumber = parseInt(Array.from(numberPart).reverse().join(""));
-                        console.log(`Nubmer Part Reversed is ${backwardsNumber}`)
+                        log.debug(`Nubmer Part Reversed is ${backwardsNumber}`)
                         backwardsNumber = backwardsNumber + (Math.ceil(Math.random() * 10) );
-                        console.log(`Final Id is ${backwardsNumber}`)
+                        log.debug(`Final Id is ${backwardsNumber}`)
                         return `id="ELEM_${backwardsNumber}"`;
 
                     }));
 
 
-                    console.log(`WHAT New ID is ${c.attr("id")}`)
+                    log.debug(`WHAT New ID is ${c.attr("id")}`)
 
                     
 
@@ -640,7 +642,7 @@ $(document).on("initializationComplete",function(){
 
             case "resize": $(".template").click();break;
             case "javascript": if(currentCtx.attr("type") != "canvas"){   
-                    console.log(`Current Context greg is ${$(currentCtx).attr("id")}`);
+                    log.debug(`Current Context greg is ${$(currentCtx).attr("id")}`);
 
                     MAKE_JAVASCRIPT_BOX_for (currentCtx)     
                     //NOTES_delete();
@@ -782,7 +784,7 @@ log.debug("CONTEXTMENU.js: I am writing fields of length " + fields.length)
 
         for(f=0; f < fields.length; f++){
             log.debug("CONTEXTMENU.js: Putting field at location")
-            console.log(locations[f])
+            log.debug(locations[f])
             $(fields[f]).css(locations[f]).attr("currentCtx",$(currentCtx).attr("id"))            
             form.append(fields[f]);
         }
@@ -867,7 +869,7 @@ log.debug("CONTEXTMENU.js: I am writing fields of length " + fields.length)
                 }
         }).on("change",function(evnt){
             //$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-            $(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+          //  $(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
             //only used to write class info here.  Everything else should use on.input
             if(label == "class" && $(currentCtx.attr("user-classes") && $(currentCtx).attr("user-classes").trim().length > 0)){
                 //$(currentCtx).attr("class",$(currentCtx).attr("user-classes"))
@@ -887,6 +889,9 @@ log.debug("CONTEXTMENU.js: I am writing fields of length " + fields.length)
             $(document).unbind("keydown")
             $(this).attr("value","")
             
+        }).on("mouseleave",function(){
+            log.debug(`Leaving the writeFields field`);
+             $(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
         })
 
         $("#quick-edit input")[0].focus();

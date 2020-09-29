@@ -99,7 +99,7 @@
 </div>
 </div>
 <div id="maincontent">
-    <div class="layer">
+    <div class="layer dummy" style="display: none">
     	<div style="border-right:1px solid grey;display:block; height:max;font-size:18px;float:left; width:10%;padding-left:5px; padding-top:5px">
     		<i class="eye fa fa-eye"></i>
     		<i class="fas fa-arrows-alt-h"></i>
@@ -109,14 +109,10 @@
     	<div class="preview-window" style="display:block; float:left;"></div>
     	<div class="details" style="font-size:12px;display:block; float:left; width:50%"></div>
     </div>
-    <!-- 
-    <div class="layer"></div>
-    <div class="layer"></div>
-    <div class="layer" id="scrollto"></div>
-    <div class="layer"></div>
-    <div class="layer"></div>
-    //-->
 </div>
+<script>
+	$(".close-window").off().on("click",showHideMenu);
+</script>
 <!--
 <div id="footer">
 

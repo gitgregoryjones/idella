@@ -170,7 +170,7 @@ function OVERLAY_showOverlay(theElem){
 
 				
 
-			
+				/*
 				if(olay.attr("bigun")){
 					olay.find(".dropped-object").each(function(it,div){
 						var div = $(div);
@@ -205,8 +205,8 @@ function OVERLAY_showOverlay(theElem){
 					if($(theElem).find("video").length > 0){
 						$(theElem).find("video")[0].play();
 					}
-				}
-
+				}*/
+				
 				$("[type=OVERLAY]").not(olay).fadeOut();
 
 				//getHelp()

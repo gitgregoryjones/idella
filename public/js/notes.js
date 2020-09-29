@@ -74,6 +74,7 @@ function refreshSlashes(){
 
 function NOTES_makeNote(element,isActive){
 
+
 	
 	if(!$(element).hasClass("dropped-object") && !$(element).attr("[type=option]")){
 		NOTES_delete()
@@ -101,11 +102,19 @@ function NOTES_makeNote(element,isActive){
 
 		log.debug("Making lock")
 
-		widgets = $("<div>",{color:"yellow", class:"widget-off",id:$(theElem).attr("id")+"-widget"})
-				.css({border:"1px solid navy","text-align":"center","background-color":"black"})
+		widgets = $("<div>",{color:"yellow", widget:"enabled",class:"widget-off",id:$(theElem).attr("id")+"-widget"})
+				.css({cursor:"pointer",visibility:"hidden",border:"1px solid navy","text-align":"center","background-color":"black"})
 
-		lock = $("<div>",{class:"fa fa-lock",id:$(theElem).attr("id")+"-lock"}).appendTo(widgets)
+		lock = $("<div>",{class:"fa fa-lock",lock:"enabled",id:$(theElem).attr("id")+"-lock"}).appendTo(widgets)
 
+		/*
+
+		if($(theElem).is("[type=T]")){
+			widgets.css({visibility:"hidden"});
+			lock.css({visibility:"hidden"});
+			//On Click of Text will open controls
+
+		}*/
 
 		widgets.appendTo($(theElem));
 
@@ -144,68 +153,7 @@ function NOTES_makeNote(element,isActive){
 							$("#editSpace").insertAfter($("#maincontent").find(`[layer=${myParent.attr('id')}]`)).css("top");
 
 
-							//Highlight the layer on the Layers Menu (if shown)
-							//import layers-menu.js
-							//updateLayersTool($(myParent).attr("id"));
-							
-
-							
-							/*
-							var lilEye = $("<div>",{class:"fa fa-eye",id:$(theElem).attr("id")+"-plus"})
-
-							if( $(`#${$(theElem).attr("id")+"-plus"}`).length == 0){
-								lilEye = $("<div>",{class:"fa fa-eye",id:$(theElem).attr("id")+"-plus"}).appendTo(widgets).css({"padding-left":"5px"})
-							} else {
-								lilEye = $(`#${$(theElem).attr("id")+"-plus"}`);
-							}
-							
-
-							lilEye.off().on("click",function(evnt){
-
-								evnt.stopPropagation();
-
-								var slash = $("<div>",{class:"fa fa-eye-slash",id:$(theElem).attr("id")+"-plus"}).appendTo($("body"))
-
-								slash.attr("slash-for",`#${theElem.attr("id")}`)
-
-								slash.css({"font-size":"32px","text-align":"center","background-color":"silver","color":"white",position:"absolute"})
-												
-								//now position it
-								
-
-								slash.attr("title",`click to show ${theElem.attr("id")}`)
-
-								slash.on("mouseenter",function(){
-
-									theElem.fadeIn();
-
-								}).on("mouseleave",function(){
-
-									theElem.fadeOut();
-
-								}).on("click",function(evnt){
-
-									theElem.hide();
-									theElem.fadeIn();
-									//Remove This
-									$(evnt.target).remove();
-								})
-
-								theElem.hide();
-
-								refreshSlashes();
-
-								widgets.remove();
-
-								NOTES_delete();
-
-							})
-
-							lilEye.attr("title",`click to hide ${theElem.attr("id")} from view`)
-
-						*/
-
-							
+						
 							//$(document).click();
 						// 	NOTES_makeNote(myParent,true)
 							//If Text Type, give more room in UI by removing the helper
@@ -215,7 +163,7 @@ function NOTES_makeNote(element,isActive){
 
 							updateLayersTool($(myParent).attr("id"));
 
-							console.log("Calling update Layers Tool");
+							log.debug("Calling update Layers Tool");
 							//impor layers.js scroll to layer
 							if(!$(this).is(".alreadyscrolled")){
 								scrollToLayer($(myParent).attr("id"));
@@ -239,19 +187,24 @@ function NOTES_makeNote(element,isActive){
 
 		if(objectIsReordable($(theElem))){
 							currentCtx = $(theElem);
-							
-							$(widgets).append($("<div>",{class:"fa fa-caret-up",id:$(theElem).attr("id")+"-before"})
-									.off("click").on("click",function(event){
+							currentCtx.target = theElem;
 
-										event.stopPropagation();
-										$("[data-action=insertBefore]").click();
+							$(widgets).append($("<div>",{class:"fa fa-caret-up",id:$(theElem).attr("id")+"-before"})
+									.unbind("click").on("click",function(event){
+										console.log(`Reordering an element Before`)
+										
+										r_InsertBefore(currentCtx);
+										//event.stopPropagation();
+										//$("[data-action=insertBefore]").click();
 										NOTES_makeNote($(theElem))
 										refreshSlashes();
 									}))
 							$(widgets).append($("<div>",{class:"fa fa-caret-down",id:$(theElem).attr("id")+"-after"})
-								.off("click").on("click",function(event){
-										event.stopPropagation();
-										$("[data-action=insertAfter]").click();
+								.unbind("click").on("click",function(event){
+										//event.stopPropagation();
+										//$("[data-action=insertAfter]").click();
+										console.log(`Reordering an element After`)
+										r_InsertAfter(currentCtx);
 										NOTES_makeNote($(theElem))
 										refreshSlashes();
 									}))
@@ -278,7 +231,7 @@ function NOTES_makeNote(element,isActive){
 
 		} else {
 			
-			widgets.css({position:"absolute", visibility:"visible",left:$(theElem).width()/2, top:0
+			widgets.css({position:"absolute", visibility:"hidden",left:$(theElem).width()/2, top:0
 				,"-webkit-text-fill-color":"gold",color:"gold","font-size":"30px"})
 
 			//widgets.remove();
@@ -293,11 +246,22 @@ function NOTES_makeNote(element,isActive){
 			
 	} 
 	
+
+
 	
 
 	if(!widgets.is(".widget-on")){
 		return
 	} 
+
+	/*
+	if($(theElem).is("[type=T]")){
+		widgets.css({visibility:"hidden"})
+		widgets.find("[lock]").click();
+		
+		//NOTES_makeNote(myParent,true);
+		//updateLayersTool($(theElem).attr("id"));
+	}*/
 
 	var blurInitialized = false;
 
@@ -351,10 +315,11 @@ function NOTES_makeNote(element,isActive){
 	var pxToVWAdjuster = (100 / document.documentElement.clientWidth);
 
 
-	
-
+	if(!element.id)
+  		log.debug(`Element does not have an id ${element}[0].outerHTML`)
 
 	if(element.id){
+	
 		log.debug("NOTES.js: Entering parent " + element.id + " with X, Y " + $(element).css("left") + "," + $(element).css("top"))
 
 		theMsg = $("<div class='msg' msg-parent='" + element.id + "'>"+$(element).attr("type") + "#" + $(element).attr("id") + " " + ($(element).attr("alias") != undefined ? " [alias= " + $(element).attr("alias") +"]" : "") + "</div>" );
@@ -408,6 +373,8 @@ function NOTES_makeNote(element,isActive){
 				if(element.is("[type=T]")){
 
 					
+					/** No Longer Needed. Simplify UI by allowing person to only change text from
+					input contenteditable
 
 					
 
@@ -416,31 +383,7 @@ function NOTES_makeNote(element,isActive){
 					
 					
 					theMsg.append(" <div style='display:inline-block'> Value: <input type='text' class='quick-disabled' name='content' parent='" + element.id + "' value='" + content + "'></div>").append("<br>")
-
-					/*
-					stype = $("<select>").append(new Option("paragraph","paragraph")).append(new Option("menutext","menutext"));
-					theMsg.append($("<div style='display:inline-block; margin-right:10px'>Type:</div>").append(stype));
-
-					//AutoSelect option based on what user chose last
-					if(element.find(".menutext").length > 0){
-						stype.find("[value=menutext]").attr('selected','selected');
-					}
-
-					stype.on('change',function(){
-					
-						if($(this).find(":selected").attr("value") == "menutext"){
-							element.attr("archType","BUTTON")
-							element.find("p").remove();
-							element.find("[type=MENU-ITEM]").css("margin-left","20px").addClass("menutext");
-						} else {
-							element.removeAttr("archType")
-							element.find("[type=MENU-ITEM]").css("margin-left",0).removeClass("menutext").append($("<p>")).removeAttr("archType")
-							//:not(:last)
-						}
-						//element.resizable();
-					})
-					*/
-
+					**/
 
 				} else {
 
@@ -498,7 +441,11 @@ function NOTES_makeNote(element,isActive){
 				theMsg.append(" <div>Source: <input type='text' class='quick-disabled quick-disabled-image-field' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
 			}
 
-			theMsg.append("<div style='display:inline-block'></div>Bckgrnd Color: <div background-color-for='#"+element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ color + "'/>")
+			
+				theMsg.append("<div style='display:inline-block'></div>Bckgrnd Color: <div background-color-for='#"+element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ color + "'/>")
+			
+			
+			
 			theMsg.append(" <div style='display:inline-block'><input type='text' class='quick-disabled quick-color' name='background-color' parent='" + element.id + "' value='" + color + "'></div>")
 			
 			//theMsg.append(" <div>Font: <select name='font-family' parent='" + element.id + "' value='" + fontFamily + "'></div>")
@@ -530,7 +477,34 @@ function NOTES_makeNote(element,isActive){
 			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="start" class="fa fa-align-left"></div>`))
 			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="center"  class="fa fa-align-center"></div>`))
 			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="right"  class="fa fa-align-right"></div>`))
-			theMsg.append(" <div style='display:inline-block'>Text Color:&nbsp;</div><div color-for='#" +element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ txtColor + "'></div>&nbsp;<input type='text' class='quick-disabled' name='color' parent='" + element.id + "' value='" + txtColor + "'>")
+			if(element.is("[type=SVG]")){
+		/*		$( function() {
+    $( "#slider" ).slider();
+
+  } );*/
+  				var startValue = element.attr("initial-slider-value") != undefined ? element.attr("initial-slider-value") : 0;
+  				theMsg.append(`<br><div style="display:inline-block">Scale:&nbsp;</div>&nbsp;<div style="margin-left:10px; display:inline-block;width:75%" slider-for="${element.attr("id")}"></div> 
+  								<script>
+  								console.log("${element.attr('id')}")
+
+  								$( function() {
+  									
+								    $( "[slider-for=${element.attr('id')}]" ).slider(
+								    	{
+								    		min:1,
+								    		max:5,
+								    		slide:r_resizeSVG,
+								    		start:r_sliderStartValue,
+								    		stop: r_sliderStartValue,
+								    		value: ${startValue}
+								    	});
+								} );
+  								</script>
+  							  `);
+			} else {
+				theMsg.append(" <div style='display:inline-block'>Text Color:&nbsp;</div><div color-for='#" +element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ txtColor + "'></div>&nbsp;<input type='text' class='quick-disabled' name='color' parent='" + element.id + "' value='" + txtColor + "'>")
+			}
+			
 			
 		
 		} else {
@@ -551,10 +525,18 @@ function NOTES_makeNote(element,isActive){
 			})
 		}
 		
-		theMsg.unbind("on").on('mouseenter',function(){
+		theMsg.unbind("mouseenter").on('mouseenter',function(){
 			userHoveringOverNote = true;
 			$(document).unbind("keydown",CUSTOM_KEYDOWN_LOGIC)
-		}).unbind("off").on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);
+		}).unbind("mouseleave").on("mouseleave",function(){
+			userHoveringOverNote = false;
+			$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+			NOTES_delete();
+
+			//element.on("click",r_makeEditable).resizable("destroy").resizable({handles:"n,s,e,w,se"});
+
+		})
+		//.unbind("off").on('mouseleave',CUSTOM_DONE_NOTE_EDITING_LOGIC);
 
 	
 		$("body").append(theMsg);
@@ -690,63 +672,57 @@ function NOTES_makeNote(element,isActive){
 		//write changes to parent object
 		$(".quick-disabled").on("input",QUICK_EDIT)
 
+
 						.on("dblclick",function(et){this.value=""})
-						.on("click",function(et){
-						//Do Default
-
-							$(et.target).attr("value") == 'url("https://fponly.files.wordpress.com/2010/04/fpo_logo_02.gif")' ? $(et.target).attr("value","") : "";
-
-
-							if($(et.target).attr("name") != "content"){
-								log.debug("Not a text type...returning")
-								return;
-							}
-
-							var parent = $("#" + $(et.target).attr("parent"));
-
-							//DRAW_SPACE_advancedShowing = false;
-
-							const regex = /<div (?:icon="fa\-\S+")? class="\s*fa\s+(fa\-\S+)"\s*(?:style=".*")?><\/div>/gim;
-
-							const str = `$1`
-							/*
-							if(parent.html()){
-								$(parent).html($(parent).html().replace(regex,str))
-							}*/
-							console.log(`Before Parent html is ${parent.text()}`)
-							console.log(`After Parent html is ${parent.text().replace(regex,str)}`)
-
-							$(parent).contents().get(0).nodeValue = $(parent).text().replace(regex,str)
-
-							//$(et.target).val($(parent).text())
-
-						})
-
+						
 						.on("mouseenter",function(et){
 							userHoveringOverNote = true;
 							$(et.target).addClass("quick-edit"); $(et.target).attr("ov",$(et.target).attr("value"))
 						})
 						.on("mouseleave",function(evnt){
+							userHoveringOverNote = false;
 							targ = $(evnt.target);
 							targ.removeClass("quick-edit");
 							if(targ.attr("value") != targ.attr("ov")){
 								CUSTOM_DONE_NOTE_EDITING_LOGIC(et);
 							}
 
-
+							log.debug(`Leaving the field quick-disabled ${$(targ).attr("parent")}`);
+							updateLayersTool($(targ).attr("parent"));
+							CUSTOM_PXTO_VIEWPORT($(`#${$(targ).attr("parent")}`));
 						
 
-							userHoveringOverNote = false;
+							
 							var parent = $("#" + $(evnt.target).attr("parent"));
 							if(parent.is("[type=AUDIO]")){
-								console.log("Audio playing")
+								log.debug("Audio playing")
 								try {
 									parent.find("audio")[0].play();
 								}catch(e){
-									console.log(`Failure playing audio for ${parent.attr("id")} ${e}`)
+									log.debug(`Failure playing audio for ${parent.attr("id")} ${e}`)
 								}
 							}
+
+							var theHREF = parent.attr("href") ? parent.attr('href').trim() : undefined;
 							//parent.resizable("disable").resizable();
+							if(theHREF != undefined &&  !theHREF.startsWith("http") && !theHREF.startsWith("javascript:") && !theHREF.startsWith("#")){
+							//alert(loc)
+
+								loc =theHREF;
+
+
+								if(loc.length > 0){
+										if(loc.startsWith("/")){
+											loc = loc.replace("/","");
+										}
+										
+										REVISION_anchors.push(loc)
+								} else {
+										parent.find("[type=anchor]").remove();
+										return;
+								}
+							} 
+
 
 							log.debug("CHANGING IT UP BABY")
 
@@ -789,6 +765,9 @@ function QUICK_EDIT(evnt){
 				$(parent).attr("user-classes",$(event.target).val())	
 			}else if(label == "src" || label == "align"){
 				$(parent).find(".content-image").attr("src",$(evnt.target).val());
+				if(parent.is("[type=VID]")){
+					parent.find("video")[0].load();
+				}
 				//$(parent).find(".content-image").attr(label,$(evnt.target).val())
 				//$(parent).find("video").first().attr(label,$(evnt.target).val())
 				//https://www.uvm.edu/~bnelson/computer/html/wrappingtextaroundimages.html
@@ -807,7 +786,7 @@ function QUICK_EDIT(evnt){
 
 					var opt = $(evnt.target).parents(".active-message").find("[color-for]").css("background-color",$(evnt.target).val())
 
-					console.log(`Found color parent for ${opt.length}`)
+					log.debug(`Found color parent for ${opt.length}`)
 
 			}  else if(label == "background-image" && !($(evnt.target).val().startsWith("url(")) ){
 
@@ -819,30 +798,13 @@ function QUICK_EDIT(evnt){
 
                     
 				
-			} else if(label == "content"){
+			} else if(label == "background-color" && parent.is("[type=SVG]")) {
+				console.log(`I see fill color ${label} ${$(evnt.target).val()}`)
+				label = "fill";
+				$(parent).css(label,$(evnt.target).val())
+			}
 
-					log.debug("User changing text to " + $(evnt.target).val())
-
-					var idx =0;
-
-					var final = "";
-
-					/*
-					$(parent).contents().filter(function() { 
-					    //Node.TEXT_NODE === 3
-					    return (this.nodeType === 3);
-					}).each(function () {
-					    // for each text node, do something with this.nodeValue
-					    //if(idx == 0){
-					    	this.nodeValue = $(evnt.target).val()
-
-					    //}
-					});*/
-
-					$(parent).contents().get(0).nodeValue = $(evnt.target).val();
-
-					
-			}else {
+			else {
 
 				//if this is NOT custom css option. ie how we define components, write as attribute
 				if(!$(parent).css(label)){
@@ -852,13 +814,14 @@ function QUICK_EDIT(evnt){
 				//if this is a custom css option. ie how we define components, write as attribute
 				}
 
-				if(label == "background-color"){
+				
+			}
+
+			if(label == "background-color"){
 					
 
 					var opt = $(evnt.target).parents(".active-message").find("[background-color-for]").css("background-color",$(evnt.target).val())
-
 					
-				}
 			}
 
 			//Turn Autosave back on again. Now that user is done editing
@@ -896,118 +859,6 @@ function QUICK_EDIT(evnt){
 			}
 
 			
-			if(parent.is("[type=T]")){
-
-				  $(parent).html($(parent).html().replace(/(?<!'fa\s)(fa-\w+)(?:(?:-\w+)+)?/gim,`<i class='fa $1'></i>`))
-
-/*	
-				$("#content [type=T]").unbind("click").on("click",function(e){$("<textarea>").appendTo($(this)).val($(this).text()); $(this).unbind("click");
-})})			on("mouseleave",function(e){ $(this).unbind("mouseleave"); $(this).text($(this).children("textarea").val()); $(this).children("textarea").remove(); setUpDiv($(this));
-
-				
-				 var textfield = $(evnt.target);
-
-				 var currentHeight = $(parent).height();
-
-				 var padding = $(parent)[0].getBoundingClientRect().height - currentHeight;
-			 	
-			 	//var heightOfEachCharacter = textfield.height() / parseInt(textfield.css("font-size"));
-			 	//var widthOfEachCharacter = Math.ceil(parseInt(textfield.css("font-size"))/heightOfEachCharacter);
-			 	var numberOfCharsPerLine = Math.round(parent.width() / parseInt(parent.css("font-size")) * 1.2);
-			 	
-			 	console.log(`textfield: numberOfCharsPerLine is ${numberOfCharsPerLine} and width is ${parent.width()}`)
-
-			 	console.log(`textfield: textvalue length is ${textfield.val().length}`)
-
-			 	var numberOfLines = 1;
-
-			 	if(textfield.val().length > numberOfCharsPerLine){
-
-			 		numberOfLines = Math.ceil(textfield.val().length / numberOfCharsPerLine);
-
-			 	} 
-
-			 	console.log(`textfield: currentHeight ${currentHeight} padding ${padding}, rect ${parent[0].getBoundingClientRect().height} TextBox Height: pHeight ${parent.height()} numberOfLines is ${numberOfLines} `)
-				
-				$(parent).css({height:(currentHeight * numberOfLines) +  padding}); 
-				
-				console.log(`textfield: number of Lines is ${numberOfLines} length ${textfield.val().length} and height ${parent.height()} == ${currentHeight * numberOfLines + padding}`)
-*/
-								if(parent.text().trim() == "fa-bars"){
-									//Write JS
-									$(parent).attr("id","zMenu")
-									var id = "#" + $(parent).attr("id");
-									var jsString = `$("${id}").on("click",onMenu)`;
-									if(getJs(parent) == null){
-										eval(jsString)
-									}
-									$(parent).css("--webkit-user-modify","read-only")
-									saveJs(parent,jsString);
-
-								}
-
-								const regex = /((fa-\w+)(?:-\w+)?)/igm;
-
-								const subst = `<div icon="$1" class="fa $1"></div>`;
-								
-								//$(parent).contents().get(0).replaceWith($(parent).text().replace(regex,subst));
-
-								/*
-								var matches = $(parent).text().match(regex)
-
-								if(matches && matches.length > 0){
-									console.log("Found matches " + matches)
-									$(parent).children("[icon]").remove();
-
-
-
-
-									$(parent).contents().get(0).replaceWith($(parent).text().replace(regex,subst))
-								}
-								*/
-								/*
-								
-								$(parent).contents().filter(function() { 
-								    //Node.TEXT_NODE === 3
-								    return (this.nodeType === 3);
-								}).each(function () {
-								    // for each text node, do something with this.nodeValue
-								    
-										//alert($(div).html())
-										//this.nodeValue = (this.nodeValue.replace(regex,subst))
-										$(this).replaceWith(this.nodeValue.replace(regex,subst))
-								    
-								});
-								*/
-
-
-
-
-								
-			} 
-			/*
-
-	$(".section [type=T]")
-	.unbind("dblclick")
-	.on("dblclick",
-	function(e){ 
-		console.log(`HTML IS ${$(this).html().replace(/<\i class='fa\s+(fa-\w+)'\>\<\/i\>/gm,"$1")}`);
-		$(this).html(  $(this).html().replace(/<\i class="fa\s+(fa-\w+)"\>\<\/i\>/g,"$1")   );
-		$(this).attr("contenteditable","true")
-		.css({right:"unset","bottom":"unset",height:"auto"}).focus();
-
-		$(this).on("mouseleave",function(e){
-			//$(this).unbind("mouseleave");
-			$(this).html($(this).html().replace(/(?<!'fa\s)(fa-\w+)(?:(?:-\w+)+)?/gm,`<i class='fa $1'></i>`))
-			$(this).attr("contenteditable","false");
-			
-		})
-	})
-	*/
-	
-
-
-	
 
 			if(parent.attr("href") != undefined){
 				//alert('hrefs is ' + parent.attr('href'))
@@ -1032,3 +883,4 @@ function makeTextAwesome(string){
 
 
 }
+	

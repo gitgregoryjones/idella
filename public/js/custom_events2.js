@@ -30,7 +30,7 @@ function CUSTOM_pressEscapeKey(){
 	var e = jQuery.Event("keydown");
 	e.which = 27; // # Some key code value
 	$(window).trigger(e);
-	console.log(`Escape Key pressed!`)
+	log.debug(`Escape Key pressed!`)
 
 	//closeMenu();
 }
@@ -70,7 +70,7 @@ function CUSTOM_incrementZIndex(){
 	return globI;
 }
 
-CUSTOM_KEYDOWN_LOGIC = function(event){
+CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event){
 
 	log.trace("Pressed Key " + event.which)
 
@@ -265,7 +265,7 @@ function setUpGroupContainer(aTool,rebuild){
 	
 
 	if(!aTool.is(":visible")){
-			console.log("Dont work on hidden objects");
+			log.debug("Dont work on hidden objects");
 			return;
 	}
 
@@ -543,7 +543,6 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	if(theElem.id){
 
 
-
 		log.debug("Entering parent " + theElem.id + " with X, Y " + $(theElem).css("left") + "," + $(theElem).css("top"))
 	
 		if($(theElem).is("[type=MENU]")){
@@ -682,7 +681,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 	log.debug("Leaving LOGIC ")
 	log.debug(event.target)
 	if(!event.target.id || $(".custom-menu").is(":visible")){
-		log.warn("CUSTOMEVENTS2.js: Bad Node Encountered-->\n " + $(event.target).html())
+		log.debug("CUSTOMEVENTS2.js: Bad Node Encountered-->\n " + $(event.target).html())
 		$(event.target).removeClass("submenu")
 		$(event.target).parent().removeClass("submenu")
 		$(event.target).parent(".dropped-object").mouseleave();
@@ -868,105 +867,34 @@ CUSTOM_ON_QUICK_INPUT = function(evnt){
 
 CUSTOM_TXT_RESIZE = function(event,ui){
 	
-	if(ui && !ui.element){
-
-		ui = $(ui)
-		log.trace("Resziing and ui " + ui.attr("id") + " : " + ui.height() + " <==> " + ui.weight())
-		log.trace("Up in here today " + ui.css("font-size"))
-		ui.css("font-size",ui.height()/1.5)
-		
-		w = ui.width() * (100 / document.documentElement.clientWidth);
-		h = ui.height() * (100 / document.documentElement.clientWidth);
 
 
-		//ui.find("span").css({height:h+"vw",width:w+"vw"})
-		//ui.element.find("span").css({height:h+"vw",width:w+"vw", "font-size":h+"vw"})
-		//CUSTOM_PXTO_VIEWPORT(ui,ui.position().left,ui.position().top)
-		//ui.element.css("height",parseInt(ui.element.css("font-size") *1.5));
-		
-
-	} else {
+		var fontSize = parseFloat(ui.element.css("font-size"));
 
 		
+		if(ui.element.children(".text-detail").width() > ui.element.width() + 1){
 
-		var fontSize = parseFloat( ui.element.css("font-size") );
-		
-		/*
-		if(ui.originalSize.height > ui.element.height()){
-			 --fontSize;
-		} else if(ui.originalSize.height < ui.element.height() && ui.element.width() == ui.originalSize.width){
-			++fontSize;
-		} 
-
-		if(fontSize > 10)
-			ui.element.css({height:"auto","font-size":fontSize,right:"unset",bottom:"unset"})
-
-
-		ui.element.css({height:"auto","font-size":fontSize,right:"unset",bottom:"unset"})
-
-			/*
-		
-
-
-
-		ui.element.find("[resize]").each(function(idx,child){
-			CUSTOM_PXTO_VIEWPORT(child,$(child).position().left,$(child).position().top)
-		
-
-		})
-		/*
-*/
-		w = ui.element.width() * (100 / document.documentElement.clientWidth);
-		h = ui.element.height() * (100 / document.documentElement.clientWidth);
-
-		 
-		var ratioFont = parseFloat( ui.element.css("font-size") ) /( parseInt(ui.originalSize.height) * parseInt(ui.originalSize.width) )
-
-		//var fontMultiplier = parseInt(ui.originalSize.height) / ui.element.height();
-
-		var fontSize = ratioFont * Math.round(ui.element.height() * ui.element.width());
-
-		console.log(`FontSize ${fontSize} ratio ${ratioFont} height ${ui.element.height()}`)
-
-		//if(fontSize > 10)
-
-		//elems= ui.element.css({height:"auto",right:"unset",bottom:"unset","font-size":h+"vw"})
-			
-		if(ui.element.width() == ui.originalSize.width)
-			elems= ui.element.css({height:"auto", right:"unset",bottom:"unset","font-size":h/1.5 + "vw"})
-		//log.debug("Resized " +elems.length)
-
-		//ui.element.css("height",parseInt(ui.element.css("font-size") *1.5));
-		
-	
-	}
-
-
-/*
-	array1.forEach(	
-		function(element) {
-			var g = element.match(/fa-\w+(-\w+)?/);
-			if( g != undefined )
-			{
-				$("<i>",{class:`fa ${g[0]}`}).appendTo($(parent));
-				parent.append($(`<i class='fa ${g[0]}></i>`));
-				console.log(`appended ${g[0]} to parent`)
-			}else {
-				console.log(`element ${element} did not match regex`)
-				//parent.text(parent.text() + " " + element);
-				parent.append(`<span>${element}&nbsp;</span>`);
+			while(ui.element.children(".text-detail").width() > ui.element.width() + 1){
+				ui.element.css({"font-size":--fontSize});
 			}
-			//console.log(element)
-		}
-	);*/
 
-	/*
-	 var textfield = ui.element;
-	 var heightOfEachCharacter = ui.element.height() / parseInt(ui.element.css("font-size"));
-	 var widthOfEachCharacter = Math.ceil(parseInt(ui.element.css("font-size"))/heightOfEachCharacter);
-	 var numberOfCharsPerLine = Math.round(ui.element.width() / widthOfEachCharacter) * 1.5;
-	 var numberOfLines = Math.round(ui.element.text().length / numberOfCharsPerLine);
-	 */
+			//ui.element.children(".text-detail").css({height:"unset"})
+		} else {
+
+			while(ui.element.children(".text-detail").width() < ui.element.width() + 1){
+				ui.element.css({"font-size":++fontSize});
+			}
+
+		}
+
+		
+		if(ui.element.children(".text-detail").height() > ui.element.height() + 1){
+
+			while(ui.element.children(".text-detail").height() > ui.element.height()){
+				ui.element.css({"font-size":--fontSize});
+			}
+		}
+
 
 
 }
@@ -1009,7 +937,7 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 
 	log.trace("Group Resize Enabled is " + groupResizeEnabled + "ID " + ui.element.attr("id"))
 
-	if(groupResizeEnabled && ui.originalSize){
+	if( (groupResizeEnabled && ui.originalSize) || ui.element.is("[type=SVG]") ){
 		 
 		rH = ui.size.height / ui.originalSize.height 
 		rW = ui.size.width / ui.originalSize.width 
@@ -1017,6 +945,11 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 		rT = ui.position.top / ui.originalPosition.top
 		
 		growOrShrinkChildren(ui.element,ui)
+
+		//now that child POLYGON coordinates are updated, redraw Polygon
+		if(ui.element.is("[type=SVG]")){
+			r_redrawSVGs({target:ui.element});
+		}
 	}
 
 }
@@ -1063,6 +996,12 @@ log.debug($(node).children("[type]").length + " leng")
 			"font-size":myH * rH
 		})
 
+		//special logic for POLYGONS.first update coordinates and then polygon redraws after
+		//this method ends in calling function  CUSTOM_RESIZE_LOGIC
+		if(child.is(".coordinate")){
+			child.attr("coordinate",`${child.position().left},${child.position().top}`)
+		}
+
 		newSize = {
 			width:child.width(),
 			height:child.height()
@@ -1093,6 +1032,7 @@ function onResizeEffectEnded(element){
 		node.attr("original-left",node.position().left)
 		node.attr("left-ratio",node.position().left/parent.width())
 		node.attr("top-ratio",node.position().top/parent.height())
+		node.attr("original-font-size",node.css("font-size"))
 
 	}
 
@@ -1108,6 +1048,7 @@ function onResizeEffectEnded(element){
 		child.attr("original-left",child.position().left)
 		child.attr("left-ratio",child.position().left/parent.width())
 		child.attr("top-ratio",child.position().top/parent.height())
+		child.attr("original-font-size",node.css("font-size"))
 
 
 	})
@@ -1117,7 +1058,8 @@ function onResizeEffectEnded(element){
 CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 	log.trace("Resizing is stopped " + event.target.id)
 	
-	event.stopPropagation()
+	event.stopPropagation();
+
 	event.preventDefault();
 
 	ui.element.removeClass("submenu");
@@ -1126,10 +1068,10 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 	onResizeEffectEnded(ui.element);
 
-	if(groupResizeEnabled){
+	if(groupResizeEnabled || ui.element.is("[type=SVG]")){
 		
 	
-		ui.element.children(".dropped-object").each(function(it,child){
+		ui.element.children(".dropped-object,.coordinate").each(function(it,child){
 			child = $(child)
 
 			log.trace("Resizing Child is stopped for " + child.attr("id"))
@@ -1176,8 +1118,11 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 //	$(window).trigger("userDragEnded")
 
 	event.stopPropagation();
-	
 
+	if($(event.target).is("[type=T]"))
+			$(event.target).children(".text-detail").on("click",r_makeEditable);
+
+	if(editing)
 	NOTES_makeNote($(event.target))
 
 	parent = $(event.target)
@@ -1198,6 +1143,7 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 }
 
 CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
+
 
 	userHoveringOverNote = false;
 	
@@ -1731,6 +1677,8 @@ function setUpAnchors(div){
 //attached it here because it was too much trouble attaching it in normal HTML and hiding/rewriting after autoSave feature enabled
 function CUSTOM_HANDLEFILES(files,audio) {
 
+  console.log(`Files length is ${files.length}  ${JSON.stringify(files)}`)	
+
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
     
@@ -1738,6 +1686,7 @@ function CUSTOM_HANDLEFILES(files,audio) {
     
     img.file = file;
     
+
     
     var reader = new FileReader();
 
@@ -1870,28 +1819,38 @@ function setUpDiv(div){
 
 	div.find(".hotspot").css({height:0,width:0}).hide()
 
-	div.not("#drawSpace,body,.template-layer,#content").resizable().on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
+	div.not("#drawSpace,body,.template-layer,#content").resizable({handles:"n,e,s,w,se"}).on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 		.not("[type=TXT],[type=ICON],[type=BTN]").on("resize",CUSTOM_ON_RESIZE_LOGIC);
 
 
-		
+
 
 	div.not("[alias=notification],[alias=header],#content").draggable().on("drag",function(e){
 		
 		//e.stopPropagation()
 		NOTES_makeNote(this);
 
-	}).on("dragstart resizestart",function(e){
+	}).on("resizestart dragstart",function(e,ui){
+	
+		CUSTOM_currentlyMousingOverElementId = e.target.id;
+		//https://stackoverflow.com/questions/1771627/preventing-click-event-with-jquery-drag-and-drop
+		$(e.target).attr("noclick","ignore");
 
+		$(e.target).attr("original-font-size",$(e.target).height())
+		
 		$(e.target).attr("contenteditable","false")
 		.css("-webkit-user-modify","read-only");
 		disableHoverEvents()
 
+
+
 	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("resize",function(e){
+
+		
+		setTimeout(function(){$(e.target).removeAttr("noclick")},1000);
 
 		NOTES_makeNote(this);
 		OVERLAY_showInstructions(e.target)
-
 	});
 
 
@@ -1916,50 +1875,35 @@ function setUpDiv(div){
 		$.event.trigger("translateTxt",[div]);
 
 		
-	    div.on("click",
-	    function(e){ 
-	    	DRAW_SPACE_advancedShowing = true;
-			SAVE_okToSave = false;
-			$(this)[0].style.caretColor=$(this).css("color");
-	        //console.log(`HTML IS ${$(this).html().replace(/<\i class="fa\s+(fa-\w+(?:-\w+)*?)"\>\<\/i\>/gim,"$1")}`);
-	        $(this).html(  $(this).html().replace(/<\i class="fa\s+(fa-\w+(?:-\w+)*?)"\>\<\/i\>/gim,"$1")   );
-	        $(this).attr("contenteditable","true").css({right:"unset","bottom":"unset",height:"auto"}).focus();
-	        //CUSTOMEVENTS_placeCaretAtEnd(e.target);
-			var cell = this;
-			// select all text in contenteditable
-			// see http://stackoverflow.com/a/6150060/145346
-			var range, selection;
-			if (document.body.createTextRange) {
-			range = document.body.createTextRange();
-			range.moveToElementText(cell);
-			range.select();
-			} else if (window.getSelection) {
-			selection = window.getSelection();
-			range = document.createRange();
-			range.selectNodeContents(cell);
-			selection.removeAllRanges();
-			selection.addRange(range);
-			}
+	    div.children(".text-detail").on("click",r_makeEditable)
+	    .on("input",
+	    	function(evt){
 
+	    		var me = $(evt.target);
 
-			//$(this).find(".fa-lock").click();
-	       
-	        $(this).on("mouseleave",function(e){
-	        	$(this).css({"caret-color":"black"});
-	        	DRAW_SPACE_advancedShowing = false;
-				SAVE_okToSave = true;
-	            $(this).unbind("mouseleave");
-	            $(this).html($(this).html().replace(/(?<!\<i class="fa\s|\<div class="fa\s)((fa-\w+)(?:(?:-\w+)+)?)/gim,`<i class="fa $1"></i>`))
-	            $(this).attr("contenteditable","false");
-	            $(this).resizable("destroy").resizable();
-	            CUSTOM_PXTO_VIEWPORT($(this))
-	        })
-	    });
+	    		me.focus();
 
+	    		log.debug(`My length is ${me.text().length} height is ${me[0].clientHeight} and outer box width is ${me.parent()[0].clientWidth} and height is ${me.parent()[0].clientHeight}`); 
+	    		
+	    		if( me.width() >= me.parent().width() ){
+
+	    			log.info('Evalutating Break Time')
+  				
+    					if(me.height() >= me.parent().height()){
+    						log.info(`No Room 2 Grow: Reducing Font ${me.parent().css("font-size")}`);
+    						var fontSize = parseFloat(me.parent().css("font-size"));
+    						while(me.height() >= me.parent().height()){
+								me.parent().css({"font-size":--fontSize});
+							}
+    					}
+  	    		} 
+	    		
+	    })
 		//div.css({outline: "2px dashed gold","text-align":"center"});
 
-		div.on("resize",CUSTOM_TXT_RESIZE)
-		.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).addClass("debug-border-style");
+		div.on("resize",CUSTOM_TXT_RESIZE).addClass("debug-border-style");
+		
+		//.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).addClass("debug-border-style");
 		//.css("text-align","center");
 		
 		//if(parseInt(div.css("font-size") != 0 )){
@@ -1974,10 +1918,11 @@ function setUpDiv(div){
 	}
 
 	if(div.is("[type=LIST]")){
-		log.warn("CUSTOMEVENTS2.js: Triggering list SLIDER_INIT for list " + div.attr("id") + " and alias " + div.attr("alias"))
+		
 		
 		if(div.hasClass("gallery")){
 			div.css("white-space","nowrap");
+			log.warn("CUSTOMEVENTS2.js: Triggering list SLIDER_INIT for list " + div.attr("id") + " and alias " + div.attr("alias"))
 			//duration = (div.css("transition-duration"))
 			
 			//duration = parseFloat(duration) == 0 ? "0.6s" : duration;
@@ -1998,7 +1943,7 @@ function setUpDiv(div){
 
 	log.debug("doing Divs")
 	
-	div.not("body,[type=MENU]").off("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+	div.not("body,[type=MENU]").unbind("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC);
 					
 	if(div.is(".navigation-list")){
@@ -2017,7 +1962,7 @@ function setUpDiv(div){
 				div.css(`${div.attr("previous-style")}`);
 				div.removeAttr("contenteditable");
 				var options = div.text().split(",");
-				console.log(`OPTIONS=${options.length}`)
+				log.debug(`OPTIONS=${options.length}`)
 				if(div.children(".dropped-object").length == 0){
 				if(options.length > 0){
 					div.text("")
@@ -2044,6 +1989,7 @@ function setUpDiv(div){
 
 	//Setup Menu Divs
 	if(div.is("[type=T]")){
+
 		setUpMenuItems(div);
 		/*
 		div.off("click")
@@ -2113,11 +2059,23 @@ function setUpDiv(div){
 		setUpGroupContainer(div,true);
 	}
 
+	if(div.is("[type=SVG]")){
+		div.find("svg").on("mouseenter", function(evt){
+			$(evt.target).parent("[type=SVG]").mouseenter();
+		})
 
+		//r_writePoints(div);
+	}
+
+	//Do setups in ready.js
+	//div.on("click",r_openNote)
+	
 
 	return div;
 	
 }
+
+
 
 function CUSTOMEVENTS_placeCaretAtEnd(el){
 
@@ -2425,6 +2383,7 @@ function initialize(){
 
    	//alert(`Length of layer-menu is ${$("#layer-menu").length}`);
    	//import layers.js
+   	
    	reLoadLayers();
 
 
@@ -2437,7 +2396,7 @@ function recursiveCpy(obj, plusButtonPushed){
 
 	obj.removeClass("submenu")
 
-	console.log(`Copying id is ${obj.attr("id")}` );
+	log.debug(`Copying id is ${obj.attr("id")}` );
 	//temporarily disable dragging on parent
 	//obj.draggable("destroy").find(".ui-droppable").draggable("destroy")
 
@@ -2460,12 +2419,12 @@ function recursiveCpy(obj, plusButtonPushed){
 
 	clone.removeAttr("hasjs")
 
-	console.log(`Extending original copy ${obj.attr("id")}`)
+	log.debug(`Extending original copy ${obj.attr("id")}`)
 	clone.attr("extends",obj.attr("id"))
 
 	clone.attr("id","ELEM_"+ new Date().getTime())
 
-	console.log(`Wrote new ID during copy ${clone.attr("id")}`)
+	log.debug(`Wrote new ID during copy ${clone.attr("id")}`)
 
 	log.trace(clone)
 	
@@ -2554,20 +2513,24 @@ DROPPER_LOGIC = {
 		
         drop: function(event, ui) {
 
+        	$(".highlight").remove();
+
+        	$("*").removeClass('over')
+
         	var fromSideNav = false;
 
         	if($(ui.draggable).hasClass("nav-link")){
-        		console.log(`User is dragging on of the nav items, ignore because dropTool() will place it for us`);
+        		log.debug(`User is dragging on of the nav items, ignore because dropTool() will place it for us`);
         		var tmpType = ui.draggable.attr('type');
 
                       if(tmpType == "PICTURE"){
                         tmpType = "IMG";
                       } 
 
-                      console.log(`Tmp Type is ${tmpType}`);
+                      log.debug(`Tmp Type is ${tmpType}`);
                       var tTool = whichTool(tmpType);
 
-                      console.log(`UI offset ${ui.draggable.offset().left}`)
+                      log.debug(`UI offset ${ui.draggable.offset().left}`)
                       tTool = configuredTool(tTool);
 
                       if(tmpType == "T"){
@@ -2583,7 +2546,7 @@ DROPPER_LOGIC = {
 
         	if($(ui.draggable).attr("id") == "layer-menu"){
 
-				console.log("Menu shouldn't be here...returning");
+				log.debug("Menu shouldn't be here...returning");
 				return;
 
 			}
@@ -2676,7 +2639,7 @@ DROPPER_LOGIC = {
 
 
 		        	if(theTarget.hasClass("section") && $(ui.draggable).hasClass("section") ) {
-		        			console.log('swapping sections ' + theTarget.attr('id'))
+		        			log.debug('swapping sections ' + theTarget.attr('id'))
 							$(ui.draggable).insertBefore(theTarget);
 
 							//CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
@@ -2750,7 +2713,7 @@ DROPPER_LOGIC = {
 
 
 					if($(parent).children(child).length > 0  && $(parent).is("[type=LIST]")){
-						console.log(`No Need to Add Child to the list again. It is already attached to the list..returning `)
+						log.debug(`No Need to Add Child to the list again. It is already attached to the list..returning `)
 						return;
 
 					} else if($(parent).children(child).length > 0  )
@@ -2763,7 +2726,7 @@ DROPPER_LOGIC = {
 	        		} 
 
 
-	        		console.log(`Is this ever reached????`)
+	        		log.debug(`Is this ever reached????`)
 
 					/* Not needed since on dragstop event is already active
 	        		if($(parent).children(child).length > 0  )
@@ -2791,23 +2754,23 @@ DROPPER_LOGIC = {
 			        	
 			        	log.warn(`UI draggable offset is ${ui.draggable.offset().left}`)
 						log.warn(JSON.stringify($(ui.draggable).offset()))
-						console.log(`a Tool is ${aTool.id}`)
+						log.debug(`a Tool is ${aTool.id}`)
 
 			        	aTool = configuredTool(aTool);
 
-			        	console.log(`A tool is jquery obj now ${$(aTool).attr('id')}`)
+			        	log.debug(`A tool is jquery obj now ${$(aTool).attr('id')}`)
 			        	createdTool = true;
 					}
 
 					
 			if($(ui.draggable).attr("id") == 'layer-menu' || $(ui.draggable).attr("id") == 'header-row'){
 
-				console.log("Leaving here because I shouldn't be here");
+				log.debug("Leaving here because I shouldn't be here");
 				return;
 
 			} else {
 
-			console.log(`A tool is ${$(aTool).attr("id")}`);
+			log.debug(`A tool is ${$(aTool).attr("id")}`);
 
 		}
 
@@ -2850,11 +2813,14 @@ DROPPER_LOGIC = {
         	}
         	$(this).addClass('over');
 
+        	r_hoverOverElement(event);
+
         
         	//|| parseInt($(this).css("left")) < parseInt($(this).parent().css("left")) )
         },
         out : function(event,ui){
         	$(this).removeClass('over')
+        	$(".highlight").remove();
         	$(this).show();
         	$(hiddenItems).show();
         	
@@ -2869,7 +2835,7 @@ function dropTool(aTool,dropInfo){
 
 		vid = $(target).attr("id");
 
-		console.log(`ID for target is ${vid}`);
+		log.debug(`ID for target is ${vid}`);
 
 		log.debug("CUSTOMEVENTS.js:A tool is ")
 		        	log.trace((aTool.attr('id')));
@@ -2890,9 +2856,10 @@ function dropTool(aTool,dropInfo){
 					//log.warn("target is ")
 					//log.warn(target)
 
-					console.log(` X and Y offset is ${xOffset} and ${yOffset}`)
+					log.debug(` X and Y offset is ${xOffset} and ${yOffset}`)
 
 					$(target).append(aTool);
+					
 					aTool.offset({left:xOffset,top:yOffset})
 					
 
@@ -2915,9 +2882,19 @@ function dropTool(aTool,dropInfo){
 		        		aTool.find("video")[0].play()
 		        	}
 
+		        	if(aTool.is("[type=SVG]")){
+		        		r_writePoints({target:aTool, solo:true})
+		        	}
+
 				//Update Layers Tool
 				//import layers_menu.js
-				updateLayersTool($(aTool).attr("id"),target.id);
+
+				if(!aTool.is(".coordinate")){
+					aTool
+					updateLayersTool($(aTool).attr("id"),target.id);
+				}
+
+
 				
 
 }

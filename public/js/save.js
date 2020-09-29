@@ -192,7 +192,7 @@ function SAVEJS_goInactive() {
 
 	var userInPreview = false;
 
-	console.log("SAVE_okToSave : " + SAVE_okToSave)
+	log.debug("SAVE_okToSave : " + SAVE_okToSave)
 
     // do save
    //if(autoSaveEnabled && !userHoveringOverNote && !$("#jsdialog").dialog("isOpen") && !$("#dialog").dialog("isOpen") && !$("#smalldialog").dialog("isOpen")){

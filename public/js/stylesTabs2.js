@@ -211,9 +211,9 @@ function writeTabs(currentCtx,forceWrite){
 		//f = $("<input>",{value:theValue})
 		
 		if(label == "transition-duration"){
-			//console.log(`Reading transition-duration Before ${parent.attr("id")}`);
+			//log.debug(`Reading transition-duration Before ${parent.attr("id")}`);
 			theValue = getTransitionDuration($(parent));
-			console.log(`Reading transition-duration After ${theValue}`);
+			log.debug(`Reading transition-duration After ${theValue}`);
 		}
 
 
@@ -391,7 +391,7 @@ function writeTabs(currentCtx,forceWrite){
 				var jsString = "";
 
 				if(!$(evnt.target).is(":checked")){
-					console.log(`The checkbox value is now ${$(evnt.target).is(":checked")}`)
+					log.debug(`The checkbox value is now ${$(evnt.target).is(":checked")}`)
 					$(parent).removeAttr("dialog-enabled");
 					$(parent).removeAttr("hasjs")
 					jsString = !$(evnt.target).is(":checked")? `$("#${$(parent).attr('id')}").on("click",function(){})`: `$("#${$(parent).attr('id')}").on("click",POPUP_win)`;
@@ -477,7 +477,7 @@ function writeTabs(currentCtx,forceWrite){
 			
 			originalFieldValue = $(evnt.target).val()
 
-			console.log(`Searching for ${originalFieldValue} `)
+			log.debug(`Searching for ${originalFieldValue} `)
 
 			//originalFieldValue = $(correctId).css(label); 
 

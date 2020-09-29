@@ -2,7 +2,7 @@
 //Test
 //var cheerio = require('cheerio');
 
-var standardFields = "type:type;id:0;text-transform:none;display:block;top:0;left:0;font-size:12px;font-family:basic;extends:none;onhover:none;href:none;color:white;alias:none;background-color:none;background-image:none;src:none;text:none;width:0;height:0;";
+var standardFields = "type:type;id:0;text-transform:none;display:block;top:0;left:0;font-size:12px;font-family:basic;extends:none;onhover:none;href:none;-webkit-text-fill-color:white;color:white;alias:none;background-color:none;background-image:none;src:none;text:none;width:0;height:0;points:0";
 
 function getSectionFromSheet($,element){
 
@@ -46,11 +46,32 @@ function getSectionFromSheet($,element){
 		var value = line.substring(line.indexOf(":")+1);
 		//trim trailing ";" character
 		value = value.substring(0,value.length-1)
-		if(label.length > 0)
+		if(label.length > 0) {
 			myObject[label] = value
+
+		}
 	}) 
 	
 	} 
+
+	if(myObject["-webkit-text-fill-color"]){
+				myObject["color"] = myObject["-webkit-text-fill-color"];
+				delete myObject["-webkit-text-fill-color"];
+	}
+
+	if(myObject["fill"]){
+				myObject["background-color"] = myObject["fill"];
+				delete myObject["fill"];
+	}
+
+	if(myObject["stroke"]){
+				myObject["color"] = myObject["stroke"];
+				delete myObject["stroke"];
+	}
+
+	if(element.is("[type=SVG]")){
+		myObject["points"] = element.find("polygon").attr("points");
+	}
 
 	element.children(".dropped-object").each(function(idx,child){
 		child = $(this)

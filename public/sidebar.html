@@ -1,41 +1,4 @@
-<!-- <ul class="babynav navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-   
-     
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-icon rotate-n-15">
-         
-        </div>
-        <div class="sidebar-brand-text mx-3">I<sup>2</sup></div>
-      </a>
-
-   
-       
-        <hr class="sidebar-divider my-0">
-        <li class="starthere nav-item active section-control">
-          <a class="nav-link sectionnav" href="#">
-            <i class="far fa-map fa-rotate-90"></i>
-            <span> > </span>
-            <span>Add</span>
-            <span>Section</span>
-          </a>
-         
-        </li>
-        <script>
-          $(document).ready(function() {
-          
-          if($(".section").length == 0 ){
-            $(".section-control").on("click",(e)=>{$(".babynav").remove();$(".notyet").removeClass("notyet");});
-          } else {
-            console.log("removing navs!");
-            $(".babynav").remove();$(".notyet").removeClass("notyet");
-          }
-        });
-
-
-        </script>
-  </ul>
-//-->
 <!-- Sidebar invisible until first element is placed -->
     <ul class="notyet babynav navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
@@ -50,7 +13,12 @@
        <!-- Divider -->
         <hr class="sidebar-divider my-0">
         
-        
+        <li class="nav-item active shapes">
+         <a class="nav-link" href="#" type="SVG" title="drag custom shape to content area">
+          <i class="far fa-star"></i>
+        </a>
+       
+      </li>
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active shapes">
          <a class="nav-link" href="#" type="T" title="drag text to content area">
@@ -88,6 +56,7 @@
         </a>
        
       </li>
+      
       <li style="visibility:hidden" class="nav-item active shapes section-control">
           <a class="nav-link sectionnav" href="#">
             <i class="far fa-map fa-rotate-90"></i>
@@ -102,46 +71,18 @@
          <script type="text/javascript">
            $(document).ready(function() {
         
-
-           $(".section-control").on("click",(e)=>{ e.preventDefault();$("[data-action=addsection]").click()})
+          //UGH  DO THIS ON THE BACKEND INSTEAD...ADD DEFAULT SECTION ON BACKEND
+           $(".section-control").unbind("on").on("click",(e)=>{ e.preventDefault();$("[data-action=addsection]").click()})
 
           option = $("li.shapes > a ").draggable({
-            stopper:(event,ui)=>{
-
-              console.log("STOPPED")
-              console.log(`GREG UI position is top ${ui.position.top}, ${ui.position.left}, ${ui.offset.top}`)
-              
-                        currentX = ui.offset.left;
-                        currentY = ui.offset.top;
-                        var tmpType = ui.helper.attr('type');
-                        if(tmpType == "PICTURE"){
-                          tmpType = "IMG";
-                        }
-                        console.log(`Tmp Type is ${tmpType}`);
-                        var tTool = whichTool(tmpType);
-                        tTool = configuredTool(tTool);
-                        console.loDg(`DONE ${CUSTOM_currentlyMousingOverElementId}`);
-
-                        //if(tmpType == "LIST"){
-                          tTool = new Gallery();
-
-                        //}
-
-                        dropTool(tTool,{target:`#${CUSTOM_currentlyMousingOverElementId}`,
-                          clientY:ui.position.top,
-                          clientX:ui.position.left})
-                      //  $(`[data-action=drop][type=${tmpType}]`).click();
-
-            },
             helper:function( event ) {
-            var nClone = $(this).clone(true);
-                          
-            nClone.css({'background-color':"#01587C",opacity:"0.7","z-index":80000})
+              var nClone = $(this).clone(true);
+                            
+              nClone.css({'background-color':"#01587C",opacity:"0.7","z-index":80000})
 
-            return nClone;
-        }})
-            });
-
+              return nClone;
+            }})
+         
         //onscrollstop move the menu
         
         $.fn.scrollStopped = function(callback) {
@@ -162,10 +103,9 @@
                  $('nav').addClass("navshowing").css({position:"static"})
                  //.animate({width:"100%",height:100})
               
-            }
+            }*/
 
-            if ($(window).scrollTop() >= $( 
-              'body').offset().top + $('body'). 
+            /*if ($(window).scrollTop() >= $('body').offset().top + $('body'). 
                 outerHeight() - window.innerHeight) { 
                 
                // alert('You reached the end of the DIV'); 
@@ -175,24 +115,13 @@
                 console.log(`No need to automagically extend body since user is still working on previous section`);
               }
               
-            } */
+            }*/ 
             
         })
         
-
-        /*
-         $(window).on('scroll', function() { 
-            if ($(window).scrollTop() >= $( 
-              'body').offset().top + $('body'). 
-                outerHeight() - window.innerHeight) { 
-                
-                alert('You reached the end of the DIV'); 
-            } 
-        });*/
-
-
+       });
      
       </script>
-      <input type="file" id="fileElem" multiple accept="image/*" style="display:none" onclick="window.myim = CUSTOM_currentlyMousingOverElementId" onchange="CUSTOM_HANDLEFILES(this.files)">
-    <input type="file" id="audioElem" multiple accept="audio/*" style="display:none" onclick="window.myim = CUSTOM_currentlyMousingOverElementId" onchange="CUSTOM_HANDLEFILES(this.files,true)">
+      <input type="file" id="fileElem" multiple accept="image/*" style="display:none" ponclick="window.myim = CUSTOM_currentlyMousingOverElementId" onchange="CUSTOM_HANDLEFILES(this.files)">
+    <input type="file" id="audioElem" multiple accept="audio/*" style="display:none" ponclick="window.myim = CUSTOM_currentlyMousingOverElementId" onchange="CUSTOM_HANDLEFILES(this.files,true)">
     <!-- End of Sidebar -->

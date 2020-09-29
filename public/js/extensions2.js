@@ -5,7 +5,7 @@ var currentNode = {}
 
 var lastComputed = 0;
 
-var standardFields = "id:0;extends:none;alias:none;border:none;border-radius:0px;background-image:none;display:block;src:none;text:none;class:none;type:none;width:0;height:0";
+var standardFields = "id:0;extends:none;alias:none;border:none;border-radius:0px;background-image:none;display:block;src:none;text:none;class:none;type:none;width:0;height:0;points:0;stroke:0";
 
 var simple = (CSSTEXT_HARDCODEDCSSTEXT + standardFields).split(";")
 
@@ -48,18 +48,20 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 				return this.nodeType == 3
 			})[0]*/
 			var innerTxt =  "";
+
+			log.debug(`Reading text context for element ${element.attr("id")} and text ${element.text()}`)
 			
-			element.contents().each(function(){
+			element.children(".text-detail").contents().each(function(){
 				switch (this.nodeType) {
 					case 1:
-						console.log(`JQ ${this.outerHTML} class = ${$(this).attr("class")}`);
+						log.debug(`JQ ${this.outerHTML} class = ${$(this).attr("class")}`);
 						var jq = $(this.outerHTML);
-						//console.log(`JQ is ${this.id}`)
-						if(jq.attr("class") && jq.attr("class").match(/(?<!\<i class="fa\s|\<div class="fa\s)((fa-\w+)(?:(?:-\w+)+)?)/ig))
+						//log.debug(`JQ is ${this.id}`)
+						if(jq.attr("class") && jq.attr("class").match(/(?<!\<i class="fa\s|\<div class="fa\s)((fa\-\w+)(?:(?:-\w+)+)?)/ig))
 							innerTxt += jq.attr("class").match(/(?<!\<i class="fa\s|\<div class="fa\s)((fa-\w+)(?:(?:-\w+)+)?)/ig)[0];
 					break;
 					case 3:
-						console.log(`JQ: Found some txt nodes ${this.nodeValue}`);
+						log.debug(`JQ: Found some txt nodes ${this.nodeValue}`);
 						innerTxt +=this.nodeValue;
 					break;
 					default:
@@ -67,7 +69,7 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 
 				}
 			})
-			console.log(`JQ: Found Overwriting ${key} with value ${innerTxt}`)
+			log.debug(`JQ: Found Overwriting ${key} with value ${innerTxt}`)
 			theClassObj[key] = innerTxt;
 			/*
 			if(innerTxt && innerTxt.nodeValue && innerTxt.nodeValue.trim().length > 0){
@@ -87,9 +89,9 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 			theClassObj["-webkit-transition-duration"] = $(element).css(key);
 			theClassObj["-moz-transition-duration"] = $(element).css(key);
 			//theClassObj["-o-transition-duration"] = $(element).css(key);
-			console.log(`Wrote a ${key} directly to HTML`)
+			log.debug(`Wrote a ${key} directly to HTML`)
 			$(element).attr("transition-duration",myValue)
-			console.log(`Wrote a transition-duration directly to HTML ${$(element).attr("id")} ${element.attr(key)}`)
+			log.debug(`Wrote a transition-duration directly to HTML ${$(element).attr("id")} ${element.attr(key)}`)
 		}
 	})
 
@@ -106,6 +108,7 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 
 	theClassObj = computeDimensions(theClassObj)
 
+	
 	/*
 
 	var outStr = "." + element.attr("id") + " {\n";
@@ -117,12 +120,13 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 	outStr +="}"
 	//theClassObj["rawjson"] = JSON.stringify(theClassObj);
 	theClassObj["cssRule"] = outStr;
+	
 	if(theClassObj.type == "ICON"){
 		log.debug("EXTENSIONS2.js:CSS Rule for ICON")
 		log.debug(theClassObj.cssRule)
 	}*/
 
-	
+	log.debug(`Wrote CSS: ${theClassObj["cssRule"]}`);
 
 	return theClassObj;
 
@@ -289,9 +293,9 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
 	delete theClassObj;
 
 	//Scroll To Layer in UI
-	reLoadLayers();
+	//reLoadLayers();
 
-	scrollToLayer(moveMe.attr("id"));
+	//scrollToLayer(moveMe.attr("id"));
 
 	return moveMe;
 }

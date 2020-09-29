@@ -77,7 +77,7 @@ class CarWithAudio {
 
 		$("[type=AUDIO]").each(function(id,div){
 			if($(div).parent("[type]").first().attr("id") != undefined){
-				new CarWithAudio($(div).parent("[type]").attr("id"),Math.floor(Math.random() * Math.floor(CarWithAudio.duration/1000)),5,$(div).attr("parkingBrake"));
+				new CarWithAudio($(div).parent("[type]").attr("id"),Math.floor(Math.random() * Math.floor(3)),5,$(div).attr("parkingBrake"));
 			}
 			$(div).on("mouseleave",(e)=>{
 				$(e.target).parent().trigger("mouseleave");

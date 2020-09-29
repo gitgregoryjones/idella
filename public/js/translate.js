@@ -1,7 +1,7 @@
 //Load 
 
 $(document).on("translateTxt",function(event,txtElem){
-	log.warn("Caught translate txt event for " + txtElem.text())
+	log.debug("Caught translate txt event for " + txtElem.text())
 
 
 	//////////DISABLED FOR NOW!!!! MAYBE RENABLE WHEN I WANT TO PAY FOR THIS SERVICE
@@ -18,7 +18,7 @@ $(document).on("translateTxt",function(event,txtElem){
 			
 			//recursivePopulate(serverContent, $(list))
 		} else {
-			log.warn("No server content found for txt  " + txtElem.text())
+			log.info("No translation txt found for txt  " + txtElem.text())
 		}
 	})
 })
@@ -49,7 +49,7 @@ function translateTxt(txtElem,callback){
 
 	var content = {};
 
-	log.warn("I am Retrieving content for [" + txtElem.text().toLowerCase() + "]");
+	log.info("I am Retrieving content for [" + txtElem.text().toLowerCase().trim() + "]");
 
 	var proxy = "php-simple-proxy.php";
 

@@ -17,7 +17,7 @@ function saveJs(theElem, script){
 
 	//test to see if style is not found, add it.  If found, replace it
 	if($("script.default").html().match(re) == null){
-		console.log("Did not find match ")
+		log.debug("Did not find match ")
 		$("script.default").append(theFunction);
 	}else {
 		$("script.default").html($("script.default").html().replace(re,theFunction))
@@ -93,7 +93,7 @@ function loadAllJs(){
 	$.each($(".dropped-object,.plugin"),(index,value)=>{
 		log.debug(`looping over ${$(value).attr('id')}`)
 		thejs = getJs(value);
-		log.debug(`Greg is cool ${thejs}`);
+		log.debug(`look at the JS ${thejs}`);
 		//console.log(`retrieved js ${thejs}`)
 	});
 	/*

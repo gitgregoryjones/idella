@@ -3,20 +3,28 @@ var LAYER_TOOL = [];
 $(document).ready(function(){
 
 	//reLoadLayers();
-	console.log("Loaded layers");
+	log.debug("Loaded layers");
+
 
 });
 
 
 function reLoadLayers(){
 
-	console.log(`Layer menu is ${$("#layer-menu").length}`);
+	log.debug(`Layer menu is ${$("#layer-menu").length}`);
 
-	$("#maincontent").children("[layer]").each(function(it){
-		if(it > 0){
-			$(this).remove();
-		}
-	})
+	log.debug(`Dummy length is ${$("#maincontent > .dummy").length}`);
+
+	log.debug(`Length of layers to draw is ${$("#content .dropped-object").length}`)
+
+	if($("#maincontent > .dummy").length == 0){
+
+		$("#maincontent").children("[layer]").each(function(it){
+			if(it > 0){
+				$(this).remove();
+			}
+		})
+	}
 
 
 	$("#content .dropped-object").each(function(){
@@ -25,6 +33,7 @@ function reLoadLayers(){
 
 	})
 
+	$(".dummy").removeClass(".dummy");
 
 	/*
 	$(".dropped-object").not('#drawSpace,#editSpace,#workspace,#content').each(function(index){
@@ -32,12 +41,12 @@ function reLoadLayers(){
 				updateLayersTool($(this).attr("id"));
 	});*/
 
-	
+	/*
 	$("#maincontent").children(".layer").each(function(it){
 		if($(this).attr("layer") == undefined){
 			$(this).remove();
 		}
-	})
+	})*/
 	
 	$("#layer-menu").css({"z-index":99999})
 
@@ -54,7 +63,7 @@ function scrollToLayer(aToolId){
 
 	$("#maincontent").children("[layer]").each(
 		function(it){
-			console.log(`Looking at layer ${$(this).attr("layer")}`)
+			log.debug(`Looking at layer ${$(this).attr("layer")}`)
 			if($(this).attr("layer") == aToolId ){
 				$("#maincontent").animate({scrollTop:it* $(this).height()},1000,function(){
 
@@ -66,39 +75,43 @@ function scrollToLayer(aToolId){
 
 function updateLayersTool(aToolId,aParentId){
 
+
+				
+
+
+				var foundInMenu = false;
 				//first Add Layer Menu Div if it does not exist
 				//var menu = $("#layer-menu").length == 0 ? $("<div>",{id:"layer-menu"}) : $("#layer-menu");
 
 				//$("#drawSpace").append(menu);
-				 $(".close-window").unbind("click").on("click",(e)=>{
-		            
-		            console.log(`Close Window Called`)
-		            $(".iilayers").click();
-		            
-          		 })
-
+				
 
 				var aTool = $(`#${aToolId}`);
 
+
+				if(aTool.is(".coordinate")){
+					console.log(`Returning. We don't draw coordinates in menu`)
+					return;
+				}
 				<!-- Setup Layers //-->
-				console.log("Building tool for layer " + $(aTool).attr("id"));
+				log.warn("Building tool for layer " + $(aTool).attr("id"));
 
 				if( $("#maincontent").find("[layer="+$(aTool).attr("id")+"]").length > 0){;
 
-					console.log("Already Found this layer in layers menu abort. Highlighting it");
+					log.debug("Already Found this layer in layers menu abort. Highlighting it");
 					$("#maincontent").find(".layer").removeClass("highlight");
 					$("#maincontent").find("[layer="+$(aTool).attr("id")+"]").addClass("highlight");
-					
-					return;
+					foundInMenu = true;
+					//return;
 
 				}else {
 
-					console.log("Did not find " + "[layer="+$(aTool).attr("id")+"]");
+					log.debug("Did not find " + "[layer="+$(aTool).attr("id")+"]");
 
 				}
                 //From edit-body.html
 
-                layer = $("#maincontent").children(".layer").first().clone(false);
+                layer = $("#maincontent").children(".layer").first().clone(false).css({display:"block"});
 
                 layer.find(".preview-window").text("");
 
@@ -114,7 +127,7 @@ function updateLayersTool(aToolId,aParentId){
                 eye = $(layer).find('.eye');
 
                 expand = $(layer).find(".fa-arrows-alt-h").on("click",(e)=>{
-                	console.log(`looking at layer ${layer.attr("layer")}`)
+                	log.debug(`looking at layer ${layer.attr("layer")}`)
                 	obj = $(e.target);
                 	if(obj.hasClass('fa-compress-alt')){
                 		obj.removeClass('fa-compress-alt');
@@ -147,7 +160,7 @@ function updateLayersTool(aToolId,aParentId){
             		$(layer).find(".fa-running").hide();
             	}
 
-                console.log(`Window height ${pwindow.height()} and width ${pwindow.width()}`);
+                log.debug(`Window height ${pwindow.height()} and width ${pwindow.width()}`);
 
                 miniObj = $(aTool).clone(false);
 
@@ -195,25 +208,57 @@ function updateLayersTool(aToolId,aParentId){
 
 				$(pwindow).unbind("click")
 
-				$(layer).unbind("mouseover").on('mouseover',function(){
-					
-					$(aTool).attr('previous-style',$(aTool).css("border"));
-					//$(aTool).css({border:"solid red"});
-					$(aTool).addClass('highlight');
+				$(layer).unbind("mouseover").on('mouseover',
+
+					function(){
+
+					r_hoverOverElement({target:aTool});
+					//var border = $("<div>",{class:"highlight", "highlight-id":$(aTool).attr("id")});
+
+					//$(".layer").removeClass("highlight");
+					/*
+					if($(aTool).attr("previous-style") == undefined){
+						$(aTool).attr('previous-style',$(aTool).css("border"));
+						//$(aTool).css({border:"solid red"});						
+					}*/
+					//$(aTool).addClass('highlight');	
 					$(aTool).mouseover();
+
+					/*
+					aTool = $(aTool);
+
+					aTool.parent().append(border);
+
+					border.css({
+						width:aTool.width(),
+						height:aTool.height(),
+						top:aTool.position().top,
+						left:aTool.position().left,
+						position:aTool.css("position"),
+						"z-index":aTool.css("z-index") + 1
+					})*/
+					
+
 					
 					
 				}).unbind("mouseout").on('mouseout',function(){
-					$(aTool).css('border',$(aTool).attr("previous-style"));
+					
+					$(aTool).parent().find("[highlight-id]").remove();
+					//$(aTool).removeClass('highlight');
+					//$(aTool).css('border',$(aTool).attr("previous-style"));
 					$(aTool).mouseout();
-					$(aTool).removeClass('highlight');
+					//$(aTool).css('border',$(aTool).attr("previous-style"));
+					
 
 				}).unbind("click").on("click",function(e){
 
-					//$(aTool).mouseover();
+					//Do MouseOVer to make lock appear
+					
+					//$(".layer").removeClass("highlight");
+					//$(aTool).css('border',$(aTool).attr("previous-style"));
 					$(aTool).find("[id$=lock]").addClass("alreadyscrolled").click();
-					$(".layer").removeClass("highlight");
-					$(this).addClass("highlight");
+					
+					//$(this).addClass("highlight");
 
 					//$(".layer").not($(this)).hide();
 
@@ -225,7 +270,7 @@ function updateLayersTool(aToolId,aParentId){
 					var final_position = new_position + $("#content").scrollTop() + new_position/2;
 
 					
-					console.log(`New Position is ${new_position} and final is ${final_position}`);
+					log.debug(`New Position is ${new_position} and final is ${final_position}`);
 					/*$('#drawSpace').stop().animate({ scrollTop: final_position}, 500,function(){
 						NOTES_makeNote($(aTool),true);
 						
@@ -271,15 +316,31 @@ function updateLayersTool(aToolId,aParentId){
 
 				//Append The Layer Finally
 				if(aParentId){
-					console.log(`Layer ${layer.id} Parent was found ${aParentId}`);
-					console.log(`Running $("layer.insertAfter("[layer=${aParentId}]")`);
+					log.debug(`Layer ${layer.id} Parent was found ${aParentId}`);
+					log.debug(`Running $("layer.insertAfter("[layer=${aParentId}]")`);
 					
-					layer.insertAfter(`[layer=${aParentId}]`);
+					if(foundInMenu){
+						log.debug(`Area 1 Replacing Layer ${layer.id}`);
+						$(`#maincontent [layer=${aTool.attr("id")}]`).replaceWith(layer);
+
+					} else {
+						layer.insertAfter(`[layer=${aParentId}]`);
+					}
+					
 					
 						
 				} else {
-					console.log(`Layer Parent was NOT found ${aParentId}`);
-					$("#maincontent").append(layer);
+
+					log.debug(`Layer Parent was NOT found`);
+					
+					if(foundInMenu){
+						log.debug(`Area 2 Replacing Layer #maincontent [layer=${aTool.attr("id")}]`);
+						$(`#maincontent [layer=${aTool.attr("id")}]`).replaceWith(layer);
+
+					} else {
+						$("#maincontent").append(layer);
+					}
+					
 				}
                
 

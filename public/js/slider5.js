@@ -13,7 +13,7 @@ function resetForLeft(container){
 	
 	//duration = list.attr("transition-duration");
 
-	//console.log(`Read transition-duration from attribute ${duration}`)
+	//log.debug(`Read transition-duration from attribute ${duration}`)
 
 	for(idx=0; idx < list.children(".dropped-object").not("[alias^=cntrl]").length; idx++){
 
@@ -80,13 +80,18 @@ function getTransitionDuration( element, with_delay )
 		$(el).css("transition-duration",duration);
 	}
 
-	console.log(`Callxy to transition-duration getTransitionDuration() ${el.css("-webkit-transition-duration")}`)
+	log.debug(`Callxy to transition-duration getTransitionDuration() ${el.css("-webkit-transition-duration")}`)
 
 	for ( var i = 0; i < prefixes.length; i++ )
 	{
-		console.log(`Searching transition duration [${prefixes[i]}transition-duration]`)
+		log.debug(`Searching transition duration [${prefixes[i]}transition-duration]`)
 		var duration = el.css(`${prefixes[i]}transition-duration`);
-		console.log(`Result transition duration [${prefixes[i]}transition-duration] is ${duration}`)
+		log.debug(`Result transition duration [${prefixes[i]}transition-duration] is ${duration}`)
+		
+		if(parseInt(duration) == 0){
+			duration = "2000";
+		}
+
 		if ( duration )
 		{
 			duration = ( duration.indexOf( 'ms' ) >- 1 ) ? parseFloat( duration ) : parseFloat( duration ) * 1000;
@@ -121,7 +126,7 @@ function goRight(list){
 
 
 	if(SLIDER_isPaused(list) ||  SLIDERS[list.attr("id")].playing){
-		console.log(`User Hovering over list or it is playing`);
+		log.debug(`User Hovering over list or it is playing`);
 		return;
 	}
 
@@ -131,7 +136,7 @@ function goRight(list){
 	list = list.target ? $(list.target).parents("[type=LIST]").first() : $(list);
 
 
-	speed = list.attr("slider-speed") > 0 ? list.attr("slider-speed") : "0.6s";
+	speed = parseInt(list.attr("slider-speed")) > 0 ? list.attr("slider-speed") : "3000";
 
 	log.debug("SLIDER5.js:Speed is " + speed)
 
@@ -159,7 +164,7 @@ function SLIDER_pause(list){
     }
 
 
-    console.log(`LIST ID IS ${list.attr("id")}`);
+    log.debug(`LIST ID IS ${list.attr("id")}`);
 
 	SLIDERS[list.attr("id")].paused = true;
 
@@ -171,7 +176,7 @@ function SLIDER_play(list){
     	return;
     }
 
-    console.log(`LIST ID IS ${list.attr("id")}`);
+    log.debug(`LIST ID IS ${list.attr("id")}`);
     
 	SLIDERS[list.attr("id")].paused = false;
 
@@ -190,7 +195,7 @@ function SLIDER_isPaused(list){
 
 function SLIDER_init(list){
 
-	console.log(`Initializing slider for ${list.attr('id')}`)
+	log.debug(`Initializing slider for ${list.attr('id')}`)
 
 	var {handle} = undefined&SLIDERS[list.attr("id")];
 
@@ -199,16 +204,16 @@ function SLIDER_init(list){
 		SLIDER_deInit(list);
 	}
 
-	console.log(`Made it this far before ${handle}`)
+	log.debug(`Made it this far before ${handle}`)
 
 	var delay = list.attr("slider-delay");
 
-	console.log(`Delay is ${delay}`)
+	log.debug(`Delay is ${delay}`)
 
 
 	handle = setInterval(()=>{ list.attr("slider-direction") == "right" ? goRight(list): goLeft(list)},delay);
 
-	console.log(`Made it this far dude after ${handle}`)
+	log.debug(`Made it this far dude after ${handle}`)
 
 	SLIDERS[list.attr("id")] = {handle:handle,paused:false,playing:false};
 
@@ -238,7 +243,7 @@ function SLIDER_init(list){
 
 	})
 
-	list.children(".dropped-object").not("[alias^=cntrl]").hover((e)=>{console.log(`Pausing SLIDER. User Hovering over ${e.target.id}`);SLIDER_pause($(e.target).parent("[type=LIST]"));},(e)=>{SLIDER_play($(e.target).parent("[type=LIST]"));})
+	list.children(".dropped-object").not("[alias^=cntrl]").hover((e)=>{log.debug(`Pausing SLIDER. User Hovering over ${e.target.id}`);SLIDER_pause($(e.target).parent("[type=LIST]"));},(e)=>{SLIDER_play($(e.target).parent("[type=LIST]"));})
 
 	list.children(".dropped-object").not("[alias^=cntrl]").each(function(it){$(this).css({position:"absolute",left:it*$(this).outerWidth(true)})})
 }
@@ -324,7 +329,7 @@ function goLeft(list){
 
 
 	if(SLIDER_isPaused(list) ||  SLIDERS[list.attr("id")].playing){
-		console.log(`User Hovering over list or it is playing`);
+		log.debug(`User Hovering over list or it is playing`);
 		return;
 	}
 
@@ -335,9 +340,9 @@ function goLeft(list){
 	list = list.target ? $(list.target).parents("[type=LIST]").first() : $(list);
 
 	//speed = getTransitionDuration(list)
-	speed = list.attr("slider-speed") > 0 ? list.attr("slider-speed") : "0.6s";
+	speed = parseInt(list.attr("slider-speed")) > 0 ? list.attr("slider-speed") : "3000";
 
-	console.log("SLIDER5.js:Speed is really! " + speed)
+	log.debug("SLIDER5.js:Speed is really! " + speed)
 
 	resetForLeft(list);
 

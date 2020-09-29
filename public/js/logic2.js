@@ -26,16 +26,16 @@ WARN = {level:3,label:"WARN"}
 TRACE = {level:2,label:"TRACE"}
 DEBUG = {level:1,label:"DEBUG"}
 
-var LOGLEVEL = WARN;
+var LOGLEVEL = ERROR;
 
 var editing = false;
 
-
+var alwaysShowMessagesFromFunc = ["r_redrawSVGs","javaOnePlace","r_writePoints"];
 
 
 var MSG = "";
 
-
+/*
 function flushIt(){
 	console.log("I read message : " + MSG)
 	var instruction = MSG;
@@ -48,36 +48,61 @@ setInterval(function(){
 		flushIt();
 	}
 },100)
+*/
 
 
-var log = function(consoleHandler, msg){
+var log = function(consoleHandler, msg, callingFunc){
+	
+
 	if(!msg){
 		msg = consoleHandler.label;
 		//console.log(msg)
 	} else{
-		if(consoleHandler.level >= LOGLEVEL.level){
+		if((alwaysShowMessagesFromFunc.includes(callingFunc)) || consoleHandler.level >= LOGLEVEL.level  ){
 
 			console.log(consoleHandler.label + ": " + msg);
 		}
 	}
 }
 
+function getFuncName(str){
+
+	var str = `${str}`;
+
+	//console.log(`Returning FUNC ${str}`);
+
+	return str.substring(0,str.indexOf("(")).substring(str.indexOf(" ")+1);
+
+}
+
 log["debug"] = function(msg){
-	log(DEBUG,msg)
+
+	var callingFunc = getFuncName(log.debug.caller);
+
+	log(DEBUG,`${callingFunc}->${msg}`,callingFunc)
 }
 
 log["trace"] = function(msg){
-	log(TRACE,msg)
+
+	var callingFunc = getFuncName(log.trace.caller);
+
+	log(TRACE,`${getFuncName(log.trace.caller)}->${msg}`,callingFunc)
 }
 
 log.info = log.trace;
 
 log["warn"] = function(msg){
-	log(WARN,msg)
+
+	var callingFunc = getFuncName(log.warn.caller);
+
+	log(WARN,`${getFuncName(log.warn.caller)}->${msg}`,callingFunc)
 }
 
 log["error"] = function(msg){
-	log(ERROR,msg)
+
+	var callingFunc = getFuncName(log.error.caller);
+
+	log(ERROR,`${getFuncName(log.error.caller)}:${msg}`,callingFunc)
 }
 
 var myPage = {}
@@ -138,6 +163,7 @@ $(document).ready(function() {
 
 
 
+
 	$("link").removeAttr("disabled");
 
 	saveJs($("body").first(),`function silent(){}`)
@@ -173,25 +199,31 @@ $(document).ready(function() {
 	
 
 	if(pageState.params){
-		console.log(`Editing: [${pageState.params.editing}] and editing is [${editing}]`);
+		log.debug(`Editing: [${pageState.params.editing}] and editing is [${editing}]`);
 		editing = pageState.params.editing;
 	}
 
 	   if(editing == "true") {
 
-	   		console.log(`I AM ONLY HERE IF lil Editing: is true`)
+	   		log.debug(`I AM ONLY HERE IF lil Editing: is true`)
 
 	   		var simpleD = $('<div>');
 
 	   		simpleD.load("/sidebar.html",()=>{
 
-	   			$("#s1w").append(simpleD);
+	   				$("#s1w").append(simpleD);
+	   				
 	   		});
+
 
 	   		topNav = $('<div>');
 
 	   		topNav.load("/top-nav.html",function(){
 	   			$("#content").prepend(topNav);
+	   			 //Load Ready Library
+		 		 javaOnePlace();
+
+		 		 $("body").trigger("pageReloaded",pageState,currentBreakPoint);
 	   		})
 
 	   		containerDiv = $('<div id="misc-controls">')
@@ -228,7 +260,7 @@ $(document).ready(function() {
 					}
 					loadAllBreakPoints();
 
-					loadAllJs();
+					//loadAllJs();
 
 					theSiteObj.currentPage = location.pathname.replace("/"+website,"");
 
@@ -248,21 +280,36 @@ $(document).ready(function() {
 					log.error(e)
 			   }
 
+			   
+
 
 		   		initialize();
+
+
+
 		   		$(document).trigger("pageReloaded",pageState,currentBreakPoint);
+
+
+
 				$.event.trigger("initializationComplete",[]);
+
+				$(".section-control").unbind("on").on("click",(e)=>{ e.preventDefault();$("[data-action=addsection]").click()})
+
+				/*
+				if($(".section").length == 0){
+
+						$(".section-control").click();
+
+						$(".section-control").click();
+				}*/
 				t = whichTool("div");
 				meDiv = $(t.droppedModeHtml)
 				$("body").append(meDiv)
 				genericClass = CONVERT_STYLE_TO_CLASS_OBJECT(meDiv)
 				meDiv.remove();
 
-				if($(".section").length == 0){
-							//alert("hello")
-							$(".section-control").click();
-							$(".section-control").click();
-				}
+				
+				
 
 				log.debug("GENERIC IS " + JSON.stringify(genericClass));
 				//$('body').show();
@@ -288,7 +335,7 @@ $(document).ready(function() {
 		   	$('body').show().addClass("hover");
 		 
 		   	$("[type=LIST]").each(function(){
-		   		//console.log("LISTING IT")
+		   		//log.debug("LISTING IT")
 		   		div = $(this)
 		   		if(div.attr("slider-auto-slide") == "true"){
 		   			SLIDER_init(div);
@@ -313,6 +360,8 @@ $(document).ready(function() {
 				CarWithAudio.initialize();		   
 		 }
 
+
+		
 	
 		 website = $('html').first().attr("x-site-name")
 
@@ -424,7 +473,7 @@ function onMenu(vertical){
 	}
 	
 	
-	console.log("Sliding time!")
+	log.debug("Sliding time!")
 
 	var pTransition = getTransitionDuration( myDiv, true );
 
@@ -629,6 +678,18 @@ function whichTool (tool){
 		});
 		break;
 
+		case "SVG":
+		var svgId= "ELEM_" + new Date().getTime();
+		theTool = new GenericTool({
+			type:"SVG",
+			droppedModeStyle:"",
+			id: svgId,			
+			droppedModeHtml: new CustomShape(svgId).asHTML(),
+			droppable:true,
+			class:"squarepeg"
+		});
+		break;
+
 		case "LIST":
 		theTool = new GenericTool({
 			type:type,
@@ -687,11 +748,12 @@ function whichTool (tool){
 		});
 		break;
 		case "T":
+			var tId= "ELEM_" + new Date().getTime();
 			theTool = new GenericTool({
 			type:type,
 			class:"texttool",
 			friendlyName : "Text Field",
-			droppedModeHtml:"<div contenteditable=\"false\">Text</div>",
+			droppedModeHtml: new TextComponent(tId).asHTML(),
 			class:"generictext"
 
 		});
@@ -778,7 +840,7 @@ function configuredTool(options){
 	{
 		me = this;
 
-		console.log(`Options are ${JSON.stringify(options)}`)
+		log.debug(`Options are ${JSON.stringify(options)}`)
 
 		this.node = $(options.droppedModeHtml).addClass(options.class).addClass("dropped-object").attr('id',this.name)
 
@@ -789,7 +851,7 @@ function configuredTool(options){
 		if(div.attr("type") == "FIELD"){
 			div.find(".dropped-object").each(function(idx,n){
 				n = $(n);
-				console.log("ID IS " + $(div).attr("id"))
+				log.debug("ID IS " + $(div).attr("id"))
 				if(n.is("[type=T]")){
 					n.attr("id",div.attr("id")+ "-label")
 				} else {
@@ -805,8 +867,8 @@ function configuredTool(options){
 			$(this.node).removeClass("ui-droppable").droppable("destroy")
 		}
 	
-		console.log(`hello`);
-		console.log(this.node)
+		log.debug(`hello`);
+		log.debug(this.node)
 		//Note: since node has not been added to document, it can does not have a width or height yet
 		return this.node;
 

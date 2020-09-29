@@ -6,7 +6,7 @@ class Equalizer {
 
  static convertRawToURL(base64Raw,sitename,newFileName){
 
- 	console.log(`Filename for audio is ${newFileName}`)
+ 	log.debug(`Filename for audio is ${newFileName}`)
 
 
 
@@ -28,8 +28,8 @@ class Equalizer {
 				resolve(data);
 
 			}).fail(function(x,t,e){
-				console.log("Error getting all sites :" + t)
-				console.log(e);
+				log.debug("Error getting all sites :" + t)
+				log.debug(e);
 				reject(e);
 		});
 	});
@@ -72,9 +72,9 @@ class Equalizer {
 		</div>
 	</div>`;
 
-	console.log(`Equalizer count is now ${++Equalizer.counter}`)
+	log.debug(`Equalizer count is now ${++Equalizer.counter}`)
 
-	//console.log(`Created HTML String called ${str}`)
+	//log.debug(`Created HTML String called ${str}`)
 
 	this.html = str;
 
@@ -88,7 +88,7 @@ class Equalizer {
 
 	static initJS(volume,speed){
 
-		console.log(`Called Equalizer HTML ${++Equalizer.counter} times`);
+		log.debug(`Called Equalizer HTML ${++Equalizer.counter} times`);
 
 		this.speed = speed;
 
@@ -108,7 +108,7 @@ class Equalizer {
 		}).css({margin:20,color:"black"});
 
 		$("body").find("[id^=speed]").each((idx,elem)=>{
-				console.log(`Building Volume for ${$(elem).parentsUntil("[vehicle]").parent().attr("id")}`)
+				log.debug(`Building Volume for ${$(elem).parentsUntil("[vehicle]").parent().attr("id")}`)
 				$(elem).slider({
 		        value: speed,
 		        //range: true,

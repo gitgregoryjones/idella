@@ -116,7 +116,7 @@ var LocalStorageRepo = class extends Repo {
 		var currentPage = $('html').attr('x-current-page-name')
 		var page = {};
 
-		console.log("Loading " + title)
+		log.debug("Loading " + title)
 
 		//this.website = localStorage.getItem("repo_"+title);
 		this.website = {name:$('html').attr('x-site-name'),pages:{}}
@@ -169,12 +169,12 @@ var LocalStorageRepo = class extends Repo {
 		
 		for(var x = 0; x <  theSiteObj.bp.length; x++){
 			//mediaQueryCSS = getBreakpoint(bp[idx])
-			console.log("BP is " + x )
-			console.log(theSiteObj.bp[x])
+			log.debug("BP is " + x )
+			log.debug(theSiteObj.bp[x])
 
 			var bp = theSiteObj.bp[x];
 
-			console.log({bp:bp, query:theSiteObj["@media-"+bp]});
+			log.debug({bp:bp, query:theSiteObj["@media-"+bp]});
 
 			revision.addBp({bp:bp, query:theSiteObj["@media-"+bp]})
 
@@ -189,7 +189,7 @@ var LocalStorageRepo = class extends Repo {
 
 		this.website.currentRevision = revision;
 
-		console.log(this.website)
+		log.debug(this.website)
 		//this.website.pages[theSiteObj.currentPage].revisions.push(revision)
 		//localStorage.setItem("repo_"+ theSiteObj.currentPage,JSON.stringify(this.website))
 
@@ -211,8 +211,8 @@ function REVISION_getAllSites(callback){
 		
 			callback(true,data)
 		}).fail(function(x,t,e){
-			console.log("Error getting all sites :" + t)
-			console.log(e);
+			log.debug("Error getting all sites :" + t)
+			log.debug(e);
 			callback(false,e);
 		});
 }
@@ -220,7 +220,7 @@ function REVISION_getAllSites(callback){
 
 function REVISION_createNewSite(siteName,callback) {
 
-	console.log(siteName)
+	log.debug(siteName)
 	
 	$.get("/site/lookup/"+siteName).fail(function(){
 
@@ -238,12 +238,12 @@ function REVISION_createNewSite(siteName,callback) {
 		}).fail(function(x,t,e){
 			//alert("Error creating site. Encountered error : " + t)
 			//alert(e);
-			console.log("Error creating site :" + t)
-			console.log(e);
+			log.debug("Error creating site :" + t)
+			log.debug(e);
 			callback(false,e);
 		});
 	}).done(function(x,t,c){
-		console.log("Not creating site " + siteName + " because it already exists");
+		log.debug("Not creating site " + siteName + " because it already exists");
 		callback(true);
 	})
 }
@@ -265,8 +265,8 @@ function REVISION_createPage(pagename){
 		}).fail(function(x,t,e){
 			//alert("Error creating site. Encountered error : " + t)
 			//alert(e);
-			console.log("Error creating site :" + t)
-			console.log(e);
+			log.debug("Error creating site :" + t)
+			log.debug(e);
 			//callback(false,e);
 		});
 
@@ -295,7 +295,7 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 	REVISION_createNewSite(object.siteName,function(ok,err){
 
 		if(ok){
-			console.log("Sending a new revision")
+			log.debug("Sending a new revision")
 
 			POPUP_greyOver({target:"window",callerType:"save-window"},function(greyBox){
 
@@ -314,7 +314,7 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 						    contentType: "application/json; charset=utf-8"
 					    	
 						}).done(function(){
-							console.log("Revision created");
+							log.debug("Revision created");
 							$(".saveImage").hide();
 
 
@@ -332,8 +332,8 @@ $(document).on("REVISION_NEEDED_EVENT",function(evt,redirect){
 						}).fail(function(x,t,e){
 							alert("Failure is here:")
 							alert(e);
-							console.log("Error revising site :" + t)
-							console.log(e);
+							log.debug("Error revising site :" + t)
+							log.debug(e);
 					});
 			
 			})

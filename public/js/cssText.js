@@ -234,14 +234,15 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExi
 	styleCss = thescript.html();
 	//test to see if style is not found, add it.  If found, replace it
 	if(!thescript.html().match(re)){
-		log.info("CSSTEXT.js: Appending RULE for " + myCSSLookupKey + " and rule " + theClassObj.cssRule)
+		log.debug("CSSTEXT.js: Appending RULE for " + myCSSLookupKey + " and rule " + theClassObj.cssRule)
 		thescript.append(theClassObj.cssRule + "\n");
 	}else {
 		if(justTestIfExists){
 			exists = true;
 			return exists;
 		}
-		log.trace("CSSTEXT.js: I found  RULE for " + myCSSLookupKey)
+		log.info("CSSTEXT.js: I found  RULE for " + myCSSLookupKey )
+		log.info(`CSSTEXT.js: Replacing with ${theClassObj.cssRule}`)
 
 		thescript.html(thescript.html().replace(re,theClassObj.cssRule))
 	}

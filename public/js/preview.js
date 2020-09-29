@@ -1,6 +1,8 @@
 
 function PREVIEW_makeSaveableView(page){
 
+		$(".coordinate").css({visibility:"hidden"});
+
 		$(".widget-on,.widget-off").remove();
 
 		$("[slash-for]").each(function(idx,it){
@@ -56,9 +58,15 @@ function PREVIEW_makeSaveableView(page){
 
 function PREVIEW_togglePreview(showPreview){
 
+	//CUSTOM_PXTO_VIEWPORT($("#content"))
 
 	if(showPreview){
+
+
+
 		$(".widget-on,.widget-off").remove();
+
+		$(".coordinate").css({visibility:"hidden"})
 
 		$(".dropped-object").not(".tool").removeClass("debug-border-style").removeClass("squarepeg");
 		$(".dropped-object,[class=submenu]").removeClass("submenu")
@@ -141,6 +149,7 @@ function PREVIEW_togglePreview(showPreview){
 
 	}else {
 		
+		$(".coordinate").css({visibility:"visible"})
 	
 		//$(".dropped-object").not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg").removeClass("noborder");
 		//$(".dropped-object").resizable().off("resizestop").on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
@@ -173,11 +182,14 @@ function PREVIEW_togglePreview(showPreview){
 		})
 
 		var total = 0;
+		var height = 0;
 		var clength = $("#content > .section").length;
 	    $("#content > .section").each(function(index){
 	        total += $(this).width();
+	        height += $(this).height();
 	    })
-	    $("body,#content").css({width:parseInt(total/clength)+5});
+	    $("body,#content").css({width:parseInt(total/clength)+5, height:height});
+
 
 
 		//Give User Visual Indicator They are in preview mode
@@ -204,4 +216,9 @@ function PREVIEW_togglePreview(showPreview){
 
 
 	}
+
+	CUSTOM_PXTO_VIEWPORT($("#content"))
+	
+	CUSTOM_PXTO_VIEWPORT($("body"))
+
 }
