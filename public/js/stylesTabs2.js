@@ -468,6 +468,8 @@ function writeTabs(currentCtx,forceWrite){
 			STYLESTABS_forceRewrite = true;
 			//NOTES_makeNote($(parent));
 			STYLESTABS_forceRewrite = false;
+			//console.log(`Calling Update Layers Tool`)
+			//updateLayersTool(theParentId)
 
 		}).on("change-placeholder-not-used",function(evnt){
 			

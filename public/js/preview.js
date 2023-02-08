@@ -100,6 +100,7 @@ function PREVIEW_togglePreview(showPreview){
 			hasDefaultBorder = $(this).css("border-top-style").indexOf("dashed") > -1
 			if(hasDefaultBorder ){
 				$(this).addClass("noborder");
+				console.log("Adding a border homey")
 			}
 			return hasDefaultBorder;
 		})
@@ -159,7 +160,7 @@ function PREVIEW_togglePreview(showPreview){
 			
 			it.off("resizestop").on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 		
-			it.not(".tool,[type=MENU-ITEM]").addClass("debug-border-style").addClass("squarepeg").removeClass("noborder");
+			it.removeClass("noborder");
 			//
 			it.is(function(){
 				$(this).css("border-top-width") == "0" ? $(this).css({"border":"3px dashed black"}) : "";

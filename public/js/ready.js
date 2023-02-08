@@ -40,6 +40,7 @@ $(document).ready(function(){
 
 
 function r_openNote(evnt){
+		evnt.stopPropagation()
 		$(evnt.target).mouseover();
 		setTimeout(function(){
 			$(evnt.target).find("[class*=fa-]").click();
@@ -283,6 +284,35 @@ function r_writePoints(evt){
 	
 
 }
+
+function r_getLayers(){
+
+	var data = ["div","img","list"];
+
+	console.log(`${$(".layer").length}`)
+
+	$(".layer").each(function(){
+		console.log(`Looping...`)
+		//data.push(`${$(this).find(".details > [type=text]").val()}`);
+
+	})
+
+	console.log(`Data is ${data}`);
+
+
+	return data;
+}
+
+function r_sliderSVGPenStrokeValue(event,ui){
+
+	console.log(`Stroke Width is ${ui.value}`)
+
+	element = $(`#${$(event.target).attr("slider-for")}`)
+
+	element.css("stroke-width",ui.value);
+
+}
+
 
 
 function r_sliderStartValue(event,ui){
@@ -600,51 +630,92 @@ function r_doFontAwesome(e){
         $(e.target).attr("noclick","true");
 }
 
+function r_makeLayerTextInputField(e){
+
+	DRAW_SPACE_advancedShowing = true;
+	SAVE_okToSave = false;
+
+	$(e.target).one("change",(inp)=>{
+
+			$(`#${$(inp.target).attr("text-for")}`).attr("alias",$(inp.target).val().toUpperCase());
+			
+			$(inp.target).val($(inp.target).val().toUpperCase())
+
+			$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+
+	}).one("mouseleave",function(){
+		DRAW_SPACE_advancedShowing = false;
+		SAVE_okToSave = true;
+		$(".form-control").focus();
+	}).one("change",(e)=>{
+		$( ".search-layers" ).catcomplete({
+      
+      		source:fit()
+      
+  		});
+	})
+
+	$(e.target).focus();
+
+					
+				
+}
+
 
 function r_makeEditable(e){ 
+		   	
+		   	var me = $(e.target);
 
-			//e.stopPropagation();
-
-	    	//$(this).parent().removeAttr("noclick")
-
-	    	DRAW_SPACE_advancedShowing = true;
-			SAVE_okToSave = false;
-			$(this)[0].style.caretColor=$(this).parent().css("color");
-
-			//Set width to max so user does not accidentally leave area before done typing
-			$(this).css({width:"100%"});
-			//Click Note
-			var lock = $(this).parent().find("[lock]");
-
-			var locked = lock.is(".fa-lock");
-			
-			if(locked){
-				lock.click();
-			}
+		   	//I am setting a timeout to give time for us to recognize that
+		   	//an drag event is really happening instead of a click event
+	    	setTimeout(function(){
 
 
-	        //log.debug(`HTML IS ${$(this).html().replace(/<\i class="fa\s+(fa-\w+(?:-\w+)*?)"\>\<\/i\>/gim,"$1")}`);
-	        $(this).html(  $(this).html().replace(/<\i class="fa\s+(fa-\w+(?:-\w+)*?)"\>\<\/i\>/gim,"$1")   );
-	        $(this).attr("contenteditable","true").focus();
-	        //CUSTOMEVENTS_placeCaretAtEnd(e.target);
-			var cell = this;
-			// select all text in contenteditable
-			// see http://stackoverflow.com/a/6150060/145346
-			var range, selection;
-			if (document.body.createTextRange) {
-			range = document.body.createTextRange();
-			range.moveToElementText(cell);
-			range.select();
-			} else if (window.getSelection) {
-			selection = window.getSelection();
-			range = document.createRange();
-			range.selectNodeContents(cell);
-			selection.removeAllRanges();
-			selection.addRange(range);
-			}
+	    		if(me.parent().attr("noclick")){
+	    			console.log(`User is really dragging...ignore one time`)
+	    			me.parent().removeAttr("noclick");
+	    			return;
+	    		}
 
-			$(e.target).one("mouseleave",r_doFontAwesome)
-			//$(this).find(".fa-lock").click();
+		    	DRAW_SPACE_advancedShowing = true;
+				SAVE_okToSave = false;
+				me[0].style.caretColor=$(this).parent().css("color");
+
+				//Set width to max so user does not accidentally leave area before done typing
+				me.css({width:"100%"});
+				//Click Note
+				var lock = me.parent().find("[lock]");
+
+				var locked = lock.is(".fa-lock");
+				
+				if(locked){
+					lock.click();
+				}
+
+
+		        //log.debug(`HTML IS ${$(this).html().replace(/<\i class="fa\s+(fa-\w+(?:-\w+)*?)"\>\<\/i\>/gim,"$1")}`);
+		        me.html(  me.html().replace(/<\i class="fa\s+(fa-\w+(?:-\w+)*?)"\>\<\/i\>/gim,"$1")   );
+		        me.attr("contenteditable","true").focus();
+		        //CUSTOMEVENTS_placeCaretAtEnd(e.target);
+				var cell = me[0];
+				// select all text in contenteditable
+				// see http://stackoverflow.com/a/6150060/145346
+				var range, selection;
+				if (document.body.createTextRange) {
+				range = document.body.createTextRange();
+				range.moveToElementText(cell);
+				range.select();
+				} else if (window.getSelection) {
+				selection = window.getSelection();
+				range = document.createRange();
+				range.selectNodeContents(cell);
+				selection.removeAllRanges();
+				selection.addRange(range);
+				}
+
+				me.one("mouseleave",r_doFontAwesome)
+
+	    	},100)
 	       
 	        
 }

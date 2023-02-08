@@ -265,8 +265,10 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
 
 
   var CUSTOM_PXTO_VIEWPORT = function( moveMe,X,  Y ) {
-  	
 
+
+  	//$(moveMe).removeClass("debug-border-style");
+  	
 	X = moveMe.position().left;
 
 	Y = moveMe.position().top;
@@ -279,8 +281,14 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
 
  	$(moveMe).removeClass("submenu");
 
-	
+ 	if(!editing && parseInt(moveMe.css("border-width")) > 0){
+ 		moveMe.removeClass("noborder");
+ 	}
+
+
 	theClassObj = CONVERT_STYLE_TO_CLASS_OBJECT($(moveMe))
+
+	console.log(`theClassObj is ${JSON.stringify(theClassObj)}`)
 
 
 	CSS_TEXT_saveCss(moveMe, theClassObj)
@@ -290,7 +298,14 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
 	//remove inline style since we have added a class
 	$(moveMe).attr("style","");
 
+	/*
+	if(!editing && parseInt(moveMe.css("border-width"))  0){
+ 		moveMe.addClass("noborder");
+ 	}*/
+
 	delete theClassObj;
+
+	//$(moveMe).addClass("debug-border-style");
 
 	//Scroll To Layer in UI
 	//reLoadLayers();

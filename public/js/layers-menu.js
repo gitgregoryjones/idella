@@ -3,19 +3,28 @@ var LAYER_TOOL = [];
 $(document).ready(function(){
 
 	//reLoadLayers();
-	log.debug("Loaded layers");
+	log.debug("Initializing search-layers");
 
+	
 
 });
 
 
 function reLoadLayers(){
 
+	$( ".search-layers" ).catcomplete({
+      
+      source:[]
+      
+  	});
+
 	log.debug(`Layer menu is ${$("#layer-menu").length}`);
 
 	log.debug(`Dummy length is ${$("#maincontent > .dummy").length}`);
 
 	log.debug(`Length of layers to draw is ${$("#content .dropped-object").length}`)
+
+	
 
 	if($("#maincontent > .dummy").length == 0){
 
@@ -29,12 +38,15 @@ function reLoadLayers(){
 
 	$("#content .dropped-object").each(function(){
 
-		updateLayersTool(this.id);
+		var theLayer = updateLayersTool(this.id);
+	
 
 	})
 
 	$(".dummy").removeClass(".dummy");
 
+
+	
 	/*
 	$(".dropped-object").not('#drawSpace,#editSpace,#workspace,#content').each(function(index){
 
@@ -55,6 +67,19 @@ function reLoadLayers(){
 
 	//updateLayersTool("body");
 
+}
+
+function fit(){
+
+		var lD = [];
+
+		$(".layer").each(function(){
+			lD.push({category:$(this).attr("layer-type"),label:$(this).find("[type=text]").val()})
+		})
+
+		console.log(lD)
+
+		return lD;
 }
 
 function scrollToLayer(aToolId){
@@ -121,6 +146,7 @@ function updateLayersTool(aToolId,aParentId){
 
 				//setup layer unique id using aTool id
 				$(layer).attr("layer",$(aTool).attr("id"));
+				$(layer).attr("layer-type",$(aTool).attr("type"))
 
                 pwindow = $(layer).find('.preview-window')
 
@@ -140,25 +166,7 @@ function updateLayersTool(aToolId,aParentId){
                 	
                 })
 
-                if( $(aTool).is("[type=LIST]") ) {
-                	$(layer).find(".fa-running").show();
-                	$(layer).find(".fa-running").on("click",
-                		(e)=>{
-                			if($(e.target).hasClass("fa-stop-circle")) {
-                				SLIDER_deInit(aTool);
-                				$(e.target).removeClass("fa-stop-circle");
-                				//e.stopPropogation()
-                			} else {
-                				SLIDER_init(aTool);
-                				$(e.target).addClass("fa-stop-circle");
-                				//e.stopPropogation();
-                			}
-                			
-                		}
-            		);
-            	} else{
-            		$(layer).find(".fa-running").hide();
-            	}
+               
 
                 log.debug(`Window height ${pwindow.height()} and width ${pwindow.width()}`);
 
@@ -178,7 +186,7 @@ function updateLayersTool(aToolId,aParentId){
 					$(pwindow).text("T");
 					//$(pwindow).css({top:12,"padding-top":20});
 
-                     $(layer).find('.details').text(miniObj.text());
+                     $(layer).find('.details > [type=text]').val(miniObj.text().toUpperCase());
 				} 
 				else {
 					var label = $(miniObj).attr("alias") ? $(miniObj).attr("alias") : miniObj.attr("type");
@@ -189,7 +197,8 @@ function updateLayersTool(aToolId,aParentId){
                 	//	miniObj.attr("type","SOUND");
                 	//}
                 	//$(layer).find('.details').text(miniObj.attr('type') + "-" + miniObj.attr("id"));
-                	$(layer).find('.details').text(label);
+                	$(layer).find('.details > [type=text]').attr("text-for",$(aTool).attr("id")).val(label.toUpperCase());
+
                 	$(pwindow).append(miniObj);
 
                 	//Make sure images appear in preview window since we may have inherited
@@ -197,6 +206,8 @@ function updateLayersTool(aToolId,aParentId){
                 	//Overwrite margin settings for preview window
                 	//$(pwindow);
 				}
+
+				$(layer).find('.details > [type=text]').on("mouseover",r_makeLayerTextInputField).attr("text-for",aToolId);
 
 				$(layer).removeClass("dropped-object");
 
@@ -246,12 +257,14 @@ function updateLayersTool(aToolId,aParentId){
 					$(aTool).parent().find("[highlight-id]").remove();
 					//$(aTool).removeClass('highlight');
 					//$(aTool).css('border',$(aTool).attr("previous-style"));
+					$(".layer").not("[active]").removeClass("highlight-layer");
 					$(aTool).mouseout();
 					//$(aTool).css('border',$(aTool).attr("previous-style"));
-					
 
-				}).unbind("click").on("click",function(e){
 
+				}).find(".details").off().on("click",function(e){
+
+					console.log("Clicked A Layer")
 					//Do MouseOVer to make lock appear
 					
 					//$(".layer").removeClass("highlight");
@@ -293,26 +306,7 @@ function updateLayersTool(aToolId,aParentId){
 
 				});
 
-				$(layer).find(".details").on("clicker",
-					(e)=>{
-						
-						$(document).unbind("keydown");
-						txt = $(e.target).text(); 
-						$(e.target).html(""); 
-						txt = $(`<input type='text' value='${txt}' pid='${aToolId}'>`);
-						txt.on("mouseleave",(inp)=>{
-							$(`#${aToolId}`).attr("alias",$(inp.target).val());
-							$(e.target).html($(inp.target).val());
-							txt.remove();
-							$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
-
-						})
-
-						$(e.target).append(txt);
-						txt.putCursorAtEnd();
-						e.stopPropogation();
-						
-				})
+				$(layer).find(".details > [type=text]").on("mouseover",r_makeLayerTextInputField)
 
 				//Append The Layer Finally
 				if(aParentId){
@@ -377,6 +371,32 @@ function updateLayersTool(aToolId,aParentId){
 					}
 				});
 
+				 if( $(aTool).is("[type=LIST]") ) {
+                	$(layer).find(".runningman").show();
+                	$(layer).find(".runningman").on("click",
+                		function(e){
+
+                			//e.stopPropogation();
+
+                			if($(e.target).hasClass("fa-stop-circle")) {
+
+                				SLIDER_deInit(aTool);
+
+                				$(e.target).removeClass("fa fa-stop-circle").addClass("fa fa-play-circle");
+                				//e.stopPropogation()
+                			} else {
+                				console.log("Starting Slider");
+                				SLIDER_init(aTool);
+                				$(e.target).removeClass("fa fa-play-circle").addClass("fa fa-stop-circle");
+                				//e.stopPropogation();
+                			}
+                			
+                		}
+            		);
+            	} else{
+            		$(layer).find(".runningman").hide();
+            	}
+
 				//reverse the list
 				//$("#layer-menu").children().each(function(i,li){$("#layer-menu").prepend(li)})
 				var menu = $("#maincontent");
@@ -384,5 +404,11 @@ function updateLayersTool(aToolId,aParentId){
 				$("#layer-menu").draggable()
 					.css({"right":200,top:200});
 
-				
+				$(".layer").removeClass("highlight-layer");
+
+				$(layer).addClass("highlight-layer");
+
+				//$( ".search-layers" ).catcomplete("option", {source:fit()});
+
+				return layer;
 }

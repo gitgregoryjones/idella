@@ -26,9 +26,9 @@ WARN = {level:3,label:"WARN"}
 TRACE = {level:2,label:"TRACE"}
 DEBUG = {level:1,label:"DEBUG"}
 
-var LOGLEVEL = ERROR;
+var LOGLEVEL = DEBUG;
 
-var editing = false;
+var editing = true;
 
 var alwaysShowMessagesFromFunc = ["r_redrawSVGs","javaOnePlace","r_writePoints"];
 
@@ -203,7 +203,8 @@ $(document).ready(function() {
 		editing = pageState.params.editing;
 	}
 
-	   if(editing == "true") {
+
+	   if(editing == true) {
 
 	   		log.debug(`I AM ONLY HERE IF lil Editing: is true`)
 
@@ -227,6 +228,8 @@ $(document).ready(function() {
 	   		})
 
 	   		containerDiv = $('<div id="misc-controls">')
+
+
 
 		   	$(containerDiv).load("/edit-body.html",function(){
 
@@ -691,9 +694,11 @@ function whichTool (tool){
 		break;
 
 		case "LIST":
+		case "SLIDER":
+		var lid = "ELEM_" + new Date().getTime();
 		theTool = new GenericTool({
-			type:type,
-			droppedModeHtml:"<div></div>",
+			type:"LIST",
+			droppedModeHtml: new ListComponent(lid,type).asHTML(),
 			droppable:true,
 			class:"squarepeg list"
 		});
@@ -846,7 +851,11 @@ function configuredTool(options){
 
 			.css({zIndex: options.zIndex,display:"block"}).attr('type',options.type);
 
-		var div = setUpDiv(this.node)
+		var div = setUpDiv(this.node);
+
+		div.find(".dropped-object").each(function(){
+			setUpDiv($(this));
+		})
 
 		if(div.attr("type") == "FIELD"){
 			div.find(".dropped-object").each(function(idx,n){

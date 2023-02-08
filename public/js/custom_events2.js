@@ -1096,6 +1096,7 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 //if called from clone/copy cmd
 		log.debug("RESIZE X IS " + ui.element.css("left") + " Y IS " + ui.element.css("top"))
+		
 		CUSTOM_PXTO_VIEWPORT(ui.element,ui.element.position().left,ui.element.position().top)
 
 		if(!ui.element.is("[type=T]")){
@@ -1118,9 +1119,6 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 //	$(window).trigger("userDragEnded")
 
 	event.stopPropagation();
-
-	if($(event.target).is("[type=T]"))
-			$(event.target).children(".text-detail").on("click",r_makeEditable);
 
 	if(editing)
 	NOTES_makeNote($(event.target))
@@ -2068,7 +2066,7 @@ function setUpDiv(div){
 	}
 
 	//Do setups in ready.js
-	//div.on("click",r_openNote)
+	div.not("[type=T]").on("click",r_openNote)
 	
 
 	return div;
@@ -2536,7 +2534,7 @@ DROPPER_LOGIC = {
                       if(tmpType == "T"){
                       	tTool.css("text-align","center");
                       }
-                      
+
                       ui.draggable = tTool;
                       fromSideNav = true;
         	}

@@ -66,7 +66,7 @@
           <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
 
             <div class="input-group">
-              <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+              <input type="text" id="search-bar" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
               <div class="input-group-append">
                 <button class="btn btn-primary" type="button">
                   <i class="fas fa-search fa-lg"></i>
@@ -75,7 +75,37 @@
             </div>
 
           </form>
+<script>
 
+$(document).ready(function(){
+
+var data = ["img","list"]
+
+  function gL(){
+
+     
+
+  $(".layer").each(function(){
+    console.log(`Looping...`)
+    data.push(`${$(this).find(".details > [type=text]").val()}`);
+
+  })
+
+  return data;    
+
+  }
+
+
+
+ 
+
+  $( "#search-bar" ).catcomplete({
+      
+      source: gL
+      
+  });
+});
+</script>
           <!--
           $(".tabul").append('<li style="50px; padding:5px">&nbsp;&nbsp;Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">&nbsp;&nbsp;Disable Hover <input type="checkbox" name="disableHoverEvents" id="disableHoverEvents">&nbsp;&nbsp;Show Overlays <input type="checkbox" name="showOverlays" id="showOverlays" class="showOverlays">&nbsp;&nbsp;');
     $(".tabul").append('<li style="50px; padding:5px">&nbsp;Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">&nbsp;&nbsp;Resize Group <input type="checkbox" name="group-resize" id="group-resize"></li>');

@@ -93,25 +93,45 @@
 
 
  <div id="header">
-<div class="fa fa-times-circle close-window" style="float:right; color:red; padding:5px;text-align:right;cursor:pointer;"></div>
-<div class="htab">
-   Layers
-</div>
+	<div class="fa fa-minus close-window" style="float:right; color:white; padding-top:20px;padding-right:25px;text-align:right;cursor:pointer;"></div>
+	<div class="htab">
+	   Layers 
+	   <div style="display:inline-block;"><input type="text" class="search-layers" placeholder="Search For Layer" class="fa fa-search">
+	   </div>
+	</div>
+	
 </div>
 <div id="maincontent">
     <div class="layer dummy" style="display: none">
     	<div style="border-right:1px solid grey;display:block; height:max;font-size:18px;float:left; width:10%;padding-left:5px; padding-top:5px">
     		<i class="eye fa fa-eye"></i>
     		<i class="fas fa-arrows-alt-h"></i>
-    		<i class="runningman fas fa-running"></i>
+    		<i class="runningman fas fa-play-circle"></i>
     	</div>
     	
-    	<div class="preview-window" style="display:block; float:left;"></div>
-    	<div class="details" style="font-size:12px;display:block; float:left; width:50%"></div>
+	    	<div class="preview-window" style="display:block; float:left;"></div>
+	    	<div class="details" style="font-size:12px; height:100%;display:block; float:left; width:65%"><input type="text" placeholder="Layer Name"></div>
+    	
+
     </div>
 </div>
+<div id="layer-footer">
+
+</div>
 <script>
-	$(".close-window").off().on("click",showHideMenu);
+	$(".close-window").off().on("click",function(){
+
+
+		var theHeight = $("#layer-menu").height() > 0 ? 0 : "50%";
+
+		$("#layer-menu").animate({height:theHeight},200,"swing",function(){
+			if($(".close-window").hasClass("fa-minus")){
+				$(".close-window").removeClass("fa-minus").addClass("fa-plus");
+			} else {
+				$(".close-window").removeClass("fa-plus").addClass("fa-minus");
+			}
+		})
+	});
 </script>
 <!--
 <div id="footer">

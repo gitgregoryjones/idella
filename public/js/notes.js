@@ -138,6 +138,7 @@ function NOTES_makeNote(element,isActive){
 							$("[data-action=lessOptions]").click();
 							$(this).removeClass("fa-unlock").addClass("fa-lock")
 							widgets.removeClass("widget-on").addClass("widget-off")
+							$(`[layer=${$(myParent).attr("id")}]`).removeAttr("active");
 							return;
 							//$(document).click();
 						} else {
@@ -163,12 +164,15 @@ function NOTES_makeNote(element,isActive){
 
 							updateLayersTool($(myParent).attr("id"));
 
+							$(`[layer=${$(myParent).attr("id")}]`).attr("active","true");
+
+
 							log.debug("Calling update Layers Tool");
 							//impor layers.js scroll to layer
 							if(!$(this).is(".alreadyscrolled")){
 								scrollToLayer($(myParent).attr("id"));
 								$(this).removeClass("alreadyscrolled");
-							}
+							} 
 							
 							
 							
@@ -441,49 +445,58 @@ function NOTES_makeNote(element,isActive){
 				theMsg.append(" <div>Source: <input type='text' class='quick-disabled quick-disabled-image-field' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
 			}
 
+			if(!element.is("[type=SVG]")){
 			
 				theMsg.append("<div style='display:inline-block'></div>Bckgrnd Color: <div background-color-for='#"+element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ color + "'/>")
-			
-			
-			
-			theMsg.append(" <div style='display:inline-block'><input type='text' class='quick-disabled quick-color' name='background-color' parent='" + element.id + "' value='" + color + "'></div>")
-			
+				theMsg.append(" <div style='display:inline-block'><input type='text' class='quick-disabled quick-color' name='background-color' parent='" + element.id + "' value='" + color + "'></div>")
+			}
 			//theMsg.append(" <div>Font: <select name='font-family' parent='" + element.id + "' value='" + fontFamily + "'></div>")
 			
-			//Do Font Stuff
-			var ftype = $(`<select name='font-family' parent='${element.id}'>`);
+			if(!element.is("[type=SVG]")){
+				//Do Font Stuff
+				var ftype = $(`<select name='font-family' parent='${element.id}'>`);
 
-					
+						
 
 
-					var fonts = $("html").attr("fonts").split(",");
+						var fonts = $("html").attr("fonts").split(",");
 
-					fonts.forEach(function(font){
-						var option = new Option(font,font);
-						$(option).css("font-family",font);
-						ftype.append(option)
-					})
+						fonts.forEach(function(font){
+							var option = new Option(font,font);
+							$(option).css("font-family",font);
+							ftype.append(option)
+						})
 
-					//AutoSelect option based on what user chose last
-					if(element.css("font-family")){
-						ftype.find(`[value="${$(element).css("font-family").replace(/"/g,"")}"]`).attr('selected','selected');
-					}
+						//AutoSelect option based on what user chose last
+						if(element.css("font-family")){
+							ftype.find(`[value="${$(element).css("font-family").replace(/"/g,"")}"]`).attr('selected','selected');
+						}
 
-					ftype.on('change',function(){
-						element.css("font-family",$(this).find(":selected").attr("value"));
-					})
+						ftype.on('change',function(){
+							element.css("font-family",$(this).find(":selected").attr("value"));
+						})
 
-			theMsg.append(ftype)
-			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="start" class="fa fa-align-left"></div>`))
-			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="center"  class="fa fa-align-center"></div>`))
-			theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="right"  class="fa fa-align-right"></div>`))
+				theMsg.append(ftype)
+
+				theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="start" class="fa fa-align-left"></div>`))
+				theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="center"  class="fa fa-align-center"></div>`))
+				theMsg.append($(`<div editor-icon-for="#${element.attr("id")}" style="padding:5px; border:1px solid white; font-size:16px; margin-left:5px" orientation="right"  class="fa fa-align-right"></div>`))
+			
+			}
+
 			if(element.is("[type=SVG]")){
 		/*		$( function() {
     $( "#slider" ).slider();
 
-  } );*/
-  				var startValue = element.attr("initial-slider-value") != undefined ? element.attr("initial-slider-value") : 0;
-  				theMsg.append(`<br><div style="display:inline-block">Scale:&nbsp;</div>&nbsp;<div style="margin-left:10px; display:inline-block;width:75%" slider-for="${element.attr("id")}"></div> 
+  } );*/		
+  				theMsg.append("<div style='display:inline-block'></div>Fill Color: <div fill-color-for='#"+element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ element.css("fill") + "'/>")
+				theMsg.append(" <div style='display:inline-block'><input type='text' class='quick-disabled quick-color' name='background-color' parent='" + element.id + "' value='" + color + "'></div>")
+
+  				theMsg.append("<div style='display:block'></div>Pen Color: <div pen-color-for='#"+element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ $(element).css("stroke") + "'/>")
+  				theMsg.append(" <div style='display:inline-block'><input type='text' class='quick-disabled quick-color' name='stroke' parent='" + element.id + "' value='"+ $(element).css("stroke") + "'></div>")
+  				var startValue = parseFloat(element.css("stroke-width"));
+  				
+  				theMsg.append(`<br><div style="display:inline-block">Pen Width:&nbsp;</div>&nbsp;<div style="margin-left:10px; display:inline-block;width:50%" slider-for="${element.attr("id")}"></div> 
   								<script>
   								console.log("${element.attr('id')}")
 
@@ -492,15 +505,15 @@ function NOTES_makeNote(element,isActive){
 								    $( "[slider-for=${element.attr('id')}]" ).slider(
 								    	{
 								    		min:1,
-								    		max:5,
-								    		slide:r_resizeSVG,
-								    		start:r_sliderStartValue,
-								    		stop: r_sliderStartValue,
+								    		max:15,
+								    		slide:r_sliderSVGPenStrokeValue,
+								    		
 								    		value: ${startValue}
 								    	});
 								} );
   								</script>
   							  `);
+  							  
 			} else {
 				theMsg.append(" <div style='display:inline-block'>Text Color:&nbsp;</div><div color-for='#" +element.id + "' style='display:inline-block;height:10px;width:10px;border:1px solid black;background-color:"+ txtColor + "'></div>&nbsp;<input type='text' class='quick-disabled' name='color' parent='" + element.id + "' value='" + txtColor + "'>")
 			}
