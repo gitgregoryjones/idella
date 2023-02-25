@@ -1,33 +1,14 @@
 var LAYER_TOOL = [];
 
-window.allowedAmountToGrowOrShrink = 0;
-
-window.expanded = true;
-
-$(document).on("initializationComplete",function(){
+$(document).ready(function(){
 
 	//reLoadLayers();
 	log.debug("Initializing search-layers");
-
-
-	$("#content").attr("expanded",true).css("width","100%")
-
-	$("div.section").length == 0 ? $("[data-action=addsection]").click() : 0;
 
 	
 
 });
 
-
-function centerMe(elem){
-	var elem = $(elem);
-    leftPos = $("#content").outerWidth()/2 
-
-    //leftPos -= $("#content")[0].offsetLeft
-    console.log(`Centering position ${leftPos} for elem ${elem.attr("id")}`)
-    elem.css({left:leftPos - elem.outerWidth()/1.5});
-    return leftPos;
-}
 
 function reLoadLayers(){
 
@@ -117,186 +98,10 @@ function scrollToLayer(aToolId){
 		);
 }
 
-
-function setRatios(content){
-
-	content.oldMe = {width:content.outerWidth(), height:content.outerHeight()}
-
-	var lRatio = content[0].offsetLeft/content.parent().outerWidth();
-
-	var tRatio = content[0].offsetTop/content.parent().outerHeight();	
-
-	content.oldMe.ratio = {left:lRatio, top:tRatio};
-
-	console.log(`Error computing ratio for element is ${JSON.stringify(content.oldMe.ratio)} for ${content.attr("alias")}`)
-
-	var kids = []
-
-	content.children(".dropped-object").each(function(iter){
-
-		var child = $(this);
-
-		console.log(`Error searching for #contentCopyFor-content/. Number found is ${child.parents("#contentCopyFor-content").length}`)
-
-
-		if(child.parents("#contentCopyFor-content").length > 0){
-			console.log(`Error Changing child id to copy id since a save is being performed on a background copy for ${"contentCopyFor-" + child.attr("id")}`)
-			child.attr("id","contentCopyFor-" + child.attr("id"))
-
-		}
-
-		console.log(`Error setting coords on kids is ${child.attr("id")} for ${child.attr("alias")}`)
-
-		kids.push(setRatios(child));
-
-	})
-
-	content.kids = kids;
-
-
-	return content;
-
-}
-
-function resizeOrGrowElement(content,shrinkMe){
-
-
-	//console.log(`Error TIme TO DO IT The allowedAmountToGrow to grow or shrink is ${window.allowedAmountToGrowOrShrink}`)
-
-	/*
-	var theSavedTransitionDuration = content.css("transtion-duration");
-	if(key == "transition-duration"){
-			theClassObj["-webkit-transition-duration"] = $(element).css(key);
-			theClassObj["-moz-transition-duration"] = $(element).css(key);
-			//theClassObj["-o-transition-duration"] = $(element).css(key);
-
-	//content.css({opacity:1,"transition-duration":"0s","-webkit-transition-duration":"0s","-moz-transition-duration":"0s"});
-
-	//console.log(`theClassObj is ${JSON.stringify(theClassObj)}`)
-
-
-	//CSS_TEXT_saveCss(moveMe, theClassObj)*/
-
-	/** Now expand or contract the Parent */
-	if(shrinkMe != undefined && shrinkMe == true ) {
-
-			content.css({width:content.oldMe.width/1.5, height:content.oldMe.height/1.5})
-			//window.expanded = false;
-
-		} else {
-			console.log(`Error Expanded is time to grow up`)
-
-			if(content[0].id == "content"){
-				if(content.oldMe.width  * 1.5 > screen.width * 1.01){
-					console.log(`Error Short circuit because this content can't grow anymore`);
-					return [];
-				}
-			}
-
-			console.log(`Error Growing ${content[0].id} size will be ${content[0].offsetLeft}  divided by ${content.parent().outerWidth()} and width is ${content.oldMe.width} x 1.5`)
-			content.css({width: content.oldMe.width  * 1.5 > screen.width * 1.0 ? content.parent().outerWidth() : content.oldMe.width * 1.5 , height:content.oldMe.height * 1.5})
-			//window.expanded = true;
-	}
-
-	var newContentHeightAndWidthOffset= {
-				left: content.oldMe.ratio.left * content.parent().outerWidth(),
-				top: content.oldMe.ratio.top * content.parent().outerHeight()
-	};
-
-	console.log(`Error applying Left and Top offset ${newContentHeightAndWidthOffset} for ${content.attr("alias")}`)
-
-	/* Set the Left and Top Offset for the Content */
-	content.css({left:newContentHeightAndWidthOffset.left, top: newContentHeightAndWidthOffset.top})
-
-	content.kids.forEach(function(child){
-
-		//var child = $(this);
-
-		console.log(`Error setting coords on child is ${child.attr("id")} for ${child.attr("alias")}`)
-
-		resizeOrGrowElement(child,shrinkMe);
-
-	})
-
-	CUSTOM_ON_RESIZE_STOP_LOGIC({target:content[0]},{element:content})
-
-	content.kids = kids;
-
-	console.log(`Error newContentHeightAndWidth as parent is ${JSON.stringify(newContentHeightAndWidthOffset)} for ${content.attr("alias")}`)
-
-	return content;
-
-
-}
-
-
-function shrinkOrGrowParent(content,shrinkMe){
-
-	console.log(`Error calling setRatios for Parent ${content.attr("id")} for ${content.attr("alias")}`)
-
-	//ShowOverlays to get Proper Sizing for Save
-	$("[type=OVERLAY]").show();
-
-	content = setRatios(content);
-
-	if(content.length == 0){
-		console.log(`Short circuit on resizing called...exit`)
-	}
-
-	var kids = [];
-
-	console.log(`Error calling Resize or Grow for Parent ${content.attr("id")} for ${content.attr("alias")}`)
-	content = resizeOrGrowElement(content, shrinkMe);
-
-	$("[type=OVERLAY]").hide();
-	
-
-}
-
-
-
 function updateLayersTool(aToolId,aParentId){
 
-		//expanded = true;
 
-		console.log(`Expanded is A LOT ${ $("#content").attr("expanded")}`)
-
-		//$("#content").css({width:"70%",left:0});
-
-		$(".close-window").off().on("click",function(){
-
-			var theHeight = $("#layer-menu").height() > 0 ? 0 : "100%";
-
-			//$("#content").css("left","6rem").css({transform:"scale(1)"})
-			
-			
-			if( $("#content").attr("expanded") == "true"){
-				//We closed.  Put everything back
-				console.log(`Error Expanded is NOT ${$("#content").attr("expanded")} and we are growing now`);
-
-				shrinkOrGrowParent($("#content"),false);
-				 $("#content").attr("expanded",false);
-			} else {
-				//$("#content").css("left","6rem").css({transform:"scale(.70)"}).css("transform-origin","middle")
-				var element = document.getElementById("content");
-				//element.scrollIntoView({behavior: "smooth"})
-				console.log(`Error xpanded is ${$("#content").attr("expanded")} and we are shrinking now`)
-				shrinkOrGrowParent($("#content"),true);
-				$("#content").attr("expanded",true).css("top","6em");;
-
-			}
-
-			console.log(`Expanded is did we get here`)
-
-			$("#layer-menu").animate({height:theHeight},200,"swing",function(){
-
-				if($(".close-window").hasClass("fa-minus")){
-					$(".close-window").removeClass("fa-minus").addClass("fa-plus");
-				} else {
-					$(".close-window").removeClass("fa-plus").addClass("fa-minus");
-				}
-				})
-		});
+				
 
 
 				var foundInMenu = false;
@@ -359,17 +164,6 @@ function updateLayersTool(aToolId,aParentId){
                 		$(`#${layer.attr("layer")}`).css({width:"100%",left:0});
                 	}
                 	
-                })
-
-                var centerIt = $(layer).find('.fa-align-center');
-
-                centerIt.on("click",function(elem){
-                	var myLayer = $(elem.target).parents("[layer]").attr("layer");
-
-                	console.log(`$(elem.target).parents("[layer]").lengh is ${$(elem.target).parents("[layer]").length}`)
-                	console.log(`clicked ${$(elem.target).parents("[layer]").attr("layer")}`)
-                	
-                	centerMe("#"+myLayer);
                 })
 
                
@@ -607,9 +401,8 @@ function updateLayersTool(aToolId,aParentId){
 				//$("#layer-menu").children().each(function(i,li){$("#layer-menu").prepend(li)})
 				var menu = $("#maincontent");
 
-				/*
 				$("#layer-menu").draggable()
-					.css({"right":200,top:200});*/
+					.css({"right":200,top:200});
 
 				$(".layer").removeClass("highlight-layer");
 

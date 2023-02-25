@@ -1,23 +1,24 @@
 
 function PREVIEW_makeSaveableView(page){
 
-		$(".coordinate").css({visibility:"hidden"});
+		page.find(".coordinate").css({visibility:"hidden"});
 
-		$(".widget-on,.widget-off").remove();
+		page.find(".widget-on,.widget-off").remove();
 
-		$("[slash-for]").each(function(idx,it){
+		page.find("[slash-for]").each(function(idx,it){
 			var pkey = $(it).attr("slash-for");
 			var parentObject = $(pkey);
 			parentObject.show();
 		})
 
-		$("[slash-for]").remove();
+		page.find("[slash-for]").remove();
 
-		$(window).trigger(editing ? "editing" :"preview")
+		//** Hidden for now.  Maybe come back an unedit if weird messages appear **/
+		//$(window).trigger(editing ? "editing" :"preview")
 
-		$("#greybox").hide();
+		//$("#greybox").hide();
 
-		$("[data-popup-for]").hide();
+		//$("[data-popup-for]").hide();
 
 		$(page).find(".dropped-object").not(".tool").removeClass("debug-border-style").removeClass("squarepeg");
 
@@ -138,8 +139,9 @@ function PREVIEW_togglePreview(showPreview){
 			//stylesheet if added
 			setTimeout(function(){
 
-				greyBox.fadeOut(function(){
+				greyBox.fadeOut("slow",function(){
 					deleteElement($(this))
+					$("#bigDipper").hide();
 				})
 			},700)
 		})
@@ -149,6 +151,7 @@ function PREVIEW_togglePreview(showPreview){
 		$(window).trigger(editing ? "editing" :"preview")
 
 	}else {
+
 		
 		$(".coordinate").css({visibility:"visible"})
 	
@@ -167,6 +170,10 @@ function PREVIEW_togglePreview(showPreview){
 				return true;
 			})
 		})
+
+		 $("#content").fadeOut("fast")
+
+		  
 		
 		//$(".dropped-object").removeClass("noborder")
 		$(".responsive-design-tab").show()
@@ -192,24 +199,31 @@ function PREVIEW_togglePreview(showPreview){
 	    $("body,#content").css({width:parseInt(total/clength)+5, height:height});
 
 
-
-		//Give User Visual Indicator They are in preview mode
+	  
+	
+			//Give User Visual Indicator They are in preview mode
 		POPUP_greyOver({target:"window",callerType:"edit-information"},function(greyBox){
 
+		
 			greyBox.find("[data-message-for-greybox]").text(" Preparing Edit Mode...").addClass("fa fa-edit")
-			.css({"background-color":"black","text-align":"center",transform:"rotate(-10deg)"})
+			.css({"background-color":"navy","text-align":"center",transform:"rotate(-10deg)"})
 
 			//Auto destroy greybox after 700 milliseconds by fading out and finally deleting from DOM and
 			//stylesheet if added
 			
 			setTimeout(function(){
 
-				greyBox.fadeOut(function(){
+				greyBox.fadeOut("slow",function(){
+					$("#content").fadeIn(1000)
 					deleteElement($(this))
+					$("#bigDipper").hide();
 				})
-			},1000)
+			},700)
 			
 		})
+		
+
+	
 
 		$("#accordionSidebar,#idella-search").show();
 

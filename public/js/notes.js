@@ -24,8 +24,16 @@ function NOTES_delete(element){
 
 	SAVE_okToSave = true;
 
-	$(".msg,.active-message").remove();
-	$(".peak,.active-peak").remove();
+	//if called from drawSpace.js function with clone of the page
+	if(element){
+		element.find(".msg,.active-message").remove();
+		element.find(".peak,.active-peak").remove();
+	} else {
+
+		//We are not in the middle of a save. Just delete notes from screen as user wants
+		$(".msg,.active-message").remove();
+		$(".peak,.active-peak").remove();
+	}
 	//$(".widget-off,.widget-on").remove();
 	noteShowing = false;
 }
@@ -74,6 +82,8 @@ function refreshSlashes(){
 
 function NOTES_makeNote(element,isActive){
 
+	//console.log("ERROR: Making Note for " + element[0].id)
+
 
 	
 	if(!$(element).hasClass("dropped-object") && !$(element).attr("[type=option]")){
@@ -97,6 +107,8 @@ function NOTES_makeNote(element,isActive){
 	var widgetWidth = 0;
 
 	log.debug(`The key to the lock is ${key}`)
+
+
 
 	if(widgets.length == 0){
 
@@ -328,7 +340,7 @@ function NOTES_makeNote(element,isActive){
 
 		theMsg = $("<div class='msg' msg-parent='" + element.id + "'>"+$(element).attr("type") + "#" + $(element).attr("id") + " " + ($(element).attr("alias") != undefined ? " [alias= " + $(element).attr("alias") +"]" : "") + "</div>" );
 
-		theMsg.append("<div>Left : " + parseInt($(element).offset().left) + ", Top: "+ parseInt($(element).offset().top) + ", Height: "+ parseInt($(element).height()) + ", Width: "+ parseInt($(element).width()) +"</div>")
+		theMsg.append("<div>Left : " + parseInt($(element)[0].offsetLeft) + ", Top: "+ parseInt($(element)[0].offsetTop) + ", Height: "+ parseInt($(element).outerHeight()*1.5) + ", Width: "+ parseInt($(element).outerWidth()*1.5) +"</div>")
 		
 		if(!element.is("[type=PLUGIN]")){
 

@@ -215,7 +215,10 @@ function addIdellaClassToElement(styleSheetName,selector, element,styleSheetSour
 
 
 
-function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExists){
+
+
+function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExists,pageNode){
+
 
 
 	var re = new RegExp(myCSSLookupKey+'\\s+\\{[^}]+\\}','img')
@@ -227,14 +230,16 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExi
 	log.debug("CSSTEXT.js: My Class should be persisted as")
 	log.debug("CSSTEXT.js: " + theClassObj.cssRule)
 
-	thescript = $("style.default");
+	
+
+	thescript = div.attr("id").startsWith("contentCopyFor-")? $("#pageStylesCopy") : $("#pageStyles");
 
 	
 
 	styleCss = thescript.html();
 	//test to see if style is not found, add it.  If found, replace it
 	if(!thescript.html().match(re)){
-		log.debug("CSSTEXT.js: Appending RULE for " + myCSSLookupKey + " and rule " + theClassObj.cssRule)
+		log.debug("Error CSSTEXT.js: Appending RULE for " + myCSSLookupKey + " and rule " + theClassObj.cssRule)
 		thescript.append(theClassObj.cssRule + "\n");
 	}else {
 		if(justTestIfExists){
@@ -246,6 +251,26 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExi
 
 		thescript.html(thescript.html().replace(re,theClassObj.cssRule))
 	}
+
+
+	//If we just wrote to pageStyles (for offscreen save), don't forget to get the hover styles for the element and append to the pageStyleCopy script
+	if(thescript[0].id == "pageStylesCopy"){
+
+		//Get :Hover class from pageStyles CSS
+
+		var hoverRegex = new RegExp("body.hover ."+  myCSSLookupKey.substr(myCSSLookupKey.indexOf("-")+1) +":hover"+'\\s+\\{[^}]+\\}','img');
+		var matches = [];
+		if((matches = $("#pageStyles").html().match(hoverRegex)) != null){
+			console.log(`Found a match for ${myCSSLookupKey}:hover and now I'm appending to pageStylesCopy with value ${matches[0]}`);
+			thescript.append(matches[0]);
+
+		}else {
+			//No Hover Method found for 
+			console.log(`Did not find a hover rule that matched body.hover  .${myCSSLookupKey.substr(myCSSLookupKey.indexOf("-")+1)}:hover\\s+\\{[^}]+\\}`);
+		}
+	}
+
+
 	return exists;
 }
 

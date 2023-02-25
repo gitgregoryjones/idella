@@ -18,9 +18,14 @@ function OVERLAY_setUp(element,isTemplate){
 
 	overlay = recursiveCpy(element)
 
+	var myIndexShouldBe = CUSTOM_incrementZIndex(overlay);
+
 	overlay.children().remove();
 
 	overlay.text("")
+
+	overlay.css("z-index",myIndexShouldBe);
+
 
 	if(overlay.attr("alias")){
 		overlay.attr("alias",`overlay for ${overlay.attr("alias")}`)
@@ -52,6 +57,7 @@ function OVERLAY_setUp(element,isTemplate){
 		overlay.attr("focus-overlay-for","#"+element.attr("id"))
 	}
 	element.attr("overlay","#"+overlay.attr('id'))
+	element.children(".dropped-object").attr("overlay","#"+overlay.attr('id'))
 	overlay.attr("type","OVERLAY")
 	overlay.removeAttr("extends").removeAttr("ui-draggable").removeAttr("ui-resizable").removeAttr("ui-resizable-handle")
 
@@ -72,6 +78,8 @@ function OVERLAY_enableOverlays(){
 	//.css("visibility","visible");
 }
 
+
+
 function OVERLAY_disableOverlays(){
 	//$("[overlay-for]").trigger("mouseleave");
 	$("[overlay-for]").hide();
@@ -79,7 +87,7 @@ function OVERLAY_disableOverlays(){
 
 function OVERLAY_areOverlaysEnabled(){
 
-	return $("#content .showOverlays").is(":checked");
+	return $(" .showOverlays").is(":checked");
 
 }
 
@@ -112,6 +120,8 @@ function OVERLAY_showOverlay(theElem){
 
 	theElem = $(theElem)
 
+	theElem = $(theElem).children("[type=OVERLAY]").first().length > 0 ?  theElem : theElem.parent("[overlay]");
+
 	if(editing){
 
 		if(OVERLAY_areOverlaysEnabled()) {
@@ -130,10 +140,17 @@ function OVERLAY_showOverlay(theElem){
 	if(!editing){
 
 
-		if(theElem[0].hasAttribute("overlay") ){
+		//if(theElem[0].hasAttribute("overlay") ){
 
 				//$("[type=OVERLAY]").trigger("mouseleave");
 				var olay = $(theElem).children("[type=OVERLAY]").first();
+
+				if(olay.length == 0){
+					olay = $(theElem).parents("[type=OVERLAY]");
+					if(olay.length == 0){
+						olay = $(theElem).siblings("[type=OVERLAY]")
+					}
+				}
 
 				//Do Big Overlay if user wants
 				if(olay.attr("bigun")){
@@ -170,44 +187,9 @@ function OVERLAY_showOverlay(theElem){
 
 				
 
-				/*
-				if(olay.attr("bigun")){
-					olay.find(".dropped-object").each(function(it,div){
-						var div = $(div);
-						
-						//alert(olay.attr("orig-top")/div.attr("orig-top"))
-						//alert((parseFloat(div.attr("orig-left"))/parseFloat(olay.attr("orig-left"))))
-						console.log("pct-x " + div.attr("pct-x"));
-						console.log("Left " + div.attr("pct-x")*$(window).width());
-
-						var coords = {"position":"absolute",display:"inline-block",
-							width:(div.attr("orig-width")/$(olay).attr("orig-width"))*$(window).outerWidth(),
-							height:((div.attr("orig-width")/$(olay).attr("orig-width"))*$(window).width()) * div.attr("ratio"),
-							top:Math.abs((div.attr("pct-y") * $(window).height())) - div.parent(".dropped-object").offset().top,
-							left:Math.abs((div.attr("pct-x") * $(window).outerWidth())) - div.parent(".dropped-object").offset().left
-						}
-					//	olay.append($("<div style='font-size:20px'>"+JSON.stringify(coords)+ "</div>").css({top:window.scrollY,width:"400px"}))
-						//if first child
-						if(div.parent(olay)){
-							coords.top += window.scrollY;
-						}
-						div.css(coords)
-					})
-				}	
-
-				if(olay.attr("bigun")){
-					var close = $('<div id="close-help" class="fa fa-window-close"></div>');
-
-					close.appendTo(olay).css({position:"absolute","color":"navy","right":"5%","font-size":"30px","top":window.scrollY,"z-index":olay.css("z-index")+1}).on("click",function(){
-						olay.mouseleave();
-					});
-
-					if($(theElem).find("video").length > 0){
-						$(theElem).find("video")[0].play();
-					}
-				}*/
 				
-				$("[type=OVERLAY]").not(olay).fadeOut();
+				
+				//$("[type=OVERLAY]").not(olay).fadeOut();
 
 				//getHelp()
 				//overlay = $(theElem).children("[type=OVERLAY]").first();
@@ -247,14 +229,14 @@ function OVERLAY_showOverlay(theElem){
 				}).on("click",function(){
 					//
 				})
-		} else {
+		//} else {
 
 			//$(theElem).parents('[overlay]').first().children("[type=OVERLAY]").first().fadeIn()
 			/*
 			if($(theElem).find("video").length > 0){
 				$(theElem).find("video")[0].play();
 			}*/
-		}
+		//}
 	}
 }
 

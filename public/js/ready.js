@@ -7,6 +7,8 @@ onclick
 	.iilayers : showHideMenu;
 	.iisave : SAVEJS_goInactive;
 	.iiexplore : explore;
+	.iireview : navPreview;
+
 
 	//Double Click file
 	#fileElem: popupFileChooser;
@@ -77,8 +79,8 @@ function r_hoverOverElement(evnt){
 					border.css({
 						width:aTool.width(),
 						height:aTool.height(),
-						top:aTool.position().top,
-						left:aTool.position().left,
+						top:aTool[0].offsetTop,//.position().top * 1.7 - 95/2,
+						left:aTool[0].offsetLeft,//.position().left * 1.7 -95/2,
 						position:aTool.css("position"),
 						"z-index":aTool.css("z-index") + 1
 					})
@@ -743,10 +745,29 @@ function showHideMenu(){
 function explore(){
 	var total = 0;
     $("#content > .section").each(function(index){
-		total += $(this).width();
+		total += $(this).outerWidth();
 	})
 	$("body,#content").css({width:total+20});
 	CUSTOM_pressEscapeKey(); closeMenu(); PREVIEW_togglePreview(editing);
+}
+
+function navPreview(){
+
+		NOTES_delete();
+
+		OVERLAY_deleteInstructions();
+
+		var over = $("#bigDipper").length > 0 ? $("#bigDipper") : $("<div></div>",{id:"bigDipper"});
+		
+		$("body").append(over);
+
+		over.css({width:screen.width,height:screen.height,position:"absolute",top:0,left:0,"background-color":"transparent","z-index":100000})
+
+		over.show(1000,function(){
+			CUSTOM_pressEscapeKey(); closeMenu(); PREVIEW_togglePreview(editing);	
+		})
+
+	
 }
 
 

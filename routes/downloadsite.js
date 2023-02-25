@@ -54,7 +54,7 @@ router.get('/:site', function(req, res, next) {
 	var srcImagesPath = path.join(process.env.SITEDIR,site,"images");
 	var destImagesPath = path.join(process.env.SITEDIR,site,"website","images");
 
-	var gitProjectBasePath = path.join("/Users","gjones","projects","preview-site.bitbucket.io");
+	var gitProjectBasePath = path.join("/Users","gjones","projects","idella-site.bitbucket.io");
 
 	var gitSiteDestPath = path.join(gitProjectBasePath,site);
 

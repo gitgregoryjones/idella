@@ -566,23 +566,6 @@ div.tool:hover {
 	box-shadow: 5px 5px ;
 }
 
-.project-control > .iireview {
-	background-color:red;
-	color:white;
-	cursor:pointer;
-	border-color:white;
-
-}
-
-.project-control > .iipreview:hover {
-	background-color:green;
-	color:white;
-	border-color:white;
-	
-}
-
-
-
 @-webkit-keyframes blinker {
   from { opacity: 0.0; }
   to { opacity: 1.0; }
@@ -1100,13 +1083,12 @@ Edit box
 
 #layer-menu {
   width:400px;
-  height: 90vh;
+  height: 450px;
   background-color:transparent;
   color:white;
   position: fixed;
-  --right:0;
   right:0;
-  top:90px;
+  top:200;
 }
 #header, #layer-footer
 {
@@ -1132,9 +1114,8 @@ Edit box
 }
 
 #header {
-	--border-top-left-radius: 10px;
-	--border-top-right-radius: 10px;
-	border-top: none;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
 	font-color:white;
 	text-align:left;
 	padding: 0px;
@@ -1157,7 +1138,7 @@ Edit box
     width: 99%;
     overflow: scroll;
     background-color: rgba(0,0,0,0.8);
-    border: solid 1px white;
+    --border: solid 1px #f00;
 }
 .layer
 {
@@ -1292,14 +1273,10 @@ svg {
 	overflow:visible;
 }
 
---#content
-[type=canvas] {
+#content {
 	width:100%;
 	height: 100%;
 	background-color:transparent;
-	border: 1px solid white;
 }
-
-
 
 

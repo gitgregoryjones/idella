@@ -491,7 +491,7 @@ $(document).on("initializationComplete",function(){
                         aTool = configuredTool(aTool);
                         aTool.addClass("section")
                             .css({
-                                width:$("body").width(),
+                                width:$("#content").width(),
                                 height:"700px",
                                 position:"relative",
                                 display:"inline-block",
@@ -523,6 +523,7 @@ $(document).on("initializationComplete",function(){
                         $("#content,body").css("height",total + 50);
                         updateLayersTool($(aTool).attr("id"));
                         setUpDiv(aTool);
+                        console.log(`Expanded is Content body width is ${$("#content").width()}`)
                         CUSTOM_PXTO_VIEWPORT(aTool);
                         break;
 

@@ -114,6 +114,12 @@ return (s)
 : jQuery("&lt;p&gt;").append(this.eq(0).clone()).html();
 }
 
+window.onbeforeunload = function() {
+	//alert("are you sure?")
+  //return "";
+  return false;
+}
+
 //https://css-tricks.com/snippets/jquery/move-cursor-to-end-of-textarea-or-input/
 jQuery.fn.putCursorAtEnd = function() {
 
@@ -195,16 +201,20 @@ $(document).ready(function() {
 	
 	
 
+	
+
 
 	
 
-	if(pageState.params){
+	if(pageState.params && pageState.params.editing != undefined){
 		log.debug(`Editing: [${pageState.params.editing}] and editing is [${editing}]`);
 		editing = pageState.params.editing;
 	}
 
 
 	   if(editing == true) {
+
+
 
 	   		log.debug(`I AM ONLY HERE IF lil Editing: is true`)
 
@@ -220,14 +230,17 @@ $(document).ready(function() {
 	   		topNav = $('<div>');
 
 	   		topNav.load("/top-nav.html",function(){
-	   			$("#content").prepend(topNav);
+	   			$("#content-wrapper").prepend(topNav);
 	   			 //Load Ready Library
+	   			topNav.css("z-index",1).css("position","fixed").css("width","100%")
+
 		 		 javaOnePlace();
 
 		 		 $("body").trigger("pageReloaded",pageState,currentBreakPoint);
 	   		})
 
 	   		containerDiv = $('<div id="misc-controls">')
+
 
 
 
@@ -238,6 +251,8 @@ $(document).ready(function() {
 
 			   		
 					log.debug("Before Current Site")
+
+					$("body").css("background-color","black").css("border","none")
 
 					if($('body').find('.dropped-object').length == 0){
 						
@@ -783,7 +798,7 @@ function whichTool (tool){
 			type:type,
 			class:"texttool",
 			friendlyName : "Input Field",
-			droppedModeHtml:"<div class='group-container  helper-wrapper'><div class='dropped-object' type='T'>Field Label</div><div class='dropped-object field-container' type='DIV'><input  width='100%' height='100%' type=\"input\" placeholder=\"Enter field value\"></div></div>"
+			droppedModeHtml:"<div class='group-container  helper-wrapper'><div class='dropped-object' type='T'>Field Label</div><div class='dropped-object field-container' type='DIV'><input  width='100%' height='100%' type=\"input\" placeholder=\"Enter field value\"></div></div><br/>"
 		});
 		break;
 
@@ -800,6 +815,8 @@ function whichTool (tool){
 		break;
 		
 	}
+
+	theTool.droppedModeHtml += "";
 
 	return theTool;
 
@@ -841,6 +858,8 @@ function GenericTool(options){
 *********************************/
 function configuredTool(options){
 
+
+
 	Object.assign(this,options);
 	{
 		me = this;
@@ -848,6 +867,10 @@ function configuredTool(options){
 		log.debug(`Options are ${JSON.stringify(options)}`)
 
 		this.node = $(options.droppedModeHtml).addClass(options.class).addClass("dropped-object").attr('id',this.name)
+		
+
+
+		//this.node.append(br);
 
 			.css({zIndex: options.zIndex,display:"block"}).attr('type',options.type);
 
@@ -879,6 +902,7 @@ function configuredTool(options){
 		log.debug(`hello`);
 		log.debug(this.node)
 		//Note: since node has not been added to document, it can does not have a width or height yet
+
 		return this.node;
 
 

@@ -93,45 +93,16 @@ function DRAW_SPACE_isEditing(){
    
 function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 	//Defined in layer-menu.js
-	
-	
+	shrinkOrGrowParent($("#content"),false);
+	$("#content").css("left",0).css("top",0).css("width","100%");
 
 	if(copyForSave){
-		//Attempt background save by copying all contents to buffer and saving
-		
+
 		NOTES_delete();
+
 		
 		html = $("html").clone();
 
-		html.find("#content").css("left",0).css("top",0).css("width","100%");
-
-		var contentCopy = html.find("#content");
-
-		PREVIEW_makeSaveableView(contentCopy);
-
-		contentCopy.attr("id","contentCopyFor-" + $("#content")[0].id);
-
-		var offScreenSaveableParent = contentCopy.parent();
-
-		$("#content").parent().append(contentCopy);		
-
-		//contentCopy.css({left:0,top:0})
-		
-
-		shrinkOrGrowParent(contentCopy,false);
-
-		offScreenSaveableParent.append(contentCopy);
-
-		//Now find any styles or JS that needs to be preserved for the copies
-		var copiedStyles = $("#pageStylesCopy").clone();
-
-		$("#pageStylesCopy").html("");
-
-		html.find("#pageStyles").html(copiedStyles.html());
-
-		delete copiedStyles;
-
-	
 		//html.append($("html").children())
 		html.find("body").append(html.find("#drawSpace").children())
 		html.find("#workspace").remove();
@@ -141,105 +112,43 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 
 		//DRAW_SPACE_addWorkSpaceToBody()
 		PREVIEW_makeSaveableView(html);
-
-		html.find("body").addClass("hover").addClass("lover");
-
-		html.html(html.html().replace(/contentCopyFor-/g,""));
 		return html;
+	}
 
 
-	} else {
 
-		//Cover Up
-		;
-		//return;
+	workspace = $("#workspace");
 
-		
+	removeEditMode();
 
-			
-		
-			$("#content").css("left",0).css("top",0).css("width","100%");	
+	$("body").append($("#drawSpace").children())
 
-			shrinkOrGrowParent($("#content"),false);
+	key = $("[alias=notification").text();
 
-			workspace = $("#workspace");
+	ack = localStorage.getItem(key.replace(" ",""));
 
-			removeEditMode();
+    if(ack){
+		//alert(editing)
+		if(!editing){
+			$("[alias=notification]").css({"height":0});
+			//$("[alias=notification]").click()
+			$("[alias=header]").css({"top":0})
+	 		$("[alias=theCanvas]").css({"top":0})
+        	
 
-			$("body").append($("#drawSpace").children())
+			//localStorage.setItem($(this).text().replace(" ",""),$(this).text());
+		}
+	}
 
-			key = $("[alias=notification").text();
+	$(workspace).remove();
 
-			ack = localStorage.getItem(key.replace(" ",""));
-
-		    if(ack){
-				//alert(editing)
-				if(!editing){
-					$("[alias=notification]").css({"height":0});
-					//$("[alias=notification]").click()
-					$("[alias=header]").css({"top":0})
-			 		$("[alias=theCanvas]").css({"top":0})
-		        	
-
-					//localStorage.setItem($(this).text().replace(" ",""),$(this).text());
-				}
-			}
-
-			$(workspace).remove();
-
-			$("[type=VID],[type=PLUGIN]").each(function(id,div){
-				var vid = $(div).find("video")[0];
-				startVideo(vid);
-			})
-
-			var close = $(`<div  id="close-button" >X<div style="font-size:14px">Close</div></div>`);
-
-			close.css({
-			    position: "absolute",
-			    top: 0,
-			    left: screen.width - 250,
-			    width: 60,
-			    height: 60,
-			    zIndex: 1000,
-			    color: "white",
-			    backgroundColor: "silver",
-			    paddingLeft: 4,
-			    paddingTop: 10,
-			    borderRadius: "5px",
-			    top: "10px",
-			    fontWeight:800,
-			    textAlign:"center",
-			    boxShadow:"2px 2px solid black"
-			})
-
-			close.off().on("click",function(evt){ 
-				$("#bigDipper").show(1000,function(){
-					$(this).remove(); 
-					PREVIEW_togglePreview(false)
-
-				});
-				
-			});
-
-			close.hover(function(){
-				$(this).css({backgroundColor:"red", transition:"1s"})
-			},
-			function(){
-				$(this).css({backgroundColor:"silver"})
-			}
-			)
-
-			$("#content").append(close);
-
-			
-			top = DRAW_SPACE_getMaxTopElement();
-					
-			$("#bigDipper").hide();
+	$("[type=VID],[type=PLUGIN]").each(function(id,div){
+		var vid = $(div).find("video")[0];
+		startVideo(vid);
+	})
 
 	
-		
-
-	}
+	top = DRAW_SPACE_getMaxTopElement();
 
 //		$("body").css({height:"3000px"})
 
@@ -322,15 +231,7 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	content = $("body");
 
 	//Defined in layer-menu.js
-	var theHeight = $("#layer-menu").height();
-
-	if(theHeight > 0){
-		//The menu on the edit screen is expanded. Shrink content to fit the edit window again
-		shrinkOrGrowParent($("#content"),true);
-	} else {
-		//Do nothing.  Return contents full expanded since the user is working in zoomed in mode
-	}
-	
+	shrinkOrGrowParent($("#content"),true);
 	$("#content").css("left","6em").css("top","6em");
 
 	//body.children().last().remove();
@@ -419,8 +320,6 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	//body.append(content);
 	body.append(es.hide());
-
-	body.css({width:"100%"})
 
 	/*
 	ds.scroll(function(){

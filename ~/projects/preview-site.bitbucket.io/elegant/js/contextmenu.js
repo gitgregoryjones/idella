@@ -252,7 +252,7 @@ $(document).on("initializationComplete",function(){
                             }
                         })
                         
-                        $(aTool).css({"height":"300px","width":"100%","background-color":"#F0F0F0"})
+                        $(aTool).css({"height":"300px","width":$("#content").width(),"background-color":"#F0F0F0"})
                         dropTool(aTool,{target:$(currentCtx),clientX:0,clientY:lastChildTop});
                         if(!currentCtx.is(["type=LIST"])){
                             aTool.css("top",lastChildTop);

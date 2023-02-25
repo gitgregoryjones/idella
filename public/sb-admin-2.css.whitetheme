@@ -4029,7 +4029,6 @@ input[type="button"].btn-block {
   padding-left: 0;
   margin-bottom: 0;
   list-style: none;
-
 }
 
 .nav-link {
@@ -4120,7 +4119,6 @@ input[type="button"].btn-block {
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  z-index: 0;
 }
 
 .navbar .container,
@@ -6473,7 +6471,7 @@ button.bg-dark:focus {
 }
 
 .bg-white {
-  --background-color: #fff !important;
+  background-color: #fff !important;
 }
 
 .bg-transparent {
@@ -9779,7 +9777,7 @@ a:focus {
 
 #wrapper #content-wrapper {
   background-color: #f8f9fc;
-  width: calc(100vw);
+  width: 100%;
   overflow-x: hidden;
 }
 
@@ -9876,8 +9874,8 @@ a:focus {
 }
 
 .bg-gradient-primary {
-  background-color: black;
-  --background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+  background-color: #4e73df;
+  background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
   background-size: cover;
 }
 
@@ -10144,7 +10142,7 @@ a:focus {
 }
 
 .topbar {
-  --height: 4.375rem;
+  height: 4.375rem;
 }
 
 .topbar #sidebarToggleTop {
@@ -10460,12 +10458,11 @@ a:focus {
 
 .sidebar {
   position: fixed;
-  top:90px;
-  border-radius: 0px;
+  top:200px;
+  border-radius: 20px;
 
   width: 6.5rem;
-  --min-height: calc(50%);
-  height:100%;
+  min-height: calc(50%);
 
 }
 
@@ -10477,9 +10474,7 @@ a:focus {
   .sidebar {
     width: 6rem !important;
     z-index: 1000000000;
-    --opacity: .2;
-    border-right: 1px solid white;
-    
+    opacity: .2;
   }
   .sidebar .nav-item .collapse {
     position: relative;

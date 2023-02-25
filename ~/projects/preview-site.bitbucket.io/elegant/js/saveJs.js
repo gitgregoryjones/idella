@@ -16,11 +16,11 @@ function saveJs(theElem, script){
 	//eval(theFunction)
 
 	//test to see if style is not found, add it.  If found, replace it
-	if($("script.default").html().match(re) == null){
+	if($("#pageJavascript").html().match(re) == null){
 		console.log("Did not find match ")
-		$("script.default").append(theFunction);
+		$("#pageJavascript").append(theFunction);
 	}else {
-		$("script.default").html($("script.default").html().replace(re,theFunction))
+		$("#pageJavascript").html($("#pageJavascript").html().replace(re,theFunction))
 	}
 
 	//localStorage.setItem("javaScript_"+id,script)

@@ -243,6 +243,8 @@ function drawResponsiveTab(){
 	})
 
 
+	/***** HIDE UNTIL WE DECIDE TO USE THIS IN A LATER RELEASE **/
+	$(".responsive-design-tab").hide()
 
 }
 

@@ -1,7 +1,7 @@
 class CarWithAudio {
 
 
-	constructor(id,speedInSecs,volume1To10,parkingBrake){
+	constructor(id,speedInSecs,volume1To10,parkingBrake,startWalkingInDirection){
 
 		if(!window.CarWithAudio){
 
@@ -16,6 +16,7 @@ class CarWithAudio {
 			//this.audioLoaded = true;
 			this.audio.volume = 0;
 			this.car = $(`#${id}`);
+			this.startWalkingInDirection = startWalkingInDirection;
 
 			this.car.oldPosition = {left:0};
 			this.car.attr("vehicle","true");
@@ -36,16 +37,18 @@ class CarWithAudio {
 
 				//this.car.css("zIndex",600);
 
+				//alert("stopping")
 				CarWithAudio.stopMe(this.car.attr("id"));
 
 			}).on("mouseleave",()=>{
 
 				this.car.find("[type=AUDIO]").hide();
 
+				//alert("leaving car " + this.car.attr("id"));
 
 				//this.car.css("zIndex",this.car.attr("old-z"));
 
-				//CarWithAudio.startMe(this.car.attr("id"));
+				CarWithAudio.startMe(this.car.attr("id"));
 
 			}).find("audio").hide()
 
@@ -77,7 +80,9 @@ class CarWithAudio {
 
 		$("[type=AUDIO]").each(function(id,div){
 			if($(div).parent("[type]").first().attr("id") != undefined){
-				new CarWithAudio($(div).parent("[type]").attr("id"),Math.floor(Math.random() * Math.floor(3)),5,$(div).attr("parkingBrake"));
+				new CarWithAudio($(div).parent("[type]").attr("id"),getRandomNumberBetween(1,15),5,$(div).attr("parkingBrake"),$(div).parent("[type]").attr("points"));
+				$(div).parent("[type]").css("z-index",CUSTOM_incrementZIndex());
+
 			}
 			$(div).on("mouseleave",(e)=>{
 				$(e.target).parent().trigger("mouseleave");
@@ -132,7 +137,7 @@ class CarWithAudio {
 		
 		if(ptr.car.direction){
 			if(ptr.car.direction == "left"){
-				console.log(`Starting vehicle going left`);
+				console.log(`Starting vehicle going left in ME`);
 				ptr.driveLeft();
 
 			} else {
@@ -174,15 +179,16 @@ class CarWithAudio {
 
 	static startVehicles(){
 
-		var values = $(".dropped-object").map(function(index, el) { return $(el).width() });
+		var values = $(".dropped-object").map(function(index, el) { return $(el).offset().left + $(el).width() });
 
-		CarWithAudio.bodyWidth = Math.max.apply(null, values);
+		//CarWithAudio.bodyWidth = Math.max.apply(null, values);
+		CarWithAudio.bodyWidth = $("body").width();
 
 		$("[type=AUDIO]").each((idx,elem)=>{
 
 			elem = $(elem).parent();
 
-			elem.css({"z-index":"50000"})
+			elem.css({"z-index":"500000"})
 
 			elem.removeAttr("brake");
 
@@ -198,9 +204,17 @@ class CarWithAudio {
 
 
 				} 
+
+				if(this.startWalkingInDirection != undefined){
+					if(this.startWalkingInDirection.toLowerCase() == "left"){
+						ptr.driveLeft();
+					} else if(this.startWalkingInDirection.toLowerCase() == "right"){
+						ptr.driveRight();
+					}
+				} else
 				
 				if(ptr.car.direction){
-					if(ptr.car.direction == "left"){
+					if(ptr.car.direction = "left"){
 						console.log(`Starting vehicle going left`);
 						ptr.driveLeft();
 
@@ -234,11 +248,12 @@ class CarWithAudio {
 
 	 driveLeft(){
 
+	 	console.log('UP IN HERE GOING LEFT')
 	 
 	 	window.CarWithAudio[$(this.car).attr("id")].car.direction = "left";
 
 
-	 	console.log(`driving left Homey.  Should not repeat a bunch ${++CarWithAudio.counter}`);
+	 	console.log(`driving left Homey.  Should not repeat a bunch ${CarWithAudio.counter++}`);
 
 	 	if($("[vehicle]").attr("brake") == "enabled"){
 	 		// if vehicle stops off screen, this will bring it back on screen
@@ -258,14 +273,32 @@ class CarWithAudio {
 		console.log(`Left: Current Time of audio is ${this.audio.currentTime}`)
 
 		$(this.car).css("transform","rotateY(0deg)");
+
+
+		if(this.startWalkingInDirection && this.startWalkingInDirection.toLowerCase() == "right"){
+			$(this.car).css("transform","rotateY(180deg)");
+		} else {
+			console.log(`Resetting walking direction since first walking sequence completed the last time we were here`)
+			//this.startWalkingInDirection = undefined;
+			$(this.car).css("transform","rotateY(0deg)");
+		}
 											  
-		$(this.car).animate({left:-$(this.car).width() * 2},{duration: CarWithAudio.duration / window.CarWithAudio[$(this.car).attr("id")].speedInSecs,
+		//$(this.car).animate({left:-$(this.car).width() * 2},
+		$(this.car).animate({left:-$(this.car).width()},
+			{duration: CarWithAudio.duration * window.CarWithAudio[$(this.car).attr("id")].speedInSecs,
 			progress:()=>{
 
 				var elem = $(this.car);
 
+				console.log(`Car is ${window.CarWithAudio[$(this.car).attr("id")]}`)
+				console.log(` and Duration is ${CarWithAudio.duration } and speedInSecs is ${window.CarWithAudio[$(this.car).attr("id")].speedInSecs}`)
+
+
 				window.CarWithAudio[elem.attr("id")].car.oldPosition.left = elem.position().left;
 				window.CarWithAudio[elem.attr("id")].car.oldPosition.top = elem.position().top;
+
+				//Test to see if the image of the car is completely offScreen.  If so, immediately end the animation
+			
 
 				if(this.audio.paused ){
 					//audio.currentTime = 90;
@@ -275,7 +308,11 @@ class CarWithAudio {
 					$(this.audio).animate({volume: this.volume1To10/10}, {duration:3000});
 					
 
-				} else if($(this.car).position().left < 0 && !loweringVolume){
+				} else if($(this.car).offset().left < 0 && !loweringVolume){
+
+					console.log('WE FINISHED DRIVING LEFT HOMEY')
+					//$(this.car).finish();
+
 					//audio.pause();
 					loweringVolume = true;
 
@@ -283,8 +320,9 @@ class CarWithAudio {
 
 					console.log("Reducing Volume Exited Stage Left <==")
 				} 
-			},complete:()=>{this.audio.pause(); console.log(this.car);$(`#${this.audio.id}`).attr("cTime",this.audio.currentTime); loweringVolume = false; console.log(`Completed driving Right ${++CarWithAudio.counter}`);
+			},complete:()=>{this.audio.pause(); console.log(this.car);$(`#${this.audio.id}`).attr("cTime",this.audio.currentTime); loweringVolume = false; console.log(`Completed driving Left ${CarWithAudio.counter++}`);
 				//setTimeout(()=>{this.driveRight();},100)
+				console.log(`trace method :Calling moving right `);
 				this.driveRight();
 				 }})
 
@@ -295,7 +333,7 @@ class CarWithAudio {
 	
 		window.CarWithAudio[$(this.car).attr("id")].car.direction = "right";
 
-		console.log(`driving right Homey.  Should not repeat a bunch ${++CarWithAudio.counter}`);
+		console.log(`driving right Homey.  Should not repeat a bunch ${CarWithAudio.counter++}`);
 
 		if($("[vehicle]").attr("brake") == "enabled"){
 			CarWithAudio.stopVehicles();
@@ -313,17 +351,61 @@ class CarWithAudio {
 
 		console.log(`Right: Current Time of audio is ${this.audio.currentTime}`)
 
-		$(this.car).css("transform","rotateY(180deg)");
+		if(this.startWalkingInDirection && this.startWalkingInDirection.toLowerCase() == "right"){
+			$(this.car).css("transform","rotateY(0deg)");
+		} else {
+			$(this.car).css("transform","rotateY(180deg)");
+			console.log(`Resetting walking direction since first walking sequence completed the last time we were here`)
+			//this.startWalkingInDirection = undefined;
+		}
 
 		
 
 		console.log(`Duration ${CarWithAudio.duration} and car speed in secondes ${window.CarWithAudio[$(this.car).attr("id")].speedInSecs}`);
-		console.log(`Math is Duration(milliseconds)/speedInSeconds ${CarWithAudio.duration/window.CarWithAudio[$(this.car).attr("id")].speedInSecs}`);
+		console.log(`Math is Duration(milliseconds)/speedInSeconds ${CarWithAudio.duration * window.CarWithAudio[$(this.car).attr("id")].speedInSecs}`);
+
+		console.log(`trace method :Right to position ${$(this.car).width() + CarWithAudio.bodyWidth} and current position is ${$(this.car).offset().left}`);
 
 
-		$(this.car).animate({left:$(this.car).width() + CarWithAudio.bodyWidth},
-			{
-				duration:CarWithAudio.duration/window.CarWithAudio[$(this.car).attr("id")].speedInSecs,
+		var floatRight = parseFloat(screen.width);
+
+		var floatDuration = parseInt(CarWithAudio.duration * window.CarWithAudio[$(this.car).attr("id")].speedInSecs)
+
+		console.log(`Trying to move a number pixels right with floatRight ${floatRight} and floatDuration is ${floatDuration}`)
+
+
+		if(isNaN(floatDuration)){
+			console.log(`Got a bad number`)
+		}
+
+		$(this.car).animate({left:floatRight},{
+			duration:floatDuration,
+			progress:()=>{
+				var elem = $(this.car);
+
+				if(this.audio.paused){
+						
+						this.audio.play();
+						console.log("Increasing Volume Entering from Offscreen Left headed right Right ==>");
+						$(this.audio).animate({volume: this.volume1To10/10}, {duration:3000});
+						
+					}else if($(this.car).position().left > screen.width - $(this.car).width() && !loweringVolume){
+						loweringVolume = true;
+
+						console.log("Decreasing Volume Leaving Offscreen from Left headed Right ==>");
+						console.log(`Left: Volume is ${this.audio.volume}`)
+						$(this.audio).animate({volume:0.0}, {duration:3000});
+
+				}
+				
+			},
+
+			complete:()=>{this.driveLeft()}})
+
+		/*
+		$(this.car).animate({left:floatRight},{
+			
+				duration:floatDuration,
 
 				progress:()=>{
 
@@ -332,9 +414,6 @@ class CarWithAudio {
 						window.CarWithAudio[elem.attr("id")].car.oldPosition.left = elem.position().left;
 						
 						window.CarWithAudio[elem.attr("id")].car.oldPosition.top = elem.position().top;
-
-				
-
 
 					if(this.audio.paused){
 						
@@ -351,16 +430,24 @@ class CarWithAudio {
 
 					}
 				},
-				complete:()=>{this.audio.pause();$(`#${this.audio.id}`).attr("cTime",this.audio.currentTime); loweringVolume = false; console.log(`Completed driving Right ${++CarWithAudio.counter}`);
+				
+				complete:()=>{this.audio.pause();$(`#${this.audio.id}`).attr("cTime",this.audio.currentTime); loweringVolume = false; 
+
+				console.log(`Completed driving: Position ${$(this.car).offset().left} Right ${CarWithAudio.counter++}`);
 						//setTimeout(()=>{this.driveLeft();},100)
 						this.driveLeft();
-				;}
-			}
-		)
+				}
+		})*/
 
 	}
 }
 
+function getRandomNumberBetween(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+}
+
 CarWithAudio.counter = 0;
 CarWithAudio.bodyWidth = 0;
-CarWithAudio.duration = 60000;
+CarWithAudio.duration = 1000;

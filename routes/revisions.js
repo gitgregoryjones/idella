@@ -8,7 +8,7 @@ var fx = require('mkdir-recursive');
 url = require('url');
 var getJSON = require('get-json')
 var cacheManager = require('cache-manager');
-var latestDemoSiteNumber = require('./site').latestDemoSiteNumber
+//var latestDemoSiteNumber = require('./site').latestDemoSiteNumber
 var persist = require('../public/js/persist');
 var moment = require('moment');
 var link = require('fs-symlink')
@@ -23,10 +23,39 @@ var googleFonts = "https://fonts.googleapis.com/css?family=Dancing+Script|Roboto
 //var googleFonts = "nothing.js";
 
 //var files = [googleFonts,"jquery-ui-1.12.1.custom/jquery-ui.css","fontawesome5.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","tinymce.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
-var files = [googleFonts,"https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&display=swap","jquery-ui-1.12.1.custom/jquery-ui.css","theme/vendor/fontawesome-free/css/all.min.css","theme/css/sb-admin-2.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css",	"theme/vendor/jquery/jquery.js","ready.js","component/ListComponent.js","component/Equalizer.js","component/TextComponent.js","component/CustomShape.js","component/Gallery.js","carWithAudio.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider5.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
+var files = [googleFonts,"https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&display=swap","jquery-ui-1.12.1.custom/jquery-ui.css","theme/vendor/fontawesome-free/css/all.min.css","theme/css/sb-admin-2.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css",	"theme/vendor/jquery/jquery.js","ready.js","component/ListComponent.js","component/Equalizer.js","component/TextComponent.js","component/CustomShape.js","component/Gallery.js","carWithAudio.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider5.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js"
+	,"getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",
+	,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js",
+	"https://code.jquery.com/jquery-3.6.0.js","https://code.jquery.com/ui/1.13.2/jquery-ui.js","https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css","https://jqueryui.com/resources/demos/style.css"]
 var version = 1;
 
 var $ = null;
+
+
+function latestDemoSiteNumber(siteDir){
+
+
+
+	var dirExists = true;
+
+	var number  = 0;
+
+	
+
+	do {
+
+		++number;
+
+		var realPath = path.join(process.env.SITEDIR,`${siteDir}-${number}`)
+
+		console.log(`Does ${realPath} exist?`)
+		dirExists = fs.existsSync(realPath);
+		console.log(`${siteDir}-${number} exists = ${dirExists}`)
+
+	} while(dirExists);
+
+	return `${siteDir}-${number}`;
+}
 
 process.on('uncaughtException', function (err) {
 
@@ -58,9 +87,9 @@ function getStyleSheetForElement(elementStyleSheetId,Query,currentBreakPoint){
 	var thescript = "";
 
 	if(currentBreakPoint && currentBreakPoint > 0){
-		thescript = Query("style.max-width-"+currentBreakPoint)
+		thescript = Query("#pageStyles.max-width-"+currentBreakPoint)
 	} else {
-		thescript = Query("style.default");
+		thescript = Query("#pageStyles");
 	}
 	groups = thescript.html().match(theExp)
 
@@ -104,9 +133,9 @@ function writeStyleSheetForElement(styleObject,Query,documentWidth,currentBreakP
 	var thescript = "";
 
 	if(currentBreakPoint && currentBreakPoint > 0){
-		thescript = Query("style.max-width-"+currentBreakPoint)
+		thescript = Query("#pageStyles.max-width-"+currentBreakPoint)
 	} else {
-		thescript = Query("style.default");
+		thescript = Query("#pageStyles");
 	}
 	groups = thescript.html().match(theExp)
 
@@ -180,24 +209,31 @@ function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 		
 		$('html').attr("BREAKPOINTS",JSON.stringify(currentRevision.BREAKPOINTS))
 
-
-
+		//Get RevDate into a Date Object
 		try {
 
-			revDate = new Date(revDate)
-			console.log("Date is converted revision [" + revDate.toString() + "]")
+			var formattedDate = dateformat(revDate,"mm-dd-yyyy HH:MM")
+
+			revDate = new Date(formattedDate).toString()
+			console.log("Date is converted revision [" + revDate + "]")
 			if(revDate == "Invalid Date"){
 				revDate = new Date();
 			}
+
 		}catch(except){
 			console.log("Exception was " + except);
-			console.log("Converting to today " + new Date())
-			revDate = new Date();
+			console.log(new Date())
+			revDate = new Date().toString();
 		}
+
+
+
+		//Convert the date Object into a suitable File Name
+		
 
 		fname = dateformat(revDate, 'mmddyyyyHHMM');
 
-		fname = path.join(revisionDirectory,fname)
+		fname = path.join(revisionDirectory,fname+".html")
 
 		console.log("The siteName is " + siteName);
 
@@ -217,6 +253,8 @@ function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 
 		var base64Img = require('base64-img');
 
+		console.log(`I see this many images for conversoin ${$(".convertImage").length}`)
+
 		$(".convertImage").each(function(it,div){
 
 			div = $(div);
@@ -231,15 +269,39 @@ function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 
 				var raw = obj["background-image"].substring(obj["background-image"].indexOf("data"),obj["background-image"].lastIndexOf("\""));
 
-				console.log("Raw is " + raw)
 
-				var newName = obj.alias ? obj.alias +"-image" : obj.id + "-image";
+				rawExtensionArray = obj["background-image"].split("/");
+
+				var rawExtension = (rawExtensionArray[1].split(";"))[0].replace("jpeg","jpg");
+
+				console.log("Raw extension is  " + rawExtension)
+				console.log(`Bunch of raw bytes ${(raw.substr(raw.length-40,10))}`)
+
+				//function hashTwo() {
+				//Create a quick hash to use as file name and keep from writing the same image over and over again when dups are detected
+				var hash = raw.substr(raw.length-40,10)
+				//.concat(raw.substr(40,4)).concat(raw.substr(80,4)).concat(raw.substr(160,4))
+				    hash = hash.replaceAll("/","G");
+				//console.log(`First x number of bytes is ${raw.substr(2000,4)}`)
+				console.log(`Writing hash as image name as ${hash}`);
+
+				//var newName = obj.alias ? obj.alias +"-image" : obj.id + "-image";
+				newName = hash;
 
 				var filepath = null;
 
 				if(raw.startsWith("data:")){
 					try {
-						filepath = base64Img.imgSync(raw, theImgPathDir, newName);
+						console.log("Searching for old instance of " + path.join(theImgPathDir.trim(),newName +"."+rawExtension));
+						if(!fs.existsSync(path.join(theImgPathDir.trim(),newName+"."+rawExtension))){
+							filepath = base64Img.imgSync(raw, theImgPathDir.trim(), newName);
+							console.log("Wrote image to " + filepath);
+
+						} else {
+							filepath = path.join(theImgPathDir.trim(),newName+"."+rawExtension);
+							console.log("Skipping file write because image already exists in this project at path " + filepath);
+						}
+						
 					}catch(e){
 						console.log("Base64 error")
 						console.log(e);
@@ -249,7 +311,7 @@ function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 
 					if(filepath){
 
-						console.log("Wrote image to " + filepath);
+						
 
 						div.css("background-image","url("+ filepath.substring(filepath.indexOf("/images")+1) + ")");
 
@@ -266,6 +328,9 @@ function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 					$ = writeStyleSheetForElement(obj,$,currentRevision.documentWidth);
 					div.removeClass("convertImage");
 				}
+
+				delete newName;
+				delete hash;
 			}
 			
 
@@ -320,7 +385,7 @@ function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 		})
 
 
-		fs.writeFile(fname,$.html(),function(err){
+		fs.writeFile(fname,$.html().replace(/><{a-Z}/g,"><br><"),function(err){
 
 			if(err){
 				return reject(err);
@@ -443,13 +508,17 @@ function getRevisionFileName(fpath,dateGMTString,callback){
 		
 	today = new Date(dateGMTString)
 
-	var todayAsMs = today.getTime();
+	
 
 	//todayAsNumber = parseFloat(today.getMonth()+""+today.getDate()+""+today.getFullYear()+today.getHours()+""+today.getMinutes())
 	//todayAsNumber = parseFloat(dateformat(today, 'mmddyyyyhhMM'));
-	todayAsNumber = (dateformat(today, 'mmddyyyyHHMM'));
+//	var todayAsNumber = (dateformat(today, 'mmddyyyyHHMM'));
 
-	console.log("Today " + today.toString() + " as number " + todayAsNumber )
+//	var tmpConvertedDateString = todayAsNumber.format();
+
+	var searchForTodayAsMilliseconds = today.getTime();
+
+	console.log("Dateformater Today " + today.toString() + " as number " +  searchForTodayAsMilliseconds)
 
 	//console.log("Today " + today.toString() + " as number " + todayAsNumber )
 
@@ -461,35 +530,91 @@ function getRevisionFileName(fpath,dateGMTString,callback){
 
 		//list = list.reverse();
 
-		console.log("List is  " + list )
+		console.log(`File List is    ${JSON.stringify(list)}` )
 
 		if(err){
 			console.log("Error. Could not retrieve revision")
 			callback(!ok,"");
 		}
+		/*
+		for(i=0; i < list.length; i++){
 
-		list = list.map(function(item){ return {item:item,num:parseInt(item)} }).sort(function(a,b){return parseInt(a.num)-parseInt(b.num)}).reverse();
+			var d = list[i].num;
+
+			var sDate = new Date(d.substr(4,4),parseInt(d.substr(0,2))-1,d.substr(2,2),d.substr(8,2),d.substr(10,2),0);
+
+			
+
+			list[i].asDate = d;
+
+		}*/
+
+		list = list.map(function(item){ 
+			var num = item.indexOf(".") > -1 ? item.substr(0,item.indexOf(".")) : item.substr(0,item.length-1);
+			console.log(`Yuck Number ${num}`)
+			return {
+					item:item,
+					num:num,
+					asDate: new Date(num.substr(4,4),parseInt(num.substr(0,2))-1,num.substr(2,2),num.substr(8,2),num.substr(10,2),0)   }}).sort(function(a,b){return (a.asDate)-(b.asDate)});
 
 		var fileName = "";
 
 		//console.log("List is  " + list )
 
+		results = [];
+
+	
+	
+
 		for(i=0; i < list.length; i++){
+
+
 			fileName = list[i].item;
 
 			
 			//console.log("comparing todayAsNumber <= list[i] : " + todayAsNumber + " > " + (list[i]))
-			console.log(`comparing todayAsNumber: ${todayAsNumber}(${parseInt(todayAsNumber)})  >=  list[${i}]: ${list[i].num} `)
+			console.log(`I hoaded todayAsNumber: ${today.toString()}(${searchForTodayAsMilliseconds})  >=  list[${i}]: ${list[i].num} `)
 			//console.log("comparing todayAsNumber > list[i] : " + todayAsMs + " > " + (fileAsMs))
-			//if(new Date(todayAsNumber >= parseFloat(list[i])){
-			//if(parseFloat(todayAsMs) <= parseFloat(fileName)){
-			if(parseInt(todayAsNumber) >= list[i].num){
+			//Ex. 021920231517
+			//	  0123456789011 parsed to Date Format
+			//new Date(year value, IndexOfMonth, day value, hours, minutes, seconds)
+			//var tmpLocalFileAsDateFormat = dateformat(list[i].num,"mmddyyyyHHMM");
+
+			var d = list[i].asDate;
+		
+			console.log(`new Date(year value, IndexOfMonth, day value, hours, minutes, seconds) = ${d.toString()}`)
+
+			
+		
+			var tmpLocalFileAsDate = d;
+
+			console.log(`My Date Format is ${tmpLocalFileAsDate.toString()}`)
+
+			
+			var localFileDateAsMilliseconds = tmpLocalFileAsDate.getTime()
+
+			console.log(`I am NOW comparing todayAsNumber: ${today.toString()}  <=  list[${i}]: ${d.toString()} `)
+
+			/* Search for page where date is less than today */
+			if(today >= d ){
 				//if(fileAsMs !=0)
-				console.log(`Picked day ${list[i].item} because ${parseInt(todayAsNumber)} is >= ${list[i].num}`);
+				console.log(`Picked day ${list[i].item} because ${today.toString()} is <= ${d.toString()}`);
 				//fileName was set at the top of this loop. It will be sent to callback a few lines below here
-				break;
+				results.push(fileName);
 			} 
+
 		}
+		console.log(`The final result return is ${results[0]} from ${JSON.stringify(results)}`)
+
+		if(results.length > 0)
+		{
+			fileName = results[results.length -1]
+
+		} else {
+			fileName = list[0].item
+		}
+
+		//fileName = results.reverse()[0]
 		
 		callback(ok,fileName);	
 
@@ -512,7 +637,9 @@ async function getRevision(req,res,next){
 
 	try {
 
-		revDate = new Date(revDate).toString();
+		var formattedDate = dateformat(revDate,"mm-dd-yyyy HH:MM")
+
+		revDate = new Date(formattedDate).toString()
 		console.log("Date is converted revision [" + revDate + "]")
 		if(revDate == "Invalid Date"){
 			revDate = new Date();
@@ -870,14 +997,16 @@ function loadFiles($){
 	$("style.generated").appendTo($('head'))
 	$("script.generated").appendTo($('head'))
 
-	if($("style.default").length == 0){
+	if($("#pageStyles").length == 0){
 		
-		$("head").append("<style class='default generated'></style>");
+		$("head").append("<style class='default generated' id='pageStyles'></style>");
+		$("head").append("<style class='default generated' id='pageStylesCopy'></style>");
 	}
 
-	if($("script.default").length == 0){
+	if($("#pageJavascript").length == 0){
 		
-		$("head").append("<script class='default generated'></script>");
+		$("head").append("<script class='default generated' id='pageJavascript'></script>");
+		$("head").append("<script class='default generated' id='pageJavascriptCopy'></script>");
 	}
 
 	

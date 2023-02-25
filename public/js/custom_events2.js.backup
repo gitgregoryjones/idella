@@ -1,11 +1,82 @@
 var hoverOverNote = false;
 
+var LAYER_TOOL = [];
+
 var CUSTOM_currentlyMousingOverElementId = null;
 
 
 var CUSTOM_lastCopyElement = null;
 
+$(window).on("editing",function(){
 
+	
+})
+
+$(window).on("preview",function(){
+	
+})
+
+
+/** Normalize when things or zoomed of scaled 
+ * https://github.com/laith7ussein/normalize_ui_position/blob/main/normalize_ui_position.js
+ * **/
+function normalize_ui_position ( scaled_container, ui ) {
+
+    /**** INPUT Checking ****/
+
+    if ( !ui.hasOwnProperty('position') ) {
+        console.error('Invalid input ui variable!');
+        return false;
+    } else if ( !ui.position.hasOwnProperty('left') || !ui.position.hasOwnProperty('top') ) {
+        console.error('Invalid input ui.position variable!');
+        return false;
+    };
+
+    if ( typeof $(scaled_container) == typeof undefined ) {
+        console.error('Undefined object!');
+        return false;
+    } else if ( !$(scaled_container).length ) { // Do not combine this condition with the previous one.
+        console.error('Object not found!');
+        return false;
+    }
+
+    if ( $(scaled_container).css('transform') === 'none' ) { // Unset CSS property
+        $(scaled_container).css('transform', 'scale(1)');
+    }
+
+    if ( $(scaled_container).css('transform-origin') != 'top left' ) {
+        // origin must be set to "top left" so the calculation equation operate correctly
+        $(scaled_container).css('transform-origin', 'top left');
+    }
+
+
+
+    /**** Real work starts here ****/
+
+    var constants = {
+        _zoom : parseFloat($(scaled_container).css('transform').match(/-?\d+\.?\d*/g)[0]),
+        _w    : $(scaled_container).innerWidth(),   // Width before scaling
+        _h    : $(scaled_container).innerHeight(),  // Height before scaling
+    }
+
+    constants = Object.assign(constants, { // Append
+        _sw   : constants._w * constants._zoom,     // Scaled width
+        _sh   : constants._h *constants._zoom,      // Scaled height
+    });
+
+    constants = Object.assign(constants, {
+        _ww   : constants._w - constants._sw,       // The displacement between origianl size and scaled size
+        _hh   : constants._h - constants._sh
+    });
+
+    ui.position.top = ui.position.top + ui.position.top*constants._hh/constants._sh;
+    ui.position.left = ui.position.left + ui.position.left*constants._ww/constants._sw;
+
+    // ui.position will be updated automaticlly since object are passed by reference...
+
+    return constants; // They could be useful!
+
+}
 
 var menuFunc = function(){
 	log.info("User click zMenu")
@@ -17,20 +88,34 @@ function CUSTOM_pressEscapeKey(){
 
 	var e = jQuery.Event("keydown");
 	e.which = 27; // # Some key code value
-	$("input").trigger(e);
+	$(window).trigger(e);
+	log.debug(`Escape Key pressed!`)
 
-	closeMenu();
+	//closeMenu();
 }
 
+function CUSTOM_showDebug(){
+
+
+	var e = jQuery.Event("keydown");
+
+	e.which = 18;
+	$(window).trigger(e);
+	e.which = 91;
+	$(window).trigger(e);
+	e.which = 73;
+	$(window).trigger(e);
+
+}
 
 function CUSTOM_incrementZIndex(){
 
 	var globI = 0;
 
-	$(".dropped-object").not("[alias^=cntrl],[alias^=header],[alias^=notification],[alias^=body]").each(function(idx,obj){
+	$(".dropped-object").not("[alias^=cntrl],[alias^=header],[alias^=notification],[alias^=body],.section,#layer-menu").each(function(idx,obj){
 
 		obj = $(obj);
-
+		//
 		if(obj.css("position") != "fixed"){
 			if(parseFloat(obj.css("z-index")) > parseFloat(globI)){
 
@@ -40,16 +125,16 @@ function CUSTOM_incrementZIndex(){
 
 	})
 
-	log.debug("CUSTOMEVENTS.js:Returing global Index globI " + globI)
+	log.debug(`CUSTOMEVENTS.js:Returing global Index globI ${globI}`)
 	return globI;
 }
 
-CUSTOM_KEYDOWN_LOGIC = function(event){
+CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event){
 
 	log.trace("Pressed Key " + event.which)
 
 	if(userHoveringOverNote){
-		console.log("Ignoring user actions because hovering over note field")
+		log.debug("Ignoring user actions because hovering over note field")
 		return;
 	}
 
@@ -62,6 +147,8 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 	
 
 	key = event.which;
+
+	log.debug(`saw key ${key} and advance is ${DRAW_SPACE_advancedShowing}`)
 	//Escape Key
 	if(key == 27 && !DRAW_SPACE_advancedShowing){
 
@@ -69,9 +156,10 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 		$("[data-action=fulledit]").html("Open Inspector...");
         $("#drawSpace").css({height:$(document).height()});
-        $("#editSpace").html("").hide()
+        $("#editSpace").css("transtion-duration","0.6s").fadeOut();
         $("*").removeClass("disabledElements").removeClass("submenu_on")
         SAVE_okToSave=true;
+
         return;        
 	} else if(DRAW_SPACE_advancedShowing){
 
@@ -97,6 +185,9 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$(".custom-menu").css("top","-3000px")
 		$("[data-action=paste]").click();
 		$(document).click();
+		event.stopPropagation();
+		return false;
+
 
 
 	//KEY C and Shift Key to COPY
@@ -110,7 +201,7 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		//$(document).click();
 
 		//Show Javascript Window SHIFT+J
-	}else if(key == 74 && event.shiftKey){
+	}else if((key == 74 && event.shiftKey) ){
 
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
@@ -118,20 +209,43 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$(document).click();
 		event.preventDefault()
 
+
+	//if left arrow key 
+	} else if(key == 37 && event.shiftKey ||  key == 38 && event.shiftKey ){
+
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		$("[data-action=insertBefore]").click();
+		$(document).click();
+		event.preventDefault()
+		NOTES_makeNote(hotObj)
+
 	//if delete key 
-	} else if(key == 8 ){
-		console.log("User clicked delete key")
+	} else if(key == 39 && event.shiftKey || key == 40 && event.shiftKey){
+
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		$("[data-action=insertAfter]").click();
+		$(document).click();
+		event.preventDefault()
+		NOTES_makeNote(hotObj)
+
+	//if delete key 
+	}  // Shift + DELETE Automatically delete
+		else if(key == 68 && event.shiftKey){
+		NOTES_delete();
+		deleteElement(hotObj)
+		
+	/*} else if(key == 8 ){
+		log.debug("User clicked delete key")
 		NOTES_delete()
+		
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
 		$("[data-action=delete]").click();
 		$(document).click();
-		
-	} // NO LONGER NEEDED SHIFT+T
-		else if(key == 84 && event.shiftKey){
-			//alert('hi')
-		$(document).trigger("contextmenu")
 		//Shift-R toggles draft mode
+		*/
 	} else if(key == 82 && event.shiftKey){
 		NOTES_delete();
 		OVERLAY_deleteInstructions();
@@ -141,6 +255,19 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 		$("[data-action=preview]").click();
 		$(document).click();
 
+	} else if(key == 69 && event.shiftKey){
+	
+		//$("#id_toolset").find(".mastertools").find("img").click();
+		$(document).trigger("contextmenu").show()
+		$(".custom-menu").css("top","-3000px")
+		if($("#editSpace").is(":visible")){
+			$("[data-action=lessOptions]").click();
+		} else {
+			$("[data-action=moreOptions]").click();
+		}
+		
+		$(document).click();
+
 	} else {
 		log(event.which)
 	}
@@ -148,25 +275,298 @@ CUSTOM_KEYDOWN_LOGIC = function(event){
 
 }
 
+const reducer = (accumulator, currentValue) => accumulator + currentValue;
+
+function setUpPopUpButtons(){
+
+	$("[data-cancel-button-for],[data-close-button-for]").each(function(idx,closeButton){
+		closeButton = $(closeButton);
+		if(closeButton.data("clickset") != "on"){
+                            
+            closeButton.off("click").on("click",function(){
+            	$(window).trigger("dialogClosed");
+                $(closeButton).parents("[data-popup-for]").hide().css({"z-index":"1"});
+
+                //enableScroll(); 
+                $("#greybox").remove();
+                $("#drawSpace").css({"overflow-y":"scroll"});
+                userHoveringOverNote = false;
+            })
+            closeButton.data("clickset","on")
+        }
+
+	})
+
+	$("[data-send-button-for]").each(function(idx,submitButton){
+		submitButton = $(submitButton);
+		if(submitButton.data("clickset") != "on"){
+                            
+            submitButton.off("click").on("click",function(){
+            	$(window).trigger("dialogClosed");
+               var cereal = $("[data-popup-for]:visible").find("form").serialize();
+               
+               if(editing){
+               		log.debug("Serialize the form -->" + cereal )
+               		alert(`Submitted values will be ${cereal}`)
+               }
+               $("[data-popup-for]:visible").hide();
+               //enableScroll(); 
+                $("#greybox").remove();
+                $("#drawSpace").css({"overflow-y":"scroll"});
+                
+            })
+            submitButton.data("clickset","on")
+        }                 
+	}).css({cursor:"pointer"})
+}
+
+function setUpGroupContainer(aTool,rebuild){
+	
+
+	if(!aTool.is(":visible")){
+			log.debug("Dont work on hidden objects");
+			return;
+	}
+
+	if(rebuild){
+		//aTool.resizable("destroy").resizable()
+		//aTool.find("[class*=-control],[class*=-label]").resizable("destroy").resizable()
+		if(aTool.resizable("instance")){
+            aTool.resizable("destroy");
+        }
+        if(aTool.draggable("instance")){
+            aTool.draggable("destroy");
+        }
+
+		aTool.off("resize resizestop dragstop");
+		if(aTool.resizable("instance")){
+			aTool.resizable("destroy").resizable();
+		}
+
+		aTool.resizable();
+		
+		aTool.find("[class*=-control],[class*=-label],[type]").each(function(idx,it){
+			it = $(it);
+			if(it.resizable("instance")){
+				it.resizable("destroy").resizable();
+			}
+
+			if(it.draggable("instance")){
+				it.draggable("destroy").draggable();
+			}
+		})
+		aTool.removeData("eventsCreated");
+	}
+
+	log.debug("Input here...")
+	//aTool.data("original-background-image",aTool.css("background-image"));
+    //aTool.css({"background-image":'url("http://www.orserumsik.se/webb/wp-content/themes/shoestrap-3/assets/img/patterns/rough_diagonal.png")',"background-size":"auto","font-weight":"600","font-family":"GT America, Helvetica Neue, Helvetica, Arial, sans-serif", "padding":"20px"})
+    //aTool.css({"background-color":"rgb(255, 255, 0,.2)","font-weight":"600","font-family":"GT America, Helvetica Neue, Helvetica, Arial, sans-serif", "padding":"20px"})
+    
+    //aTool.find("[id*=-control]").css({width:aTool.find("[type]").width() + parseInt(aTool.css("padding-top"))})
+    //aTool.find("[type]").css({width:aTool.width() + parseInt(aTool.css("padding-top"))})
+    var theWidth =  Math.max.apply(null,$.map(aTool.find("[class*=-control],[type]"),function(it,i){return $(it).width()}))
+    log.debug(`The calc width is ${theWidth} for id ${aTool.find("[class*=-control]").attr("id")}`)
+    //alert(aTool.find("[type]").width())
+   	aTool.find("[class*=-control]").css({width:theWidth});
+   	aTool.css({width:theWidth});
+
+    aTool.find("[class*=-label]").on("input",function(evnt){
+    	
+    	aTool.find("[type]").attr("name",$(evnt.target).text().replace(/\W+/g,"_").toLowerCase()).attr("placeholder",`Enter ${$(evnt.target).text()}`);
+    })
+
+
+
+
+    aTool.on("resize",CUSTOM_ON_RESIZE_GROUP_CONTAINER)
+    	.on("resizestop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
+    	.on("dragstop",CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER)
+    //Child Elements	
+    aTool.find("[class*=-control],[class*=-label]")
+    	.on("resize",CUSTOM_ON_RESIZE_FIELD_CONTAINER)    	
+    	.on("resizestop dragstop",CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER)
+
+   
+	
+
+    var zMaxHeightArr = $.map(aTool.find("[class*=-control],[class*=-label]"), function(d,idx){
+   							if($(d).height() != ""){
+   								return $(d).height();
+   							}
+   						})
+    if(zMaxHeightArr.length > 0){
+ 		var totalHeight = zMaxHeightArr.reduce(reducer);
+
+    	aTool.css({height:totalHeight})
+    }
+    //CUSTOM_PXTO_VIEWPORT(aTool);
+
+    var isGroupContainer = aTool;
+
+    
+
+    //For special Form Field types, do more processing before returning here.
+    //trigger CUSTOM_ON_RESIZE_GROUP_CONTAINER
+
+    isGroupContainer.trigger("resizestop",[{element:isGroupContainer,
+        width:isGroupContainer.height(),width:isGroupContainer.width()}])
+}
+
+CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER = function(event,u){
+
+	//log.debug(`Element ${u.element.attr('id')} helper ${u.helper.attr('id')} target ${event.target}`)
+
+	if(!u || !u.element){
+		u = {element:$(event.target)}
+	}
+
+	var zMaxHeightArr = $.map(u.element.find("[id*=-label],[id*=-control],[type]"), function(d,idx){
+   							return $(d).height()
+   						})
+   
+
+    u.element.find("[id*=-label],[id*=-control]").each(function(idx,copy){
+    	copy = $(copy);
+    	
+    	EXTENSIONS_delaySaving_PXTO_VIEWPORT(copy)
+    })
+
+    //Do Parent Elem
+   // if(u.element.is("[type=FIELD]")){
+    	EXTENSIONS_delaySaving_PXTO_VIEWPORT(u.element);
+   // } 
+
+    
+}
+
+
+CUSTOM_ON_RESIZE_GROUP_CONTAINER = function(evnt,u){
+
+		var theWidth = u.size.width;
+
+		log.debug("The width is " + theWidth); 
+
+	
+
+		$.map(u.element.find("[id*=-label],[id*=-control]"), function(it,i){
+				it = $(it);
+
+				var origHeightRatio = parseInt(it.attr("original-height")) /  parseInt(u.element.attr("original-height"));
+
+				$(it).css({"font-size":(origHeightRatio * u.size.height) *.85 + "px" ,height:origHeightRatio * u.size.height})
+
+				if(it.is("[class*=-control]")){
+						it.find("[type]").not("select,option").css({"font-size":it.height() *.85 + "px",height:origHeightRatio * u.size.height})
+				}
+				return it;
+		})
+
+
+		//do width calculations
+		u.element.find("[id*=-label],[id*=-control]").css({width:theWidth + "px"})
+		u.element.find("[type]").css({width:theWidth })
+
+		return;
+
+}
+
+
+CUSTOM_ON_RESIZE_FIELD_CONTAINER = function(evnt,ui){
+
+	var container = ui.element;
+
+	log.debug(`container is ${container.attr("id")}`)
+
+	var inputField = container.find("[type]");
+
+	inputField.css({width:container.width(), height:container.height()})
+
+	var zMaxWidth = Math.max.apply(null,$.map(container.parent(".group-container").find(".dropped-object"),function(it,i){return $(it).width()}))
+
+	var zParent = container.parent(".group-container");
+
+	var zMaxHeightArr = $.map(container.parent(".group-container").find("[id*=-control],[id*=-label]"), function(d,idx){
+   							return $(d).height()
+   						})
+   
+
+    var totalHeight = zMaxHeightArr.reduce(reducer);
+
+
+	zParent.css({width:zMaxWidth,height:totalHeight})
+
+	if(container.is("[class*=-control]")){
+		container.find("[type]").not("select,option").css({"font-size":container.height() *.5 + "px", height:container.height(), width:container.width()})
+	}
+
+}
+
+/*
+*
+*	Once user finishes resizing field or label, do any special stuff here
+*/
+CUSTOM_ON_RESIZESTOP_FIELD_CONTAINER = function(evnt,ui){
+
+	//ui.size.height
+	//alert(ui.element)
+
+	var container = ui.helper;
+
+	//CUSTOM_PXTO_VIEWPORT(container,$(container)[0].offsetLeft,$(container)[0].offsetTop)
+
+	if(container.is("[class*=-control]")){
+		var inputText = container.find("[type]").css({"font-size":container.height() *.5 + "px"})
+		//container.css({height:container.find("[type]").height()})
+		//CUSTOM_PXTO_VIEWPORT(inputText,$(inputText)[0].offsetLeft,$(inputText)[0].offsetTop)
+	}
+
+	log.trace("RESIZE WAS STOPPED for container " + container.attr("id"))
+
+	//Now Call Resize Group Which will make this field child and parent responsive
+	
+	evnt.target = container.parent("[type=FIELD]");
+	ui.element = container.parent("[type=FIELD]");
+
+	CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER(evnt,ui)
+	    
+
+}
 
 
 CUSTOM_MOUSEENTER_LOGIC = function(event){
 
+	//Make new Lock for this element
+	event.stopPropagation();
 
-	
+
+
 	if($(event.target).hasClass("ui-resizable-handle")){
 		//alert($(event.target).parents(".dropped-object").first().attr("id"))
-		$(event.target).parents(".dropped-object").first().mouseenter();
+		$(event.target).parents(".dropped-object:visible").first().mouseenter();
 		//$(event.target).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 		
 		return;	
 	}
 
+	if($(event.target).parent().is("[id*=-control]")){
+		//alert('hi')
+		$(event.target).parents(".dropped-object:visible").first().mouseenter();
+		//$(event.target).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+		
+		return;	
+	}
+
+
+	if($(event.target).is("[type=text]")){
+		$(event.target).parent(".dropped-object:visible").mouseenter();
+		return;
+	}
 	//NOTES_delete()
 
 	//enableHoverEvents();
 
-	if(DRAW_SPACE_isEditing() ){
+	if(DRAW_SPACE_isEditing() || !$(event.target).hasClass("dropped-object")){
 
 		event.stopPropagation()
 
@@ -186,8 +586,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 	
 
-	if(!editing || $(".custom-menu").is(":visible") ){
-
+	//Commenting out... not needed with new menu logic if(!editing || $(".custom-menu").is(":visible") ){
+	if(!editing){
 
 		//OVERLAY_showOverlay(theElem);
 	
@@ -197,10 +597,9 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		return;
 	}
 
-	$("*").removeClass("submenu")
+	//$("*").removeClass("submenu")
 
 	if(theElem.id){
-
 
 
 		log.debug("Entering parent " + theElem.id + " with X, Y " + $(theElem).css("left") + "," + $(theElem).css("top"))
@@ -222,7 +621,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 			log.info("Changing target to dropped-object");
 			//theElem = $(theElem).parents(".dropped-object").first();
 			log.info(theElem)
-			$(theElem).parents(".dropped-object").first().mouseenter();
+			$(theElem).parents(".dropped-object:visible").first().mouseenter();
 			return;
 		}	
 
@@ -235,20 +634,31 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 			addPlusButton($(theElem));
 		}	
 
-		
+		/*
 		if(CUSTOM_currentlyMousingOverElementId !=null){
-			//$(theElem).parent().trigger("mouseleave")
+		//	$(theElem).parents(".dropped-object:visible").first().mouseleave()
 			
-		}	
+		}*/	
 			
 		
 
 		log.debug("making note for " + CUSTOM_currentlyMousingOverElementId)
 
 	
-
+		//Do flash
+		/*
 		$(theElem).addClass("submenu")
 
+		 op = $(theElem).css("opacity");
+ 
+         $(theElem).css("opacity",".9");
+         $(theElem).animate({opacity:op},600,function(){
+         	$(theElem).removeClass("submenu")
+         })
+		*/
+
+
+		
 
 		NOTES_delayShowingNote(theElem);
 
@@ -259,13 +669,14 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	} else {
 		log.debug("Entering bad child bad node")
 		$(".dropped-object").not(event.target).removeClass("submenu")
-		$(event.target).parents().first().mouseenter();
+		$(event.target).parents(".dropped-object:visible").first().mouseenter();
 		return;
 	}
 }
 
 function addPlusButton(elem){
-
+	//Not doing this anymore...stop working anyway
+	return;
 
 	var plusButtonPushed = true;
 
@@ -289,22 +700,25 @@ function addPlusButton(elem){
 
 	} else {
 
-		plus.css({top:10, position:"relative","border-color":"white","text-align":"center",
-			"font-size":"40px","border-radius":"50px",
+		plus.css({top:0, position:"absolute","border-color":"white","text-align":"center",
+			"font-size":"30px","border-radius":"0px",
 				"background-color":"silver","margin":"10px","padding":"10px"
 				,"color":"white","z-index":30000})
 
-		plus.css({left:$(elem).width()/2 - plus.width()/2})
+		plus.css({left:$(elem).width() - plus.width()*2.5})
 
 	}
 
 	plus.on('click',function(){
-		cpy = recursiveCpy($(elem),plusButtonPushed);
+		
 		/*$(elem).css("opacity","0");
         $(elem).animate({opacity:op},600)*/
        	op = $(currentCtx).css("opacity");
-        $(cpy).css("opacity","0");
-        $(cpy).animate({opacity:op},600)
+        $(currentCtx).css("opacity","1");
+       
+        $(currentCtx).animate({opacity:op},600, function(obj){
+        	recursiveCpy($(obj),plusButtonPushed);
+        })
 
 	}).on("mouseenter",function(){
 		$(this).css("background-color","navy")
@@ -322,17 +736,18 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 	OVERLAY_deleteInstructions();
 
 
+
 	log.debug("Leaving LOGIC ")
 	log.debug(event.target)
-	if(!event.target.id){
-		log.warn("CUSTOMEVENTS2.js: Bad Node Encountered-->\n " + $(event.target).html())
+	if(!event.target.id || $(".custom-menu").is(":visible")){
+		log.debug("CUSTOMEVENTS2.js: Bad Node Encountered-->\n " + $(event.target).html())
 		$(event.target).removeClass("submenu")
 		$(event.target).parent().removeClass("submenu")
 		$(event.target).parent(".dropped-object").mouseleave();
 	} else {
 		$("#"+event.target.id).removeClass("submenu")
 
-		//$(event.target).parent(".dropped-object").trigger("mouseenter")
+		$(event.target).parent(".dropped-object:visible").mouseenter();
 	}
 
 }
@@ -348,18 +763,18 @@ _DEFAULT_CLOSE_CODE = function(event,ui){
 	SAVE_okToSave = true;
 	log.debug("CUSTOMEVENTS.js:Closing the window")
 	log($(event.target).data())
-	parent = $(event.target).data().theClickedElement;
+	parent = ui.element.data().theClickedElement;
 	log(parent)
 
 	if(copiesModified){
 		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
-			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
+			CUSTOM_PXTO_VIEWPORT($(copy),$(copy)[0].offsetLeft ,$(copy)[0].offsetTop);
 		})
 	}
 	copiesModified = false;
 
-	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	
+	$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 }
 
@@ -369,6 +784,10 @@ _DEFAULT_CLOSE_CODE = function(event,ui){
 */
 CUSTOM_JS_OPEN_CODE = function(event,ui){
 
+	if(!ui.element){
+		ui = {element:$(event.target)}
+	}
+
 	NOTES_delete();
 
 	userHoveringOverNote = true;
@@ -376,9 +795,9 @@ CUSTOM_JS_OPEN_CODE = function(event,ui){
 	$(document).unbind("keydown");
 
 	//Add Default Title...Other funcs override this if user clicks on draggable shape
-	$(event.target).dialog("option","title","Global JS");
+	ui.element.dialog("option","title","Global JS");
 
-	$(event.target).find("#error_area").val("")
+	ui.element.find("#error_area").val("")
 	
 	exampleFunc = "//Enter Global JS below";
 
@@ -441,7 +860,9 @@ CUSTOM_ON_QUICK_INPUT = function(evnt){
 
 			}else if(label.startsWith("font") || label.startsWith("text")){
 				$(parent).css(label,$(evnt.target).val())
-                // $(parent).find("[type]").css(label,$(evnt.target).val())  
+                // $(parent).find("[type]").css(label,$(evnt.target).val()) 
+		       
+
             }else if(label == "color"){
 					$(parent).css("-webkit-text-fill-color",$(evnt.target).val())
 					
@@ -505,34 +926,36 @@ CUSTOM_ON_QUICK_INPUT = function(evnt){
 
 CUSTOM_TXT_RESIZE = function(event,ui){
 	
-	if(ui && !ui.element){
 
-		ui = $(ui)
-		log.trace("Resziing and ui " + ui.attr("id") + " : " + ui.height() + " <==> " + ui.weight())
-		log.trace("Up in here today " + ui.css("font-size"))
-		ui.css("font-size",ui.height())
+
+		var fontSize = parseFloat(ui.element.css("font-size"));
+
 		
-		w = ui.width() * (100 / document.documentElement.clientWidth);
-		h = ui.height() * (100 / document.documentElement.clientWidth);
+		if(ui.element.children(".text-detail").width() > ui.element.width() + 1){
 
+			while(ui.element.children(".text-detail").width() > ui.element.width() + 1){
+				ui.element.css({"font-size":--fontSize});
+			}
 
-		ui.find("span").css({height:h+"vw",width:w+"vw"})
-		ui.element.find("span").css({height:h+"vw",width:w+"vw", "font-size":h+"vw"})
-		//CUSTOM_PXTO_VIEWPORT(ui,ui.position().left,ui.position().top)
+			//ui.element.children(".text-detail").css({height:"unset"})
+		} else {
+
+			while(ui.element.children(".text-detail").width() < ui.element.width() + 1){
+				ui.element.css({"font-size":++fontSize});
+			}
+
+		}
+
 		
+		if(ui.element.children(".text-detail").height() > ui.element.height() + 1){
 
-	} else {
-		ui.element.css("font-size",ui.size.height)/*
-		ui.element.find("[resize]").each(function(idx,child){
-			CUSTOM_PXTO_VIEWPORT(child,$(child).position().left,$(child).position().top)
-		
-		})*/
-		w = ui.element.width() * (100 / document.documentElement.clientWidth);
-		h = ui.element.height() * (100 / document.documentElement.clientWidth);
+			while(ui.element.children(".text-detail").height() > ui.element.height()){
+				ui.element.css({"font-size":--fontSize});
+			}
+		}
 
-		elems= ui.element.find("span").css({height:h+"vw",width:w+"vw", "font-size":h+"vw"})
-		console.log("Resized " +elems.length)
-	}
+
+
 }
 
 CUSTOM_ICON_RESIZE = function(event,ui){
@@ -544,7 +967,7 @@ CUSTOM_ICON_RESIZE = function(event,ui){
 		ui.css("font-size",ui.height())
 		//ui.css("line-height",ui.height())
 		ui.css("width",ui.height());
-		CUSTOM_PXTO_VIEWPORT(ui,ui.position().left,ui.position().top)
+		CUSTOM_PXTO_VIEWPORT(ui,ui[0].offsetLeft,ui[0].offsetTop)
 
 	} else {
 		ui.element.css("font-size",ui.size.height)
@@ -567,40 +990,47 @@ CUSTOM_ON_RESIZE_LOGIC = function(event,ui){
 	event.stopPropagation()
 	event.preventDefault();
 
-	log.trace("Group Resize Enabled is " + groupResizeEnabled + "ID " + $(event.target).attr("id"))
+	
 
-	groupResizeEnabled = $("#group-resize").is(":checked")
+	var groupResizeEnabled = $("#group-resize").is(":checked")
 
-	if(groupResizeEnabled && ui.originalSize){
+	log.trace("Group Resize Enabled is " + groupResizeEnabled + "ID " + ui.element.attr("id"))
+
+	if( (groupResizeEnabled && ui.originalSize) || ui.element.is("[type=SVG]") ){
 		 
 		rH = ui.size.height / ui.originalSize.height 
 		rW = ui.size.width / ui.originalSize.width 
 		rL = ui.position.left / ui.originalPosition.left 
 		rT = ui.position.top / ui.originalPosition.top
 		
-		growOrShrinkChildren(event.target,ui)
+		growOrShrinkChildren(ui.element,ui)
+
+		//now that child POLYGON coordinates are updated, redraw Polygon
+		if(ui.element.is("[type=SVG]")){
+			r_redrawSVGs({target:ui.element});
+		}
 	}
 
 }
 
 //Called after parent node is in process of resizing and child nodes need to copy that effect
 //relative to parent
-function growOrShrinkChildren(node,ui){
-console.log($(node).children("[type]").length + " leng")
+function growOrShrinkChildren(node,ui, saveAChild){
+log.debug($(node).children("[type]").length + " leng")
 
 
 
-	$(node).children("[type]").each(function(it,child){
+	node.children("[type]").each(function(it,child){
 
 		child = $(child)	
 
 		if(!child.attr("original-height")) {
-			child.attr("original-height",child.height())
-			child.attr("original-width",child.width())
-			child.attr("original-top",child.position().top)
-			child.attr("original-left",child.position().left)
-			child.attr("left-ratio",child.position().left/ui.originalSize.width)
-			child.attr("top-ratio",child.position().top/ui.originalSize.height)
+			child.attr("original-height",child.outerHeight())
+			child.attr("original-width",child.outerWidth())
+			child.attr("original-top",child[0].offsetTop)
+			child.attr("original-left",child[0].offsetLeft)
+			child.attr("left-ratio",/* Math.round */(child[0].offsetLeft/ui.originalSize.width))
+			child.attr("top-ratio",/* Math.round */(child[0].offsetTop/ui.originalSize.height))
 		}
 
 		var myH = parseFloat(child.attr("original-height"))
@@ -612,97 +1042,114 @@ console.log($(node).children("[type]").length + " leng")
 
 		//Save settings before shrinking
 		originalSize = {
-			width:child.width(),
-			height:child.height()
+			width:child.outerWidth(),
+			height:child.outerHeight()
 		}
 
 		child.css(
 		{
-			height:myH * ui.size.height / ui.originalSize.height ,
-			width:myW * ui.size.width / ui.originalSize.width ,
-			left:LRatio * ui.size.width, 
-			top:TRatio * ui.size.height, 
-			"font-size":myH * rH
+			height:myH * Math.round(ui.size.height / ui.originalSize.height) ,
+			width:myW * Math.round (ui.size.width / ui.originalSize.width),
+			left: parseInt(child.css("left")) == 0 ? 0 : /* Math.round */(LRatio * ui.size.width), 
+			top: parseInt(child.css("top")) == 0 ? 0 :  /* Math.round */(TRatio * ui.size.height), 
+			"font-size":myH *  /* Math.round */(ui.size.height / ui.originalSize.height)
 		})
 
+		//special logic for POLYGONS.first update coordinates and then polygon redraws after
+		//this method ends in calling function  CUSTOM_RESIZE_LOGIC
+		if(child.is(".coordinate")){
+			child.attr("coordinate",`${child[0].offsetLeft},${child[0].offsetTop}`)
+		}
+
 		newSize = {
-			width:child.width(),
-			height:child.height()
+			width:child.outerWidth(),
+			height:child.outerHeight()
 		}
 
 		if(child.children("[type]").length > 0){
-			console.log("I'm doing the small stuff " + child.attr("id"))
-			growOrShrinkChildren(child,{originalSize:originalSize,size:newSize})
+			log.debug("I'm doing the small stuff " + child.attr("id"))
+			growOrShrinkChildren(child,{originalSize:originalSize,size:newSize},saveAChild)
 		} else {
-			console.log("I'm doing the big stuff " + child.attr("id"))
+			log.debug("I'm doing the big stuff " + child.attr("id"))
 		}
+
+		//if(saveAChild != undefined && saveAChild == true)
+		//	CUSTOM_PXTO_VIEWPORT(child,$(child)[0].offsetLeft,$(child)[0].offsetTop)
+
 	})
 
 }
 
 
-function onResizeEffectEnded(element){
+function onResizeEffectEnded(element, frontEnd){
 	//On Resize Stop...reset ratio of this node in relation to it's parent
-	if($(element).parent("[type]").length > 0){
-		console.log("I need to resize")
+	//if($(element).parent("[type]").length > 0 || $(element).attr("id") == "content"){
+		log.debug("I need to resize")
 
 		var parent = $(element).parent("[type]");
 		var node = $(element);
 
-		node.attr("original-height",node.height())
-		node.attr("original-width",node.width())
-		node.attr("original-top",node.position().top)
-		node.attr("original-left",node.position().left)
-		node.attr("left-ratio",node.position().left/parent.width())
-		node.attr("top-ratio",node.position().top/parent.height())
+		node.attr("original-height",node.outerHeight())
+		node.attr("original-width",node.outerWidth())
+		node.attr("original-top",node[0].offsetTop)
+		node.attr("original-left",node[0].offsetLeft)
+		node.attr("left-ratio",/* Math.round */(node[0].offsetLeft/parent.outerWidth()))
+		node.attr("top-ratio",/* Math.round */(node[0].offsetTop/parent.outerHeight()))
+		node.attr("original-font-size",node.css("font-size"))
 
-	}
+	
 
-	//On Resize Stop...reset ratios of any children
-	$(element).find("[type]").each(function(it,child){
+		//On Resize Stop...reset ratios of any children
+		$(element).find("[type]").each(function(it,child){
 
-		var child = $(child);
-		var parent = $(element);
+			var child = $(child);
+			var parent = $(element);
 
-		child.attr("original-height",child.height())
-		child.attr("original-width",child.width())
-		child.attr("original-top",child.position().top)
-		child.attr("original-left",child.position().left)
-		child.attr("left-ratio",child.position().left/parent.width())
-		child.attr("top-ratio",child.position().top/parent.height())
+			child.attr("original-height",child.outerHeight())
+			child.attr("original-width",child.outerWidth())
+			child.attr("original-top",child[0].offsetTop)
+			child.attr("original-left",child[0].offsetLeft)
+			child.attr("left-ratio",/* Math.round */(child[0].offsetLeft/parent.outerWidth()))
+			child.attr("top-ratio",/* Math.round */(child[0].offsetTop/parent.outerHeight()))
+			child.attr("original-font-size",node.css("font-size"))
 
 
-	})
+		})
+	//}
 }
 
 
 CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 	log.trace("Resizing is stopped " + event.target.id)
 	
-	event.stopPropagation()
-	event.preventDefault();
+	event.stopPropogation != undefined && event.stopPropagation();
 
-	$(event.target).removeClass("submenu");
+	event.preventDefault != undefined && event.preventDefault();
+
+	ui.element.removeClass("submenu");
 
 	div = $(event.target);
 
-	onResizeEffectEnded(event.target);
+	onResizeEffectEnded(ui.element);
 
-	if(groupResizeEnabled){
+	if(groupResizeEnabled || ui.element.is("[type=SVG]")){
 		
 	
-		$(event.target).children(".dropped-object").each(function(it,child){
+		ui.element.children(".dropped-object,.coordinate").each(function(it,child){
 			child = $(child)
 
 			log.trace("Resizing Child is stopped for " + child.attr("id"))
+			//onResizeEffectEnded(child);
 
 			//child.removeAttr("original-height").removeAttr("original-width")
 
-			CUSTOM_PXTO_VIEWPORT(child,$(child).position().left,$(child).position().top)
+			CUSTOM_PXTO_VIEWPORT(child,$(child)[0].offsetLeft,$(child)[0].offsetTop)
 			//.trigger("resizestop",[$(child)])
 
 		})
 	}
+
+	
 	
 
 	//Add border for menu-items. makes it easier for user to click and choose 
@@ -713,13 +1160,14 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 	
 
 //if called from clone/copy cmd
-		log.debug("RESIZE X IS " + $(event.target).css("left") + " Y IS " + $(event.target).css("top"))
-		CUSTOM_PXTO_VIEWPORT(event.target,$(event.target).position().left,$(event.target).position().top)
+		log.debug("RESIZE X IS " + ui.element.css("left") + " Y IS " + ui.element.css("top"))
+		
+		CUSTOM_PXTO_VIEWPORT(ui.element,ui.element[0].offsetLeft,ui.element[0].offsetTop)
 
-		if(!$(event.target).is("[type=T]")){
-			$(event.target).addClass("submenu");
-			$(event.target).attr("contenteditable","false")
-			//.css("-webkit-user-modify","false")
+		if(!ui.element.is("[type=T]")){
+			ui.element.addClass("submenu");
+			ui.element.attr("contenteditable","false")
+			.css("-webkit-user-modify","read-only")
 		}
 
 		createAnchorFor(div,true)
@@ -728,14 +1176,17 @@ CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 
 }
 
+
+
 CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 	//log.debug("Triggered Done Dragging parent " + event.target.id)
-
+	//Don't show POPUP that somehow gets triggered
+//	$(window).trigger("userDragEnded")
 
 	event.stopPropagation();
-	
 
-	NOTES_makeNote(event.target)
+	if(editing)
+	NOTES_makeNote($(event.target))
 
 	parent = $(event.target)
 
@@ -743,10 +1194,10 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 
 	onResizeEffectEnded(parent);
 
-	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
+	CUSTOM_PXTO_VIEWPORT($(parent),$(parent)[0].offsetLeft ,$(parent)[0].offsetTop);
 	if(copiesModified){
 		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
-			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
+			CUSTOM_PXTO_VIEWPORT($(copy),$(copy)[0].offsetLeft ,$(copy)[0].offsetTop);
 		})
 	}
 
@@ -756,8 +1207,11 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 
 CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 
-	userHoveringOverNote = false;
 
+	userHoveringOverNote = false;
+	
+    $(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
+    
 	//log.debug("CUSTOMEVENTS.js:Triggered Done Editing Notes for parent " + $(event.target).attr("parent"))
 
 	var parentId = $(event.target).attr("parent")
@@ -766,35 +1220,21 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 		//alert('nothing to do ' + $(event.target).attr("parent"))
 		return;
 	}
-
-
 	var parent = $("#"+parentId)
 
-	if(parent.attr("href") != undefined){
-		//alert('hrefs is ' + parent.attr('href'))
-			var loc = parent.attr("href");
-		
-			if(loc.trim().length  > 0){
-
-				createAnchorFor(parent);
-		
-			}
+	if(parent.position()){
+		//CUSTOM_PXTO_VIEWPORT($(parent),$(parent)[0].offsetLeft ,$(parent)[0].offsetTop);
 	}
 
-
-   
-	
-
-	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
 	if(copiesModified){
 		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
-			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
+			CUSTOM_PXTO_VIEWPORT($(copy),$(copy)[0].offsetLeft ,$(copy)[0].offsetTop);
 		})
 	}
 	copiesModified = false;
 	//bind document listener keydown again
-	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	
+	$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 	writeTabs(parent,true)
 
@@ -804,24 +1244,27 @@ CUSTOM_DONE_NOTE_EDITING_LOGIC = function(event,ui){
 }
 
 CUSTOM_CLOSE_LOGIC = function(event,ui){
+	if(!ui.element){
+		ui = {element:$(event.target)}
+	}
 	userHoveringOverNote = false;
 	log.debug("CUSTOMEVENTS.js: Closing the window")
 	log.debug("CUSTOMEVENTS2.js: " + $(event.target).data())
-	parent = $(event.target).data().theClickedElement;
+	parent = ui.element.data().theClickedElement;
 	log.debug("CUSTOMEVENTS2..js: parent is")
 	log.debug(parent)
-	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
+	CUSTOM_PXTO_VIEWPORT($(parent),$(parent)[0].offsetLeft ,$(parent)[0].offsetTop);
 	if(copiesModified){
 		$("[extends='"+$(parent).attr("id")+ "']").not($(parent)).each(function(idx,copy){
-			CUSTOM_PXTO_VIEWPORT($(copy),$(copy).position().left ,$(copy).position().top);
+			CUSTOM_PXTO_VIEWPORT($(copy),$(copy)[0].offsetLeft ,$(copy)[0].offsetTop);
 		})
 	}
 	copiesModified = false;
 
 
 	//bind document listener keydown again
-	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	
+	$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 
 }
@@ -830,7 +1273,9 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 	
 			if($(event.target).is("[type=T]")){
 
-				$("[name=value]").click().focus();
+				$("[name=value]").dblclick().focus().parent().mouseenter();
+				//userHoveringOverNote = true;
+
 				return;
 			}
 
@@ -848,9 +1293,16 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 			event.preventDefault();
 			event.stopPropagation();
 
-			if($(event.target).is("[type=IMG],[type=DIV]")){
+			if($(event.target).is("[type=IMG],[type=DIV],[type=CIRCLE]")){
 				log.debug("starting image upload")
+
 				$("#fileElem").click();
+
+				log.debug("Done uploading image")
+				userHoveringOverNote = false;
+				return;
+			} else if($(event.target).is("[type=AUDIO]")){
+				$("#audioElem").click();
 
 				log.debug("Done uploading image")
 				userHoveringOverNote = false;
@@ -868,7 +1320,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 				log.debug("CUSTOMEVENTS.js:Overwriting event target with new target ")
 				myParent = $(event.target).parents("[type=T]").first();
 				log.debug("CUSTOMEVENTS.js:Making note for " + $(myParent).attr("id"))
-				console.log(myParent)
+				log.debug(myParent)
 				//return;
 			} 
 
@@ -979,8 +1431,8 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 
 
 				//reenable keydown logic and save input
-				$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-				$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+				
+				$(document).unbind("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 				
 					var tokens = $(input).val().split("\n");
 
@@ -999,7 +1451,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 							//see if User gave us comma separated line.  If so, treat as images and text in menu item
 							var imgTxtTok = tokens[it].split(",")
 							log.debug("CUSTOMEVENTS.js:SPLITTING ON ,")
-							console.log(imgTxtTok)
+							log.debug(imgTxtTok)
 							if(imgTxtTok.length > 0){
 
 							
@@ -1181,6 +1633,9 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 				}
 				
 				REVISION_anchors.push(loc.trim())
+			} else {
+				parent.find("[type=anchor]").remove();
+				return;
 			}
 		} 
 
@@ -1206,10 +1661,10 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 		var topPos = immediateParent.css("display") == "inline-block" ? 0 : "0px";
 
 
-		log.debug("CUSTOMEVENTS.js:immediate parent is " + immediateParent.attr("id") + " with offsets " + immediateParent.position().left)
-		console.log({left:leftPos,top:immediateParent.offset().top});
+		log.debug("CUSTOMEVENTS.js:immediate parent is " + immediateParent.attr("id") + " with offsets " + immediateParent[0].offsetLeft)
+		log.debug({left:leftPos,top:immediateParent.offset().top});
 		
-		a.css({align:"center",display:"inline-block",left:leftPos,width:immediateParent.width(),height:immediateParent.height()
+		a.css({align:"center",display:"inline-block",left:leftPos,width:immediateParent.outerWidth(),height:immediateParent.outerHeight()
 			,"position":"absolute", top:topPos});				
 		a.on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 		a.on("click",writeTabs)
@@ -1217,15 +1672,15 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 		//
 		if(a.attr("href").startsWith("#")){
 			var fragmentId = a.attr("href").substring(1);
-			console.log("fragmentId is " + fragmentId);
+			log.debug("fragmentId is " + fragmentId);
 			var linkTo = $("[alias="+fragmentId+"]").attr("id")
 			if(linkTo){
-				console.log("LinkTo is " + linkTo)
+				log.debug("LinkTo is " + linkTo)
 				a.attr("href","#"+linkTo);
 			}
 		}
 
-		CUSTOM_PXTO_VIEWPORT($(a),$(a).position().left, a.position().top)
+		CUSTOM_PXTO_VIEWPORT($(a),$(a)[0].offsetLeft, a[0].offsetTop)
 
 	})
 
@@ -1237,7 +1692,7 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 
 		$(parent).append(anchors);
 
-		CUSTOM_PXTO_VIEWPORT($(anchors),$(anchors).position().left, anchors.position().top)
+		CUSTOM_PXTO_VIEWPORT($(anchors),$(anchors)[0].offsetLeft, anchors[0].offsetTop)
 
 		setUpAnchors(parent);
 	}
@@ -1283,27 +1738,42 @@ function setUpAnchors(div){
 
 //file input field is actually created in stylesTabs2.js dynamically
 //attached it here because it was too much trouble attaching it in normal HTML and hiding/rewriting after autoSave feature enabled
-function CUSTOM_HANDLEFILES(files) {
+function CUSTOM_HANDLEFILES(files,audio) {
+
+  console.log(`Files length is ${files.length}  ${JSON.stringify(files)}`)	
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
-    var imageType = /^image\//;
     
-    if (!imageType.test(file.type)) {
-      continue;
-    }
-    //CUSTOM_currentlyMousingOverElementId
     var img = $("#"+window.myim);
     
     img.file = file;
     
+
     
     var reader = new FileReader();
-    reader.onload = (function(aImg) { return function(e) { 
+
+
+    if(audio){
+	   	reader.onload =  (function(aImg) { return async function(e) { 
+	   		//Set Request and Send to Backend
+	   		var result = await Equalizer.convertRawToURL(e.target.result,theSiteObj.name,$(img).attr("id"))
+	   		//$(aImg).find("audio").remove();	
+
+	    	$(img).find("audio").attr("src",`${result.sound}?v=${Math.floor(Math.random() * Math.floor(1000))}`)[0].play();
+	    	
+	    	 //$(aImg).find("audio").addClass("convertAudio");
+	    	 CUSTOM_PXTO_VIEWPORT($(img),$(img)[0].offsetLeft, $(img)[0].offsetTop) 
+	    }; })(img);
+    } else {
+
+    	reader.onload = (function(aImg) { return function(e) { 
     	 $(aImg).css({"background-image":"url(" + e.target.result + ")","background-size":"cover"})
     	 $(aImg).addClass("convertImage");
-    	 CUSTOM_PXTO_VIEWPORT($(aImg),$(aImg).position().left, $(aImg).position().top) 
-    }; })(img);
+    	 CUSTOM_PXTO_VIEWPORT($(aImg),$(aImg)[0].offsetLeft, $(aImg)[0].offsetTop) 
+    	}; })(img);
+    }
+
     reader.readAsDataURL(file);
     
 
@@ -1323,11 +1793,33 @@ function addEditMode(){
 		$("body").addClass("editing")
 		$("[type=anchor]").css("border","1px solid red")
 	}
+
+	//Stop Cars From Moving
+
+	
+
+	CarWithAudio.stopVehicles();
+
+	CarWithAudio.seeMe();
+	
+
+	$("#layer-menu").show();
 }
 
 function removeEditMode(){
+
+	
+
 	$("body").removeClass("editing")
 	$("[type=anchor]").css("border","none")
+	$("#layer-menu").hide();
+	//Delete old references to CarsWithAudio
+	//window.CarWithAudio = null;
+
+
+	Equalizer.initJS(8,5);
+	CarWithAudio.initialize();
+
 }
 
 function enableHoverEvents(){
@@ -1353,50 +1845,142 @@ function setUpDiv(div){
 
 
 	try {
-		div.off("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
-			.off("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).off("click",writeTabs).resizable("destroy");
+		div.unbind("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).unbind("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+			.unbind("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).unbind("click",writeTabs).resizable("destroy");
 	} catch(destroy){
 		log.debug("ignoring warning while destroying system generated events tied to div " + div.attr("id"));
 	}
 
 
-	console.log("Setting up my DIV " + div.attr("id"))
-	div.not("[type=OVERLAY]").on("mouseenter",function(event){
+	log.debug("Setting up my DIV " + div.attr("id"))
+	div.not("[type=OVERLAY]").unbind("mouseenter").on("mouseenter",function(event){
 		
 		if($(this).attr("overlay") && !$(this).children("[type=OVERLAY]").first().is(":visible") ) {
 			log.error("Entered MOUSE CUSTOM_EVENTS2.js: " + event.target.id)
-			OVERLAY_showOverlay(event.target)
+			OVERLAY_showOverlay(event.target);
+
+
 		} else if(div.is("[type=IMG]")) {
 			OVERLAY_showInstructions(event.target);
 		}
 		
 	})
-	var oldPos = div.css("position");
+
+	var oldPos = "relative";
+
+	try {
+
+		oldPos = div.css("position");
+
+
+	}catch(e){
+		
+		log.warn(e);
+		
+
+	}
 
 	div.find(".hotspot").css({height:0,width:0}).hide()
 
-	div.not("#drawSpace,body").resizable().on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
+	div.not("#drawSpace,body,.template-layer,#content").resizable({handles:"n,e,s,w,se"}).on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 		.not("[type=TXT],[type=ICON],[type=BTN]").on("resize",CUSTOM_ON_RESIZE_LOGIC);
 
 
-		
+	var clickCoord = {
+	    distanceFromMouseX: 0,
+	    distanceFromMouseY: 0,
+	   // ui: {oldleft:0, oldTop:0},
 
-	div.not("[alias=notification],[alias=header]").draggable().on("drag",function(e){
+	};
+
+
+	div.not("[alias=notification],[alias=header],#content").draggable({
+		//$('.draggable').draggable({
+			
+	    start: function(event, ui) {
+	        clickCoord.distanceFromMouseX= event.clientX - ui.helper[0].offsetLeft;
+	        clickCoord.distanceFromMouseY= event.clientY - ui.helper[0].offsetTop - scrollY;
+
+	        /*/*click.ui.oldLeft = ui.helper[0].offsetLeft;
+			click.ui.oldTop = ui.helper[0].offsetTop;*/
+
+			/*click.ui.oldLeft = ui.offset().left;
+			click.ui.oldTop = ui.offset().top;
+
+			click.x = event.clientX;
+			click.y = event.clientY;*/console.log(`CLICK IT  is ${JSON.stringify(clickCoord)}`);
+	    },
+
+	    /*
+	    drag: function(event, ui) {
+
+	        // This is the parameter for scale()
+	        var zoom = 1.5;
+
+	        var original = ui.originalPosition;
+
+	        // jQuery will simply use the same object we alter here
+	        ui.position = {
+	            left: (event.offsetLeft - click.x + original.left) / zoom,
+	            top:  (event.offsetTop - click.y + original.top ) / zoom
+	        };
+
+	    }
+	     drag: function (event, ui) {
+
+	        var constants = normalize_ui_position('#content', ui);
+
+	        console.log(`GREGORY ${constants}`); // They could be useful!
+
+    	}*/
+
+}).on("drag",function(event,ui){
+
+		/*   ui.position = {
+	            left: event.clientX - clickCoord.distanceFromMouseX,
+	            top:  event.clientY- clickCoord.distanceFromMouseY
+	        };*/
+/*
+			
+	        var original = ui.originalPosition;
+	        var diffX = event.clientX - click.x;
+	        var diffY = event.clientY - click.y;
+	        ui.position = {
+	        	left:click.ui.oldLeft + diffX,
+	        	top:click.ui.oldTop + diffY
+	        }*/
+
+	        // jQuery will simply use the same object we alter here
+	/*
+	        ui.position = {
+	            left: ui.offset().left * 1.7,// * zoom,
+	            top:  ui.offset().top * 1.7 //* zoom
+	        };*/
 		
 		//e.stopPropagation()
 		NOTES_makeNote(this);
 
-	}).on("dragstart resizestart",function(e){
+	}).on("resizestart dragstart",function(e,ui){
+	
+		CUSTOM_currentlyMousingOverElementId = e.target.id;
+		//https://stackoverflow.com/questions/1771627/preventing-click-event-with-jquery-drag-and-drop
+		$(e.target).attr("noclick","ignore");
 
+		$(e.target).attr("original-font-size",$(e.target).height())
+		
 		$(e.target).attr("contenteditable","false")
 		.css("-webkit-user-modify","read-only");
 		disableHoverEvents()
 
+
+
 	}).on("dragstop",CUSTOM_DRAPSTOP_LOGIC).on("resize",function(e){
+
 		
+		setTimeout(function(){$(e.target).removeAttr("noclick")},1000);
+
 		NOTES_makeNote(this);
 		OVERLAY_showInstructions(e.target)
-
 	});
 
 
@@ -1418,34 +2002,70 @@ function setUpDiv(div){
 	
 
 	if(attr == "T" || attr == "BTN"){
-		$.event.trigger("translateTxt",[div])
+		$.event.trigger("translateTxt",[div]);
 
-		div.css({outline: "0px solid transparent","white-space":"pre-line"});
-
-		div.on("resize",CUSTOM_TXT_RESIZE)
-		.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 		
+	    div.children(".text-detail").on("click",r_makeEditable)
+	    .on("input",
+	    	function(evt){
+
+	    		var me = $(evt.target);
+
+	    		me.focus();
+
+	    		log.debug(`My length is ${me.text().length} height is ${me[0].clientHeight} and outer box width is ${me.parent()[0].clientWidth} and height is ${me.parent()[0].clientHeight}`); 
+	    		
+	    		if( me.width() >= me.parent().width() ){
+
+	    			log.info('Evalutating Break Time')
+  				
+    					if(me.height() >= me.parent().height()){
+    						log.info(`No Room 2 Grow: Reducing Font ${me.parent().css("font-size")}`);
+    						var fontSize = parseFloat(me.parent().css("font-size"));
+    						while(me.height() >= me.parent().height()){
+								me.parent().css({"font-size":--fontSize});
+							}
+    					}
+  	    		} 
+	    		
+	    })
+		//div.css({outline: "2px dashed gold","text-align":"center"});
+
+		div.on("resize",CUSTOM_TXT_RESIZE).addClass("debug-border-style");
+		
+		//.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC).addClass("debug-border-style");
+		//.css("text-align","center");
+		
+		//if(parseInt(div.css("font-size") != 0 )){
+			/*	div.css({
+			height:parseInt(div.css("font-size"))*3.5, 
+			width:parseInt(div.css("font-size")*300)})*/
+		//}
+		
+                      
+
 		
 	}
 
 	if(div.is("[type=LIST]")){
-		log.warn("CUSTOMEVENTS2.js: Triggering list SLIDER_INIT for list " + div.attr("id") + " and alias " + div.attr("alias"))
+		
 		
 		if(div.hasClass("gallery")){
 			div.css("white-space","nowrap");
-			duration = (div.css("transition-duration"))
+			log.warn("CUSTOMEVENTS2.js: Triggering list SLIDER_INIT for list " + div.attr("id") + " and alias " + div.attr("alias"))
+			//duration = (div.css("transition-duration"))
 			
-			duration = parseFloat(duration) == 0 ? "0.6s" : duration;
-			div.css({overflow:"hidden","transition-duration":duration})
+			//duration = parseFloat(duration) == 0 ? "0.6s" : duration;
+			//div.css({overflow:"hidden","transition-duration":duration})
 
-			SLIDER_init(div);
+			//SLIDER_init(div);
 		}
 	
 
 	} 
 
 	
-	if(div.is("[type=IMG],[type=DIV]")){
+	if(div.is("[type=IMG],[type=DIV],[type=AUDIO],[type=CIRCLE],[type=VID],#content")){
 		//$.event.trigger("translateTxt",[div])
 		div.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 	}
@@ -1453,23 +2073,74 @@ function setUpDiv(div){
 
 	log.debug("doing Divs")
 	
-	div.not("body,[type=MENU]").on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
-					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
-					.on("click",writeTabs)
+	div.not("body,[type=MENU]").unbind("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC);
 					
+	if(div.is(".navigation-list")){
+		div.on("click",function(e){
+
+			if(div.children(".dropped-object").length > 0){
+				return;
+			}
+
+			div.text("")
+			div.attr("previous-style",`'background-color':'${div.css("background-color")}',color:'${div.css("color")}'`)
+			div.css({"background-color":"white",color:"black"}).attr("contenteditable",true);
+			div.focus();
+			div.on("mouseleave",function(){
+				//div.unbind("mouseleave");
+				div.css(`${div.attr("previous-style")}`);
+				div.removeAttr("contenteditable");
+				var options = div.text().split(",");
+				log.debug(`OPTIONS=${options.length}`)
+				if(div.children(".dropped-object").length == 0){
+				if(options.length > 0){
+					div.text("")
+					options.forEach(function(token){
+						var item = configuredTool(whichTool("T"));
+	                    item.html(token);
+	                    div.append(item);
+	                    item.addClass("menutext")
+	                    item.css({height:"30px", "margin-top":"30px","font-family":"inherit","font-weight":"inherit","text-transform":"inherit",color:"inherit",display:"inline-block","position":"relative","text-align":"center"})
+	                    //item.attr("onhover","background-color:navy;color:white")
+	                  
+	                    setUpDiv(item);
+
+	                    CUSTOM_PXTO_VIEWPORT(item,item.offset().left,item.offset().top)
+					})
+					
+				}
+			}
+			})
+		
+
+	})		
+	}		
 
 	//Setup Menu Divs
 	if(div.is("[type=T]")){
-		setUpMenuItems(div);	
+
+		setUpMenuItems(div);
+		/*
+		div.off("click")
+			.on("click",function(){
+						$(this).attr("contenteditable","true"); 
+						$(document).unbind("keydown",CUSTOM_KEYDOWN_LOGIC);
+						$(this).focus();
+			}).off("mouseleave").on("mouseleave",function(){
+						$(this).attr("contenteditable","false"); 
+						$(document).bind("keydown",CUSTOM_KEYDOWN_LOGIC)
+						//Do some parsing logic for fontawesome txt
+			})	*/
 	} 
 
 	
-
+	/*
 	if(div.is("[id=closeB]")){
 		div.on("click",function(){
 			closeMenu();
 		})
-	}
+	}*/
 
 	setUpAnchors(div)
 	//div.not("#drawSpace").not("body").on("mouseover",CUSTOM_MOUSEENTER_LOGIC);
@@ -1480,7 +2151,7 @@ function setUpDiv(div){
 				log.debug("CUSTOMEVENTS.js:ServerContent is " + serverContent)
 				if(serverContent){
 					log.debug("CUSTOMEVENTS.js:ServerContent is below for alias " + div.attr("alias"))
-					console.log(serverContent)
+					log.debug(serverContent)
 
 					for(responseKey in serverContent){
 						log.debug("CUSTOMEVENTS.js:ServerContent Looking for alias with key " + responseKey)
@@ -1513,9 +2184,42 @@ function setUpDiv(div){
 
 	//fix bug in jquery which forces position to relative on draggable() init
 	div.css("position",oldPos);
+
+	if(div.is("[type=FIELD]")){
+		setUpGroupContainer(div,true);
+	}
+
+	if(div.is("[type=SVG]")){
+		div.find("svg").on("mouseenter", function(evt){
+			$(evt.target).parent("[type=SVG]").mouseenter();
+		})
+
+		//r_writePoints(div);
+	}
+
+	//Do setups in ready.js
+	div.not("[type=T]").on("click",r_openNote)
+	
+
+	return div;
 	
 }
 
+
+
+function CUSTOMEVENTS_placeCaretAtEnd(el){
+
+    
+    if (typeof el.selectionStart == "number") {
+        el.selectionStart = el.selectionEnd = el.value.length;
+    } else if (typeof el.createTextRange != "undefined") {
+        el.focus();
+        var range = el.createTextRange();
+        range.collapse(false);
+        range.select();
+    }
+        
+}
 
 
 
@@ -1529,7 +2233,7 @@ function parseStyleClassFromString(theStr){
 		theOldHo = oldHos[i];
 		lilOldHos = theOldHo.split(":")
 		log.debug("CUSTOMEVENTS.js:Do I have old hos!")
-		console.log(lilOldHos);
+		log.debug(lilOldHos);
 		if(lilOldHos.length > 1){
 			
 			theOldLabel = lilOldHos[0];
@@ -1546,11 +2250,11 @@ function parseStyleClassFromString(theStr){
 
 function initialize(){
 
-	if(LOGIC_TEMPLATE_MODE){
+	/*if(LOGIC_TEMPLATE_MODE){
 
 	$(":text,div,span,img").on("mouseenter",function(e){
 		//$(this).parents().trigger("mouseleave");
-		console.log("Template MODE Entering " + $(e.target).attr("id"))
+		log.debug("Template MODE Entering " + $(e.target).attr("id"))
 			
 			//NOTES_delayShowingNote($(this))
 		}).on("mouseleave",function(e){
@@ -1576,7 +2280,7 @@ function initialize(){
 				var img = configuredTool(tmp)
 				img.addClass("from-template")
 				style = CONVERT_STYLE_TO_CLASS_OBJECT($(this))
-				console.log("SRC IS " + $(this).attr("src"))
+				log.debug("SRC IS " + $(this).attr("src"))
 				$(this).replaceWith(img.css(style))
 
 				theImgSrc = $(this).prop("tagName") == "IMG" ? "url("+$(this).attr("src") + ")" : $(this).css("background-image")
@@ -1615,11 +2319,13 @@ function initialize(){
 			}
 
 		})	 
-	}
+	}*/
 	
 
 
  	$("body").attr("id","body").addClass("body").addClass("hover");
+
+ 	/*
 
  	$("#smalldialog").dialog({
  		autoOpen: false, 
@@ -1650,6 +2356,23 @@ function initialize(){
 			Cancel: function(){
 				log.debug("CUSTOMEVENTS.js:Ignoring " + $("#jsdialog").find("textarea").val());
 				$(this).dialog("close");
+			},
+			"Delete Function": function(){
+				
+			
+				//disable all events before adding new user events	
+
+				$(this).data().theClickedElement.off("click")
+				//test and add new user events
+				
+
+				//Now that we are sure code is good.  Write it to storage
+				saveJs($(this).data().theClickedElement,"");
+
+				$(this).dialog("close");
+
+				//Always Renable Drag events
+				initDraggableObject($(this).data().theClickedElement);
 			},
 			"Save Function": function(){
 				var error = false;
@@ -1724,14 +2447,14 @@ function initialize(){
 					$(this).data().theClickedElement.removeAttr("hasjs")	
 				}
 
-				theId = $(this).data().theClickedElement.attr("id")
+				
 				//Always Renable Drag events
 				initDraggableObject($(this).data().theClickedElement);
 			}
 		}
 
  	});
-
+	*/
 
    	
    	//Reinitialize resizable that may have been saved during autosave or manual save process
@@ -1749,7 +2472,7 @@ function initialize(){
 
 	//$('.ui-draggable').draggable({snap:false});
 	
-	$("#drawSpace").droppable(DROPPER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+	$("#drawSpace").droppable(DROPPER_LOGIC).off("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).find(".hotspot").css({height:0,width:0}).hide()
 	
 	
@@ -1774,8 +2497,8 @@ function initialize(){
 	//Determine which popup to call based on Key User Pressed
 	//Note: Unbind called while user is entering values on dialog so that we don't
 	//interfere with Shift or Ctrl keys needed while in JS view
-	$(document).off("keydown",CUSTOM_KEYDOWN_LOGIC);
-   	$(document).on("keydown",CUSTOM_KEYDOWN_LOGIC)
+	
+   	$(document).off("keydown").on("keydown",CUSTOM_KEYDOWN_LOGIC)
 
 
    	//setupGhosts
@@ -1784,6 +2507,14 @@ function initialize(){
    		GHOST_init(ghost);
    	})
 
+   	//layer tool menu
+
+   
+
+   	//alert(`Length of layer-menu is ${$("#layer-menu").length}`);
+   	//import layers.js
+   	
+   	reLoadLayers();
 
 
    	log.debug("CUSTOMEVENTS.js:all done")
@@ -1795,7 +2526,7 @@ function recursiveCpy(obj, plusButtonPushed){
 
 	obj.removeClass("submenu")
 
-	log.trace("Copying")
+	log.debug(`Copying id is ${obj.attr("id")}` );
 	//temporarily disable dragging on parent
 	//obj.draggable("destroy").find(".ui-droppable").draggable("destroy")
 
@@ -1818,9 +2549,12 @@ function recursiveCpy(obj, plusButtonPushed){
 
 	clone.removeAttr("hasjs")
 
+	log.debug(`Extending original copy ${obj.attr("id")}`)
 	clone.attr("extends",obj.attr("id"))
 
 	clone.attr("id","ELEM_"+ new Date().getTime())
+
+	log.debug(`Wrote new ID during copy ${clone.attr("id")}`)
 
 	log.trace(clone)
 	
@@ -1830,13 +2564,12 @@ function recursiveCpy(obj, plusButtonPushed){
 
    	clone.removeClass(obj.attr("id")) 
 
-   	clone.off();
-
+   	clone.unbind();
 	
 	//var goodChildren = $(obj).children(".dropped-object"); 
 
    	log.trace("CUSTOMEVENTS2.js : bad children after copy");
-   //	console.log($(obj).children(".dropped-object")); 
+   //	log.debug($(obj).children(".dropped-object")); 
 
    	$(obj).find(".dropped-object").each(function(idx,elem){
    		
@@ -1860,23 +2593,19 @@ function recursiveCpy(obj, plusButtonPushed){
    		cpy.attr("id","ELEM_" + new Date().getTime()+idx);
    		//trigger write to file
    		//cpy.trigger("resizestop")
-   		//CUSTOM_PXTO_VIEWPORT($(cpy),cpy.position().left,cpy.position().top)
+   		//CUSTOM_PXTO_VIEWPORT($(cpy),cpy[0].offsetLeft,cpy[0].offsetTop)
    		log.debug("CUSTOMEVENTS.js:Copy position is " + cpy.css("position"))
    		//cpy.css("position",cpy.css("position"))
    		//cpy.css("position")
    		cpy.removeClass(id)
 
-   		cpy.off();
+   		cpy.unbind();
+
+   		cpy.removeData();
    		
    		setUpDiv(cpy);
    	
    	})
-
-  
-   	
-   
-
-	
 
    	//then parent
    	setUpDiv($(clone))
@@ -1887,8 +2616,10 @@ function recursiveCpy(obj, plusButtonPushed){
 	if(obj.parent().is("[type=LIST]") && plusButtonPushed){
    	 //obj.parent().append(clone)
    	 clone.insertAfter(obj);
-   	 CUSTOM_PXTO_VIEWPORT($(clone),clone.position().left,clone.position().top)
+   	 CUSTOM_PXTO_VIEWPORT($(clone),clone[0].offsetLeft,clone[0].offsetTop)
 	}
+
+
 
    	//clone.css({top:obj.offset().top + 10, left:obj.offset().left+10})
 
@@ -1904,7 +2635,7 @@ function recursiveCpy(obj, plusButtonPushed){
 
 var hiddenItems = null;
 
-DROPPER_LOGIC = {
+var DROPPER_LOGIC = {
 
 		helper:"clone",
 
@@ -1912,8 +2643,43 @@ DROPPER_LOGIC = {
 		
         drop: function(event, ui) {
 
+        	$(".highlight").remove();
+
+        	$("*").removeClass('over')
+
+        	var fromSideNav = false;
+
+        	if($(ui.draggable).hasClass("nav-link")){
+        		log.debug(`User is dragging on of the nav items, ignore because dropTool() will place it for us`);
+        		var tmpType = ui.draggable.attr('type');
+
+                      if(tmpType == "PICTURE"){
+                        tmpType = "IMG";
+                      } 
+
+                      log.debug(`Tmp Type is ${tmpType}`);
+                      var tTool = whichTool(tmpType);
+
+                      log.debug(`UI offset ${ui.draggable.offset().left}`)
+                      tTool = configuredTool(tTool);
+
+                      if(tmpType == "T"){
+                      	tTool.css("text-align","center");
+                      }
+
+                      ui.draggable = tTool;
+                      fromSideNav = true;
+        	}
+
         	//remove class which highlights element when hovering over it in inspect mode
         	$(ui.draggable).removeClass("submenu")
+
+        	if($(ui.draggable).attr("id") == "layer-menu"){
+
+				log.debug("Menu shouldn't be here...returning");
+				return;
+
+			}
 
         	//event.preventDefault();
         	log.trace("Showing hiddenItems")
@@ -1931,11 +2697,11 @@ DROPPER_LOGIC = {
 
         		clone = recursiveCpy(event.target);
         		
-        		//clone.css({left:$(event.target).position().left -	10,top:$(event.target).position().top -10})
+        		//clone.css({left:$(event.target)[0].offsetLeft -	10,top:$(event.target)[0].offsetTop -10})
         		//$('body').append(clone);
         		
-				$(clone).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
-							.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
+				$(clone).unbind("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+							.unbind("mouseleave",CUSTOM_MOUSELEAVE_LOGIC).on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC)
 							
 
         		log.debug("CUSTOMEVENTS.js:Copy")
@@ -1990,13 +2756,46 @@ DROPPER_LOGIC = {
 
 		        	var isBTNCntrl = false;
 		        	
-
 		        	theElem = $(ui.draggable);
+		        	
 		        	theTarget = $(event.target);
 
-		        
+                    //Edge Case: sections can only be inserted over sections not child content in another section
+                    if($(ui.draggable).hasClass("section") && !theTarget.hasClass("section") && theTarget.parents(".section").length > 0){
+                    	theTarget = theTarget.parents(".section").first();
+                    }
 
-		      
+                    //Now that we caught this edge case, allow the general section logic to continue
+
+
+		        	if(theTarget.hasClass("section") && $(ui.draggable).hasClass("section") ) {
+		        			log.debug('swapping sections ' + theTarget.attr('id'))
+							$(ui.draggable).insertBefore(theTarget);
+
+							//CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable)[0].offsetLeft,$(ui.draggable)[0].offsetTop)
+							return;
+					
+					} else
+					
+		        	
+		        	if($("#greybox").is(":visible")){
+
+		        		if(theTarget.parents("[data-popup-for]").length == 0){
+		        			
+                            if(theTarget == $("[data-popup-for]").first()){
+                            	event.target = theTarget;
+                               // txt = $(aTool.children().first());
+                                //aTool.draggable( "option", "scope", "dialog")
+                                //aTool.droppable( "option", "greedy", true );
+
+                                //aTool.css({height:txt.height(),"width":txt.width()*1.25, "background-color":"transparent"});
+                            }
+                        }
+                        return;
+                     }  else
+
+                    
+		   
 
 		        	if(theElem.is("[alias^=cntrl]")){
 		        		
@@ -2009,28 +2808,21 @@ DROPPER_LOGIC = {
 			        		theElem.css({top:0,left:theTarget.width()-theElem.width()});*/
 			        		SLIDER_setUpButton(theElem,theTarget);
 
-			        		CUSTOM_PXTO_VIEWPORT($(theElem),$(theElem).position().left,$(theElem).position().top)
+			        		CUSTOM_PXTO_VIEWPORT($(theElem),$(theElem)[0].offsetLeft,$(theElem)[0].offsetTop)
 			        		return;
 
 		        		}
 
 		        	} else
 
-		        	
-		        	if($(event.target).parent().is("[type=LIST]") && $(ui.draggable).parent().is("[type=LIST]")){
-		        		 
-							$(ui.draggable).insertBefore($(event.target));
-							CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
-							return;
-					
-					}
+		        
 
 		        	if(isBTNCntrl){
 		        		log.trace("Can't drop button here")
 					
-						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable)[0].offsetLeft,$(ui.draggable)[0].offsetTop)
 						return;
-		        	}
+		        	} else
 					
 					
 					
@@ -2038,33 +2830,39 @@ DROPPER_LOGIC = {
 					if( ( $(event.target).width() * $(event.target).height()) <=  ( $(ui.draggable).width() * $(ui.draggable).height() ) ){
 						log.trace("Exiting Target too small to accept the dropped element " + $(event.target).offset().left)
 						
-						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable)[0].offsetLeft,$(ui.draggable)[0].offsetTop)
 						return;
-					}
+					} 
 
 
 					if($(ui.draggable).is("[type=T]")){
 						$(ui.draggable).css("white-space","pre-line")
 					}
 
+
+
+
 					if($(parent).children(child).length > 0  && $(parent).is("[type=LIST]")){
+						log.debug(`No Need to Add Child to the list again. It is already attached to the list..returning `)
 						return;
 
 					} else if($(parent).children(child).length > 0  )
 	        		{
+
 	        	
-	        			CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+	        			CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable)[0].offsetLeft,$(ui.draggable)[0].offsetTop)
 	     
 	        			return;
 	        		} 
 
 
+	        		log.debug(`Is this ever reached????`)
 
 					/* Not needed since on dragstop event is already active
 	        		if($(parent).children(child).length > 0  )
 	        		{
 	        	
-	        			//CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+	        			//CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable)[0].offsetLeft,$(ui.draggable)[0].offsetTop)
 	     
 	        			return;
 	        		} else {
@@ -2072,7 +2870,7 @@ DROPPER_LOGIC = {
 	        		}
 					*/
 	        		if(LOGIC_TEMPLATE_MODE){
-		        		CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
+		        		CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable)[0].offsetLeft,$(ui.draggable)[0].offsetTop)
 		        		return;
 	        		}
 
@@ -2084,62 +2882,46 @@ DROPPER_LOGIC = {
 
 			        	aTool =  whichTool($(ui.draggable).text());
 			        	
-			        	log.warn("UI draggable offset is ")
-						log.warn($(ui.draggable).offset())
+			        	log.warn(`UI draggable offset is ${ui.draggable.offset().left}`)
+						log.warn(JSON.stringify($(ui.draggable).offset()))
+						log.debug(`a Tool is ${aTool.id}`)
 
 			        	aTool = configuredTool(aTool);
+
+			        	log.debug(`A tool is jquery obj now ${$(aTool).attr('id')}`)
 			        	createdTool = true;
 					}
 
+					
+			if($(ui.draggable).attr("id") == 'layer-menu' || $(ui.draggable).attr("id") == 'header-row'){
 
-					if($("[alias=zMenuContent]").width() > 0 ){
+				log.debug("Leaving here because I shouldn't be here");
+				return;
 
+			} else {
+
+			log.debug(`A tool is ${$(aTool).attr("id")}`);
+
+		}
+
+
+					if($("[alias=zMenuContent]").width() > 0 && $("#zMenu").attr("open") == "open"){
+							
                             dropTool(aTool,{target:$("[alias=zMenuContent]"),clientX:aTool.offset().left,clientY:aTool.offset().top});
 
                      }else {
-                           dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
+                     	
+                     	if(fromSideNav){
+                     		 dropTool(aTool,{target:event.target,clientX:ui.offset.left,clientY:ui.offset.top});
+                     	} else {
+                     		 dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
+                     	}
+
+                          
                      }
 
 
-					//dropTool Call
-					//dropTool(aTool,{target:event.target,clientX:event.clientX,clientY:event.clientY});
-					//dropTool(aTool,{target:event.target,clientX:aTool.offset().left,clientY:aTool.offset().top});
-					/*
-		        	log.debug("CUSTOMEVENTS.js:A tool is ")
-		        	log(aTool)
 
-		        	
-		        	$(aTool).css({position:"absolute"})
-
-						        
-
-					log(`Value of position is ${$(aTool).css('position')}`);
-				
-					log.debug("CUSTOMEVENTS.js:Offset before append is " + Math.abs($(event.target).offset().top - $(aTool).offset().top))
-
-					//var relativeAppendTop = createdTool ? event.clientY : Math.abs($(event.target).offset().top - $(aTool).offset().top);	
-					$(event.target).append(aTool);	
-
-					yOffset = event.clientY + window.scrollY;
-					xOffset = event.clientX;
-					aTool.offset({left:xOffset,top:yOffset})
-					$(event.target).append(aTool);	
-		        	aTool = CUSTOM_PXTO_VIEWPORT(aTool,aTool.position().left,aTool.position().top)
-		        	$(aTool).addClass("debug-border-style");
-		      		$(aTool).addClass("dropped-object");
-
-		        	log.debug("CUSTOMEVENTS.js:Handle length is " + aTool.children(".ui-resizable-handle").length)
-		        	
-        	
-
-		        	aTool.resizable({disabled:false}).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
-		        	try {
-		        		aTool.unbind("click",genericSlide).on("click",genericSlide);
-		        	}catch(e){
-		        		log.debug("CUSTOMEVENTS.js:generic slide is disabled")
-		        	}
-					*/
-        	
         	}
         
         	log.trace("Showing hiddenItems")
@@ -2155,15 +2937,20 @@ DROPPER_LOGIC = {
         },
        
         over: function(event,ui){
-        
+        	//if dialog not showing
+        	if($("#greybox").length == 0){
+        		$(this).addClass('over');
+        	}
         	$(this).addClass('over');
-        	
+
+        	r_hoverOverElement(event);
 
         
         	//|| parseInt($(this).css("left")) < parseInt($(this).parent().css("left")) )
         },
         out : function(event,ui){
         	$(this).removeClass('over')
+        	$(".highlight").remove();
         	$(this).show();
         	$(hiddenItems).show();
         	
@@ -2173,12 +2960,15 @@ DROPPER_LOGIC = {
 function dropTool(aTool,dropInfo){
 
 		var target = dropInfo.target;
-		var yOffset = dropInfo.clientY + window.scrollY;
+		var yOffset = dropInfo.clientY;
 		var xOffset = dropInfo.clientX;
 
+		vid = $(target).attr("id");
+
+		log.debug(`ID for target is ${vid}`);
 
 		log.debug("CUSTOMEVENTS.js:A tool is ")
-		        	log(aTool)
+		        	log.trace((aTool.attr('id')));
 
 		        	
 		        	$(aTool).css({position:"absolute"})
@@ -2196,7 +2986,10 @@ function dropTool(aTool,dropInfo){
 					//log.warn("target is ")
 					//log.warn(target)
 
+					log.debug(` X and Y offset is ${xOffset} and ${yOffset}`)
+
 					$(target).append(aTool);
+					
 					aTool.offset({left:xOffset,top:yOffset})
 					
 
@@ -2204,20 +2997,36 @@ function dropTool(aTool,dropInfo){
 					//$(target).append(aTool);
 
 
-		        	aTool = CUSTOM_PXTO_VIEWPORT(aTool,aTool.position().left,aTool.position().top)
+		        	aTool = CUSTOM_PXTO_VIEWPORT(aTool,aTool[0].offsetLeft,aTool[0].offsetTop)
 		        	$(aTool).addClass("debug-border-style");
 		      		$(aTool).addClass("dropped-object");
 
-		        	log.info("CUSTOMEVENTS2.js: Handle length is " + aTool.children(".ui-resizable-handle").length)
+		        	log.info("CUSTOMEVENTS2.jsppp: Handle length is " + aTool.children(".ui-resizable-handle").length)
 		        	
-        	
+		        	log.debug("GREGZ.js: Handle length is " + aTool.children(".ui-resizable-handle").length)
 
-		        //if(aTool.children(".ui-resizable-handle").length == 0){
+
 		        	aTool.resizable({disabled:false}).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
+
 		        	if(aTool.is("[type=VID]")){
 		        		aTool.find("video")[0].play()
 		        	}
-		        	
+
+		        	if(aTool.is("[type=SVG]")){
+		        		r_writePoints({target:aTool, solo:true})
+		        	}
+
+				//Update Layers Tool
+				//import layers_menu.js
+
+				if(!aTool.is(".coordinate")){
+					aTool
+					updateLayersTool($(aTool).attr("id"),target.id);
+				}
+
+
+				
+
 }
 
 

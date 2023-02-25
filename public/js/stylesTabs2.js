@@ -580,85 +580,7 @@ function writeTabs(currentCtx,forceWrite){
 		DRAW_SPACE_advancedShowing ? $(".settings-icon").addClass("fa-angle-double-down").removeClass("fa-angle-double-up") : $(".settings-icon").addClass("fa-angle-double-up").removeClass("fa-angle-double-down")
 
 
-		$(".rocket-settings").on("click",function(){
-
-			if(DRAW_SPACE_advancedShowing){
-				
-				DRAW_SPACE_hideSettings();
-				$(".settings-icon").addClass("fa-angle-double-up").removeClass("fa-angle-double-down")
-				DRAW_SPACE_advancedShowing = false;
-				SAVE_okToSave = false;
-			} else{
-				
-				DRAW_SPACE_showSettings();
-				$(".settings-icon").addClass("fa-angle-double-down").removeClass("fa-angle-double-up")
-				DRAW_SPACE_advancedShowing = true;
-				SAVE_okToSave = true;
-			}
-
-		})
-
-
-		$(".rocket-save").on('click',function(){
-
-			if(website == "default"){
-				//text = prompt("Please enter a name for your new site")
-				 MAKE_PROMPT_FOR_INPUT_BOX_for({promptMsg:"What is new site name?"},function(text){
-
-						if(text && text.trim().length > 0){
-							$('html').attr("x-site-name",text);
-							$('title').text(text);
-							LOGIC_redirectNeeded = true;
-							SAVEJS_goInactive()
-						}
-				 })
-				 
-			} else {
-				log.debug("Pressed Key for saving ")
-				SAVE_okToSave = true;
-				SAVEJS_goInactive()
-			}
-		});
 		
-
-		$("#anchorsAway").on("click",function(){
-			anchorsAway = $(this).is(":checked") ? true: false;
-			if(anchorsAway){
-				removeEditMode();
-			} else{
-				addEditMode();
-			}
-		})
-
-		$(".cssToggle").on("click",function(){
-			$(".extendedTabs").toggle();
-		})
-
-		$("#group-resize").on("click",function(){
-			groupResizeEnabled = $(this).is(":checked") ? true: false;
-		})
-
-		$(".changesToggle").on("click",function(){
-			copiesModified = $(this).is(":checked") ? true: false;
-		})
-
-		$(".showOverlays").on("click",function(){
-			showOverlays = OVERLAY_areOverlaysEnabled();
-			if(showOverlays){
-				OVERLAY_enableOverlays();
-			} else {
-				OVERLAY_disableOverlays();
-			}
-		})
-
-		$("#disableHoverEvents").on("click",function(){
-			disableEventsFlag = $(this).is(":checked") ? true: false;
-			if(disableEventsFlag){
-				disableHoverEvents();
-			} else {
-				enableHoverEvents();
-			}
-		})
 		
 		
 		//reset buttons in case page reloaded
@@ -712,6 +634,8 @@ function writeTabs(currentCtx,forceWrite){
 
 
 }
+
+//export {STYLESTABS_forceRewrite as forceRewrite}
 
 //<div id="element-selector" class="fa fa-save" style="display:inline-block; height:20px;width:30px;font-size:25px; border-right:1px solid black"></div><div id="group-resize" class="fa fa-object-group" style="display:inline-block; height:20px;width:30px;font-size:25px; border-right:1px solid black"></div>
 

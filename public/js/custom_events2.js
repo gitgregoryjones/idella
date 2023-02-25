@@ -49,11 +49,14 @@ function CUSTOM_showDebug(){
 
 }
 
-function CUSTOM_incrementZIndex(){
+function CUSTOM_incrementZIndex(element){
 
 	var globI = 0;
 
-	$(".dropped-object").not("[alias^=cntrl],[alias^=header],[alias^=notification],[alias^=body],.section,#layer-menu").each(function(idx,obj){
+	var node = element == undefined ? $(".dropped-object") : $(element).find(".dropped-object");
+
+
+	node.not("[alias^=cntrl],[alias^=header],[alias^=notification],[alias^=body],.section,#layer-menu").each(function(idx,obj){
 
 		obj = $(obj);
 		//
@@ -72,7 +75,20 @@ function CUSTOM_incrementZIndex(){
 
 CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event){
 
-	log.trace("Pressed Key " + event.which)
+
+	
+
+	log.trace("Error Pressed Key " + event.which)
+
+
+	if(event.which == 27 && $("#workspace").length == 0){
+			//defined in ready.js
+			navPreview();
+			//$(document).off("keydown");
+			//DRAW_SPACE_addWorkSpaceToBody()
+
+	}
+
 
 	if(userHoveringOverNote){
 		log.debug("Ignoring user actions because hovering over note field")
@@ -188,13 +204,14 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event){
 		//Shift-R toggles draft mode
 		*/
 	} else if(key == 82 && event.shiftKey){
-		NOTES_delete();
-		OVERLAY_deleteInstructions();
+		
 		//$("#id_toolset").find(".mastertools").find("img").click();
+		navPreview();
+		/*
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
 		$("[data-action=preview]").click();
-		$(document).click();
+		$(document).click();*/
 
 	} else if(key == 69 && event.shiftKey){
 	
@@ -304,11 +321,11 @@ function setUpGroupContainer(aTool,rebuild){
     //aTool.css({"background-image":'url("http://www.orserumsik.se/webb/wp-content/themes/shoestrap-3/assets/img/patterns/rough_diagonal.png")',"background-size":"auto","font-weight":"600","font-family":"GT America, Helvetica Neue, Helvetica, Arial, sans-serif", "padding":"20px"})
     //aTool.css({"background-color":"rgb(255, 255, 0,.2)","font-weight":"600","font-family":"GT America, Helvetica Neue, Helvetica, Arial, sans-serif", "padding":"20px"})
     
-    //aTool.find("[id*=-control]").css({width:aTool.find("[type]").width() + parseInt(aTool.css("padding-top"))})
-    //aTool.find("[type]").css({width:aTool.width() + parseInt(aTool.css("padding-top"))})
-    var theWidth =  Math.max.apply(null,$.map(aTool.find("[class*=-control],[type]"),function(it,i){return $(it).width()}))
+    //aTool.find("[id*=-control]").css({width:aTool.find("[type]").outerWidth() + parseInt(aTool.css("padding-top"))})
+    //aTool.find("[type]").css({width:aTool.outerWidth() + parseInt(aTool.css("padding-top"))})
+    var theWidth =  Math.max.apply(null,$.map(aTool.find("[class*=-control],[type]"),function(it,i){return $(it).outerWidth()}))
     log.debug(`The calc width is ${theWidth} for id ${aTool.find("[class*=-control]").attr("id")}`)
-    //alert(aTool.find("[type]").width())
+    //alert(aTool.find("[type]").outerWidth())
    	aTool.find("[class*=-control]").css({width:theWidth});
    	aTool.css({width:theWidth});
 
@@ -351,7 +368,7 @@ function setUpGroupContainer(aTool,rebuild){
     //trigger CUSTOM_ON_RESIZE_GROUP_CONTAINER
 
     isGroupContainer.trigger("resizestop",[{element:isGroupContainer,
-        width:isGroupContainer.height(),width:isGroupContainer.width()}])
+        width:isGroupContainer.height(),width:isGroupContainer.outerWidth()}])
 }
 
 CUSTOM_ON_RESIZESTOP_GROUP_CONTAINER = function(event,u){
@@ -421,9 +438,9 @@ CUSTOM_ON_RESIZE_FIELD_CONTAINER = function(evnt,ui){
 
 	var inputField = container.find("[type]");
 
-	inputField.css({width:container.width(), height:container.height()})
+	inputField.css({width:container.outerWidth(), height:container.height()})
 
-	var zMaxWidth = Math.max.apply(null,$.map(container.parent(".group-container").find(".dropped-object"),function(it,i){return $(it).width()}))
+	var zMaxWidth = Math.max.apply(null,$.map(container.parent(".group-container").find(".dropped-object"),function(it,i){return $(it).outerWidth()}))
 
 	var zParent = container.parent(".group-container");
 
@@ -438,7 +455,7 @@ CUSTOM_ON_RESIZE_FIELD_CONTAINER = function(evnt,ui){
 	zParent.css({width:zMaxWidth,height:totalHeight})
 
 	if(container.is("[class*=-control]")){
-		container.find("[type]").not("select,option").css({"font-size":container.height() *.5 + "px", height:container.height(), width:container.width()})
+		container.find("[type]").not("select,option").css({"font-size":container.height() *.5 + "px", height:container.height(), width:container.outerWidth()})
 	}
 
 }
@@ -480,6 +497,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	//Make new Lock for this element
 	event.stopPropagation();
 
+	
+
 
 
 	if($(event.target).hasClass("ui-resizable-handle")){
@@ -509,6 +528,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 
 	if(DRAW_SPACE_isEditing() || !$(event.target).hasClass("dropped-object")){
 
+
+
 		event.stopPropagation()
 
 		return;
@@ -535,7 +556,7 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		log.info("will not highlight element user hovers over because master tool edit mode if off ")
 		log.info("theElem is ")
 		log.info(theElem)
-		return;
+		//return;
 	}
 
 	//$("*").removeClass("submenu")
@@ -613,6 +634,8 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 		$(event.target).parents(".dropped-object:visible").first().mouseenter();
 		return;
 	}
+
+
 }
 
 function addPlusButton(elem){
@@ -646,7 +669,7 @@ function addPlusButton(elem){
 				"background-color":"silver","margin":"10px","padding":"10px"
 				,"color":"white","z-index":30000})
 
-		plus.css({left:$(elem).width() - plus.width()*2.5})
+		plus.css({left:$(elem).outerWidth() - plus.outerWidth()*2.5})
 
 	}
 
@@ -672,10 +695,9 @@ function addPlusButton(elem){
 
 CUSTOM_MOUSELEAVE_LOGIC = function(event){
 
-	event.stopPropagation();
+	//event.stopPropagation();
 
 	OVERLAY_deleteInstructions();
-
 
 
 	log.debug("Leaving LOGIC ")
@@ -688,7 +710,16 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 	} else {
 		$("#"+event.target.id).removeClass("submenu")
 
-		$(event.target).parent(".dropped-object:visible").mouseenter();
+		//If just a regular element, leave and trigger the parent mouse enter event.
+		
+		if($(event.target).parents("[type=OVERLAY]") == 0){
+			//$(event.target).parent().mouseleave();
+			//do nothing
+			//$(event.target).parent(".dropped-object:visible").mouseenter();
+		} else{
+			//$(event.target).parent(".dropped-object:visible").mouseenter();
+		}
+		
 	}
 
 }
@@ -872,16 +903,16 @@ CUSTOM_TXT_RESIZE = function(event,ui){
 		var fontSize = parseFloat(ui.element.css("font-size"));
 
 		
-		if(ui.element.children(".text-detail").width() > ui.element.width() + 1){
+		if(ui.element.children(".text-detail").outerWidth() > ui.element.outerWidth() + 1){
 
-			while(ui.element.children(".text-detail").width() > ui.element.width() + 1){
+			while(ui.element.children(".text-detail").outerWidth() > ui.element.outerWidth() + 1){
 				ui.element.css({"font-size":--fontSize});
 			}
 
 			//ui.element.children(".text-detail").css({height:"unset"})
 		} else {
 
-			while(ui.element.children(".text-detail").width() < ui.element.width() + 1){
+			while(ui.element.children(".text-detail").outerWidth() < ui.element.outerWidth() + 1){
 				ui.element.css({"font-size":++fontSize});
 			}
 
@@ -918,8 +949,8 @@ CUSTOM_ICON_RESIZE = function(event,ui){
 }
 
 function figure(elem){
-	log.trace($(elem).width() + " for id " + $(elem).attr("id"))
-	return $(elem).width();
+	log.trace($(elem).outerWidth() + " for id " + $(elem).attr("id"))
+	return $(elem).outerWidth();
 }
 
 
@@ -967,7 +998,7 @@ log.debug($(node).children("[type]").length + " leng")
 
 		if(!child.attr("original-height")) {
 			child.attr("original-height",child.height())
-			child.attr("original-width",child.width())
+			child.attr("original-width",child.outerWidth())
 			child.attr("original-top",child.position().top)
 			child.attr("original-left",child.position().left)
 			child.attr("left-ratio",child.position().left/ui.originalSize.width)
@@ -983,7 +1014,7 @@ log.debug($(node).children("[type]").length + " leng")
 
 		//Save settings before shrinking
 		originalSize = {
-			width:child.width(),
+			width:child.outerWidth(),
 			height:child.height()
 		}
 
@@ -1003,7 +1034,7 @@ log.debug($(node).children("[type]").length + " leng")
 		}
 
 		newSize = {
-			width:child.width(),
+			width:child.outerWidth(),
 			height:child.height()
 		}
 
@@ -1020,21 +1051,21 @@ log.debug($(node).children("[type]").length + " leng")
 
 function onResizeEffectEnded(element){
 	//On Resize Stop...reset ratio of this node in relation to it's parent
-	if($(element).parent("[type]").length > 0){
+	//if($(element).parent("[type]").length > 0){
 		log.debug("I need to resize")
 
 		var parent = $(element).parent("[type]");
 		var node = $(element);
 
 		node.attr("original-height",node.height())
-		node.attr("original-width",node.width())
+		node.attr("original-width",node.outerWidth())
 		node.attr("original-top",node.position().top)
 		node.attr("original-left",node.position().left)
-		node.attr("left-ratio",node.position().left/parent.width())
+		node.attr("left-ratio",node.position().left/parent.outerWidth())
 		node.attr("top-ratio",node.position().top/parent.height())
 		node.attr("original-font-size",node.css("font-size"))
 
-	}
+	//}
 
 	//On Resize Stop...reset ratios of any children
 	$(element).find("[type]").each(function(it,child){
@@ -1043,10 +1074,10 @@ function onResizeEffectEnded(element){
 		var parent = $(element);
 
 		child.attr("original-height",child.height())
-		child.attr("original-width",child.width())
+		child.attr("original-width",child.outerWidth())
 		child.attr("original-top",child.position().top)
 		child.attr("original-left",child.position().left)
-		child.attr("left-ratio",child.position().left/parent.width())
+		child.attr("left-ratio",child.position().left/parent.outerWidth())
 		child.attr("top-ratio",child.position().top/parent.height())
 		child.attr("original-font-size",node.css("font-size"))
 
@@ -1058,9 +1089,9 @@ function onResizeEffectEnded(element){
 CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
 	log.trace("Resizing is stopped " + event.target.id)
 	
-	event.stopPropagation();
+	event.stopPropogation != undefined && event.stopPropagation();
 
-	event.preventDefault();
+	event.preventDefault != undefined && event.preventDefault();
 
 	ui.element.removeClass("submenu");
 
@@ -1599,8 +1630,8 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 		log.debug("CUSTOMEVENTS.js:immediate parent is " + immediateParent.attr("id") + " with offsets " + immediateParent.position().left)
 		log.debug({left:leftPos,top:immediateParent.offset().top});
 		
-		a.css({align:"center",display:"inline-block",left:leftPos,width:immediateParent.outerWidth(),height:immediateParent.outerHeight()
-			,"position":"absolute", top:topPos});				
+		a.css({align:"center",display:"block",left:leftPos,width:"100%",height:"100%"
+			,"ZZZposition":"absolute", top:0});				
 		a.on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
 		a.on("click",writeTabs)
 
@@ -1615,7 +1646,7 @@ function 	createAnchorFor(parent,overwriteOldAnchor){
 			}
 		}
 
-		CUSTOM_PXTO_VIEWPORT($(a),$(a).position().left, a.position().top)
+		//CUSTOM_PXTO_VIEWPORT($(a),$(a).position().left, a.position().top)
 
 	})
 
@@ -1788,9 +1819,23 @@ function setUpDiv(div){
 
 
 	log.debug("Setting up my DIV " + div.attr("id"))
+
+	//Add Overlay attribute to this object if parent already has it.  This is for an edge case where the child of a element that has an Overlay fails
+	//to trigger the display of the Overlay 
+
+
+
+
+	if(div.parent(".dropped-object").attr("overlay")){
+
+		div.attr("overlay",div.parent(".dropped-object").attr("overlay"));
+	}
+
+
 	div.not("[type=OVERLAY]").unbind("mouseenter").on("mouseenter",function(event){
 		
-		if($(this).attr("overlay") && !$(this).children("[type=OVERLAY]").first().is(":visible") ) {
+		
+		if($(this).attr("overlay")  ) {
 			log.error("Entered MOUSE CUSTOM_EVENTS2.js: " + event.target.id)
 			OVERLAY_showOverlay(event.target);
 
@@ -1800,6 +1845,11 @@ function setUpDiv(div){
 		}
 		
 	})
+
+	
+	div.not("body,[type=MENU]").unbind("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
+					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC);
+					
 
 	var oldPos = "relative";
 
@@ -1883,7 +1933,7 @@ function setUpDiv(div){
 
 	    		log.debug(`My length is ${me.text().length} height is ${me[0].clientHeight} and outer box width is ${me.parent()[0].clientWidth} and height is ${me.parent()[0].clientHeight}`); 
 	    		
-	    		if( me.width() >= me.parent().width() ){
+	    		if( me.outerWidth() >= me.parent().outerWidth() ){
 
 	    			log.info('Evalutating Break Time')
   				
@@ -1941,9 +1991,7 @@ function setUpDiv(div){
 
 	log.debug("doing Divs")
 	
-	div.not("body,[type=MENU]").unbind("mouseenter",CUSTOM_MOUSEENTER_LOGIC).on("mouseenter",CUSTOM_MOUSEENTER_LOGIC)
-					.on("mouseleave",CUSTOM_MOUSELEAVE_LOGIC);
-					
+	
 	if(div.is(".navigation-list")){
 		div.on("click",function(e){
 
@@ -2656,7 +2704,7 @@ DROPPER_LOGIC = {
                                 //aTool.draggable( "option", "scope", "dialog")
                                 //aTool.droppable( "option", "greedy", true );
 
-                                //aTool.css({height:txt.height(),"width":txt.width()*1.25, "background-color":"transparent"});
+                                //aTool.css({height:txt.height(),"width":txt.outerWidth()*1.25, "background-color":"transparent"});
                             }
                         }
                         return;
@@ -2673,7 +2721,7 @@ DROPPER_LOGIC = {
 		        		if(theTarget){
 			        		/*
 			        		theTarget.append(theElem);
-			        		theElem.css({top:0,left:theTarget.width()-theElem.width()});*/
+			        		theElem.css({top:0,left:theTarget.outerWidth()-theElem.outerWidth()});*/
 			        		SLIDER_setUpButton(theElem,theTarget);
 
 			        		CUSTOM_PXTO_VIEWPORT($(theElem),$(theElem).position().left,$(theElem).position().top)
@@ -2695,7 +2743,7 @@ DROPPER_LOGIC = {
 					
 					
 					
-					if( ( $(event.target).width() * $(event.target).height()) <=  ( $(ui.draggable).width() * $(ui.draggable).height() ) ){
+					if( ( $(event.target).outerWidth() * $(event.target).height()) <=  ( $(ui.draggable).outerWidth() * $(ui.draggable).height() ) ){
 						log.trace("Exiting Target too small to accept the dropped element " + $(event.target).offset().left)
 						
 						CUSTOM_PXTO_VIEWPORT($(ui.draggable),$(ui.draggable).position().left,$(ui.draggable).position().top)
@@ -2773,7 +2821,7 @@ DROPPER_LOGIC = {
 		}
 
 
-					if($("[alias=zMenuContent]").width() > 0 && $("#zMenu").attr("open") == "open"){
+					if($("[alias=zMenuContent]").outerWidth() > 0 && $("#zMenu").attr("open") == "open"){
 							
                             dropTool(aTool,{target:$("[alias=zMenuContent]"),clientX:aTool.offset().left,clientY:aTool.offset().top});
 

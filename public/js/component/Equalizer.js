@@ -54,16 +54,16 @@ class Equalizer {
 			<!--- Container Left 1 //-->
 			<div style="float: left;">
 				<!-- Volume Up //-->
-				<span class="fa fa-volume-up" style="color: rgb(255, 255, 255); padding-top: 5px; padding-left: 20px; width: 20px; height: 20px;"></span>
+				<span class="fa fa-volume-up" style="color: rgb(255, 255, 255); padding-top: 5px; margin:auto; width: 20px; height: 20px;"></span>
 			</div>
 			<!-- Container 2 //-->
 			<div style="float: left;">
 				<!-- Turtle //-->
-				<img src="/rabbit.png" style="padding-top: 5px; padding-left: 30px; width: 30px; height: 25px;">
+				<img src="/rabbit.png" style="padding-top: 5px; padding-left: 10px; width: 30px; height: 25px;">
 			</div>
 		</div>
 		<!-- Volume Slider //-->
-		<div id="volume-${id}" class="fa fa-bullhorn" style="margin: 20px; color: rgb(0, 0, 0);"></div>
+		<div id="volume-${id}" class="fa fa-bullhorn" style="margin: 5px; color: rgb(0, 0, 0);"></div>
 		<div id="speed-${id}" class="fa fa-battery" style="margin: 0px; color: rgb(0, 0, 0);"></div>
 		
 		<!-- Footer //-->
@@ -105,7 +105,7 @@ class Equalizer {
 		        	//this.volume1To10 = ui.value/10;
 		        }
       		})
-		}).css({margin:20,color:"black"});
+		}).css({margin:"auto",color:"black"});
 
 		$("body").find("[id^=speed]").each((idx,elem)=>{
 				log.debug(`Building Volume for ${$(elem).parentsUntil("[vehicle]").parent().attr("id")}`)
@@ -113,7 +113,7 @@ class Equalizer {
 		        value: speed,
 		        //range: true,
 		        min: 1,
-		        max: 5,
+		        max: 15,
 		        animate: true,
 		        disabled: window.CarWithAudio ? false: true,
 		        orientation: "vertical",
@@ -124,7 +124,7 @@ class Equalizer {
 		        	
 		        }
       	})
-		}).css({margin:20,color:"black"});
+		}).css({margin:"auto",color:"black"});
 		
 	}
 }
