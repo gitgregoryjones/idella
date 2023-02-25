@@ -695,7 +695,7 @@ function addPlusButton(elem){
 
 CUSTOM_MOUSELEAVE_LOGIC = function(event){
 
-	//event.stopPropagation();
+	event.stopPropagation();
 
 	OVERLAY_deleteInstructions();
 
@@ -712,11 +712,54 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 
 		//If just a regular element, leave and trigger the parent mouse enter event.
 		
-		if($(event.target).parents("[type=OVERLAY]") == 0){
+		if($(event.target).parent("[type=OVERLAY]").length == 0){
 			//$(event.target).parent().mouseleave();
 			//do nothing
 			//$(event.target).parent(".dropped-object:visible").mouseenter();
 		} else{
+
+			setTimeout(()=>{
+					var theParent = $(event.target).parent('[type=OVERLAY]');
+				console.log(`We are leaving overlay ${$(event.target).parent('[type=OVERLAY]')[0].id} and X,Y is ${event.pageX}, ${event.pageY} Elem XY ${theParent.offset().left}, ${theParent.offset().top}`)
+				//var theParent = $(event.target).parent('[type=OVERLAY]');
+				console.log(`Comparing eventY + bodyscroll +5 > theParent.outerHeight() + theParent.offset().top ==> ${event.pageY } > ${theParent.offset().top + theParent.outerHeight()} `)
+				console.log(`Comparing eventY + bodyscroll +5 > theParent.outerHeight() + theParent.offset().top ==> ${event.pageY } > ${theParent.offset().top + theParent.outerHeight()} `)
+
+				var mycoords = {pageX : event.pageX, pageY: event.pageY, elemX : theParent.offset().left, elemY: theParent.offset().top,
+							elemWidth: theParent.outerWidth(), elemHeight : theParent.outerHeight()
+
+				}
+
+				console.log(`XY cooords for Overlay ${JSON.stringify(mycoords)}`)
+
+				if(mycoords.pageX < mycoords.elemX)
+				{ 
+					console.log(`Leaving because we exited left`)
+					theParent.mouseleave();
+				
+				}else if(mycoords.pageX > mycoords.elemWidth + mycoords.elemX){
+					console.log(`Leaving because we exited right ${JSON.stringify(mycoords)}`)
+
+					theParent.mouseleave();
+
+				}else if (mycoords.pageY < mycoords.elemY){
+					console.log(`Leaving because we exited Top`)
+					theParent.mouseleave();
+
+				} else if(mycoords.pageY > mycoords.elemY + mycoords.elemHeight){
+					console.log(`Leaving because we exited Bottom`)
+					theParent.mouseleave();
+				}
+
+			},300)
+			
+			/*var theParent = $(event.target).parent('[type=OVERLAY]');
+			console.log(`We are leaving overlay ${$(event.target).parent('[type=OVERLAY]')[0].id} and X,Y is ${event.clientX}, ${event.clientY} Elem XY ${theParent.offset().left}, ${theParent.offset().top}`)
+			//var theParent = $(event.target).parent('[type=OVERLAY]');
+			if(event.clientX < theParent.offset().left || event.clientX > theParent.outerWidth() 
+				|| event.clientY + document.body.scrollTop < theParent[0].offsetTop || event.clientY + document.bodyType.scrollTop > theParent.outerHeight() + document.body.scrollTop){
+				theParent.mouseleave();
+			}*/
 			//$(event.target).parent(".dropped-object:visible").mouseenter();
 		}
 		
@@ -1867,13 +1910,13 @@ function setUpDiv(div){
 
 	div.find(".hotspot").css({height:0,width:0}).hide()
 
-	div.not("#drawSpace,body,.template-layer,#content").resizable({handles:"n,e,s,w,se"}).on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
+	div.not("#drawSpace,body,.template-layer,#content,[type=OVERLAY]").resizable({handles:"n,e,s,w,se"}).on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 		.not("[type=TXT],[type=ICON],[type=BTN]").on("resize",CUSTOM_ON_RESIZE_LOGIC);
 
 
 
 
-	div.not("[alias=notification],[alias=header],#content").draggable().on("drag",function(e){
+	div.not("[alias=notification],[alias=header],#content,[type=OVERLAY]").draggable().on("drag",function(e){
 		
 		//e.stopPropagation()
 		NOTES_makeNote(this);
