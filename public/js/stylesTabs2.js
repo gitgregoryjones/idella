@@ -50,7 +50,7 @@ function writeTabs(currentCtx,forceWrite){
 	styleMeta = CONVERT_STYLE_TO_CLASS_OBJECT(parent,true);
 
 	//defaultTabs = ["slider",commonTabLabel,"misc","font","text","border","background","-webkit"]
-	defaultTabs = [commonTabLabel,"misc","font","text","border","background"]
+	defaultTabs = [commonTabLabel,"font","text","border","background","misc",]
 
 	if(lastTabBeforeSave && defaultTabs.indexOf(lastTabBeforeSave) == -1){
 		defaultTabs[defaultTabs.length-1] = lastTabBeforeSave;
@@ -60,6 +60,16 @@ function writeTabs(currentCtx,forceWrite){
 
 	//log.debug("STYLETABS2.js:Parent is " + JSON.stringify(parent))
 
+	var sortedKeys = Object.keys(styleMeta).sort();
+
+	var sortedObject = {};
+
+	sortedKeys.forEach(function(key){
+
+		sortedObject[key] = styleMeta[key];
+	})
+
+	//styleMeta = sortedObject;
 	//Write all tabs
 	$.each(styleMeta,function(label,value){
 
@@ -131,15 +141,33 @@ function writeTabs(currentCtx,forceWrite){
 		//if not reusing already visible field from last element user inspected
 		if(reWritingEditSpace){
 
-			styleValue = $('<div class="styleValue" id="' + tab + '-id"></div>').append(theParentId).css({"border-bottom":"1px solid yellow","width":"250px"});
+			var IDinput = $(`<input>`,{readonly:true, type:"text", value:`${theParentId}`});
 
-			styleLabel = $('<div class="styleLabel"><div>').append("id");
+			styleValue = $('<div class="styleValue" id="' + tab + '-id"></div>');
+
+			styleValue.append(IDinput).css({"text-decoration":"underline","width":"50%"});
+
+			styleLabel = $('<div class="styleLabel"><div>').append("ID");
 
 			styleRow = $('<div class="styleRow"></div>').css({color:"white","font-weight":"600"});
 
 			styleRow.append(styleLabel).append(styleValue)
 
+
+
 			log.debug("STYLETABS2.js:Appending ID to " + "#t_" + tab);
+
+			$("#t_" + tab).append(styleRow);
+
+			styleLabel = $('<div class="styleLabel"><div>').append("More Styles");
+
+			var searchCSS = $(`<input>`,{class:"tags", type:"search", placeholder:"enter a css label", width:"100%"});
+
+			styleValue = $('<div class="styleValue" id="' + tab + '-id"></div>').append(searchCSS);
+
+			styleRow = $('<div class="styleRow"></div>').css({"font-weight":"600"});
+
+			styleRow.append(styleLabel).append(styleValue)
 
 			$("#t_" + tab).append(styleRow);
 			
@@ -162,10 +190,11 @@ function writeTabs(currentCtx,forceWrite){
 		var common = null;
 
 		if(label.startsWith("common-")){
-			log.debug("Moving this field to common tab for easier access")
+			log.debug(`Moving this ${label} field to common tab for easier access!`)
 			common = label.substring(label.indexOf("-")+1);
 			log.debug("Label is now " + common)
 			label = common;
+			log.debug(`Label is now ${label} after conversion`)
 		}
 
 		//Add Tab Content dynamically equal to style Groups
@@ -189,7 +218,7 @@ function writeTabs(currentCtx,forceWrite){
 
 		var styleLabel = "";
 
-		var sAnchor =  $("<a>",{href:"yahoo.com", title:lowLab}).append(lowLab);
+		var sAnchor =  $("<a>",{href:"cssreference.io", title:lowLab}).append(lowLab);
 
 		sAnchor.on('click',function(e){
 			
@@ -197,7 +226,7 @@ function writeTabs(currentCtx,forceWrite){
 			getHelp(url)
 			e.preventDefault();
 
-		}).css({color:"white","cursor":"help"})
+		}).css({color:"yellow",textEmphasisStyle:"circle-notch","cursor":"help"})
 
 		if(tabLabel != "misc"){
 
@@ -207,6 +236,23 @@ function writeTabs(currentCtx,forceWrite){
 		}
 
 		let theValue = !$(parent).css(label) ? $(parent).attr(label) : $(parent).css(label);
+
+		
+
+		if(label == "onhover"){
+
+			var myCSSLookupKey = `${$(parent).attr("id")}`;
+			console.log(`Hover lookup key for ${myCSSLookupKey} is ${"body.hover ." + myCSSLookupKey + ":hover"}`)
+			var hoverRegex = new RegExp("body.hover ."+  myCSSLookupKey+":hover"+'\\s+\\{[^}]+\\}','img');
+			var matches = [];
+			if((matches = $("#pageStyles").html().match(hoverRegex)) != null){
+				theValue = matches[0].replace("\n}","").substr(matches[0].indexOf("{") + 1, matches[0].lastIndexOf("}")-1).trim();
+				console.log(`Found a match for body.hover .${myCSSLookupKey}:hover ${matches[0]} converted to value ${theValue}`);
+				//I'll figure out the group backreference when I'm bored
+				
+
+			}
+		}
 
 		//f = $("<input>",{value:theValue})
 		
@@ -241,8 +287,109 @@ function writeTabs(currentCtx,forceWrite){
 		}
 
 
+		var nodeName = "<input>";
 
-		var f = $("<input>",{type:theType,id:tabLabel+"-"+label,value:theValue,for:theParentId});
+		var options = {type:theType,id:`${tabLabel}-${label}`,value:theValue,for:theParentId, field:`${theParentId}-${label}`}
+
+		if(label == "api-body"){
+
+			nodeName = "<textarea>";
+
+
+		} else if( label == "api-response"){
+
+			nodeName = "<preview>";
+
+
+		}else if(label =="api-submit"){
+
+			nodeName = "<button>";
+		} else if(label == "color"){
+			options["data-jscolor"] = "{}";
+		}
+
+		var f = $(nodeName,options);
+
+		if(label == "api-submit") {
+
+			f.on("click", function(evt){
+
+				var baseService = "/proxy?service=";
+
+				var myPrefix = `${$(evt.target).attr("for")}`;
+
+				console.log(`Event target is ${myPrefix} `)
+
+				var apiRequestBody = $(`[field=${myPrefix}-api-body]`).val();
+
+				var apiUrl = $(`[field=${myPrefix}-api-API]`).val();
+
+				var apiResponse = $(`[field=${myPrefix}-api-response]`);
+
+				alias = $(`#${myPrefix}`)[0].outerHTML;
+
+				console.log(`Alias is ${alias} and my prefix is #${myPrefix} `);
+
+				//console.log(`Data is ${}`)
+
+				//apiResponse.val(baseService + apiUrl + "\n" + apiRequestBody);
+
+				$.post( `${baseService}${apiUrl}`, { json: JSON.parse(apiRequestBody), alias: alias } ).done((data)=>{
+
+
+
+					apiResponse.val(JSON.stringify(data));
+
+
+
+					$(`#${myPrefix}`).attr("style",$(data.html).attr('style'));	
+
+					var preview = $(unescape(data.html));
+
+					preview.css({width:"100%",height:"100%",display:"block",top:0, left:0,position:'relative'})
+
+					//data.html = `<div style=\"${$(data.html).attr('style')}\"></div>`
+
+					apiResponse.html(preview);
+				});
+
+			}).text("Test Service")
+		}
+
+
+		/*
+		if(label == "api-body" || label == "api-response"){
+
+			
+		
+
+			
+		} else if(label == "api-submit"){
+
+				
+				 f = $("<button>Go</button>",{for:"zoned"}).on('click',function(evt){
+
+					
+						var tId = `#${$(evt.target).attr("for")}`;
+
+						var textVal = $(tId).val();
+
+						console.log(`The Textarea value ${textVal}`)
+				
+				}).text("Test").attr("fortune",$(parent).attr("id"))
+
+
+		//}
+		}*/
+
+		f.val(theValue);
+
+
+		
+
+
+
+		
 
 		//If this is a dialog Box
 		if(label == "dialog-enabled"){
@@ -317,7 +464,13 @@ function writeTabs(currentCtx,forceWrite){
 						
 						$(parent).find("[type]").css("-webkit-text-fill-color",$(evnt.target).val())
 					
-				} else {
+				} if(label == "alias"){
+
+					$(`#layer-menu [text-for=${$(parent).attr('id')}]`).val($(event.target).val().toUpperCase());
+					$(`#header .details`).find("input").val($(event.target).val().toUpperCase());
+					$(parent).attr(label,$(evnt.target).val().toUpperCase())
+
+				}else {
 
 					//if this is a custom css option. ie how we define components, write as attribute
 					if(!$(parent).css(label)){
@@ -489,9 +642,31 @@ function writeTabs(currentCtx,forceWrite){
 		//Don't write id field again. We already manually added to each tab for consistency above
 		if(lowLab != "id" ){
 
+
+
+
 			 if(reWritingEditSpace){
 
 				styleValue = $('<div class="styleValue"></div>').append(f);
+
+
+				if(label == "background-color" || label == "color"){
+					
+					styleValue.prepend($(`<toolcool-color-picker color="" id="color-picker" style="display:inline-block"></toolcool-color-picker>`).off().on("change",function(evt){
+						$(evt.target).siblings("input").val(	evt.detail.rgba)
+						$(evt.target).siblings("input").trigger("input")
+					}));
+				}
+
+
+				if(label == "onhover" || label == "border" || label== "href" || label == "background-image"){
+					styleValue.css("width","350px")
+				}
+
+
+				if(label == "color"){
+					styleLabel.text("Text Color")
+				}
 
 				styleRow.append(styleLabel).append(styleValue)
 
@@ -509,6 +684,18 @@ function writeTabs(currentCtx,forceWrite){
 			} else {
 
 				$("#"+tabLabel + "-" + label).replaceWith(f);
+
+				console.log(`Field is found ${label} ${f.val()}, ${f.text()}`)
+
+				if(label == "background-color" || label == "color"){
+					
+					$("#"+tabLabel + "-" + label).parent().find("[color]").attr("color",f.val());
+					f.css({width:"134px",marginLeft:"1px", textAlign:"center"})
+
+					//$("#"+tabLabel + "-" + label).parent().find("style").remove();
+					//$($("toolcool-color-picker")[0].shadowRoot).find("style").text("tacos!")
+				}
+
 			}
 
 			 if( !$(parent).is("[type=LIST]") ){ 
@@ -535,7 +722,7 @@ function writeTabs(currentCtx,forceWrite){
 		//write non-standard shorthand fields
 		//Write menu
 		$(".tabul").append("<li style='width:10px'>&nbsp;</li>")
-		$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;More Styles : <input type="search" id="tags" value=""></div></li>');
+		
 		$(".tabul").append('<li style="50px; padding:5px" class="mini-responsive-design-tab"><div class="fa fa-desktop"></div></li>');
 		//$(".tabul").append('<li style="50px; padding:5px" class="rocket-save"><div style="display:inline">&nbsp;&nbsp;Save: </div><div class="fa fa-save"></div></li>');
 		//$(".tabul").append('<li style="50px; padding:5px" class="rocket-settings"><div style="display:inline">&nbsp;&nbsp;Options: </div><div class="settings-icon fa fa-angle-double-up"></div></li>');
@@ -564,6 +751,7 @@ function writeTabs(currentCtx,forceWrite){
 			}
 		})
 
+		//$(".tabul").append('<li style="50px; padding:5px" ><div style="display:inline">&nbsp;&nbsp;More Styles : <input type="search" id="tags" value=""></div></li>');
 	}
 
 	//Need to refactor this.  This file should not care about NOTES_timer
@@ -600,7 +788,7 @@ function writeTabs(currentCtx,forceWrite){
 			$("#disableHoverEvents").click();
 		}
 
-		$( "#tags" ).autocomplete({
+		$( ".tags" ).autocomplete({
 	      source: writtenTabs,
 	      appendTo: "tags",
 	      select: function(event,ui){

@@ -7,7 +7,7 @@ onclick
 	.iilayers : showHideMenu;
 	.iisave : SAVEJS_goInactive;
 	.iiexplore : explore;
-	.iireview : navPreview;
+	.iireview : CUSTOM_pressEscapeKey;
 
 
 	//Double Click file
@@ -627,6 +627,8 @@ function r_doFontAwesome(e){
         	textDetail.text("Enter Text")
         }
 
+        textDetail.parent().css({position:"relative"})
+
         CUSTOM_PXTO_VIEWPORT($(e.target).parent())
 
         $(e.target).attr("noclick","true");
@@ -734,24 +736,93 @@ function popupFileChooser(){
 }
 
 //Show or Hide The Floating Menu
-function showHideMenu(){
+function showHideMenu(evt){
 
-	log.debug(`Hiding the Menu`)
+	log.debug(`Hiding/Showing the Menu`)
 	 
-	 $("#layer-menu").toggleClass("layer-hide").css({"z-index":8000,right:"0"});
+	 //$("#layer-menu").toggleClass("layer-hide").css({"z-index":8000,right:"0"});
+
+
+ 	var theHeight = 0;
+
+		
+	if( $("#content").attr("expanded") == "true"){
+		theHeight = 50;
+		//We closed.  Put everything back
+		console.log(`Error Expanded is NOT ${$("#content").attr("expanded")} and we are growing now`);
+
+		shrinkOrGrowParent($("#content"),false);
+		$("#content").attr("expanded",false);
+			$("#layer-menu").fadeOut();
+	} else {
+		theHeight = "100%";
+		//$("#content").css("left","6rem").css({transform:"scale(.70)"}).css("transform-origin","middle")
+		var element = document.getElementById("content");
+		//element.scrollIntoView({behavior: "smooth"})
+		console.log(`Error xpanded is ${$("#content").attr("expanded")} and we are shrinking now`)
+		shrinkOrGrowParent($("#content"),true);
+		$("#layer-menu").fadeIn();
+		$("#content").attr("expanded",true).css("top","6em");;
+
+	}
+
+
+	$("#layer-menu").animate({height:theHeight},300,"swing",function(){
+
+		//$("#layer-menu").css({opacity:1})
+			
+		if($(".close-window").hasClass("fa-minus")){
+			$(".close-window").removeClass("fa-minus").addClass("fa-plus");
+			//$("#layer-menu").fadeOut();
+		} else {
+			$(".close-window").removeClass("fa-plus").addClass("fa-minus");
+			
+		}
+	})
+
+	console.log(`Expanded is did we get here`)
+
+
+	/*
+
+	$("#header").off().on("click",function(evt){
+		var lId = $(this).find(".mini-preview").children("cleaned").first().attr("id")
+		
+		$("#editSpace").hide();
+		$("#header").hide();
+		$("#maincontent").css("overflow-y","auto")
+
+	})*/
+
+
+
 }
 
 //Make big Horizontal view of all the sections
-function explore(){
+function explore(evt){
 	var total = 0;
     $("#content > .section").each(function(index){
 		total += $(this).outerWidth();
 	})
 	$("body,#content").css({width:total+20});
+
+
+
 	CUSTOM_pressEscapeKey(); closeMenu(); PREVIEW_togglePreview(editing);
 }
 
+
+function isEditing(){
+
+	return $("body").hasClass("editing") > 0 ? true : false;
+}
+
+
 function navPreview(){
+
+		console.log(`Error Called Nav Preview`)
+
+		console.log(`Error Calling editing is ${editing} ${window.editing}`)
 
 		NOTES_delete();
 
@@ -761,10 +832,33 @@ function navPreview(){
 		
 		$("body").append(over);
 
-		over.css({width:screen.width,height:screen.height,position:"absolute",top:0,left:0,"background-color":"transparent","z-index":100000})
+		
+		//$("#content").css({filter:"blur(20px)"})
 
-		over.show(1000,function(){
-			CUSTOM_pressEscapeKey(); closeMenu(); PREVIEW_togglePreview(editing);	
+		//$(document).trigger("keydown",[{which:27}]);
+
+		
+		//over.css({width:screen.width,height:screen.height,position:"absolute",top:0,left:0,"background-color":"red","z-index":10000000})
+
+		
+		over.fadeIn(300,function(){
+
+			//CUSTOM_pressEscapeKey(); 
+
+			closeMenu(); 
+
+
+			if(isEditing()) {
+
+				/* Show Preview since user is leaving Editng Screen */
+				PREVIEW_togglePreview(true);	
+			
+			} else {
+				/** Show edit View since user is leaving preview Screen */
+				PREVIEW_togglePreview(false);	
+			}
+			
+
 		})
 
 	
@@ -781,6 +875,8 @@ const regex = /on(\w+)\s+\{([^}]+)\s*}/gm;
 
 
 function javaOnePlace(){
+
+	log.debug = console.log;
 
 	log.debug(`Loading Ready.js ${ready}`);
 
@@ -809,9 +905,9 @@ function javaOnePlace(){
 			        		try {
 			        			log.debug(`Binding it`)
 			        			if(key == "document" || key == "window"){
-			        				$(eval(key)).unbind(val).on(`${m[1]}`,eval(val))
+			        				$(eval(key)).off(val).on(`${m[1]}`,eval(val))
 			        			} else {
-			        				$(`${key}`).unbind(val).on(`${m[1]}`,eval(val))
+			        				$(`${key}`).off(val).on(`${m[1]}`,eval(val))
 			        			}
 			        			
 			        		}catch(ex){

@@ -1,6 +1,6 @@
 
 <!-- Sidebar invisible until first element is placed -->
-    <ul class="notyet babynav navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <ul class="notyet babynav navbar-nav  sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
      
@@ -24,6 +24,12 @@
          <a class="nav-link" href="#" type="T" title="drag text to content area">
           <i class="fas fa-font"></i>
         </a>
+      </li>
+       <li class="nav-item active shapes">
+         <a class="nav-link" href="#" type="CARD" title="drag site to content area">
+          <i class="fa fa-id-card"></i>
+        </a>
+       
       </li>
       <li class="nav-item active shapes">
          <a class="nav-link" href="#" type="PICTURE" title="drag picture to content area">
@@ -50,6 +56,12 @@
           <i class="fa fa-table"></i>
         </a>
       </li>
+        <li class="nav-item active shapes">
+         <a class="nav-link" href="#" type="ZFIELD" title="drag input field to content area">
+          <div style="color:white;font-weight:800;font-size:32px">F</div>
+        </a>
+       
+      </li>
       <li class="nav-item active shapes">
          <a class="nav-link" href="#" type="VID" title="drag video to content area">
           <i class="fas fa-video"></i>
@@ -57,12 +69,12 @@
        
       </li>
       
-      <li style="visibility:hidden" class="nav-item active shapes section-control">
-          <a class="nav-link sectionnav" href="#">
+     
+      
+      <li style="visibility:visible" class="nav-item active shapes section-control">
+          <a class="nav-link sectionnav" type="SECTION" href="#" title="add section">
             <i class="far fa-map fa-rotate-90"></i>
-            <span> > </span>
-            <span>Add</span>
-            <span>Section</span>
+           
           </a>
          
         </li>  
@@ -71,9 +83,7 @@
          <script type="text/javascript">
            $(document).ready(function() {
         
-          //UGH  DO THIS ON THE BACKEND INSTEAD...ADD DEFAULT SECTION ON BACKEND
-           $(".section-control").unbind("on").on("click",(e)=>{ e.preventDefault();$("[data-action=addsection]").click()})
-
+     
           option = $("li.shapes > a ").draggable({
             helper:function( event ) {
               var nClone = $(this).clone(true);

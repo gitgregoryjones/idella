@@ -65,6 +65,7 @@ function PREVIEW_togglePreview(showPreview){
 
 
 
+
 		$(".widget-on,.widget-off").remove();
 
 		$(".coordinate").css({visibility:"hidden"})
@@ -122,6 +123,9 @@ function PREVIEW_togglePreview(showPreview){
 		}catch(e){
 			console.log("ignoring resize for overlays")
 		}
+
+
+
 		
 		DRAW_SPACE_deleteWorkspaceFromBody();
 		$(".ui-icon").hide();
@@ -143,7 +147,7 @@ function PREVIEW_togglePreview(showPreview){
 					deleteElement($(this))
 					$("#bigDipper").hide();
 				})
-			},700)
+			},500)
 		})
 
 		$("#accordionSidebar,#idella-search").hide();
@@ -171,7 +175,7 @@ function PREVIEW_togglePreview(showPreview){
 			})
 		})
 
-		 $("#content").fadeOut("fast")
+		 //$("#content").fadeOut("fast")
 
 		  
 		

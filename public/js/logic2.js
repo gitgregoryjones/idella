@@ -1,3 +1,4 @@
+
 var _debug = false;
 var lastEditedClass = "";
 global_zIndex = 1000;
@@ -174,12 +175,7 @@ $(document).ready(function() {
 
 	saveJs($("body").first(),`function silent(){}`)
 
-	$(window).on("click",function(){
-
-		CUSTOM_pressEscapeKey();
 	
-
-	})
 	
 
 	$(document).mousemove(function(event){
@@ -222,12 +218,16 @@ $(document).ready(function() {
 
 	   		simpleD.load("/sidebar.html",()=>{
 
+	   			//if($("#s1w").children().length == 0){
 	   				$("#s1w").append(simpleD);
+	   		//	}
 	   				
 	   		});
 
 
-	   		topNav = $('<div>');
+	   		topNav = $(`#id-content-div`).length > 0 ? $(`#id-content-div`) : $(`<div id="id-content-div">`);
+
+	   		topNav.children().remove();
 
 	   		topNav.load("/top-nav.html",function(){
 	   			$("#content-wrapper").prepend(topNav);
@@ -247,6 +247,7 @@ $(document).ready(function() {
 		   	$(containerDiv).load("/edit-body.html",function(){
 
 			   try {
+
 
 
 			   		
@@ -277,6 +278,8 @@ $(document).ready(function() {
 //loadAllJs();
 					}
 					loadAllBreakPoints();
+
+
 
 					//loadAllJs();
 
@@ -311,7 +314,10 @@ $(document).ready(function() {
 
 				$.event.trigger("initializationComplete",[]);
 
+
+
 				$(".section-control").unbind("on").on("click",(e)=>{ e.preventDefault();$("[data-action=addsection]").click()})
+
 
 				/*
 				if($(".section").length == 0){
@@ -333,7 +339,9 @@ $(document).ready(function() {
 				//$('body').show();
 
 				CUSTOM_pressEscapeKey(); 
-				PREVIEW_togglePreview(false);
+
+				
+				//PREVIEW_togglePreview(false);
 
 
 			
@@ -718,11 +726,20 @@ function whichTool (tool){
 			class:"squarepeg list"
 		});
 		break;
+		case "CARD":
+		var lid = "ELEM_" + new Date().getTime();
+		theTool = new GenericTool({
+			type:"CARD",
+			droppedModeHtml: new Card(lid).asHTML(),
+			droppable:true,
+			class:"squarepeg card"
+		});
+		break;
 		case "VID":
 		theTool = new GenericTool({
 			type:type,
 			droppedModeStyle:"",
-			droppedModeHtml:'<div><video controls preload="auto" autoplay><source class="content-image" src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4"/></video></div>',
+			droppedModeHtml:'<div><video controls preload="auto" loop autoplay><source class="content-image" src="https://wave.video/embed/63faf5767dd6ea41af407d5c/63faf5767dd6ea41af407d61.mp4" psrc="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4"/></video></div>',
 			droppable:true,
 			class:"squarepeg"
 		});
@@ -744,9 +761,18 @@ function whichTool (tool){
 		theTool = new GenericTool({
 			type:type,
 			droppedModeStyle:"",
-			droppedModeHtml:'<div><iframe style="pointer-events:none; width:100%; height:100%" class="content-image" onmouseover="$(this).parents().first().mouseenter()" src="https://www.wikipedia.org/"></iframe></div>',
+			droppedModeHtml:'<div><iframe style="pointer-events:none; width:100%; height:100%" class="content-image" ponmouseover="$(this).parents().first().mouseenter()" src="https://www.wikipedia.org/"></iframe></div>',
 			droppable:true,
 			class:"squarepeg"
+		});
+		break;
+	case "SECTION":
+		theTool = new GenericTool({
+			type:type,
+			droppedModeStyle:"",
+			droppedModeHtml:'<section></section>',
+			droppable:true,
+			class:"squarepeg section"
 		});
 		break;
 		/*
@@ -792,13 +818,14 @@ function whichTool (tool){
 		break;
 
 		case "FIELD":
-		
+		case "ZFIELD":
 	
 		theTool = new GenericTool({
+			id: "ELEM_" + new Date().getTime(),
 			type:type,
-			class:"texttool",
+			//class:"texttool",
 			friendlyName : "Input Field",
-			droppedModeHtml:"<div class='group-container  helper-wrapper'><div class='dropped-object' type='T'>Field Label</div><div class='dropped-object field-container' type='DIV'><input  width='100%' height='100%' type=\"input\" placeholder=\"Enter field value\"></div></div><br/>"
+			droppedModeHtml:`<div  style=\"margin:10px;width:40vw;height:4vw\; box-sizing:border-box; boder:30px solid black" contenteditable="true" type=\"FIELD\" placeholder=\"Enter field value\"></div>`
 		});
 		break;
 
@@ -867,14 +894,12 @@ function configuredTool(options){
 		log.debug(`Options are ${JSON.stringify(options)}`)
 
 		this.node = $(options.droppedModeHtml).addClass(options.class).addClass("dropped-object").attr('id',this.name)
-		
-
-
-		//this.node.append(br);
-
-			.css({zIndex: options.zIndex,display:"block"}).attr('type',options.type);
+			.css({zIndex: options.zIndex}).attr('type',options.type);
 
 		var div = setUpDiv(this.node);
+
+
+		$("body").append(div);
 
 		div.find(".dropped-object").each(function(){
 			setUpDiv($(this));

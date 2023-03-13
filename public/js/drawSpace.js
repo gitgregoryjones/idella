@@ -192,27 +192,27 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 				startVideo(vid);
 			})
 
-			var close = $(`<div  id="close-button" >X<div style="font-size:14px">Close</div></div>`);
+			var close = $(`<i id="close-button" class="fas fa-compress-alt"></i>`);
 
 			close.css({
 			    position: "absolute",
-			    top: 0,
-			    left: screen.width - 250,
-			    width: 60,
-			    height: 60,
+			    top: 30,
+			    left: 220,
+			    width: 33,
+			    height: 33,
 			    zIndex: 1000,
-			    color: "white",
-			    backgroundColor: "silver",
-			    paddingLeft: 4,
-			    paddingTop: 10,
-			    borderRadius: "5px",
-			    top: "10px",
-			    fontWeight:800,
+			    color: "green",
+			    backgroundColor: "green",
+			    
+			    borderRadius: "50%",
+			   fontSize:"x-large",
+			    
 			    textAlign:"center",
-			    boxShadow:"2px 2px solid black"
+			    border:"2px solid silver"
 			})
 
 			close.off().on("click",function(evt){ 
+				$(evt.target).css({filter:"contrast(200%)"})
 				$("#bigDipper").show(1000,function(){
 					$(this).remove(); 
 					PREVIEW_togglePreview(false)
@@ -221,11 +221,12 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 				
 			});
 
+			
 			close.hover(function(){
-				$(this).css({backgroundColor:"red", transition:"1s"})
+				$(this).css({color:"black", transition:".3s","cursor":"pointer",opacity:1})
 			},
 			function(){
-				$(this).css({backgroundColor:"silver"})
+				$(this).css({color:"green",opacity:"0.4"})
 			}
 			)
 
@@ -276,23 +277,40 @@ function getHelp(url){
 
 	} else {
 
-		tools.frame = $('<iframe id="help-css" src="'+url+'" ></iframe>').css({display:"none",position:"absolute",top:$("[alias=header]").position().top,left:"0px","z-index":"10000",height:"6000px",width:"100vw"})
+		tools.frame = $('<iframe id="help-css" src="'+url+'" ></iframe>').css({display:"none",position:"absolute",top:$("#idella-search").outerHeight(),left:$(".babynav").outerWidth(),"z-index":$("content").css("z-index")+1,height:"2000px",width:$("#content").outerWidth()})
 
-		tools.close = $('<div id="close-help" class="fa fa-window-close"></div>')
-				.css({display:"none",cursor:"pointer",position:"absolute",top:"10px","right":"10px",
-					"font-size":"40px",color:"red","z-index":"3000000"})
-				.on('click',function(){
+		/*
+		tools.close = $(`<div  id="close-button" >X<div style="font-size:14px">Close</div></div>`);
+
+		tools.close.css({
+			    position: "absolute",
+			    top: 0,
+			    left: screen.width - 250,
+			    width: 60,
+			    height: 60,
+			    zIndex: 100010000000,
+			    color: "white",
+			    backgroundColor: "silver",
+			    paddingLeft: 4,
+			    paddingTop: 10,
+			    borderRadius: "5px",
+			    top: "10px",
+			    fontWeight:800,
+			    textAlign:"center",
+			    boxShadow:"2px 2px solid black"
+
+		}).on('click',function(){
 					$("#help-css").remove();
 					$(this).remove();
 					SAVE_okToSave = true;
 					
 					$(".hideMe").removeClass("hideMe").show()
 
-				})
+				})*/
 
 		tools.sponsor = $('<div id="sponsor-help" class="fa fa-bullhorn"></div>')
 				.css({"background-color":"#FFFFFF",width:"200px",height:"60px",display:"none",cursor:"pointer",position:"absolute",top:"10px","left":"20px",
-					"font-size":"80px",color:"green","z-index":"3000000"})
+					"font-size":"80px",color:"green","z-index":"3000000000"})
 				.on('click',function(){
 					$("#help-css").remove();
 					
@@ -310,6 +328,24 @@ function getHelp(url){
 		}
 	} 
 
+	SAVE_okToSave = false;
+	bn = $("<div class='HelpClose'>Click Here to Continue Editing</div>").css({"font-weight":800,"font-size":"2vw", "padding-top":"10px","z-index":10000000000,color:"black","text-align":"center","font-family":"Helvitica",width:$("#content").outerWidth(), height:"60px", position:"fixed", "background-color":"yellow", left:$(".babynav").outerWidth(), top:$("#idella-search").outerHeight()});
+	$("#idella-search").append(bn)
+	$(".babynav").fadeOut();
+	$(".project-control").fadeOut();
+	$("#content").fadeOut();
+	bn.off().on("click",function(){
+
+		$("#help-css").remove();
+					
+					SAVE_okToSave = true;
+					$(".HelpClose").remove();
+					$(".babynav").fadeIn();
+					$(".project-control").fadeIn();
+					$("#content").fadeIn();
+
+	})
+
 	return tools;
 
 }
@@ -320,6 +356,8 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 	NOTES_delete();
 
 	content = $("body");
+
+	$("#close-button").remove();
 
 	//Defined in layer-menu.js
 	var theHeight = $("#layer-menu").height();
@@ -373,13 +411,13 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	es.css({
 		height:"30%",
-		width:400,
+		"---width":400,
 		top:100,
 		position:"absolute",
 		"z-index": 9999999,
-		border:"3px solid white",
-		"box-shadow":"2px 2px 2px black",
-		"border-radius":"5px",
+		"--border":"3px solid white",
+		"--box-shadow":"2px 2px 2px black",
+		"--border-radius":"5px",
 		overflow:"none"
 		
 

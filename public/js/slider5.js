@@ -15,12 +15,12 @@ function resetForLeft(container){
 
 	//log.debug(`Read transition-duration from attribute ${duration}`)
 
-	for(idx=0; idx < list.children(".dropped-object").not("[alias^=cntrl]").length; idx++){
+	for(idx=0; idx < list.children(".dropped-object").not("[alias^=CNTRL]").length; idx++){
 
-		tail = list.children(".dropped-object").not("[alias^=cntrl]").last();
-		head = list.children(`.dropped-object`).not("[alias^=cntrl]").first();
+		tail = list.children(".dropped-object").not("[alias^=CNTRL]").last();
+		head = list.children(`.dropped-object`).not("[alias^=CNTRL]").first();
 
-		if(head.position().left + head.outerWidth(true) < list.position().left){
+		if(head.position().left + head.outerWidth(true) < list[0].offsetLeft){
 	
 			head.css({left:tail.position().left + tail.outerWidth(true)});
 
@@ -33,7 +33,7 @@ function resetForLeft(container){
 	var canViewAtOneTime = parseInt(list.width() / head.width()) >= 1 ? parseInt(list.width() / head.width()) : 1;
 	
 
-	numberHidden = list.children(".dropped-object").not("[alias^=cntrl]").length - canViewAtOneTime;
+	numberHidden = list.children(".dropped-object").not("[alias^=CNTRL]").length - canViewAtOneTime;
 
 	numberToSlide = canViewAtOneTime;	
 }
@@ -43,10 +43,10 @@ function resetForRight(container){
 
 	list =$(container);
 
-	for(idx=0; idx < list.children(".dropped-object").not("[alias^=cntrl]").length; idx++){
+	for(idx=0; idx < list.children(".dropped-object").not("[alias^=CNTRL]").length; idx++){
 
-		tail = list.children(".dropped-object").not("[alias^=cntrl]").last();
-		head = list.children(".dropped-object").not("[alias^=cntrl]").first();
+		tail = list.children(".dropped-object").not("[alias^=CNTRL]").last();
+		head = list.children(".dropped-object").not("[alias^=CNTRL]").first();
 
 		if(tail.position().left > list.position().left + list.outerWidth(true)){
 	
@@ -60,8 +60,8 @@ function resetForRight(container){
 
 	var canViewAtOneTime = parseInt(list.width() / head.width()) >= 1 ? parseInt(list.width() / head.width()) : 1;
 
-	 numberHidden = list.children(".dropped-object").not("[alias^=cntrl]").length - canViewAtOneTime;
-	//alert("Not notVisible "+ (list.children(".dropped-object").not("[alias^=cntrl]").length -  canViewAtOneTime))
+	 numberHidden = list.children(".dropped-object").not("[alias^=CNTRL]").length - canViewAtOneTime;
+	//alert("Not notVisible "+ (list.children(".dropped-object").not("[alias^=CNTRL]").length -  canViewAtOneTime))
 	//$(tail).insertBefore(head)
 	numberToSlide = canViewAtOneTime;
     howFarLeft = 0;
@@ -88,8 +88,8 @@ function getTransitionDuration( element, with_delay )
 		var duration = el.css(`${prefixes[i]}transition-duration`);
 		log.debug(`Result transition duration [${prefixes[i]}transition-duration] is ${duration}`)
 		
-		if(parseInt(duration) == 0){
-			duration = "2000";
+		if(parseFloat(duration) == 0){
+			duration = "0";
 		}
 
 		if ( duration )
@@ -102,7 +102,8 @@ function getTransitionDuration( element, with_delay )
 				duration += ( delay.indexOf( 'ms' ) >- 1 ) ? parseFloat( delay ) : parseFloat( delay ) * 1000;
 			}
 
-			result = duration;
+			//result = `${duration/1000}s`;
+			result = duration
 
 			break;
 		}
@@ -142,7 +143,7 @@ function goRight(list){
 
 	resetForRight(list);
 
-	list.children(".dropped-object").not("[alias^=cntrl]").each(function(it){$(this).animate({left:$(this).position().left + $(this).outerWidth(true) * numberToSlide },parseInt(speed),"swing",function(cmp){
+	list.children(".dropped-object").not("[alias^=CNTRL]").each(function(it){$(this).animate({left:$(this).position().left + $(this).outerWidth(true) * numberToSlide },parseInt(speed),"swing",function(cmp){
 		
 		 SLIDERS[list.attr("id")].playing = false;
 	})})
@@ -211,7 +212,7 @@ function SLIDER_init(list){
 	log.debug(`Delay is ${delay}`)
 
 
-	handle = setInterval(()=>{ list.attr("slider-direction") == "right" ? goRight(list): goLeft(list)},delay);
+	//handle = setInterval(()=>{ list.attr("slider-direction") == "right" ? goRight(list): goLeft(list)},delay);
 
 	log.debug(`Made it this far dude after ${handle}`)
 
@@ -226,10 +227,10 @@ function SLIDER_init(list){
 
     list.css("white-space","nowrap");
 
-	if(list.find("[alias^=cntrl]").length == 0){
+	if(list.find("[alias^=CNTRL]").length == 0){
 		list.on("click",unPackListHack);
 	} else {
-		list.find("[alias^=cntrl]").each(function(id,button){
+		list.find("[alias^=CNTRL]").each(function(id,button){
 			SLIDER_setUpButton(button,list,true);
 		})
 	}
@@ -243,9 +244,9 @@ function SLIDER_init(list){
 
 	})
 
-	list.children(".dropped-object").not("[alias^=cntrl]").hover((e)=>{log.debug(`Pausing SLIDER. User Hovering over ${e.target.id}`);SLIDER_pause($(e.target).parent("[type=LIST]"));},(e)=>{SLIDER_play($(e.target).parent("[type=LIST]"));})
+	list.children(".dropped-object").not("[alias^=CNTRL]").hover((e)=>{log.debug(`Pausing SLIDER. User Hovering over ${e.target.id}`);SLIDER_pause($(e.target).parent("[type=LIST]"));},(e)=>{SLIDER_play($(e.target).parent("[type=LIST]"));})
 
-	list.children(".dropped-object").not("[alias^=cntrl]").each(function(it){$(this).css({position:"absolute",left:it*$(this).outerWidth(true)})})
+	list.children(".dropped-object").not("[alias^=CNTRL]").each(function(it){$(this).css({position:"absolute",left:it*$(this).outerWidth(true)})})
 }
 
 function SLIDER_deInit(list){
@@ -262,11 +263,11 @@ function SLIDER_deInit(list){
 
 	list.css({overflow:"auto","transition-duration":"0s"})
 
-	list.children(".dropped-object").not("[alias^=cntrl]").stop().css({left:0,top:0,position:"relative"});
+	list.children(".dropped-object").not("[alias^=CNTRL]").stop().css({left:0,top:0,position:"relative"});
 	list.unbind("dragstart resizestop dragstop resizestart");
 	list.unbind("click",unPackListHack)
-	list.children("[alias=cntrl-left]").unbind('click',goLeft).css("visibility","hidden");
-	list.children("[alias=cntrl-right]").unbind('click',goRight).css("visibility","hidden");
+	list.children("[alias=CNTRL-LEFT]").unbind('click',goLeft).css("visibility","hidden");
+	list.children("[alias=CNTRL-RIGHT]").unbind('click',goRight).css("visibility","hidden");
 
 
 
@@ -310,8 +311,8 @@ function SLIDER_setUpButton(button,list,blockClick){
 
 	list.on("resizestop",function(){
 
-		$(this).children("[alias=cntrl-left]").css({height:list.children(".dropped-object").first().outerHeight(),top:0,left:0,"z-index":800,"visibility":"visible"});
-		$(this).children("[alias=cntrl-right]").css({height:list.children(".dropped-object").first().outerHeight(),top:0,left:list.width()-button.width(),"z-index":800,"visibility":"visible"})
+		$(this).children("[alias=CNTRL-LEFT]").css({height:list.children(".dropped-object").first().outerHeight(),top:0,left:0,"z-index":800,"visibility":"visible"});
+		$(this).children("[alias=CNTRL-RIGHT]").css({height:list.children(".dropped-object").first().outerHeight(),top:0,left:list.width()-button.width(),"z-index":800,"visibility":"visible"})
 	})
 
 }
@@ -344,12 +345,24 @@ function goLeft(list){
 
 	log.debug("SLIDER5.js:Speed is really! " + speed)
 
-	resetForLeft(list);
+	//resetForLeft(list);
 
 
 
 
-	list.children(".dropped-object").not("[alias^=cntrl]").each(function(it){$(this).animate({left:$(this).position().left  - $(this).outerWidth(true) * numberToSlide },parseInt(speed),"swing",function(cmp){
-		 SLIDERS[list.attr("id")].playing = false;
-	})})
+	list.children(".dropped-object").not("[alias^=CNTRL]").each(function(it){
+		$(this).animate(
+			{left:$(this).position().left  - $(this).outerWidth(true) * numberToSlide },
+			{
+				duration:parseInt(speed),
+				easing:"swing",
+				progress: ()=>{
+					resetForLeft(list);
+				},
+				done: ()=>{
+					SLIDERS[list.attr("id")].playing = false;	
+				}
+			}
+			
+	)})
 }

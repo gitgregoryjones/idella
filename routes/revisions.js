@@ -23,10 +23,10 @@ var googleFonts = "https://fonts.googleapis.com/css?family=Dancing+Script|Roboto
 //var googleFonts = "nothing.js";
 
 //var files = [googleFonts,"jquery-ui-1.12.1.custom/jquery-ui.css","fontawesome5.css","jquery.timepicker.css","idella.css","jquery.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","tinymce.js","translate.js","ingest.js","contextmenu.js","slider4.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js","getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js"]
-var files = [googleFonts,"https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&display=swap","jquery-ui-1.12.1.custom/jquery-ui.css","theme/vendor/fontawesome-free/css/all.min.css","theme/css/sb-admin-2.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css",	"theme/vendor/jquery/jquery.js","ready.js","component/ListComponent.js","component/Equalizer.js","component/TextComponent.js","component/CustomShape.js","component/Gallery.js","carWithAudio.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","www.movies.com.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider5.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js"
+var files = [googleFonts,"https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&display=swap","jquery-ui-1.12.1.custom/jquery-ui.css","theme/vendor/fontawesome-free/css/all.min.css","theme/css/sb-admin-2.css","font-awesome-4.7.0/css/font-awesome.min.css","jquery.timepicker.css","idella.css","colors/green.css",	"theme/vendor/jquery/jquery.js","ready.js","component/ListComponent.js","component/Equalizer.js","component/TextComponent.js","component/CustomShape.js","component/Gallery.js","component/Card.js","carWithAudio.js","tool-color-picker/tool-color-picker.js","jonthornton-timepicker/jquery.timepicker.min.js","jonthornton-datepair/dist/datepair.min.js","jonthornton-datepair/dist/jquery.datepair.min.js","playground-43.js","URI.js","preview.js","gzip.js","revisions.js","overlay.js","ghost.js","plugins.js","custom_events2.js","notes.js","drawSpace.js","translate.js","ingest.js","contextmenu.js","slider5.js","cssText.js","persist.js","extensions2.js","stylesTabs2.js","stylesAutoComplete.js","save.js","saveJs.js","enableTextAreaTabs.js","saveBreakpoints.js","jquery-ui-1.12.1.custom/jquery-ui.min.js"
 	,"getEditableContent.js","slideIn.js","popup.js","controls.js","makeJavascriptBox.js",
 	,"makePromptForInputBox.js","makeMsgBox.js","greybox.js","textArea.js","processLines.js","layers-menu.js","logic2.js",
-	"https://code.jquery.com/jquery-3.6.0.js","https://code.jquery.com/ui/1.13.2/jquery-ui.js","https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css","https://jqueryui.com/resources/demos/style.css"]
+	/*"https://code.jquery.com/jquery-3.6.0.js","https://code.jquery.com/ui/1.13.2/jquery-ui.js","https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css","https://jqueryui.com/resources/demos/style.css"*/]
 var version = 1;
 
 var $ = null;
@@ -927,9 +927,9 @@ function loadFiles($){
 
 	var ok = true;
 
-	$("head").find('style').not(".generated").remove();
-	$("head").find('script').not(".generated").remove();
-	$("head").find("link").not(".generate").remove();
+	$("html").find('style').not(".generated").remove();
+	$("html").find('script').not(".generated").remove();
+	$("html").find("link").not(".generate").remove();
 	console.log("Monkey")
 	console.log(files)
 	files.forEach(function(file){
@@ -945,10 +945,11 @@ function loadFiles($){
   		var linkRel = null;
   		var async = '';
   		var tag = null;
+  		var myKey = file;
   		if(file.endsWith(".js")){
   			ext = ".js";
   			selectAttrValue = "[src='/js/"+file +"']";
-  			selectorTag = `<script ${async} todd=smith>`;
+  			selectorTag = `<script ${async}>`;
   			selectAttrName = "src";
   			srcLocation = (file.startsWith("theme") ? "" : "/js/") + file;
   			async = "false";
@@ -956,13 +957,14 @@ function loadFiles($){
   		} else if(file.endsWith(".css")) {
   			ext = ".css";
   			selectAttrValue = "[href='/css/"+file +"']";
-  			selectorTag = `<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">`;
+  			selectorTag = `<link rel="preload" as="style">`;
   			selectAttrName = "href";
   			srcLocation = (file.startsWith("theme") ? "" : "/css/") + file;
   			linkRel = "stylesheet";
+  			myKey = "/css/" + file;
   		} else {
   			
-  			var myKey =  url.parse(file).pathname;
+  			myKey =  url.parse(file).pathname;
   			ext = file
   			selectAttrValue = "[href='" + myKey +"'']";
 
@@ -976,32 +978,33 @@ function loadFiles($){
   		//ok
   		if(file.endsWith(ext)){
 
-  			$('head').find(selectAttrValue).remove();
+  			$('html').find(selectAttrValue).remove();
 
 	  		tag = $(selectorTag);
 	  		tag.attr(selectAttrName,srcLocation);
-	  		tag.attr("vname",myKey)
+	  		tag.attr("vname",myKey.replace(/\//g,"_"))
+
 	  		
 	  		if(linkRel != null){
 	  			tag.attr("rel",linkRel)
 	  		}
 	  		tag.attr("version",version);
 	  		//console.log("Wrote file")
-	  		tag.appendTo($('head'));
+	  		tag.appendTo($('body'));
 	  		
   		} 
   	})
 
 	
-	//make sure these are always last
-	$("style.generated").appendTo($('head'))
-	$("script.generated").appendTo($('head'))
+	
+
+
 
 	if($("#pageStyles").length == 0){
 		
 		$("head").append("<style class='default generated' id='pageStyles'></style>");
 		$("head").append("<style class='default generated' id='pageStylesCopy'></style>");
-	}
+	} 
 
 	if($("#pageJavascript").length == 0){
 		
@@ -1009,7 +1012,8 @@ function loadFiles($){
 		$("head").append("<script class='default generated' id='pageJavascriptCopy'></script>");
 	}
 
-	
+	//always put at the end
+	$("#pageStyles,#pageStylesCopy").insertAfter($("[href=\\/css\\/idella\\.css]"))
 
 }
 
@@ -1052,6 +1056,8 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 		$.callback = callback;
 
 		console.log(" The dataPath is " + path.join(process.env.SITEDIR,site,"data.js"))
+
+		console.log(`Prepping to Read Backend Data from ${path.join(process.env.SITEDIR,site,"data.js")} does it exist ${fs.existsSync(path.join(process.env.SITEDIR,site,"data.js") )}`)
 		
 		if(fs.existsSync(path.join(process.env.SITEDIR,site,"data.js") ) ){
 
@@ -1073,8 +1079,9 @@ function getRevisionFileContents(site,dateGMTString,revDir,revisionFileName,orig
 				var msg = "<ol><li>Encountered error executing javascript you entered in file " + dataPath + "<li>" + e.stack;
 				msg += "<li>To find the source of the error go to your file [" + dataPath + "] and look for the line that would cause the error below:";
 				msg += "<li><font color='red'>"+ e.toString() + "</font></ol>";
-				$("[alias=notification]").html(msg).css({"height":"200px","padding":"30px"})
-				$("html").attr("was-error","true");
+				//$("[alias=notification]").html(msg).css({"height":"200px","padding":"30px"})
+				$("html").attr("was-error",true);
+				$("#content").prepend($("<div id=`1alias` alias=`notification`></div>").html(msg).css({"height":"200px","padding":"30px",width:"100%",color:"black","background-color":"yellow"}))
 				console.log("Encountered error executing external functions for " + dataPath)
 				console.log(e);
 			}

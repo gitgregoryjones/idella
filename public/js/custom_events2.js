@@ -27,10 +27,17 @@ var menuFunc = function(){
 
 function CUSTOM_pressEscapeKey(){
 
+	console.log(`Executing User Pressed Escape Key`)
+
 	var e = jQuery.Event("keydown");
 	e.which = 27; // # Some key code value
-	$(window).trigger(e);
-	log.debug(`Escape Key pressed!`)
+	//var a = $(window).trigger(e);
+
+	$(document).trigger("keydown",e);
+
+	//CUSTOM_KEYDOWN_LOGIC(e);
+	
+	console.log(`Executing Escape Key pressed!`)
 
 	//closeMenu();
 }
@@ -73,16 +80,24 @@ function CUSTOM_incrementZIndex(element){
 	return globI;
 }
 
-CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event){
+CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 
 
 	
 
-	log.trace("Error Pressed Key " + event.which)
+	
 
+	if(event.which == undefined){
+		event.which = simulatedEvent.which;
+	}
+
+
+	log.trace("Error Calling Pressed Key " + event.which)
 
 	if(event.which == 27 && $("#workspace").length == 0){
+		console.log(`Error Calling NavPreview`)
 			//defined in ready.js
+
 			navPreview();
 			//$(document).off("keydown");
 			//DRAW_SPACE_addWorkSpaceToBody()
@@ -105,9 +120,11 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event){
 
 	key = event.which;
 
-	log.debug(`saw key ${key} and advance is ${DRAW_SPACE_advancedShowing}`)
+	
 	//Escape Key
 	if(key == 27 && !DRAW_SPACE_advancedShowing){
+
+		log.debug(`Error Calling saw key ${key} and advance is ${DRAW_SPACE_advancedShowing}`)
 
 		$(".msg,.peak,.active-message,.active-peak").remove();
 
@@ -280,6 +297,7 @@ function setUpPopUpButtons(){
 
 function setUpGroupContainer(aTool,rebuild){
 	
+	return true;
 
 	if(!aTool.is(":visible")){
 			log.debug("Dont work on hidden objects");
@@ -500,7 +518,6 @@ CUSTOM_MOUSEENTER_LOGIC = function(event){
 	
 
 
-
 	if($(event.target).hasClass("ui-resizable-handle")){
 		//alert($(event.target).parents(".dropped-object").first().attr("id"))
 		$(event.target).parents(".dropped-object:visible").first().mouseenter();
@@ -718,7 +735,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 			//$(event.target).parent(".dropped-object:visible").mouseenter();
 		} else{
 
-			setTimeout(()=>{
+			//setTimeout(()=>{
 					var theParent = $(event.target).parent('[type=OVERLAY]');
 				console.log(`We are leaving overlay ${$(event.target).parent('[type=OVERLAY]')[0].id} and X,Y is ${event.pageX}, ${event.pageY} Elem XY ${theParent.offset().left}, ${theParent.offset().top}`)
 				//var theParent = $(event.target).parent('[type=OVERLAY]');
@@ -751,7 +768,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 					theParent.mouseleave();
 				}
 
-			},300)
+		//	},300)
 			
 			/*var theParent = $(event.target).parent('[type=OVERLAY]');
 			console.log(`We are leaving overlay ${$(event.target).parent('[type=OVERLAY]')[0].id} and X,Y is ${event.clientX}, ${event.clientY} Elem XY ${theParent.offset().left}, ${theParent.offset().top}`)
@@ -1130,6 +1147,8 @@ function onResizeEffectEnded(element){
 
 
 CUSTOM_ON_RESIZE_STOP_LOGIC = function(event,ui){
+
+	var groupResizeEnabled = $("#group-resize").is(":checked")
 	log.trace("Resizing is stopped " + event.target.id)
 	
 	event.stopPropogation != undefined && event.stopPropagation();
@@ -1202,6 +1221,8 @@ CUSTOM_DRAPSTOP_LOGIC = function(event,ui){
 	$(parent).removeClass("submenu");
 
 	onResizeEffectEnded(parent);
+
+	enableTransition(event.target);
 
 	CUSTOM_PXTO_VIEWPORT($(parent),$(parent).position().left ,$(parent).position().top);
 	if(copiesModified){
@@ -1845,6 +1866,45 @@ function disableHoverEvents(){
 }
 
 
+function enableTransition(element){
+
+	var element = $(element)
+
+	if(element[0].hasAttribute("done-moving")){
+
+
+		console.log(`Error Adding (setting) duration ${element.attr("x-transition-duration")}`);
+
+		element.css({"transition-duration":`${element.attr("x-transition-duration")}`})
+
+		element.removeAttr("done-moving");
+
+		console.log(`Error Adding old transition value back ${getTransitionDuration(element.target)} for ${element[0].id}`)
+	}
+
+}
+
+function disableTransition(element){
+
+	var element = $(element)
+
+	var theDuration = `${getTransitionDuration(element)/1000}s`;
+
+	if(!element[0].hasAttribute("done-moving")){
+
+		element.attr("done-moving","nope");
+
+		element.attr("x-transition-duration",theDuration)
+
+
+		console.log(`Error Adding The Duration is saved as ${theDuration} `)
+
+		element.css({"transition-duration":"0s"})
+	}
+
+}
+
+
 function setUpDiv(div){
 
 	div = $(div)
@@ -1910,18 +1970,18 @@ function setUpDiv(div){
 
 	div.find(".hotspot").css({height:0,width:0}).hide()
 
-	div.not("#drawSpace,body,.template-layer,#content,[type=OVERLAY]").resizable({handles:"n,e,s,w,se"}).on("resizestart",disableHoverEvents).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
+	div.not("#drawSpace,body,.template-layer,#content,[type=OVERLAY], .notresizable").resizable({handles:"n,e,s,w,se"}).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC)
 		.not("[type=TXT],[type=ICON],[type=BTN]").on("resize",CUSTOM_ON_RESIZE_LOGIC);
 
 
 
 
-	div.not("[alias=notification],[alias=header],#content,[type=OVERLAY]").draggable().on("drag",function(e){
-		
+	div.not("[alias=notification],[alias=header],#content,[type=OVERLAY], .notdraggable").draggable().one("drag",function(e){
+			
 		//e.stopPropagation()
 		NOTES_makeNote(this);
 
-	}).on("resizestart dragstart",function(e,ui){
+	}).on("resizestart, dragstart",function(e,ui){
 	
 		CUSTOM_currentlyMousingOverElementId = e.target.id;
 		//https://stackoverflow.com/questions/1771627/preventing-click-event-with-jquery-drag-and-drop
@@ -1931,6 +1991,13 @@ function setUpDiv(div){
 		
 		$(e.target).attr("contenteditable","false")
 		.css("-webkit-user-modify","read-only");
+
+
+		disableTransition(e.target)
+				
+
+	
+
 		disableHoverEvents()
 
 
@@ -1939,6 +2006,8 @@ function setUpDiv(div){
 
 		
 		setTimeout(function(){$(e.target).removeAttr("noclick")},1000);
+
+
 
 		NOTES_makeNote(this);
 		OVERLAY_showInstructions(e.target)
@@ -2145,7 +2214,7 @@ function setUpDiv(div){
 	div.css("position",oldPos);
 
 	if(div.is("[type=FIELD]")){
-		setUpGroupContainer(div,true);
+		//setUpGroupContainer(div,true);
 	}
 
 	if(div.is("[type=SVG]")){
@@ -2158,6 +2227,8 @@ function setUpDiv(div){
 
 	//Do setups in ready.js
 	div.not("[type=T]").on("click",r_openNote)
+
+	//CUSTOM_PXTO_VIEWPORT(div,div.offset().left,div.offset().top)
 	
 
 	return div;
@@ -2513,6 +2584,8 @@ function recursiveCpy(obj, plusButtonPushed){
 
 	clone.attr("id","ELEM_"+ new Date().getTime())
 
+	clone.removeClass(obj.attr("id")) 
+
 	log.debug(`Wrote new ID during copy ${clone.attr("id")}`)
 
 	log.trace(clone)
@@ -2539,6 +2612,7 @@ function recursiveCpy(obj, plusButtonPushed){
    		// find elem on copy
    		var cpy = $(clone).find("#"+id);
 
+   		cpy.removeClass(id)
    	
    		mystyle = CONVERT_STYLE_TO_CLASS_OBJECT(elem)
    		log.debug("CUSTOMEVENTS.js:what was position " + mystyle.position)
@@ -2556,7 +2630,7 @@ function recursiveCpy(obj, plusButtonPushed){
    		log.debug("CUSTOMEVENTS.js:Copy position is " + cpy.css("position"))
    		//cpy.css("position",cpy.css("position"))
    		//cpy.css("position")
-   		cpy.removeClass(id)
+   	
 
    		cpy.unbind();
 
@@ -2979,8 +3053,9 @@ function dropTool(aTool,dropInfo){
 				//import layers_menu.js
 
 				if(!aTool.is(".coordinate")){
-					aTool
-					updateLayersTool($(aTool).attr("id"),target.id);
+					
+					//updateLayersTool($(aTool).attr("id"),target.id);
+					reLoadLayers();
 				}
 
 

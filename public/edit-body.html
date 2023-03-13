@@ -58,6 +58,7 @@
 	  <div data-action="drop" type="T" archType="button" title="add push button" ><div class="fa fa-hand-o-down"></div></div>
 	  <div data-action="drop" type="NAVIGATION" title="add menu"><div class="fa fa-navicon">&nbsp;</div></div>
 	  <div data-action="drop" type="AUD" title="drop audio file"><div class="fa fa-music">&nbsp;
+	  	<div data-action="drop" type="SITE" title="embed website"><div class="fa fa-computer">&nbsp;
 	  	</div></div>
 	  	<!-- <div data-action="drop" type="BTN" class="fa fa-toggle-on"></div>//-->
 	  	<!-- <div data-action="drop" type="ICON" class="fa fa-twitter"></div>//-->
@@ -92,30 +93,37 @@
 <div id="layer-menu">
 
 
- <div id="header">
-	<div class="fa fa-minus close-window" style="float:right; color:white; padding-top:20px;padding-right:25px;text-align:right;cursor:pointer;"></div>
-	<div class="htab">
-	   <!-- Layers //-->
-	   <div style="display:inline-block;">
-	   	<!-- <input type="text" class="search-layers" placeholder="Search For Layer" class="fa fa-search">//-->
-	   </div>
-	</div>
-	
-</div>
+ 
 <div id="maincontent">
-    <div class="layer dummy" style="display: none">
-    	<div style="border-right:1px solid grey;display:block; height:max;font-size:18px;float:left; width:10%;padding-left:5px; padding-top:5px">
-    		<i class="eye fa fa-eye"></i>
-    		<i class="fas fa-arrows-alt-h"></i>
-    		<i class="fas fa-align-center"></i>
-    		<i class="runningman fas fa-play-circle"></i>
-    	</div>
-    	
-	    	<div class="preview-window" style="display:block; float:left;"></div>
-	    	<div class="details" style="font-size:12px; height:100%;display:block; float:left; width:65%"><input type="text" placeholder="Layer Name"></div>
-    	
+		<div id="header">
+			<div class="mini-preview"></div><div class="details" style=" height:100%; float:left; width:65%"><input disabled="" type="text" placeholder="Layer Name" text-for="ELEM_1678426025335"></div>
+			<div class="fa fa-minus close-window" style="float:right; color:white; padding-top:20px;padding-right:25px;text-align:right;cursor:pointer;"></div>
+			<div class="htab">
+			   <!-- Layers //-->
+			   <div style="display:inline-block;">
+			   	<!-- <input type="text" class="search-layers" placeholder="Search For Layer" class="fa fa-search">//-->
+			   </div>
+			</div>
+		
+	</div>
+	  <div id="layer-content">
+	    <div class="layer dummy" style="display: none">
+	    	<div style="border-right:1px solid grey;display:block; height:max;font-size:18px;float:left; width:10%;padding-left:5px; padding-top:5px">
+	    		<i class="eye fa fa-eye"></i>
+	    		<i class="fas fa-arrows-alt-h"></i>
+	    		<i class="fas fa-align-center"></i>
+	    		<i class="runningman fas fa-play-circle"></i>
+	    		<i class="download fas fa-download"></i>
+	    	</div>
+	    	
+		    	<div class="preview-window" style="display:block; float:left;"></div>
+		    	<div class="details" style="font-size:12px; height:100%;display:block; float:left; width:65%"><input disabled type="text" placeholder="Layer Name">
+		    		<!-- <i class="close-layer fa fa-window-close" style="padding-left: 50px; font-size:large; color:#9B0027; display:hidden"></i>//-->
+		    	</div>
+	    	
 
-    </div>
+	    </div>
+		</div>
 </div>
 <div id="layer-footer">
 
@@ -129,23 +137,4 @@
 </div>
 
 
-<!----  Layers Menu ///---->
-<!-- <div id="layer-menu-container">
-	<div id="header-row">Hello</div>
-	<div id="child-menu">
-		<select style="background-color: green; ">
-			<option>One</option>
-			<option>Two</option>
-		</select>
-	</div>
-	<div id='layer-menu'>
-		
-	</div>
-	
-</div>
- used as template before converted to sample layer in code 
-<div class='template-layer' style="display:none">
-	<div class="eye fa fa-eye" style="border-right:1px solid grey;display:block; height:max;font-size:18px;float:left; width:10%;padding-left:5px; padding-top:20px"></div>
-	<div class="preview-window" style="display:block; float:left; width:20%"> </div>
-	<div class="details" style="font-size:12px;display:block; float:left; width:50%"><div>
-</div>//-->
+

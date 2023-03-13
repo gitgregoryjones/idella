@@ -35,9 +35,9 @@ function OVERLAY_setUp(element,isTemplate){
 
 
 	if(isTemplate){
-		overlay.css({"position":"absolute","margin":"0","background-image":"none","background-color":"rgba(255,255,255,.5)",left:0,top:0 });
+		overlay.css({"margin":"0","background-image":"none","background-color":"rgba(255,255,255,.5)",left:0,top:0 });
 	}else {
-		overlay.css({"position":"absolute","margin":"0","background-image":"none","background-color":"rgba(255,255,255,.5)",left:0,top:0 });
+		overlay.css({"margin":"0","background-image":"none","background-color":"rgba(255,255,255,.5)",left:0,top:0 });
 	}
 
 	
@@ -103,9 +103,10 @@ function OVERLAY_showInstructions(theElem){
 
 	theElem = $(theElem)
 
-	OVERLAY_deleteInstructions();
 
-	if(editing && $(theElem).css("background-image").indexOf("saveabandonedbabies") > -1){
+	OVERLAY_deleteInstructions();
+	//if default image showing, show instructions
+	if(editing && $(theElem).css("background-image").indexOf("qyix6eyhrnc8x9c44yp2") > -1){
 		div = $("<div>",{id:"imgwin",width:theElem.width(),height:theElem.height()*.40})
 		div.append("Double click to edit image").css("text-align","center")
 		div.on("dblclick",function(){
@@ -220,9 +221,7 @@ function OVERLAY_showOverlay(theElem){
 									close.remove();
 							})
 						} else {
-							$(this).fadeOut(function(e){
-								
-							});
+							$(this).fadeOut("slow");
 						}
 					
 					}

@@ -1,4 +1,4 @@
-$(document).on("movies-available",function(event,list,callback){
+$(document).on("BGM",function(event,list,callback){
 
 	var list = $(list)
 
@@ -21,9 +21,10 @@ $(document).on("movies-available",function(event,list,callback){
 	console.log("Leaving movies-available with content \n" + JSON.stringify(content));
 	*/
 
-	
+	content.BGM = {"background-image":`url(https://static.wikia.nocookie.net/avengersvsxmen/images/4/4c/Ororo_Munroe_from_Uncanny_X-Force_Vol_2_1.png/revision/latest?cb=20130125220318)`}
 		
 	callback(content);
+	//}
 
 })
 

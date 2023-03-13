@@ -1,51 +1,42 @@
 
-<style type="text/css">
-  nav {
-    background-color: black;
-    color:white;
-    width:100%;
-    border:1px solid white;
-    position: relative;
-
-  }
-</style>
   
-<nav id="idella-search" class="navbar navbar-expand  topbar mb-4 static-top shadow">
+<nav id="idella-search" class="navbar navbar-expand topbar mb-4 static-top shadow">
+  <div id="notification" alias="notification"></div>
 
-<div class="project-control">
+ <!-- <div class="" style="border:4px solid black; width:100px; display:inline;">
               
-    <div class="iicon iisave">
-      <span class="itool far fa-save"></span>
-      <div class="title">save</div>
-    </div>
-    <div class="iicon iilayers">
-      <span class="itool fas fa-layer-group"></span>
-      <div class="title">menu</div>
-    </div>
-    <!-- 
-    <div class="iicon iiexplore">
-      <span class="itool fab fa-css3-alt"></span>
-      <div class="title">css</div>
-    </div>
-    <div class="iicon iiexplore">
-      <span class="itool fab fa-js-square"></span>
-      <div class="title">script</div>
-    </div>
-    //-->
-   
-     <div class="iicon iiexplore">
-      <span class="itool fas fa-running"></span>
-      <div class="title">play</div>
-    </div>
-      <div class="iicon iireview">
-      <span class="itool fas fa-window-maximize"></span>
-      <div class="title">view</div>
-    </div>
-<!--
-    <span class="itool far fa-layer-group"></span>
-    <span class="itool far fa-street-view"></span>//-->
-                
-  </div>
+        
+          <span class="fa fa-circle" style="color:yellow; display: inline;float:left"></span>
+          <span class="fa fa-circle" style="color:green;display: inline;float:left"></span>
+          <span class="fa fa-circle" style="color:purple;display: inline;float:left"></span>
+      
+</div>//-->
+
+
+  
+      <div class="project-control window-control" style="display:inline-flex;font-size:medium;color:transparent;">
+     
+        
+        <i class=" fas fa-circles iisave" title="save progress" style="transition-duration:0.3s;text-align:center;float: left; margin-right:15px; background-color:#0973BA;border:1px solid silver;color:inherit; border-radius: 50%;width:20px; height: 20px;">&blacktriangledown;</i>
+        <i class=" iilayers" title="hide menu" style="text-align:center;float: left; margin-right:15px; background-color:#F79321;border:1px solid silver;color:inherit; border-radius: 50%;width:20px; height: 20px;">&mdash;</i>
+        <i class=" fas fa-circles iireview" title="preview page" style="text-align:center;font-size:12px;float: right; font-weight:900;color:inherit;  background-color:green;border:1px solid silver;border-radius: 50%;width:20px; height: 20px;">&#10530;</i>
+
+
+      <style>
+        .window-control:hover {
+          color:black !important;
+          cursor: pointer;
+
+          
+
+        }
+        .iireview:active, .iisave:active, .iilayers:active {
+          filter:contrast(200%);
+        }
+      </style>
+      </div>
+
+
   <script>
     /*
 
@@ -94,6 +85,15 @@
 <script>
 
 $(document).ready(function(){
+
+  /** Change Themes top right corner **/
+   $("select.theme").on("change",function(){
+        var pickme =  this.value.replace(/_/g,"/");
+
+        $("link[vname=_css_colors_green\\.css]").attr("href",pickme);
+
+        console.log(`The new theme is ${pickme}`)
+  })
 
   /** Enable Click Events for the top nav checkboxes **/
 
@@ -210,7 +210,22 @@ var data = ["img","list"]
     $(".tabul").append('<li style="50px; padding:5px">&nbsp;Hide Links <input type="checkbox" name="anchorsAway" id="anchorsAway">&nbsp;&nbsp;Resize Group <input type="checkbox" name="group-resize" id="group-resize"></li>');
 
           //-->
+           <div class="project-control" style="border:0px solid black;display: inline-block; margin: 0px;">
+              <!-- Logo Goes Here //-->
+              <li style="padding: 5px;list-style: none;">
+                powered by: <img class="logo"  src="/logo1.png"/>
+                
+              </li>
+              <!-- <div style="display:inline-block;">Theme:
+                <select  class="theme" onchange="" style="margin-right:50px;">
+                <option value="_css_colors_blue.css">Blue</option>
+                <option value="_css_colors_green.css" selected>Green</option>
+                <option value="_css_colors_wakanda.css">Wakanda</option>
+              </select>
+            </div>//-->
+          </div>
           <div class="project-control">
+             
               <li style="padding:5px;list-style: none;display: inline-block;">
                 Modify clones <input type="checkbox" name="changesToggle" class="changesToggle">
               </li>
@@ -228,8 +243,13 @@ var data = ["img","list"]
               </li>
               
           </div>
-          <!-- Topbar Navbar -->
+
+
+         
+         
           <ul class="navbar-nav ml-auto">
+         
+
 
             <!-- Nav Item - Search Dropdown (Visible Only XS) -
             <li class="nav-item dropdown no-arrow d-sm-none">
@@ -278,14 +298,14 @@ var data = ["img","list"]
                 
   </div> 
           
-            <!-- Nav Item - Alerts -->
+            <!-- Nav Item - Alerts 
             <li class="nav-item dropdown no-arrow mx-1">
               <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
-                <!-- Counter - Alerts -->
+                Counter - Alerts 
                 <span class="badge badge-danger badge-counter">3+</span>
               </a>
-              <!-- Dropdown - Alerts -->
+               Dropdown - Alerts 
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
                 <h6 class="dropdown-header">
                   Alerts Center
@@ -327,14 +347,14 @@ var data = ["img","list"]
               </div>
             </li>
 
-            <!-- Nav Item - Messages -->
+             Nav Item - Messages 
             <li class="nav-item dropdown no-arrow mx-1">
               <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-envelope fa-fw"></i>
-                <!-- Counter - Messages -->
+                 Counter - Messages 
                 <span class="badge badge-danger badge-counter">7</span>
               </a>
-              <!-- Dropdown - Messages -->
+               Dropdown - Messages 
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
                 <h6 class="dropdown-header">
                   Message Center
@@ -385,13 +405,13 @@ var data = ["img","list"]
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
-            <!-- Nav Item - User Information -->
+             Nav Item - User Information 
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">Valerie Luna</span>
                 <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
               </a>
-              <!-- Dropdown - User Information -->
+              -- Dropdown - User Information -
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="#">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -411,8 +431,39 @@ var data = ["img","list"]
                   Logout
                 </a>
               </div>
-            </li>
+            </li>//-->
 
           </ul>
+      
+          <!--
+           <div class="project-control">
+              
+                theme: <select  class="theme" onchange="" style="margin-right:50px;">
+                <option value="_css_colors_blue.css">Blue</option>
+                <option value="_css_colors_green.css" selected>Green</option>
+                <option value="_css_colors_wakanda.css">Wakanda</option>
+              </select>
+              
+            
+          </div>
+          //-->
+  
 
+      <div class="project-control">
+              
+   
+
+    <div>
+      Theme: <select  class="theme" onchange="" style="margin-right:50px;">
+        <option value="_css_colors_blue.css">Blue</option>
+        <option value="_css_colors_green.css" selected>Green</option>
+        <option value="_css_colors_wakanda.css">Wakanda</option>
+      </select>
+    </div>
+<!--
+    <span class="itool far fa-layer-group"></span>
+    <span class="itool far fa-street-view"></span>//-->
+                
+  </div>
+         
         </nav>

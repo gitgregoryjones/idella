@@ -390,14 +390,14 @@ $(document).on("initializationComplete",function(){
                             var whiteSpace = "nowrap";
 
                             if($(this).hasClass("adaptive")){
-                                limit = 4;
+                                limit = 2;
                             }
 
                             for(i=0; i < limit; i++){
-                                var bImg = whichTool("IMG")
+                                var bImg = whichTool("CARD")
                                 bImg = configuredTool(bImg);
                                 if($(this).hasClass("adaptive")){
-                                    bImg.css({"height":"120px","width":"120px"})
+                                    //bImg.css({"height":"120px","width":"120px"})
                                 }
                                
                                 aTool.append(bImg);
@@ -487,19 +487,9 @@ $(document).on("initializationComplete",function(){
                 $(".fa-lock").first().click();
                 break;
             case "addsection":
-                 var aTool =  whichTool("DIV");
+                 var aTool =  whichTool("SECTION");
                         aTool = configuredTool(aTool);
-                        aTool.addClass("section")
-                            .css({
-                                width:$("#content").width(),
-                                height:"700px",
-                                position:"relative",
-                                display:"inline-block",
-                                "background-image": "linear-gradient(navy, white)"
-                                //"background-color":"transparent"
-
-                            });
-
+                       
                        // h1 = $("<h1>",{"font-color":"white"}).text("Drop Content Here")
 
                         //aTool.append(h1);
@@ -523,7 +513,7 @@ $(document).on("initializationComplete",function(){
                         $("#content,body").css("height",total + 50);
                         updateLayersTool($(aTool).attr("id"));
                         setUpDiv(aTool);
-                        console.log(`Expanded is Content body width is ${$("#content").width()}`)
+                        console.log(`Expanded is iiContent body width is ${$("#content").width()}`)
                         CUSTOM_PXTO_VIEWPORT(aTool);
                         break;
 

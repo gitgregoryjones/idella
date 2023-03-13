@@ -5,7 +5,7 @@ var currentNode = {}
 
 var lastComputed = 0;
 
-var standardFields = "id:0;extends:none;alias:none;border:none;border-radius:0px;background-image:none;display:block;src:none;text:none;class:none;type:none;width:0;height:0;points:0;stroke:0";
+var standardFields = "id:0;extends:none;alias:none;border:none;border-radius:0px;background-image:none;display:flex;src:undefined;text:none;class:none;type:none;width:0;height:0;points:0;stroke:0";
 
 var simple = (CSSTEXT_HARDCODEDCSSTEXT + standardFields).split(";")
 
@@ -86,11 +86,12 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 		} 
 
 		if(key == "transition-duration"){
-			theClassObj["-webkit-transition-duration"] = $(element).css(key);
-			theClassObj["-moz-transition-duration"] = $(element).css(key);
-			//theClassObj["-o-transition-duration"] = $(element).css(key);
+			myValue = getTransitionDuration(element);
+			theClassObj["-webkit-transition-duration"] = myValue;
+			theClassObj["-moz-transition-duration"] = myValue
+			theClassObj["-o-transition-duration"] = myValue;
 			log.debug(`Wrote a ${key} directly to HTML`)
-			$(element).attr("transition-duration",myValue)
+			$(element).attr("transition-duration",getTransitionDuration(element))
 			log.debug(`Wrote a transition-duration directly to HTML ${$(element).attr("id")} ${element.attr(key)}`)
 		}
 	})
@@ -105,6 +106,21 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 	}
 
 	log.info("EXTENSIONS2.js: Background is now " + theClassObj["background-color"])
+	log.info("EXTENSIONS2.js: position is now " + theClassObj["position"])
+
+
+	var regularStyles = {};
+
+	try {
+		position = getComputedStyle(element[0]).position;
+		console.log(`I want to overwrite ${position}`)
+			theClassObj.position = position;
+
+	}catch(e){
+		console.log(`Get Computed error ${e}`)
+	}
+
+	//Object.assign(theClassObj,regularStyles);
 
 	theClassObj = computeDimensions(theClassObj)
 
@@ -152,7 +168,7 @@ function computeDimensions(theClassObj,Query,cWidth){
 
   	var adjuster = 1;
 
-  	var numbersInPXReg = /([+-]?\d+(?:\.\d+)?)(px)/g
+  	var numbersInPXReg = /([+-]?\d+(?:\.\d+)?)px/g
 
   	if(units =="vw"){
   		adjuster = (100 / theDocWidth);
@@ -221,7 +237,7 @@ function computeDimensions(theClassObj,Query,cWidth){
 			theClassObj["position"] = "relative";
 			//theClassObj["float"] = "left"
 			//theClassObj["width"] = "20px"
-			theClassObj["display"] = "inline-block";
+			theClassObj["display"] = "absolute";
 		}
 		
 	} 
@@ -285,6 +301,10 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
  		moveMe.removeClass("noborder");
  	}
 
+ 	//clean up class
+
+ 	cleanUpClassString(moveMe);
+
 
 	theClassObj = CONVERT_STYLE_TO_CLASS_OBJECT($(moveMe))
 
@@ -316,6 +336,25 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
 }
 
 
+function cleanUpClassString (element){
+  //  $(element).each(function(i){
+    var classArr = $(element).attr("class").split(/\s+/);
+    console.log(`This is the split.... ${classArr.toString()}`);
+    var cleanArr = ["cleaned"];
+    //var ignore = ["idella-photo","idella-squarepeg","idella-container",""]
+    for(i=0;i < classArr.length;i++)
+    {
+        if(!cleanArr.includes(classArr[i])){
 
+            cleanArr.push(classArr[i]);
+        } else {
+            console.log(`Saw ${classArr[i]} in cleanArr so skipping it for id ` );
+        }
+    }
+       
+    console.log(`The after is ${cleanArr.toString()}`)
+    $(element).attr("class",cleanArr.toString().replace(/,/g," "))
+//})
+}
 
 

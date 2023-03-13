@@ -84,6 +84,10 @@ function NOTES_makeNote(element,isActive){
 
 	//console.log("ERROR: Making Note for " + element[0].id)
 
+	/* Immediately return if we are not actively editing the page */
+	if(!editing){
+		return;
+	}
 
 	
 	if(!$(element).hasClass("dropped-object") && !$(element).attr("[type=option]")){
@@ -151,6 +155,7 @@ function NOTES_makeNote(element,isActive){
 							$(this).removeClass("fa-unlock").addClass("fa-lock")
 							widgets.removeClass("widget-on").addClass("widget-off")
 							$(`[layer=${$(myParent).attr("id")}]`).removeAttr("active");
+
 							return;
 							//$(document).click();
 						} else {
@@ -160,10 +165,109 @@ function NOTES_makeNote(element,isActive){
 							$(this).removeClass("fa-lock").addClass("fa-unlock")
 							widgets.removeClass("widget-off").addClass("widget-on")
 
+
 						 	NOTES_makeNote(myParent,true)
 
-						 	$("#editSpace").css({top:0,left:0,width:"99%",height:"99%",display:"inline-block",position:"relative"})
-							$("#editSpace").insertAfter($("#maincontent").find(`[layer=${myParent.attr('id')}]`)).css("top");
+						 	var zId = `#z${$(myParent).attr("id")}`
+						 	console.log(`Mini preview is ${zId}`)
+							var bgImg = $(zId).css("background-image");
+							console.log(`read background image as ${bgImg}`)
+
+							var miniObj = $(`#${$(myParent).attr("id")}`).clone(false);
+
+							miniObj.children().remove();
+
+							miniObj.attr("id",`z${miniObj[0].id}`);
+
+							$(miniObj).attr("style","");
+
+							miniObj.css("border","none").removeClass("submenu").removeClass("squarepeg").removeClass("dropped-object").removeClass("ui-resizable ui-draggable ui-draggable-handle ui-droppable")
+
+							miniObj.css({ width:$(".mini-preview").width(), height:$(".mini-preview").height(), top:0, left:0, position:"relative"}).removeClass(".dropped-object").find('[class^=ui]').remove();
+
+							var label = $(miniObj).attr("alias") ? $(miniObj).attr("alias") : miniObj.attr("type");
+
+							$("#header .details").find("input").val(label);
+
+
+							$(".mini-preview").children().remove();
+							
+
+
+							$(".mini-preview").append(miniObj);
+							//$(".mini-preview").css("background-color","purple")
+							/*
+						 	if($("#maincontent").attr("showing") == "0" || $("#maincontent").attr("showing") == undefined){
+								$("#editSpace").css({top:0,left:0,width:"99%",height:"99%",display:"inline-block",position:"relative"})
+								$("#editSpace").insertAfter($("#maincontent").find(`[layer=${myParent.attr('id')}]`)).css("top");
+							} else	if($("#maincontent").attr("showing") == "1"){
+								return;
+							}*/
+
+
+							$("#editSpace").css({top:0,left:0,width:"99%",height:"99%",display:"inline-block",position:"relative"})
+
+							/**. HIDE THE HEADER... NOT NEEDED SINCE WE FIGURED OUT THE SCROLL PROBLEM **/
+							$("#header").hide();
+
+						//	if(layerShowingAtPositionZero()){
+								/*
+								var blur = 2;
+								var duration = 1000;
+
+								//$("#editSpace").insertAfter($("#maincontent").find(`[layer=${myParent.attr('id')}]`)).css("top");
+								//do nothing...already showing
+								$("#header, #editSpace").css({filter:"blur(4px)"})
+
+								$("#editSpace").fadeOut(300,function(){
+									$("#editSpace").fadeIn();
+									$("#header,#editSpace").animate({filter:"blur(0)"},{
+										progress: function(anime, progress,remaining){
+											console.log(`I'm chaning blur to ${progress}/${remaining}`)
+											if(( 25 % Math.round(progress * duration/remaining)) == 0){
+													blur -= 1;
+													
+													$("#header,#editSpace").css({filter:`blur(${blur}px)`})
+
+											}
+
+										},
+										duration : duration
+									})
+								})
+								*/
+
+
+			//					} else {
+
+								$("#editSpace").insertAfter($("#maincontent").find(`[layer=${myParent.attr('id')}]`)).css("top");
+								//$("#maincontent").css({"overflow-y":"hidden"})
+
+								var contrast = 200;
+								var duration = 1000;
+
+								//$("#editSpace").insertAfter($("#maincontent").find(`[layer=${myParent.attr('id')}]`)).css("top");
+								//do nothing...already showing
+								//$("#header, #editSpace").css({filter:"contrast(200%)"})
+
+								/*$("#editSpace").fadeOut(300,function(){
+									$("#editSpace").fadeIn();
+									/*$("#header,#editSpace").animate({filter:"contrast(0%)"},{
+										progress: function(anime, progress,remaining){
+											console.log(`I'm chaning blur to ${progress}/${remaining}`)
+											if(( 25 % Math.round(progress * duration/remaining)) == 0){
+													contrast -= 1;
+													
+													$("#header,#editSpace").css({filter:`contrast(${contrast}px)`})
+
+											}
+
+										},
+										duration : duration
+									})
+								})*/
+						//	}
+						 
 
 
 						
@@ -186,6 +290,7 @@ function NOTES_makeNote(element,isActive){
 								$(this).removeClass("alreadyscrolled");
 							} 
 							
+
 							
 							
 

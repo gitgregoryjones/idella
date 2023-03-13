@@ -12,7 +12,7 @@ $(document).on("initializationComplete",function(){
 
 	$("#content").attr("expanded",true).css("width","100%")
 
-	$("div.section").length == 0 ? $("[data-action=addsection]").click() : 0;
+	$("section.section").length == 0 ? $("[data-action=addsection]").click() : 0;
 
 	
 
@@ -39,15 +39,15 @@ function reLoadLayers(){
 
 	log.debug(`Layer menu is ${$("#layer-menu").length}`);
 
-	log.debug(`Dummy length is ${$("#maincontent > .dummy").length}`);
+	log.debug(`Dummy length is ${$("#layer-content  .dummy").length}`);
 
 	log.debug(`Length of layers to draw is ${$("#content .dropped-object").length}`)
 
 	
 
-	if($("#maincontent > .dummy").length == 0){
+	if($("#layer-content > .dummy").length == 0){
 
-		$("#maincontent").children("[layer]").each(function(it){
+		$("#layer-content").children("[layer]").each(function(it){
 			if(it > 0){
 				$(this).remove();
 			}
@@ -55,7 +55,7 @@ function reLoadLayers(){
 	}
 
 
-	$("#content .dropped-object").each(function(){
+	$("#content").find(".dropped-object").each(function(){
 
 		var theLayer = updateLayersTool(this.id);
 	
@@ -101,17 +101,52 @@ function fit(){
 		return lD;
 }
 
+
+function layerShowingAtPositionZero(){
+
+
+	var atZero = false;
+
+
+
+	var tester = $("#maincontent").attr("showing") == undefined ?  false : $("#maincontent").attr("showing");
+
+	if(tester == false){
+		return atZero;
+	}
+
+	if(Math.abs($(`#${tester}`).offset().top -   $("#maincontent").offset().top) < 60){
+			atZero = true;
+	}
+
+	return atZero;
+}
+
+
 function scrollToLayer(aToolId){
 
 	t = $("#maincontent").offset().top;
 
+
+
+
 	$("#maincontent").children("[layer]").each(
 		function(it){
-			log.debug(`Looking at layer ${$(this).attr("layer")}`)
-			if($(this).attr("layer") == aToolId ){
-				$("#maincontent").animate({scrollTop:it* $(this).height()},1000,function(){
+			log.debug(`Looking at layer ${$(this).attr("layer")} and layerShowingAtPositionZero is ${layerShowingAtPositionZero()}`)
+			if($(this).attr("layer") == aToolId  && !layerShowingAtPositionZero()){
 
-				});
+
+
+			
+					console.log(`Ok to Scroll to Layer ${$(this).attr("layer")}`)
+					//$("#maincontent").animate({scrollTop:$(this).position().top	   },1000,function(){
+					$("#maincontent").animate({scrollTop:it * $(this).outerHeight() + 55},1000,function(){
+							//$("#maincontent").attr("showing",`z${aToolId}`);
+							//$(".layer").hide();
+						
+							//$(".mini-preview").css({width:"30px",height:"30px"})
+					});
+				
 			}
 		}
 		);
@@ -124,11 +159,15 @@ function setRatios(content){
 
 	var lRatio = content[0].offsetLeft/content.parent().outerWidth();
 
-	var tRatio = content[0].offsetTop/content.parent().outerHeight();	
+	var tRatio = content[0].offsetTop/content.parent().outerHeight();
+
+	console.log(`Error computing size for element is ${JSON.stringify(content.oldMe)} for ${content.attr("id")} and  parent ${content.parent().attr("id")} is ${content.parent().outerWidth()}`)		
 
 	content.oldMe.ratio = {left:lRatio, top:tRatio};
 
-	console.log(`Error computing ratio for element is ${JSON.stringify(content.oldMe.ratio)} for ${content.attr("alias")}`)
+	console.log(`Error computing ratio for element is ${JSON.stringify(content.oldMe.ratio)} parent height was ${content.parent().outerHeight()}for ${content.attr("id")}`)
+
+
 
 	var kids = []
 
@@ -158,17 +197,13 @@ function setRatios(content){
 
 }
 
-function resizeOrGrowElement(content,shrinkMe){
+function resizeOrGrowElement(content,growMe){
 
 
 	//console.log(`Error TIme TO DO IT The allowedAmountToGrow to grow or shrink is ${window.allowedAmountToGrowOrShrink}`)
 
-	/*
-	var theSavedTransitionDuration = content.css("transtion-duration");
-	if(key == "transition-duration"){
-			theClassObj["-webkit-transition-duration"] = $(element).css(key);
-			theClassObj["-moz-transition-duration"] = $(element).css(key);
-			//theClassObj["-o-transition-duration"] = $(element).css(key);
+	
+	disableTransition(content);
 
 	//content.css({opacity:1,"transition-duration":"0s","-webkit-transition-duration":"0s","-moz-transition-duration":"0s"});
 
@@ -178,18 +213,18 @@ function resizeOrGrowElement(content,shrinkMe){
 	//CSS_TEXT_saveCss(moveMe, theClassObj)*/
 
 	/** Now expand or contract the Parent */
-	if(shrinkMe != undefined && shrinkMe == true ) {
+	if(growMe != undefined && growMe == true ) {
 
 			content.css({width:content.oldMe.width/1.5, height:content.oldMe.height/1.5})
 			//window.expanded = false;
 
-		} else {
+	} else {
 			console.log(`Error Expanded is time to grow up`)
 
 			if(content[0].id == "content"){
 				if(content.oldMe.width  * 1.5 > screen.width * 1.01){
-					console.log(`Error Short circuit because this content can't grow anymore`);
-					return [];
+					console.log(`Error Short circuit because this id [${content[0].id}] can't grow anymore ${content.oldMe.width}`);
+					//return content;
 				}
 			}
 
@@ -205,6 +240,8 @@ function resizeOrGrowElement(content,shrinkMe){
 
 	console.log(`Error applying Left and Top offset ${newContentHeightAndWidthOffset} for ${content.attr("alias")}`)
 
+	
+
 	/* Set the Left and Top Offset for the Content */
 	content.css({left:newContentHeightAndWidthOffset.left, top: newContentHeightAndWidthOffset.top})
 
@@ -214,15 +251,27 @@ function resizeOrGrowElement(content,shrinkMe){
 
 		console.log(`Error setting coords on child is ${child.attr("id")} for ${child.attr("alias")}`)
 
-		resizeOrGrowElement(child,shrinkMe);
+		resizeOrGrowElement(child,growMe);
 
 	})
 
+	//reset the old duration now that everything is resized
+	//
+
+
+	
+
 	CUSTOM_ON_RESIZE_STOP_LOGIC({target:content[0]},{element:content})
+
+	enableTransition(content)
+
+
 
 	content.kids = kids;
 
 	console.log(`Error newContentHeightAndWidth as parent is ${JSON.stringify(newContentHeightAndWidthOffset)} for ${content.attr("alias")}`)
+
+	
 
 	return content;
 
@@ -230,12 +279,21 @@ function resizeOrGrowElement(content,shrinkMe){
 }
 
 
-function shrinkOrGrowParent(content,shrinkMe){
+function shrinkOrGrowParent(content,growMe){
+
+	if($("#content").attr("expanded") != undefined && $("#content").attr("expanded") === 'false' && growMe == false /* So backwards and nonintuitive..fix later*/){
+
+		console.log(`Error Calling Short Circuit.  No Need to Grow Anymore from Edit Screen`)
+		$("#content").attr("expanded",true);
+		return;
+	}
 
 	console.log(`Error calling setRatios for Parent ${content.attr("id")} for ${content.attr("alias")}`)
 
 	//ShowOverlays to get Proper Sizing for Save
 	$("[type=OVERLAY]").show();
+
+
 
 	content = setRatios(content);
 
@@ -246,7 +304,7 @@ function shrinkOrGrowParent(content,shrinkMe){
 	var kids = [];
 
 	console.log(`Error calling Resize or Grow for Parent ${content.attr("id")} for ${content.attr("alias")}`)
-	content = resizeOrGrowElement(content, shrinkMe);
+	content = resizeOrGrowElement(content, growMe);
 
 	$("[type=OVERLAY]").hide();
 	
@@ -262,10 +320,11 @@ function updateLayersTool(aToolId,aParentId){
 		console.log(`Expanded is A LOT ${ $("#content").attr("expanded")}`)
 
 		//$("#content").css({width:"70%",left:0});
+		/*
 
 		$(".close-window").off().on("click",function(){
 
-			var theHeight = $("#layer-menu").height() > 0 ? 0 : "100%";
+			var theHeight = $("#layer-menu").height() > 50 ? 50 : "100%";
 
 			//$("#content").css("left","6rem").css({transform:"scale(1)"})
 			
@@ -296,7 +355,7 @@ function updateLayersTool(aToolId,aParentId){
 					$(".close-window").removeClass("fa-plus").addClass("fa-minus");
 				}
 				})
-		});
+		});*/
 
 
 				var foundInMenu = false;
@@ -316,7 +375,7 @@ function updateLayersTool(aToolId,aParentId){
 				<!-- Setup Layers //-->
 				log.warn("Building tool for layer " + $(aTool).attr("id"));
 
-				if( $("#maincontent").find("[layer="+$(aTool).attr("id")+"]").length > 0){;
+				if( $("#maincontent").find("[layer="+$(aTool).attr("id")+"]").length > 0){
 
 					log.debug("Already Found this layer in layers menu abort. Highlighting it");
 					$("#maincontent").find(".layer").removeClass("highlight");
@@ -331,13 +390,15 @@ function updateLayersTool(aToolId,aParentId){
 				}
                 //From edit-body.html
 
-                layer = $("#maincontent").children(".layer").first().clone(false).css({display:"block"});
+                layer = $("#maincontent").find(".layer").first().clone(false).css({display:"block"});
 
                 layer.find(".preview-window").text("");
 
                 layer.find(".dropped-object").removeClass("overlay");
                 //.css({display:"block"});
                 layer.find(".fa-compress-alt").removeClass("fa-compress-alt")
+
+                layer.removeClass("dummy");
 
 				//setup layer unique id using aTool id
 				$(layer).attr("layer",$(aTool).attr("id"));
@@ -378,6 +439,8 @@ function updateLayersTool(aToolId,aParentId){
 
                 miniObj = $(aTool).clone(false);
 
+                miniObj.find(".dropped-object").remove();
+
 				$(miniObj).attr("id","z"+$(miniObj).attr("id"));
 
 
@@ -413,7 +476,8 @@ function updateLayersTool(aToolId,aParentId){
                 	//$(pwindow);
 				}
 
-				$(layer).find('.details > [type=text]').on("mouseover",r_makeLayerTextInputField).attr("text-for",aToolId);
+				//Hide MouseOver for this.  Kinda Confusing
+				//$(layer).find('.details > [type=text]').on("mouseover",r_makeLayerTextInputField).attr("text-for",aToolId);
 
 				$(layer).removeClass("dropped-object");
 
@@ -475,7 +539,9 @@ function updateLayersTool(aToolId,aParentId){
 					
 					//$(".layer").removeClass("highlight");
 					//$(aTool).css('border',$(aTool).attr("previous-style"));
-					$(aTool).find("[id$=lock]").addClass("alreadyscrolled").click();
+					/** alreadyScrolled can be added to keep the layer from scrolling since the user already is on the list**/
+					//$(aTool).find("[id$=lock]").addClass("alreadyscrolled").click();
+					$(aTool).find("[id$=lock]").click();
 					
 					//$(this).addClass("highlight");
 
@@ -484,22 +550,10 @@ function updateLayersTool(aToolId,aParentId){
 					
 					var jump = $(aTool);
 					//CUSTOM_pressEscapeKey();
-					var new_position = $(jump).offset().top;
-
-					var final_position = new_position + $("#content").scrollTop() + new_position/2;
-
 					
-					log.debug(`New Position is ${new_position} and final is ${final_position}`);
-					/*$('#drawSpace').stop().animate({ scrollTop: final_position}, 500,function(){
-						NOTES_makeNote($(aTool),true);
-						
-						$(aTool).mouseover();
-						//CUSTOM_pressEscapeKey();
-						//$("[data-action=lessOptions]").click();
-					});*/
 					$("body,html").animate(
 				      {
-				        scrollTop: $(`#${aToolId}`).offset().top
+				        scrollTop: aTool.offset().top - aTool.outerHeight()
 				      },
 				      800, //speed
 
@@ -512,7 +566,8 @@ function updateLayersTool(aToolId,aParentId){
 
 				});
 
-				$(layer).find(".details > [type=text]").on("mouseover",r_makeLayerTextInputField)
+				//Hide This Functionality
+				//$(layer).find(".details > [type=text]").on("mouseover",r_makeLayerTextInputField)
 
 				//Append The Layer Finally
 				if(aParentId){
@@ -553,6 +608,7 @@ function updateLayersTool(aToolId,aParentId){
 					log.debug(`Looking for this layer to remove #${key} from #layer-menu`);
 	
 					$("#maincontent").find(`[layer=${key}]`).remove();
+					$("#editSpace").hide();
 
 				});
 
@@ -603,6 +659,11 @@ function updateLayersTool(aToolId,aParentId){
             		$(layer).find(".runningman").hide();
             	}
 
+            	if(aTool.is("[type=OVERLAY]")){
+
+            		$(layer).find('.fa-align-center').remove();
+            	}
+
 				//reverse the list
 				//$("#layer-menu").children().each(function(i,li){$("#layer-menu").prepend(li)})
 				var menu = $("#maincontent");
@@ -616,6 +677,7 @@ function updateLayersTool(aToolId,aParentId){
 				$(layer).addClass("highlight-layer");
 
 				//$( ".search-layers" ).catcomplete("option", {source:fit()});
+
 
 				return layer;
 }

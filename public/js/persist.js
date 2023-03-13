@@ -169,7 +169,7 @@ function toJSON(element){
 }
 
 
- module.exports.getSectionFromSheet = getSectionFromSheet;
+ //module.exports.getSectionFromSheet = getSectionFromSheet;
  /*
 
 function trimObject(obj,customFields){

@@ -1,3 +1,6 @@
+
+//var CSSTEXT_validStyles = require("../public/js/cssText")
+
 function isObject (value) {
 return value && typeof value === 'object' && value.constructor === Object;
 }
@@ -30,7 +33,7 @@ function INGEST_populateList(child,exampleObject,idx){
 *	 param	content: "valid json object", 
 *    param	object:   jQuery reference to object where content will be copied, 
 */
-function INGEST_populateObject(content, object){
+function INGEST_populateObject(content, object, skinny){
 
 	object = $(object);
 	
@@ -66,7 +69,7 @@ function INGEST_populateObject(content, object){
 					var before = object.children("[type]").not("[alias^=cntrl]").length;
 					console.log("BEFORE IS " + before)
 					console.log(JSON.stringify(child));
-					INGEST_populateList(child,object.children("[type]").not("[alias^=cntrl]").first(),key);
+					INGEST_populateList(child,object.children("[type]").not("[alias^=cntrl]").first(),key,skinny);
 					
 					//for(childIdx in children){
 					//	child = children[childIdx];
@@ -107,7 +110,7 @@ function INGEST_populateObject(content, object){
 							var theContent = theList.pop()
 							console.log("page Object was " + pageObject.length + " id " + pageObject.attr("id")) 
 							console.log("The content is " + theContent);
-							INGEST_populateObject(theContent,pageObject);
+							INGEST_populateObject(theContent,pageObject,skinny);
 							++i;
 
 						})
@@ -120,9 +123,11 @@ function INGEST_populateObject(content, object){
 
 				var childObject = object.find(`[alias=${key}]`);
 
-				INGEST_populateObject(content[key],childObject);
+				INGEST_populateObject(content[key],childObject,skinny);
 
 			}else {
+
+
 
 				if(CSSTEXT_validStyles.hasOwnProperty(key)){
 					console.log("SETTING ANOTHER KEY AS CSS "+ key + " with value " + content[key]);
@@ -140,7 +145,12 @@ function INGEST_populateObject(content, object){
 						//$(`#content[key]`).attr("edittxt",content[key]);
 						//object.attr("edittxt",content[key])
 					}
-					$(object).attr(key,content[key])
+
+					if(!skinny) {
+						$(object).attr(key,content[key])
+					} else {
+						console.log(`Not writing attribute ${key} with value ${content[key]} because user specified skinny param = ie. no attributes written only CSS Styles`)
+					}
 				}
 			}
 
@@ -156,4 +166,4 @@ function INGEST_populateObject(content, object){
 	}
 }
 	
-
+//module.exports.INGEST_populateObject

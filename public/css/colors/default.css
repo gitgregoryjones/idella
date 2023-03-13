@@ -1,0 +1,175 @@
+.navbar-nav, #maincontent, #header, #layer-footer, .navbar, body, .layer {
+	background-color:#3C3C3C;
+	border:double 2px solid black;
+	margin: 0;
+	padding: 0;	
+	border-top: 1px solid white;
+	--background-color:pink;
+	--background: linear-gradient(limegreen,#3C3C3C,black);
+
+}
+
+
+#header {
+	position: fixed;
+	z-index:900;
+	width:380px;
+
+}
+
+
+
+
+#layer-content {
+	margin-top:50px;
+}
+
+/** Top Navigation **/
+.navbar, .ml-auto {
+	--background-image:url(https://storage.needpix.com/rsynced_images/gradient-2000574_1280.png);
+	--background-image:url(https://cdn.pixabay.com/photo/2017/07/07/22/43/purple-2483041_1280.png) !important;
+	background-size: cover;
+	background-repeat: repeat;
+	--background-color: orange;
+	--border-bottom-color: transparent;
+	background-image:url(https://storage.needpix.com/rsynced_images/gradient-2000574_1280.png);
+
+}
+
+/** To Specifically Style Left Nav **/
+.babynav {
+	--background: linear-gradient(#3B98D6,#3C3C3C,black);
+	--background-image:url(https://storage.needpix.com/rsynced_images/gradient-2000574_1280.png);
+	background-color:#F79321;
+	background-color:#0973BA;
+	top:80px;
+}
+
+.layer{
+	background-color: #007AD2;
+	background-color: #3B98D6;
+	background-color: black;
+	outline: 1px solid white;
+	border-left: 4px solid transparent;
+	height:120px;
+	
+
+}
+
+.highlight-layer {
+	--background-color: #77BC2C !important;
+	background-color: #2F3FAD !important;
+	--filter: blur(1px);
+	--filter:grayscale(1)
+	--background-color: black !important;
+	border: 4px solid black;
+	color:white;
+
+
+}
+
+
+
+.preview-window {
+	filter:grayscale(50%);
+	
+}
+
+
+
+
+.layer:hover {
+	border-bottom-color: transparent !important;
+	border-top-color: transparent !important;
+	border-left: 4px solid white !important; 
+
+}
+
+
+.ui-state-default {
+	--background-color: #818181 !important;
+	background-color: #F2F2F2 !important;
+	color: #E4BC83 !important;
+	font-weight: 900 !important;
+	border-left:none !important;
+	transition-duration: .3s;
+	
+}
+
+
+.ui-state-active:before {
+    content: "\25BC";
+    margin-right: 6px;
+    color:green;
+    font-size: medium;
+}
+
+.ui-state-active {
+	background-color: #262627 !important;
+	border-top-left-radius: 10px;
+
+}
+
+ul.tabul {
+	background-color: transparent;
+}
+
+.nav-link  {
+	color:#818181 !important;
+	transition-duration: .1s;
+	border: 4px solid transparent;
+}
+
+.nav-link:hover {
+    background: none !important;
+    box-shadow: none;
+   -- border:none;
+    border-right: 4px solid white;
+}
+
+/** Main Edit Content Area */
+.ui-tabs {
+    background: #1e1e1e !important;
+    transition-duration: .3s;
+}
+
+.styleRow {
+	color:orange !important;
+}
+
+input[for]:hover{
+
+	color:white;
+}
+
+body {
+	width: 100vw !important;
+}
+
+.project-control > .iicon {
+    width: 40px;
+    --padding-bottom: 0px;
+    padding: 5px;
+    --display: inline-block;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-left: 2px solid #D1D3E2;
+    border-top: 2px solid #D1D3E2;
+    border-right: 2px solid #D1D3E2;
+    border-bottom: 2px solid #D1D3E2;
+    border:1px solid white;
+    --font-weight: 900;
+    transition-duration: 0.3s;
+    color: white;
+    font-size: medium;
+    background-color: black;
+}
+
+
+.project-control > .iicon:hover {
+   --zoom:1.10;
+   box-shadow: none;
+}

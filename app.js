@@ -10,6 +10,7 @@ var users = require('./routes/users');
 var revisions = require('./routes/revisions');
 var rewrites = require('./routes/rewrites');
 var download = require('./routes/downloadsite');
+var proxy = require("./routes/proxy");
 var site = require('./routes/site');
 var distort = require('response-distort')
 var url = require('url')
@@ -21,6 +22,7 @@ var compression = require('compression')
 var express = require('express')
 var app = express()
 app.use(compression())
+
 
 
 // compress all responses 
@@ -46,12 +48,14 @@ app.use(cookieParser());
 
 
 
+
 //app.use('/', index);
 app.use('/users', users);
 app.use('/revisions', revisions);
 app.use('/site', site);
 app.use('/rewrites',rewrites);
 app.use('/download',download);
+app.use("/proxy",proxy);
 
 process.env.HOMEDIR = path.join(__dirname);
 
