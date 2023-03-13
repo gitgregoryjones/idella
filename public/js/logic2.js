@@ -667,7 +667,7 @@ function whichTool (tool){
 			editModeHtml:"<input>",
 			droppable:true,
 			editModeStyle:"border:0;width:10vw",
-			class:"button red"
+			class:"button red button"
 		});
 		break;
 		case "SCRL":
@@ -685,7 +685,7 @@ function whichTool (tool){
 			droppedModeStyle:"position:fixed",
 			droppable:true,
 			class:"header",
-			position:"fixed"
+			position:"fixed hdr"
 		});
 		break;
 		case "DIV":
@@ -700,7 +700,7 @@ function whichTool (tool){
 		theTool = new GenericTool({
 			type:type,
 			droppable:true,
-			class:"squarepeg"
+			class:`squarepeg idella-${type.toLowerCase()}`
 		});
 		break;
 
@@ -712,7 +712,7 @@ function whichTool (tool){
 			id: svgId,			
 			droppedModeHtml: new CustomShape(svgId).asHTML(),
 			droppable:true,
-			class:"squarepeg"
+			class:"squarepeg svg"
 		});
 		break;
 
@@ -741,7 +741,7 @@ function whichTool (tool){
 			droppedModeStyle:"",
 			droppedModeHtml:'<div><video controls preload="auto" loop autoplay><source class="content-image" src="https://wave.video/embed/63faf5767dd6ea41af407d5c/63faf5767dd6ea41af407d61.mp4" psrc="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4"/></video></div>',
 			droppable:true,
-			class:"squarepeg"
+			class:"squarepeg video"
 		});
 		break;
 		case "AUD":
@@ -754,7 +754,7 @@ function whichTool (tool){
 			//droppedModeHtml:'<div><audio controls title="sound file" class="content-image" src="http://soundbible.com/mp3/descending_craft-Sonidor-991848481.mp3" type="video/mp4">Your browser does not support the audio element.</audio></div>',
 			droppedModeHtml: new Equalizer(audId).asHTML(),
 			droppable:true,
-			class:"squarepeg"
+			class:"squarepeg audio"
 		});
 		break;
 		case "SITE":
@@ -836,7 +836,7 @@ function whichTool (tool){
 			class:"texttool",
 			friendlyName : "generic",
 			droppedModeHtml:`<${type} width="100%" height="100%" type="${type}"></${type}>`,
-			class:"generictext"
+			class:`generictext idella-${type.toLowerCase}`
 
 		});
 		break;
@@ -860,7 +860,7 @@ function GenericTool(options){
 	this.editModeHtml = "<textarea>";
 	this.editModeStyle = "";
 	this.editModeAttribute = "value";
-	this.class = "";
+	this.class = `squarepeg ${options.type.toLowerCase()}`;
 	this.zIndex = CUSTOM_incrementZIndex();
 	this.friendlyName = this.type;
 	this.droppable = true;

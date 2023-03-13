@@ -21,12 +21,14 @@ class Card {
 
  			this.id = id;
 
- 			this.html = `<card id="${id}" class="card dropped-object" type="CARD">
-						  <div id="${id}-photo" class="dropped-object notdraggable resizable photo" type="IMG"></div>
+ 			Card.counter++;
+
+ 			this.html = `<card id="${id}-${Card.counter}" class="card dropped-object" type="CARD">
+						  <div id="${id}-photo-${Card.counter}" class="dropped-object notdraggable resizable photo" type="IMG"></div>
 						  
-						  <div id="${id}-container" class="container notresizable notdraggable" type="DIV">
-						    <div id="${id}-headline-container" class="dropped-object headline notresizable notdraggable" type="T"><div lines="1" chars="0" style="display:inline-block width:100%" contenteditable=\"false\" id="text-${id}" class="text-detail">Enter Text</div></div>
-						    <div id="${id}-subtext-container" class="dropped-object subtext notdraggable notresizable" type="T"><div lines="1" chars="0" style="display:inline-block width:100%" contenteditable=\"false\" id="text-${id}" class="text-detail">Enter Text</div></div>
+						  <div id="${id}-container-${Card.counter}" class="container notresizable notdraggable" type="DIV">
+						    <div id="${id}-headline-container-${Card.counter}" class="dropped-object headline notresizable notdraggable" type="T"><div lines="1" chars="0" style="display:inline-block width:100%" contenteditable=\"false\" id="text-${id}" class="text-detail">Enter Text</div></div>
+						    <div id="${id}-subtext-container-${Card.counter}" class="dropped-object subtext notdraggable notresizable" type="T"><div lines="1" chars="0" style="display:inline-block width:100%" contenteditable=\"false\" id="text-${id}" class="text-detail">Enter Text</div></div>
 						  </div>
 						</card>`;
 

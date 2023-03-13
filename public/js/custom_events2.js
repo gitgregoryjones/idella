@@ -1323,7 +1323,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 			event.preventDefault();
 			event.stopPropagation();
 
-			if($(event.target).is("[type=IMG],[type=DIV],[type=CIRCLE]")){
+			if($(event.target).is("[type=IMG],[type=DIV],[type=CIRCLE],section")){
 				log.debug("starting image upload")
 
 				$("#fileElem").click();
@@ -1357,7 +1357,7 @@ CUSTOM_ELEMENT_DOUBLECLICK_LOGIC = function(event){
 			attr = $(myParent).attr("type");
 
 
-			if(attr != "T" && attr != "BTN" &&  attr != "IMG" ){
+			if(attr != "T" && attr != "BTN" &&  attr != "IMG"){
 
 					log.debug("CUSTOMEVENTS.js:DOUBLE_CLICK cancelled " + attr )
 					return;
@@ -2095,7 +2095,7 @@ function setUpDiv(div){
 	} 
 
 	
-	if(div.is("[type=IMG],[type=DIV],[type=AUDIO],[type=CIRCLE],[type=VID],#content")){
+	if(div.is("[type=IMG],[type=DIV],[type=AUDIO],[type=CIRCLE],[type=VID],#content,.section")){
 		//$.event.trigger("translateTxt",[div])
 		div.on("dblclick",CUSTOM_ELEMENT_DOUBLECLICK_LOGIC);
 	}

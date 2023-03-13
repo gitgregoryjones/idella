@@ -32,16 +32,16 @@
 	background-repeat: repeat;
 	--background-color: orange;
 	--border-bottom-color: transparent;
-	--background-image:url(https://storage.needpix.com/rsynced_images/gradient-2000574_1280.png);
+	background-image:url(https://storage.needpix.com/rsynced_images/gradient-2000574_1280.png);
 
 }
 
 /** To Specifically Style Left Nav **/
 .babynav {
 	--background: linear-gradient(#3B98D6,#3C3C3C,black);
-	--background-image:url(https://storage.needpix.com/rsynced_images/gradient-2000574_1280.png);
+	background-image:url(https://storage.needpix.com/rsynced_images/gradient-2000574_1280.png);
 	background-color:#F79321;
-	background-color:yellowgreen;
+	--background-color:yellowgreen;
 	top:80px;
 }
 

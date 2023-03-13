@@ -338,10 +338,11 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
 
 function cleanUpClassString (element){
   //  $(element).each(function(i){
+		//$(element).removeClass(`idella-${$(element).attr("type").toLowerCase()}`)
     var classArr = $(element).attr("class").split(/\s+/);
     console.log(`This is the split.... ${classArr.toString()}`);
     var cleanArr = ["cleaned"];
-    //var ignore = ["idella-photo","idella-squarepeg","idella-container",""]
+    //var dontWrite = ["idella-photo","idella-squarepeg","idella-container","idella-video"]
     for(i=0;i < classArr.length;i++)
     {
         if(!cleanArr.includes(classArr[i])){
