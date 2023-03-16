@@ -318,7 +318,11 @@ function SLIDER_init(list){
 
 	numberHidden = list.children(".dropped-object").not("[alias^=CNTRL]").length - canViewAtOneTime;
 
-	numberToSlide = canViewAtOneTime;	
+	numberToSlide = canViewAtOneTime;
+
+
+	//make left button
+	$(`<i alias="CNTRL-LEFT" class="left-arrow">&&#x2C2;</i>`).appendTo(list);	
 
 	return list;
 }

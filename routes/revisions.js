@@ -198,6 +198,7 @@ function writeRevision(revisionDirectory,currentRevision,revDate,siteName){
 		$("body").find('#layer-menu').remove();
 		$("body").find('.navbar-nav,#idella-search').remove();
 		$("body").find(".toolhotspot,.ui-resizable-handle, .ui-resizable-e").remove();
+		$("body").addClass("hover");
 
 		console.log(`Loaded Cheerio Done`)
 

@@ -68,6 +68,18 @@ body.editing a[type=anchor] {
 	border:1px solid red;
 }
 
+.list .left-arrow {
+		background-color: white;
+		color:black;
+		width:20vw;
+		heigh:20vw;
+		float:left;
+		position: relative;
+
+		content: &#x2C2;
+
+}
+
 .ui-icon-gripsmall-diagonal-se {
     background-position: 0px 0px;
 }
