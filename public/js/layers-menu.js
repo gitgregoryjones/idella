@@ -307,6 +307,10 @@ function shrinkOrGrowParent(content,growMe){
 	content = resizeOrGrowElement(content, growMe);
 
 	$("[type=OVERLAY]").hide();
+
+	$("[type=LIST] .gallery").each(function(){
+		SLIDER_init($(this))
+	})
 	
 
 }

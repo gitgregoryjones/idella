@@ -193,6 +193,7 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 		$(document).click();
 		event.preventDefault()
 		NOTES_makeNote(hotObj)
+		hotObj[0].scrollIntoView({ behavior: "smooth", block: "center"});
 
 	//if delete key 
 	} else if(key == 39 && event.shiftKey || key == 40 && event.shiftKey){
@@ -201,8 +202,10 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 		$(".custom-menu").css("top","-3000px")
 		$("[data-action=insertAfter]").click();
 		$(document).click();
+
 		event.preventDefault()
 		NOTES_makeNote(hotObj)
+		hotObj[0].scrollIntoView({ behavior: "smooth", block: "start"});
 
 	//if delete key 
 	}  // Shift + DELETE Automatically delete
@@ -1768,6 +1771,7 @@ function setUpAnchors(div){
 
 //file input field is actually created in stylesTabs2.js dynamically
 //attached it here because it was too much trouble attaching it in normal HTML and hiding/rewriting after autoSave feature enabled
+
 function CUSTOM_HANDLEFILES(files,audio) {
 
   console.log(`Files length is ${files.length}  ${JSON.stringify(files)}`)	
@@ -1800,9 +1804,15 @@ function CUSTOM_HANDLEFILES(files,audio) {
     	reader.onload = (function(aImg) { return function(e) { 
     	 $(aImg).css({"background-image":"url(" + e.target.result + ")","background-size":"cover"})
     	 $(aImg).addClass("convertImage");
+    	
     	 CUSTOM_PXTO_VIEWPORT($(aImg),$(aImg).position().left, $(aImg).position().top) 
+
+
     	}; })(img);
     }
+
+    console.log("Wrote files")
+
 
     reader.readAsDataURL(file);
     
@@ -1868,6 +1878,8 @@ function disableHoverEvents(){
 
 function enableTransition(element){
 
+	
+
 	var element = $(element)
 
 	if(element[0].hasAttribute("done-moving")){
@@ -1880,11 +1892,15 @@ function enableTransition(element){
 		element.removeAttr("done-moving");
 
 		console.log(`Error Adding old transition value back ${getTransitionDuration(element.target)} for ${element[0].id}`)
+
+		CUSTOM_PXTO_VIEWPORT(element)
 	}
 
 }
 
 function disableTransition(element){
+
+	
 
 	var element = $(element)
 

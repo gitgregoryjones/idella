@@ -79,10 +79,23 @@ function refreshSlashes(){
 
 }
 
+function NOTES_makeHighLightBox(element){
+
+	element = $(element)
+
+	$(".dropped-object").removeClass("highlight");
+
+	element.addClass("highlight");
+
+
+}
+
 
 function NOTES_makeNote(element,isActive){
 
 	//console.log("ERROR: Making Note for " + element[0].id)
+
+	//NOTES_makeHighLightBox(element);
 
 	/* Immediately return if we are not actively editing the page */
 	if(!editing){
@@ -451,6 +464,7 @@ function NOTES_makeNote(element,isActive){
 
 			color = $(element).css("background-color")
 			image =  $(element).is("[type=VID],[type=AUDIO],[type=SITE]") ? $(element).find(".content-image").attr("src") : $(element).css("background-image")
+			var hover = r_lookupHover(element);
 			txtColor = $(element).css("-webkit-text-fill-color")
 			fontFamily  = $(element).css("font-family")
 			href = $(element).attr("href") != undefined ? $(element).attr("href") : "none" ;
@@ -559,7 +573,8 @@ function NOTES_makeNote(element,isActive){
 				}
 
 			} else {
-				theMsg.append(" <div>Source: <input type='text' class='quick-disabled quick-disabled-image-field' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
+				theMsg.append(" <div>Src: <input type='text' class='quick-disabled quick-disabled-image-field' name='" + videoOrImage + "' parent='" + element.id + "' value='" + image + "'></div>")
+				theMsg.append(" <div>onHover: <input type='text' class='quick-disabled quick-disabled-image-field' name='onhover' parent='" + element.id + "' value='" + hover + "'></div>")
 			}
 
 			if(!element.is("[type=SVG]")){
@@ -878,7 +893,9 @@ function QUICK_EDIT(evnt){
 	//Turn of autosave temporarily
 	SAVE_okToSave = false;				
 
-	var parentId =  "#" + $(evnt.target).attr("parent");
+	//if we got here from styleTabs, use the "for" attribute, else use the parent attribute that came from popup Notes
+	var parentId =  $(evnt.target).attr("parent") != undefined ? "#" + $(evnt.target).attr("parent") : `#${$(evnt.target).attr("for")}`
+
 
 	var parent = $(parentId);
 
@@ -924,7 +941,14 @@ function QUICK_EDIT(evnt){
 
                         $(parent).css(label,theValue)
 
-                        $(parent).css("background-size","cover")
+                        if($(evnt.target).val().startsWith("none")){
+                        	 $(parent).css({"background-image":"url(https://res.cloudinary.com/practicaldev/image/fetch/s--P-zvMTgt--/c_imagga_scale,f_auto,fl_progressive,h_900,q_auto,w_1600/https://dev-to-uploads.s3.amazonaws.com/i/qyix6eyhrnc8x9c44yp2.jpg)"})
+                        } else {
+                        	  $(parent).css({"background-color":"transparent"})
+                        }
+                       
+
+                         $(parent).css({"background-size":"cover"})
 
                     
 				

@@ -799,6 +799,8 @@ log.debug("CONTEXTMENU.js: I am writing fields of length " + fields.length)
                 }else if(label == "src" || label == "align" ){
 
                     $(currentCtx).find(".content-image").attr(label,$(evnt.target).val())
+
+
                     //https://www.uvm.edu/~bnelson/computer/html/wrappingtextaroundimages.html
                     if(label == "align"){
                         $(currentCtx).find("br").attr(clear,$(evnt.target).val())

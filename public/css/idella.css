@@ -21,6 +21,13 @@
 
 <style>
 
+.notransition {
+
+	-webkit-transition-duration: none !important;
+  -moz-transition-duration: none !important;
+  -o-transition-duration: none !important;
+  transition-duration: none !important;
+}
 
 .ui-wrapper{
 	position: inherit;
@@ -738,6 +745,18 @@ div.tool:hover {
 	border: 2px dashed #3057C9;
 }
 
+
+#idella-highlight-box{
+	background-color:transparent;
+	position:absolute; 
+	top:120;
+	left:120;
+	width:280;
+	height:440;
+	--display:none;
+	documentation: highlight-box is used to highlight the currently selected element for editing, It will dynamically resize around the element by using JS;
+}
+
 .debug-border-style, .squarepeg {
 	/* --border: 3px dashed; */
 	/* --border-color: black; */
@@ -912,7 +931,7 @@ li.header-row:after {
 
 }
 
-#content [type=VID] {
+.video {
 	height: 200px;
 	width:300px;
 }
@@ -2002,7 +2021,7 @@ Edit box
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
-.card  .photo {
+.photo {
   border-radius: 5px 5px 0 0;
   height: 60%;
   width:100% !important;
@@ -2270,11 +2289,12 @@ Edit box
 
 .highlight {
 
-	border: 1px solid red !important;
-	background-color: rgb(0,0,0,.4) !important;
+	--border: 1px solid red !important;
+	--background-color: rgb(0,0,0,.4) !important;
 	--background-image:url(https://www.interiorroofing.com/wp-content/plugins/super-forms/assets/images/drop-here.png) !important;
 	background-size: contain;
 	background-repeat: no-repeat;
+	--filter: blur(4px);
 	
 	--transform: scale(1.05) !important;
 

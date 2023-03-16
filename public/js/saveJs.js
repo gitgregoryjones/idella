@@ -11,9 +11,10 @@ function saveJs(theElem, script){
 	log.info("Entering save JS with id " + id)
 	
 
-	theFunction = "<!-- BEGIN " + id + " //-->\n\n$(document).ready(\n\tfunction(){\n\t" + script.trim() + "\n\t})<!-- END "+ id + "//-->";
+	//theFunction = "<!-- BEGIN " + id + " //-->\n\n$(document).ready(\n\tfunction(){\n\t\t" + script.trim() + "\n\t})\n<!-- END "+ id + "//-->";
+	theFunction = "<!-- BEGIN " + id + " //-->\n" + script.trim() + "\n<!-- END "+ id + "//-->";
 	//theFunction = "<!-- BEGIN " + id + " //-->\n" + script.trim() + "\n<!-- END "+ id + "//-->";
-	//eval(theFunction)
+	eval(theFunction)
 
 	//test to see if style is not found, add it.  If found, replace it
 	if($("script.default").html().match(re) == null){

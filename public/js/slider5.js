@@ -7,6 +7,37 @@ var numberHidden =0;
 SLIDERS = {};
 
 
+
+
+var tail = [];
+
+function findTail(list){
+
+	if(tail.length > 0){
+		console.log(` Tail short circut is ${tail[0].id}`)
+		return tail[0];
+	}
+
+	var max = {id:0};
+
+	list.children('.dropped-object').not("[alias^=CNTRL]").each(function(){
+
+		console.log(`Comparing ${this.id} to ${max.id}`)
+
+		if(max.offsetLeft && max.offsetLeft > this.offsetLeft){
+			
+		} else {
+
+			max = this;
+		}
+
+	})
+
+	console.log(`Returning is ${max.id}`)
+	 return max
+}
+
+
 function resetForLeft(container){
 
 	list =$(container);
@@ -15,27 +46,60 @@ function resetForLeft(container){
 
 	//log.debug(`Read transition-duration from attribute ${duration}`)
 
-	for(idx=0; idx < list.children(".dropped-object").not("[alias^=CNTRL]").length; idx++){
+	var needReset = [];
 
-		tail = list.children(".dropped-object").not("[alias^=CNTRL]").last();
-		head = list.children(`.dropped-object`).not("[alias^=CNTRL]").first();
+	//Get Items that have rolled past the left edge
+	list.children('.dropped-object').each(function(){
 
-		if(head.position().left + head.outerWidth(true) < list[0].offsetLeft){
-	
-			head.css({left:tail.position().left + tail.outerWidth(true)});
+		if($(this).position().left <=  -$(this).outerWidth()){
+			//stopTrain(list);
+			needReset.push(this);
+			 //start train
 
-			list.append(head);
-						
 		}
-		
+
+	})
+
+	
+
+	console.log(`Need to move  ${needReset.length}`)
+	needReset.forEach(function(element,idx){
+
+		tail = findTail(list);
+
+		console.log(`Tail is ${tail.id}`)
+
+		if(tail.id){
+			tail = $(tail);
+		  console.log(`Time to move element ${element.id} to offsetLeft of ${tail[0].id} with offset Left of ${tail.offset().left}`)
+		  $(element).css({left:tail[0].offsetLeft + $(element).outerWidth()})
+
+		  tail = element;
+		}
+
+	})
+
+	
+	//sort by position number asc
+	var inAscOrder = list.children('.dropped-object').toArray().sort(function(first,second){
+		if(first.offsetLeft < second.offsetLeft){
+			return -1;
+		} 
+		if( first.offsetLeft > second.offsetLeft){
+			return 1;
+		}
+
+		return 0;
+	})
+
+	for(elem in inAscOrder){
+
+		//$(inAscOrder[elem]).css({left:elem * $(inAscOrder[elem]).outerWidth()})
 	}
 
-	var canViewAtOneTime = parseInt(list.width() / head.width()) >= 1 ? parseInt(list.width() / head.width()) : 1;
 	
 
-	numberHidden = list.children(".dropped-object").not("[alias^=CNTRL]").length - canViewAtOneTime;
-
-	numberToSlide = canViewAtOneTime;	
+	
 }
 
 
@@ -223,12 +287,12 @@ function SLIDER_init(list){
 
     //duration = parseFloat(duration) == 0 ? "0.6s" : duration;
 
-    list.css({overflow:"visible"});
+    list.css({overflow:"hidden"});
 
     list.css("white-space","nowrap");
 
 	if(list.find("[alias^=CNTRL]").length == 0){
-		list.on("click",unPackListHack);
+		list.unbind("click",unPackListHack).on("click",unPackListHack);
 	} else {
 		list.find("[alias^=CNTRL]").each(function(id,button){
 			SLIDER_setUpButton(button,list,true);
@@ -247,6 +311,16 @@ function SLIDER_init(list){
 	list.children(".dropped-object").not("[alias^=CNTRL]").hover((e)=>{log.debug(`Pausing SLIDER. User Hovering over ${e.target.id}`);SLIDER_pause($(e.target).parent("[type=LIST]"));},(e)=>{SLIDER_play($(e.target).parent("[type=LIST]"));})
 
 	list.children(".dropped-object").not("[alias^=CNTRL]").each(function(it){$(this).css({position:"absolute",left:it*$(this).outerWidth(true)})})
+
+
+	var canViewAtOneTime = parseInt(list.width() / list.children(".dropped-object").not("[alias^=CNTRL]").first().width()) >= 1 ? parseInt(list.width() / list.children(".dropped-object").not("[alias^=CNTRL]").first().width()) : 1;
+	
+
+	numberHidden = list.children(".dropped-object").not("[alias^=CNTRL]").length - canViewAtOneTime;
+
+	numberToSlide = canViewAtOneTime;	
+
+	return list;
 }
 
 function SLIDER_deInit(list){
@@ -327,9 +401,9 @@ function goLeft(list){
 
 	
 
+	list.css({overflow:"hidden"})
 
-
-	if(SLIDER_isPaused(list) ||  SLIDERS[list.attr("id")].playing){
+	if(SLIDER_isPaused(list) /*||  SLIDERS[list.attr("id")].playing*/){
 		log.debug(`User Hovering over list or it is playing`);
 		return;
 	}
@@ -347,8 +421,54 @@ function goLeft(list){
 
 	//resetForLeft(list);
 
+	//get the difference
+
+	list.width()  /* sum of the number of elems to slide. that difference if positive should be subtracted. if negative, added */
+
+	var total = 0;
+	var viewed = 0;
 
 
+	var highestNegativePosition = 0;
+
+	list.children(".dropped-object").not("[alias^=CNTRL]").each(function(){
+
+		if($(this).position().left < 0){
+				console.log(`Looping ${this.id} with offset ${$(this).offset().left} and position ${$(this).position().left}`)
+				if(highestNegativePosition < $(this).position().left){
+					highestNegativePosition = $(this).position().left;
+				}
+
+				if(highestNegativePosition == 0){
+					highestNegativePosition = $(this).position().left;
+				}
+		}
+
+	})
+
+	//total = list.width() - total;
+
+	total = list.width() - total;
+
+
+
+	console.log(`Total is ${total}`)
+
+
+	//list[0].scrollLeft -= list.children('.dropped-object').not("[alias^=CNTRL]").first().outerWidth();
+
+	list.animate({scrollLeft:`+=${list.width() + highestNegativePosition -20}`},{duration:parseInt(speed),
+
+		progress: ()=>{
+
+			//list.css({overflow:"visible"});
+
+			resetForLeft(list);
+			//list.css({overflow:"visible"});
+		}
+	})
+
+	/*
 
 	list.children(".dropped-object").not("[alias^=CNTRL]").each(function(it){
 		$(this).animate(
@@ -357,12 +477,14 @@ function goLeft(list){
 				duration:parseInt(speed),
 				easing:"swing",
 				progress: ()=>{
-					resetForLeft(list);
+					//resetForLeft(list);
+					
 				},
-				done: ()=>{
+				always: ()=>{
+					resetForLeft(list)
 					SLIDERS[list.attr("id")].playing = false;	
 				}
 			}
 			
-	)})
+	)})*/
 }

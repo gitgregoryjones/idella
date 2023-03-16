@@ -241,17 +241,10 @@ function writeTabs(currentCtx,forceWrite){
 
 		if(label == "onhover"){
 
-			var myCSSLookupKey = `${$(parent).attr("id")}`;
-			console.log(`Hover lookup key for ${myCSSLookupKey} is ${"body.hover ." + myCSSLookupKey + ":hover"}`)
-			var hoverRegex = new RegExp("body.hover ."+  myCSSLookupKey+":hover"+'\\s+\\{[^}]+\\}','img');
-			var matches = [];
-			if((matches = $("#pageStyles").html().match(hoverRegex)) != null){
-				theValue = matches[0].replace("\n}","").substr(matches[0].indexOf("{") + 1, matches[0].lastIndexOf("}")-1).trim();
-				console.log(`Found a match for body.hover .${myCSSLookupKey}:hover ${matches[0]} converted to value ${theValue}`);
-				//I'll figure out the group backreference when I'm bored
+				theValue = r_lookupHover(parent);
 				
 
-			}
+			
 		}
 
 		//f = $("<input>",{value:theValue})
@@ -290,6 +283,14 @@ function writeTabs(currentCtx,forceWrite){
 		var nodeName = "<input>";
 
 		var options = {type:theType,id:`${tabLabel}-${label}`,value:theValue,for:theParentId, field:`${theParentId}-${label}`}
+
+		var r = new RegExp(/(-)/g);
+
+		var simpleName = ( label.match(r) != null && label.match(r).length > 1  ) ?  label.substring(label.indexOf("-")+1) : label;
+
+		options.name = simpleName;  
+
+
 
 		if(label == "api-body"){
 
@@ -405,133 +406,12 @@ function writeTabs(currentCtx,forceWrite){
 		f.unbind("dblclick").on("dblclick",function(e){
 			$(e.target).val("");
 		})
-					
-		f.unbind("input").on('input',function(evnt){
+		
 
-				if(label == "class"){
-					//do nothing.  wait until class is complete
-					$(parent).addClass($(evnt.target).val())
-					$(parent).attr("user-classes",$(evnt.target).val())	
-				}else if(label == "src" || label == "align"){
-					/*
-					if(jwplayer == true){
-							jwplayer().load([{file:$(event.target).val()}])
-							//$(parent).attr(label,$(event.target).val())
-					}*/
+		f.unbind("input").on('input',QUICK_EDIT)
 
-					log.debug("Src is true and value is " + $(evnt.target).val() + " pID " + $(parent).attr("id") + " type is ["+ $(parent).attr("type") + "]")
-
-					if($(parent).is("[type=VID]")){
-						$(parent).find("video").first().attr(label,$(evnt.target).val())
-
-
-					} else if($(parent).is("[type=AUDIO]")){
-						$(parent).children(".content-image").attr(label,$(evnt.target).val());
-
-					} else
-					if($(parent).is("[type=SITE]")){
-						$(parent).children(".content-image").attr(label,$(evnt.target).val())
-
-					} else 
-					
-					if($(parent).is("[type=DIV],[type=IMG]")){
-						if($(evnt.target).val().indexOf("url(") == -10){
-							theValue = "url(" + $(evnt.target).val() + ")"
-						} else {
-							theValue = $(evnt.target).val();
-						}
-						$(parent).css("background-image",theValue);
-						$(parent).css("width","500px")
-						$(parent).css(label,theValue);
-						$(parent).attr(label,theValue)
-						log.debug("STYLETABS2.js:Overwriting background-image with src attribute since this is what the user really wants " + $(evnt.target).val())
-					}
-
-					//https://www.uvm.edu/~bnelson/computer/html/wrappingtextaroundimages.html
-					if(label == "align"){
-						$(parent).find("br").attr(clear,$(evnt.target).val())
-					}
-					
-
-				}else if(label.startsWith("font") || label.startsWith("text")){
-					$(parent).css(label,$(evnt.target).val())
-					if($(parent).is("[type=LIST],[type=NAVIGATION]")){
-						$(parent).children(".dropped-object").css(label,$(evnt.target).val())
-					}
-                    // $(parent).find("[type]").css(label,$(evnt.target).val())  
-                }else if(label == "color"){
-						$(parent).css("-webkit-text-fill-color",$(evnt.target).val())
-						
-						$(parent).find("[type]").css("-webkit-text-fill-color",$(evnt.target).val())
-					
-				} if(label == "alias"){
-
-					$(`#layer-menu [text-for=${$(parent).attr('id')}]`).val($(event.target).val().toUpperCase());
-					$(`#header .details`).find("input").val($(event.target).val().toUpperCase());
-					$(parent).attr(label,$(evnt.target).val().toUpperCase())
-
-				}else {
-
-					//if this is a custom css option. ie how we define components, write as attribute
-					if(!$(parent).css(label)){
-						$(parent).attr(label,$(evnt.target).val())
-					} else {
-					$(parent).css(label,$(evnt.target).val())
-					//if this is a custom css option. ie how we define components, write as attribute
-					}
-				}
-
-				if($(parent).is("[type=T]") && label.startsWith("margin")){
-					$(parent).find("[type=MENU-ITEM]").css(label,$(event.target).val())
-					$(parent).css("margin",0);
-				} else
-
-				if($(parent).is("[type=LIST],[type=NAVIGATION]") && label.startsWith("margin")){
-					$(parent).children(".dropped-object").css(label,$(event.target).val())
-					$(parent).css("margin",0);
-				}
-
-				log.debug("STYLETABS2.js:Firing : " + label + " ==> " + $(evnt.target).val())
-				log.debug("STYLETABS2.js:Webkit : " + $(parent).css("-webkit-text-fill-color"))
-
-				if($(".changesToggle").is(":checked")){
-					log.trace("Style is checked ")
-					//myStyle = CONVERT_STYLE_TO_CLASS_OBJECT($(parent))
-					myStyle = {}
-					myStyle[label] = $(evnt.target).val()
-					if(label == "color"){
-						myStyle["-webkit-text-fill-color"] = $(evnt.target).val();
-					}
-					log.trace(myStyle)
-					//delete myStyle.top;
-					//delete myStyle.left;
-					log.trace("I see this many copies of " + $(parent).attr("id") + " : " + $(`[extends=${$(parent).attr("id")}]`).not($(parent)).length)
-					//Any copies of this parent
-					$(`[extends=${$(parent).attr("id")}]`).not($(parent)).css(myStyle);
-
-					//Any copies currently being edited
-
-					//copy to others just in case we are editing a copy
-					originalParentId = $(parent).attr("extends");
-
-					$(`[extends=${originalParentId}]`).not($(parent)).css(myStyle);
-
-					//Copy to parent in case we are editing a copy and not the parent directly
-					$("#"+originalParentId).css(myStyle)
-
-					//test to see if this is a custom attribute instead of class
-					if($(parent).css(label) == undefined){
-						log.debug("STYLETABS2.js :" + label + " is not a style " + " overwriting with label " + $(event.target).val())
-						//User modified an an attribute
-						$("#"+originalParentId).attr(label,$(event.target).val())
-						$(`[extends=${originalParentId}]`).not($(parent)).attr(label,$(event.target).val());
-						$(`[extends=${$(parent).attr("id")}]`).not($(parent)).attr(label,$(event.target).val())
-
-					}
-					copiesModified = true;
-				}
-
-		}).unbind("mouseleave").on("mouseleave",function(evnt){
+		//f.unbind("input")
+		.unbind("mouseleave").on("mouseleave",function(evnt){
 
 			var theTarget = $(evnt.target);
 

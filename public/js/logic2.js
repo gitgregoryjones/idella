@@ -173,7 +173,56 @@ $(document).ready(function() {
 
 	$("link").removeAttr("disabled");
 
-	saveJs($("body").first(),`function silent(){}`)
+	var alwaysAvailable = `window.onresize = function() {
+	    clearTimeout(window.resizedFinished);
+	    if(window.resizestart == undefined){
+	    	//$(window).trigger("resizestart");
+	    	console.log("Resize Event: started")
+
+	    	var event = new CustomEvent("resizestart", { "detail": "Example of an event" });
+
+			// Dispatch/Trigger/Fire the event
+			window.dispatchEvent(event);
+
+	    	window.resizestart = true;
+	    }
+	    window.resizedFinished = setTimeout(function(){
+	       // console.log('Resized finished.');
+	        delete window.resizestart;
+	        var event = new CustomEvent("resizestop", { "detail": "Example of an event" });
+
+			// Dispatch/Trigger/Fire the event
+			window.dispatchEvent(event);
+	        console.log("Resize Event: stopped")
+
+	    }, 250);
+	};
+
+	window.addEventListener("resizestart",startTransitions)
+	window.addEventListener("resizestop",stopTransitions)	
+
+	function startTransitions(){
+		console.log("Transitions Started!")
+		//$(".dropped-object").css({"transition":"0s"});
+		var elements = document.getElementsByClassName("dropped-object");
+
+		for(i=0; i < elements.length; i++){
+			elements[i].style["transition-duration"] = "0s";
+			console.log("element " + elements[i].id + " duration attempted")
+		}
+	}
+
+function stopTransitions(){
+	console.log("Transitions Stopped!")
+	//$(".dropped-object").removeAttr("style");
+	var elements = document.getElementsByClassName("dropped-object");
+		for(i=0; i < elements.length; i++){
+			elements[i].setAttribute("style","")
+		}
+}
+									`;
+
+	saveJs($(`<div id="idella-1></div>`),alwaysAvailable)
 
 	
 	
@@ -381,7 +430,7 @@ $(document).ready(function() {
 			loadAllBreakPoints()
 			
 			
-			$(window).on('resize',drawResponsiveTab)
+			$(window).on('resize',drawResponsiveTab);
 
 				CarWithAudio.initialize();		   
 		 }
@@ -863,7 +912,7 @@ function GenericTool(options){
 	this.class = `squarepeg ${options.type.toLowerCase()}`;
 	this.zIndex = CUSTOM_incrementZIndex();
 	this.friendlyName = this.type;
-	this.droppable = true;
+	this.droresizeppable = true;
 
 
 

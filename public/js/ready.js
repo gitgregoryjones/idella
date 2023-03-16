@@ -30,15 +30,36 @@ onpageReloaded {
 
 onresize {
 
-	document : r_redrawSVGs;
+	document : sr_redrawSVGs;
+
+
 }
+
+onresizestart {
+	
+	window : startTransitions;
+}
+
+onresizestop {
+	window : stopTransitions;
+	
+}
+
 
 `;
 //Get SVGs
 $(document).ready(function(){
-	window.onresize = r_redrawSVGs;
+	//window.onresize = r_redrawSVGs;
+
+	
 	
 })
+
+
+
+
+
+
 
 
 function r_openNote(evnt){
@@ -49,6 +70,22 @@ function r_openNote(evnt){
 		},300)
 		
 		//event.stopPropagation();
+}
+
+function r_lookupHover(element){
+
+			var theValue = "";
+
+			var myCSSLookupKey = `${$(element).attr("id")}`;
+			console.log(`Hover lookup key for ${myCSSLookupKey} is ${"body.hover ." + myCSSLookupKey + ":hover"}`)
+			var hoverRegex = new RegExp("body.hover ."+  myCSSLookupKey+":hover"+'\\s+\\{[^}]+\\}','img');
+			var matches = [];
+			if((matches = $("#pageStyles").html().match(hoverRegex)) != null){
+				theValue = matches[0].replace("\n}","").substr(matches[0].indexOf("{") + 1, matches[0].lastIndexOf("}")-1).trim();
+				console.log(`Found a match for body.hover .${myCSSLookupKey}:hover ${matches[0]} converted to value ${theValue}`);
+			}
+
+			return theValue;
 }
 
 function r_hoverOverElement(evnt){

@@ -142,7 +142,7 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 		//DRAW_SPACE_addWorkSpaceToBody()
 		PREVIEW_makeSaveableView(html);
 
-		html.find("body").addClass("hover").addClass("lover");
+		html.find("body").addClass("hover").addClass("hover");
 
 		html.html(html.html().replace(/contentCopyFor-/g,""));
 		return html;
