@@ -739,22 +739,15 @@ function NOTES_makeNote(element,isActive){
 		})
 
 
-		if((element.outerHeight() * element.outerWidth()) > ($(".msg").outerHeight() * $(".msg").outerWidth())*2){
-
-			$(".msg").css({position:"absolute",top:myPage.Y - $(".msg").height() - 60, left:myPage.X -20})
-			$(".peak").css({position:"absolute",top:$(".msg").offset().top + $(".msg").outerHeight() - 10, left:myPage.X })
-
-		} else {
-			$(".msg").css({position:"absolute",top:element.offset().top - $(".msg").height() - 30 , left:element.offset().left })
-			$(".peak").css({position:"absolute",top:$(".msg").offset().top + $(".msg").outerHeight() - 10, left:$(".msg").offset().left + 10 })
-		}
+		$(".active-message").css({position:"absolute",top:myPage.Y - $(".active-message").height() - 60, left:myPage.X -20})
+		$(".active-peak").css({position:"absolute",top:$(".active-message").offset().top + $(".active-message").outerHeight() - 10, left:myPage.X })
 
 
 		//position bar in correct place so it does not overrun the screen
 		// This was pretty cool but how About just putting it where the user clicked
-		if(parseInt($(".msg").offset().left) + $(".msg").width()  > $("#content").width()){
-			log.debug("Slide Left " + $(".msg").attr("id")) 
-			$(".msg").css({left:parseInt($(".msg").offset().left)-160})
+		if(parseInt($(".active-message").offset().left) + $(".active-message").width()  > $("#content").width()){
+			log.debug("Slide Left " + $(".active-message").attr("id")) 
+			$(".active-message").css({left:parseInt($(".active-message").offset().left)-160})
 			//$(".peak").css({position:"absolute",top:parseInt($(element).offset().top)-20, left:parseInt($(element).offset().left)+20})
 		}
 
@@ -770,30 +763,32 @@ function NOTES_makeNote(element,isActive){
 
 		//last check, if rendered bar too close to top. move bar and peak again
 		
-		if(parseInt($(".msg")[0].offsetTop) - $(".navbar").outerHeight()  <  window.scrollY   ) {
+		if($(".active-message")[0].offsetTop  <  0  ){
 
 
 			//ok, this is really the last last check.  If to close to bottom, flip again
-			
+			/*if(parseInt($(".msg")[0].offsetTop)  + $(".msg").height() + 20 > window.outerHeight){
+
+				//Place in bottom left corner of element
+				log.debug("Bottom Left " + $(element).attr("id")) 
+				$(".peak").css({position:"absolute",top:parseInt(($(".msg").offset().top + $(".msg").height()) - 20 )})
+				$(".msg").css({position:"absolute",top:parseInt($(".peak").offset().top - $(".msg").height() - 20)})
+			} else*/ {
 				log.debug("Top Left " + $(element).attr("id")) 
-				if((element.outerHeight() * element.outerWidth()) > ($(".msg").outerHeight() * $(".msg").outerWidth())*2){
-					$(".msg").css({position:"absolute",top:myPage.Y + 20 })
-				} else {
-					$(".msg").css({position:"absolute",top:element.offset().top + element.outerHeight() + 20 })
+					$(".active-message").css({position:"absolute",top:parseInt($(".active-message").offset().top) + $(".active-message").height() + 20 })
+					
+					//flip vertically
+					$(".active-peak").css({"-ms-transform": "rotate(180deg)","-webkit-transform": "rotate(180deg)","transform": "rotate(180deg)"})
+					$(".active-peak").css({position:"absolute",top:parseInt($(".active-message").offset().top) - 35})
+				}
 
-				}			
-				//flip vertically
-				$(".peak").css({"-ms-transform": "rotate(180deg)","-webkit-transform": "rotate(180deg)","transform": "rotate(180deg)"})
-				$(".peak").css({position:"absolute",top:parseInt($(".msg").offset().top) - 25})
-				
-
-		}
+		//}
 
 		//$(".msg").css({top:myPage.Y - $(".msg").height()*1.1,left:myPage.X})
 	
 
-		msgcoords = {top:($(".msg").offset().top * pxToVWAdjuster) + "vw", 
-						left:($(".msg").offset().left * pxToVWAdjuster) + "vw"
+		msgcoords = {top:($(".active-message").offset().top * pxToVWAdjuster) + "vw", 
+						left:($(".active-message").offset().left * pxToVWAdjuster) + "vw"
 		}
 
 
@@ -808,7 +803,6 @@ function NOTES_makeNote(element,isActive){
 		//$(".peak").css({top:($(".peak").offset().top * pxToVWAdjuster) + "vw",left:($(".peak").offset().left * pxToVWAdjuster) + "vw"})
 	
 
-		$(".msg").fadeIn("slow")
 
 		//now that placement is correct, color it active if necessary
 		if(element.id == $(".active-message").attr("parent") || isActive) {

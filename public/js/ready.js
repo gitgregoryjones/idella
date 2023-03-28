@@ -30,7 +30,7 @@ onpageReloaded {
 
 onresize {
 
-	document : sr_redrawSVGs;
+	document : r_redrawSVGs;
 
 
 }
@@ -93,7 +93,7 @@ function r_hoverOverElement(evnt){
 
 	$(".highlight").remove();
 
-	aTool = $(evnt.target);
+	var aTool = $(evnt.target);
 
 
 
@@ -115,10 +115,11 @@ function r_hoverOverElement(evnt){
 
 					border.css({
 						width:aTool.width(),
-						height:aTool.height(),
+						height:aTool.height() ,
 						top:aTool[0].offsetTop,//.position().top * 1.7 - 95/2,
 						left:aTool[0].offsetLeft,//.position().left * 1.7 -95/2,
-						position:aTool.css("position"),
+
+						position:"absolute",
 						"z-index":aTool.css("z-index") + 1
 					})
 					return;

@@ -198,11 +198,13 @@ $(document).ready(function() {
 	    }, 250);
 	};
 
-	window.addEventListener("resizestart",startTransitions)
-	window.addEventListener("resizestop",stopTransitions)	
+	//window.addEventListener("resizestart",startTransitions)
+	//window.addEventListener("resizestop",stopTransitions)	
 
 	function startTransitions(){
 		console.log("Transitions Started!")
+		var html = document.getElementsByTagName("html")[0];
+		html.classList.add("nottransition");
 		//$(".dropped-object").css({"transition":"0s"});
 		var elements = document.getElementsByClassName("dropped-object");
 
@@ -213,12 +215,22 @@ $(document).ready(function() {
 	}
 
 function stopTransitions(){
-	console.log("Transitions Stopped!")
+	console.log("Transitions Stopped??")
+	var html = document.getElementsByTagName("html")[0];
+	html.classList.remove("nottransition");
 	//$(".dropped-object").removeAttr("style");
 	var elements = document.getElementsByClassName("dropped-object");
 		for(i=0; i < elements.length; i++){
 			elements[i].setAttribute("style","")
 		}
+
+	galleries = document.getElementsByClassName("gallery");
+
+	for(i=0; i < galleries.length; i++){
+			SLIDER_init(galleries[i])
+		}
+
+
 }
 									`;
 
@@ -766,7 +778,6 @@ function whichTool (tool){
 		break;
 
 		case "LIST":
-		case "SLIDER":
 		var lid = "ELEM_" + new Date().getTime();
 		theTool = new GenericTool({
 			type:"LIST",
@@ -775,20 +786,41 @@ function whichTool (tool){
 			class:"squarepeg list"
 		});
 		break;
-		case "CARD":
+
+	case "GALLERY":
 		var lid = "ELEM_" + new Date().getTime();
 		theTool = new GenericTool({
-			type:"CARD",
-			droppedModeHtml: new Card(lid).asHTML(),
+			type:"GALLERY",
+			droppedModeHtml: new GalleryComponent(lid,type).asHTML(),
+			droppable:false,
+			class:"squarepeg gallery"
+		});
+
+		break;
+	case "TOGGLE":
+		var lid = "ELEM_" + new Date().getTime();
+		theTool = new GenericTool({
+			type:"TOGGLE",
+			droppedModeHtml: new ToggleSwitchComponent(lid,type).asHTML(),
+			droppable:false,
+			class:"squarepeg"
+		});
+
+		break;
+		case "ICARD":
+		var lid = "ELEM_" + new Date().getTime();
+		theTool = new GenericTool({
+			type:"ICARD",
+			droppedModeHtml: new ICard(lid).asHTML(),
 			droppable:true,
-			class:"squarepeg card"
+			class:"squarepeg icard"
 		});
 		break;
 		case "VID":
 		theTool = new GenericTool({
 			type:type,
 			droppedModeStyle:"",
-			droppedModeHtml:'<div><video controls preload="auto" loop autoplay><source class="content-image" src="https://wave.video/embed/63faf5767dd6ea41af407d5c/63faf5767dd6ea41af407d61.mp4" psrc="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4"/></video></div>',
+			droppedModeHtml:'<div><video controls preload="auto" loop autoplay width="100%" height="100%"><source class="content-image" src="https://wave.video/embed/63faf5767dd6ea41af407d5c/63faf5767dd6ea41af407d61.mp4" psrc="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4"/></video></div>',
 			droppable:true,
 			class:"squarepeg video"
 		});
@@ -909,7 +941,7 @@ function GenericTool(options){
 	this.editModeHtml = "<textarea>";
 	this.editModeStyle = "";
 	this.editModeAttribute = "value";
-	this.class = `squarepeg ${options.type.toLowerCase()}`;
+	this.class = `squarepeg ${options.type.toLowerCase()} dropped-object`;
 	this.zIndex = CUSTOM_incrementZIndex();
 	this.friendlyName = this.type;
 	this.droresizeppable = true;

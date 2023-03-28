@@ -273,6 +273,8 @@ function writeTabs(currentCtx,forceWrite){
 			
 		}
 
+
+
 		var theType = "text"
 
 		if(label == "dialog-enabled"){
@@ -357,6 +359,17 @@ function writeTabs(currentCtx,forceWrite){
 			}).text("Test Service")
 		}
 
+
+		if(label == "font-family") {
+
+			f.on("click", function(evt){
+
+				console.log(`Got Em`)
+
+				showFontDropDown(f);
+				//show font dropdown
+			})
+		}
 
 		/*
 		if(label == "api-body" || label == "api-response"){
@@ -700,6 +713,62 @@ function writeTabs(currentCtx,forceWrite){
 		lastTabBeforeSave = $(this).html();
 	})
 
+
+}
+
+function showFontDropDown(element){
+
+	$("#idrop").remove();
+
+
+	var ftype = $(`<span id="idrop"></span>`);
+
+	ftype.css({
+	    width: element.outerWidth(),
+	    height: element.outerHeight() * 3,
+	    position: "relative",
+	    display: "grid",
+	    //left:element[0].offsetLeft,
+	    overflowY: "scroll",
+	    backgroundColor: "white",
+	    fontSize: "24px",
+	    borderBottomLeftRadius: "5px",
+	    borderBottomRightRadius: "5px",
+	    color: "navy",
+	    cursor:"hand"
+	})
+
+	var fonts = $("html").attr("fonts").split(",");
+
+				fonts.forEach(function(font){
+					var option = new Option(font,font);
+					$(option).css("font-family",font);
+					ftype.append(option)
+				})
+
+				//AutoSelect option based on what user chose last
+				if(element.css("font-family")){
+					ftype.find(`[value="${$(element).css("font-family").replace(/"/g,"")}"]`).attr('selected','selected');
+				}
+
+	ftype.css({position:"relative"})
+
+	element.parent().append(ftype)
+
+	ftype.children("option").on("click",function(){
+
+		element.val($(this).text()	)
+		element.trigger("input")
+		element.trigger("mouseleave")
+		ftype.remove();
+					
+				
+	}).on("mouseover",function(){
+			element.val($(this).text()	)
+		element.trigger("input")
+		//	element.trigger("mouseleave")
+
+	})
 
 }
 

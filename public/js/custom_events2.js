@@ -735,7 +735,7 @@ CUSTOM_MOUSELEAVE_LOGIC = function(event){
 		if($(event.target).parent("[type=OVERLAY]").length == 0){
 			//$(event.target).parent().mouseleave();
 			//do nothing
-			//$(event.target).parent(".dropped-object:visible").mouseenter();
+			$(event.target).parent(".dropped-object:visible").mouseleave().mouseenter();
 		} else{
 
 			//setTimeout(()=>{
@@ -1992,7 +1992,7 @@ function setUpDiv(div){
 
 
 
-	div.not("[alias=notification],[alias=header],#content,[type=OVERLAY], .notdraggable").draggable().one("drag",function(e){
+	div.not("[alias=notification],[alias=header],#content,[type=OVERLAY], .notdraggable").draggable().on("drag",function(e){
 			
 		//e.stopPropagation()
 		NOTES_makeNote(this);
@@ -3055,7 +3055,7 @@ function dropTool(aTool,dropInfo){
 		        	log.debug("GREGZ.js: Handle length is " + aTool.children(".ui-resizable-handle").length)
 
 
-		        	aTool.resizable({disabled:false}).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
+		        	aTool.not(".notresizable").resizable({disabled:false}).on( "resizestop", CUSTOM_ON_RESIZE_STOP_LOGIC);
 
 		        	if(aTool.is("[type=VID]")){
 		        		aTool.find("video")[0].play()

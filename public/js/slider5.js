@@ -6,6 +6,7 @@ var numberHidden =0;
 
 SLIDERS = {};
 
+var handles = [];
 
 
 
@@ -72,7 +73,9 @@ function resetForLeft(container){
 		if(tail.id){
 			tail = $(tail);
 		  console.log(`Time to move element ${element.id} to offsetLeft of ${tail[0].id} with offset Left of ${tail.offset().left}`)
-		  $(element).css({left:tail[0].offsetLeft + $(element).outerWidth()})
+		  disableTransition(element);
+		  $(element).css({top:0,left:tail[0].offsetLeft + $(tail).outerWidth()})
+		  enableTransition(element);
 
 		  tail = element;
 		}
@@ -92,13 +95,7 @@ function resetForLeft(container){
 		return 0;
 	})
 
-	for(elem in inAscOrder){
-
-		//$(inAscOrder[elem]).css({left:elem * $(inAscOrder[elem]).outerWidth()})
-	}
-
 	
-
 	
 }
 
@@ -264,10 +261,10 @@ function SLIDER_init(list){
 
 	var {handle} = undefined&SLIDERS[list.attr("id")];
 
-	if(handle != undefined){
+	//if(handle != undefined){
 
 		SLIDER_deInit(list);
-	}
+	//}
 
 	log.debug(`Made it this far before ${handle}`)
 
@@ -287,9 +284,9 @@ function SLIDER_init(list){
 
     //duration = parseFloat(duration) == 0 ? "0.6s" : duration;
 
-    list.css({overflow:"hidden"});
+    list.css({overflowX:"hidden"});
 
-    list.css("white-space","nowrap");
+    list.css("zwhite-space","nowrap").css("flex-wrap","nowrap");
 
 	if(list.find("[alias^=CNTRL]").length == 0){
 		list.unbind("click",unPackListHack).on("click",unPackListHack);
@@ -306,7 +303,12 @@ function SLIDER_init(list){
 		
 		SLIDER_play($(this));
 
-	})
+	})/*.on("mouseenter",function(){
+		$(this).stop()
+		SLIDER_pause($(this))
+	}).on("mouseleave",function(){
+		SLIDER_play($(this))
+	})*/
 
 	list.children(".dropped-object").not("[alias^=CNTRL]").hover((e)=>{log.debug(`Pausing SLIDER. User Hovering over ${e.target.id}`);SLIDER_pause($(e.target).parent("[type=LIST]"));},(e)=>{SLIDER_play($(e.target).parent("[type=LIST]"));})
 
@@ -321,31 +323,47 @@ function SLIDER_init(list){
 	numberToSlide = canViewAtOneTime;
 
 
-	//make left button
-	$(`<i alias="CNTRL-LEFT" class="left-arrow">&&#x2C2;</i>`).appendTo(list);	
+	var speed = parseInt(list.attr("slider-speed")) > 0 ? list.attr("slider-speed") : "5000";
+
+	if(list.find('[alias^=CNTRL]').length == 0){
+
+		console.log(`Doing it my Damn Self!!!`)
+		SLIDERS[list.attr("id")].handle = (setInterval(function(){
+			goLeft(list)
+		},speed));
+	}
+
+	list.addClass(`handle_${SLIDERS[list.attr("id")].handle}`);
+	console.log(`Handle it is ${SLIDERS[list.attr("id")].handle }`)
 
 	return list;
 }
 
 function SLIDER_deInit(list){
 
-	var {handle} = SLIDERS[list.attr("id")];
+	//var {handle} = SLIDERS[list.attr("id")];
 
 
 
-	window.clearInterval(handle);
+	//window.clearInterval(handle);
 
 
 
 	list.css("white-space","normal");
 
-	list.css({overflow:"auto","transition-duration":"0s"})
+	list.css({overflow:"auto !important","transition-duration":"0s"})
 
 	list.children(".dropped-object").not("[alias^=CNTRL]").stop().css({left:0,top:0,position:"relative"});
 	list.unbind("dragstart resizestop dragstop resizestart");
 	list.unbind("click",unPackListHack)
 	list.children("[alias=CNTRL-LEFT]").unbind('click',goLeft).css("visibility","hidden");
 	list.children("[alias=CNTRL-RIGHT]").unbind('click',goRight).css("visibility","hidden");
+	list.stop();
+
+	for(i in handles){
+		window.clearTimeout(i)
+		window.clearInterval(i)
+	}
 
 
 
@@ -405,7 +423,7 @@ function goLeft(list){
 
 	
 
-	list.css({overflow:"hidden"})
+	//list.css({overflow:"hidden"})
 
 	if(SLIDER_isPaused(list) /*||  SLIDERS[list.attr("id")].playing*/){
 		log.debug(`User Hovering over list or it is playing`);
@@ -419,7 +437,9 @@ function goLeft(list){
 	list = list.target ? $(list.target).parents("[type=LIST]").first() : $(list);
 
 	//speed = getTransitionDuration(list)
-	speed = parseInt(list.attr("slider-speed")) > 0 ? list.attr("slider-speed") : "3000";
+	speed = parseInt(list.attr("slider-speed")) > 0 ? list.attr("slider-speed") : "5000";
+
+
 
 	log.debug("SLIDER5.js:Speed is really! " + speed)
 
@@ -461,7 +481,7 @@ function goLeft(list){
 
 	//list[0].scrollLeft -= list.children('.dropped-object').not("[alias^=CNTRL]").first().outerWidth();
 
-	list.animate({scrollLeft:`+=${list.width() + highestNegativePosition -20}`},{duration:parseInt(speed),
+	list.delay(speed*1.1).animate({scrollLeft:`+=${list.width() + highestNegativePosition}`},{duration:parseInt(speed),
 
 		progress: ()=>{
 
@@ -471,6 +491,8 @@ function goLeft(list){
 			//list.css({overflow:"visible"});
 		}
 	})
+
+
 
 	/*
 

@@ -176,6 +176,11 @@ function computeDimensions(theClassObj,Query,cWidth){
   		log.debug(theClassObj["width"])	
   	}
 
+
+  
+
+
+
   	for(field in theClassObj){
 
   		var val = theClassObj[field];
@@ -215,7 +220,7 @@ function computeDimensions(theClassObj,Query,cWidth){
   	//theClassObj["line-height"] = theClassObj["type"] == "ICON" ||  theClassObj["type"] == "BTN" ? theClassObj["height"] : ( adjuster * parsePx(theClassObj["line-height"]));
   	//any last minute overrides
   	var me = $("#"+theClassObj["id"]);
-  	if($("#"+theClassObj["id"]).parent(".dropped-object").is("[type=LIST],[type=NAVIGATION]")){
+  	if($("#"+theClassObj["id"]).parent(".dropped-object").is("[type=NAVIGATION]")){
 
   		obj = $("#"+theClassObj.id);
 
@@ -237,8 +242,9 @@ function computeDimensions(theClassObj,Query,cWidth){
 			theClassObj["position"] = "relative";
 			//theClassObj["float"] = "left"
 			//theClassObj["width"] = "20px"
-			theClassObj["display"] = "absolute";
+			//theClassObj["display"] = "absolute";
 		}
+		
 		
 	} 
 
@@ -253,6 +259,13 @@ function computeDimensions(theClassObj,Query,cWidth){
 		theClassObj["position"] = "absolute";
 		log.debug("EXTENSIONS2.js: Over saw the theClassObj.position as " + theClassObj["position"])
 	}
+
+	if($(`#${theClassObj.id}`).parent().is("#content")){
+
+			theClassObj["top"] =0;
+			theClassObj["left"] =0;
+			theClassObj["position"] = "relative"
+		}
 
 	var outStr = "." + theClassObj.id + " {\n";
 

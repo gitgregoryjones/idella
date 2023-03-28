@@ -21,7 +21,7 @@ $(document).on("initializationComplete",function(){
 
 function centerMe(elem){
 	var elem = $(elem);
-    leftPos = $("#content").outerWidth()/2 
+    leftPos = $("#content").outerWidth( + $("#content")[0].offsetLeft/2 )
 
     //leftPos -= $("#content")[0].offsetLeft
     console.log(`Centering position ${leftPos} for elem ${elem.attr("id")}`)
@@ -81,6 +81,18 @@ function reLoadLayers(){
 	
 	$("#layer-menu").css({"z-index":99999})
 
+	/*
+
+     $("[type=LIST]").not("#content").find(".dropped-object").each(function(){
+     	if(!$(this).hasClass("highlight-layer")) {
+			$(`[layer=${$(this).attr("id")}]`).fadeOut()
+			$(this).removeClass("open");
+			$(this).addClass("closed");
+		}
+
+	})*/
+			       
+
 	
 	//bId = $("body").attr("type","body").attr("id");
 
@@ -128,24 +140,39 @@ function scrollToLayer(aToolId){
 	t = $("#maincontent").offset().top;
 
 
+	var addToIt = 0;
 
 
 	$("#maincontent").children("[layer]").each(
 		function(it){
 			log.debug(`Looking at layer ${$(this).attr("layer")} and layerShowingAtPositionZero is ${layerShowingAtPositionZero()}`)
+
+			if($(this).attr("layer") !=  aToolId &&  $(this).is(".closed") ){
+
+				addToIt += parseInt($(this).attr("children"));
+
+			}
+
 			if($(this).attr("layer") == aToolId  && !layerShowingAtPositionZero()){
 
 
 
 			
-					console.log(`Ok to Scroll to Layer ${$(this).attr("layer")}`)
+					console.log(`Ok to Scroll to Layer ${$(this).attr("layer")} Distance = ${Math.abs(it - addToIt)} because it is ${it} and addToIt is ${addToIt}`)
+
+
+
 					//$("#maincontent").animate({scrollTop:$(this).position().top	   },1000,function(){
-					$("#maincontent").animate({scrollTop:it * $(this).outerHeight() + 55},1000,function(){
+					$("#maincontent").animate({scrollTop:Math.abs(it - addToIt) * $(this).outerHeight() + 55},1000,function(){
 							//$("#maincontent").attr("showing",`z${aToolId}`);
 							//$(".layer").hide();
-						
+							//break out of loop...we are done
+							console.log(`Add to it is ${addToIt} and it is ${it}`)
+							return false;
 							//$(".mini-preview").css({width:"30px",height:"30px"})
 					});
+
+
 				
 			}
 		}
@@ -194,7 +221,6 @@ function setRatios(content){
 
 
 	return content;
-
 }
 
 function resizeOrGrowElement(content,growMe){
@@ -394,7 +420,9 @@ function updateLayersTool(aToolId,aParentId){
 				}
                 //From edit-body.html
 
-                layer = $("#maincontent").find(".layer").first().clone(false).css({display:"block"});
+                layer = $("#maincontent").find(".layer").first().clone(false);
+
+                layer.css({display:"flex"})
 
                 layer.find(".preview-window").text("");
 
@@ -413,15 +441,18 @@ function updateLayersTool(aToolId,aParentId){
                 eye = $(layer).find('.eye');
 
                 expand = $(layer).find(".fa-arrows-alt-h").on("click",(e)=>{
+                	e.stopPropagation();
                 	log.debug(`looking at layer ${layer.attr("layer")}`)
                 	obj = $(e.target);
                 	if(obj.hasClass('fa-compress-alt')){
                 		obj.removeClass('fa-compress-alt');
                 		$(`#${layer.attr("layer")}`).css({width:$(layer).attr("compressX")});
+                		$(`#${layer.attr("layer")}`).css({height:$(layer).attr("compressY")});
                 	} else{
                 		obj.addClass("fa-compress-alt");
-                		layer.attr("compressX",$(`#${layer.attr("layer")}`).css("width"))
-                		$(`#${layer.attr("layer")}`).css({width:"100%",left:0});
+                		layer.attr("compressX",$(`#${layer.attr("layer")}`).outerWidth())
+                		layer.attr("compressY",$(`#${layer.attr("layer")}`).outerHeight())
+                		$(`#${layer.attr("layer")}`).css({width:"100%", height:"100%",top:0,left:0});
                 	}
                 	
                 })
@@ -429,6 +460,8 @@ function updateLayersTool(aToolId,aParentId){
                 var centerIt = $(layer).find('.fa-align-center');
 
                 centerIt.on("click",function(elem){
+
+                	elem.stopPropagation();
                 	var myLayer = $(elem.target).parents("[layer]").attr("layer");
 
                 	console.log(`$(elem.target).parents("[layer]").lengh is ${$(elem.target).parents("[layer]").length}`)
@@ -447,6 +480,10 @@ function updateLayersTool(aToolId,aParentId){
 
 				$(miniObj).attr("id","z"+$(miniObj).attr("id"));
 
+				var descendents = $(aTool).find(".dropped-object").length;
+
+				$(layer).attr("children",descendents);
+
 
 				$(miniObj).find("audio").remove();
 				$(miniObj).find("[type=AUDIO]").remove();
@@ -460,9 +497,26 @@ function updateLayersTool(aToolId,aParentId){
 					//$(pwindow).css({top:12,"padding-top":20});
 
                      $(layer).find('.details > [type=text]').val(miniObj.text().toUpperCase());
-				} 
-				else {
+				} else if( $(miniObj).attr("type") == "LIST" || $(miniObj).attr("type") == "SECTION"){
+
+					//$(pwindow).css({"background-image":"url(https://winaero.com/blog/wp-content/uploads/2019/01/windows-10-download-downloads-folder-icon.png")})
+					var label = $(miniObj).attr("alias") ? $(miniObj).attr("alias") : $(miniObj).attr("type") == "LIST"?  "Gallery" : "Section";
+
+					label+= ` (${descendents})`;
+				
+					  $(layer).find('.details > [type=text]').attr("text-for",$(aTool).attr("id")).val(label.toUpperCase());
+
+					  if( $(miniObj).attr("type") == "SECTION"){
+					  	$(pwindow).append(miniObj);
+					  }
+
+                	//$(pwindow).css({"background-repeat":"no-repeat","background-size":"contain","background-image":"url(https://icons-for-free.com/download-icon-data+document+documents+file+folder+icon-1320184630726303272_512.png"});
+
+				}
+				else  {
 					var label = $(miniObj).attr("alias") ? $(miniObj).attr("alias") : miniObj.attr("type");
+
+					label+=  descendents > 0 ? `(${descendents})` : "";
                 	
                 	$(miniObj).find("audio").remove();
                 	//$(miniObj).find("[type=AUDIO]").attr("type","SOUND");
@@ -483,6 +537,8 @@ function updateLayersTool(aToolId,aParentId){
 				//Hide MouseOver for this.  Kinda Confusing
 				//$(layer).find('.details > [type=text]').on("mouseover",r_makeLayerTextInputField).attr("text-for",aToolId);
 
+
+
 				$(layer).removeClass("dropped-object");
 
 			     
@@ -495,9 +551,11 @@ function updateLayersTool(aToolId,aParentId){
 
 				$(layer).unbind("mouseover").on('mouseover',
 
-					function(){
+					function(e){
 
-					r_hoverOverElement({target:aTool});
+					var jump = $(`#${$(e.target).attr("layer")}`);
+
+					r_hoverOverElement({target:jump});
 					//var border = $("<div>",{class:"highlight", "highlight-id":$(aTool).attr("id")});
 
 					//$(".layer").removeClass("highlight");
@@ -507,7 +565,7 @@ function updateLayersTool(aToolId,aParentId){
 						//$(aTool).css({border:"solid red"});						
 					}*/
 					//$(aTool).addClass('highlight');	
-					$(aTool).mouseover();
+					$(jump).mouseover();
 
 					/*
 					aTool = $(aTool);
@@ -526,38 +584,45 @@ function updateLayersTool(aToolId,aParentId){
 
 					
 					
-				}).unbind("mouseout").on('mouseout',function(){
+				}).unbind("mouseout").on('mouseout',function(e){
+
+					var jump = $(`#${$(e.target).attr("layer")}`);
 					
-					$(aTool).parent().find("[highlight-id]").remove();
+					$(jump).parent().find("[highlight-id]").remove();
 					//$(aTool).removeClass('highlight');
 					//$(aTool).css('border',$(aTool).attr("previous-style"));
 					$(".layer").not("[active]").removeClass("highlight-layer");
-					$(aTool).mouseout();
+					$(jump).mouseout();
 					//$(aTool).css('border',$(aTool).attr("previous-style"));
 
 
-				}).find(".details").off().on("click",function(e){
+				}).unbind("click").on("click",function(e){
 
-					console.log("Clicked A Layer")
+					console.log(`Clicked A Layer ${$(this).attr("layer")}`)
+
+					var jump = $(`#${$(this).attr("layer")}`);
+
+					//$(this).parent().find(".preview-window").click();
 					//Do MouseOVer to make lock appear
 					
 					//$(".layer").removeClass("highlight");
 					//$(aTool).css('border',$(aTool).attr("previous-style"));
 					/** alreadyScrolled can be added to keep the layer from scrolling since the user already is on the list**/
 					//$(aTool).find("[id$=lock]").addClass("alreadyscrolled").click();
-					$(aTool).find("[id$=lock]").click();
+					$(jump).find("[id$=lock]").click();
 					
 					//$(this).addClass("highlight");
 
 					//$(".layer").not($(this)).hide();
 
+
 					
-					var jump = $(aTool);
+					
 					//CUSTOM_pressEscapeKey();
 					
 					$("body,html").animate(
 				      {
-				        scrollTop: aTool.offset().top - aTool.outerHeight()
+				        scrollTop: jump.offset().top - $(".navbar").outerHeight()
 				      },
 				      800, //speed
 
@@ -619,7 +684,9 @@ function updateLayersTool(aToolId,aParentId){
 
 				//show hide when clicking eye
 
-				$(eye).on("click",function(){
+				$(eye).on("click",function(e){
+
+					e.stopPropagation();
 					if($(aTool).css("display") == "none"){
 						$(aTool).css({display:"block"});
 						$(this).removeClass("fa-eye-slash");
@@ -640,20 +707,22 @@ function updateLayersTool(aToolId,aParentId){
 				 if( $(aTool).is("[type=LIST]") ) {
                 	$(layer).find(".runningman").show();
                 	$(layer).find(".runningman").on("click",
+
                 		function(e){
+                			e.stopPropagation();
 
                 			//e.stopPropogation();
 
                 			if($(e.target).hasClass("fa-stop-circle")) {
-
+                				console.log(`Stopping Slider`)
                 				SLIDER_deInit(aTool);
 
-                				$(e.target).removeClass("fa fa-stop-circle").addClass("fa fa-play-circle");
+                				$(e.target).removeClass("fa fa-stop-circle").removeClass("gallery").addClass("fa fa-play-circle");
                 				//e.stopPropogation()
                 			} else {
                 				console.log("Starting Slider");
                 				SLIDER_init(aTool);
-                				$(e.target).removeClass("fa fa-play-circle").addClass("fa fa-stop-circle");
+                				$(e.target).removeClass("fa fa-play-circle").addClass("fa fa-stop-circle").addClass("gallery");
                 				//e.stopPropogation();
                 			}
                 			
@@ -678,7 +747,52 @@ function updateLayersTool(aToolId,aParentId){
 
 				$(".layer").removeClass("highlight-layer");
 
-				$(layer).addClass("highlight-layer");
+				$(layer).addClass("highlight-layer open");
+
+				/*
+				$(pwindow).on("click",function(){
+					$(this).parent().find(".details").click()
+				})*/
+
+				
+
+				$(pwindow).off("click",function(e){
+
+					e.stopPropagation();
+
+
+					if(parseInt($(e.target).parent().attr("children")) > 0){
+
+								console.log(`Clicked me brudda`)
+					    if($(this).parent().hasClass("open")){
+					        $(`#${$(this).parent().attr("layer")}`).find(".dropped-object").each(function(){
+					            $(`[layer=${$(this).attr("id")}]`).fadeOut()
+
+					        })
+					        $(this).parent().removeClass("open");
+					        $(this).parent().addClass("closed");
+					        $("#editSpace").fadeOut();
+					    } else  if($(this).parent().hasClass("closed")){
+					          $(`#${$(this).parent().attr("layer")}`).find(".dropped-object").each(function(){
+					            $(`[layer=${$(this).attr("id")}]`).fadeIn()
+
+					        })
+					        //don't forget to close details if we are opening children  
+					        
+					        $(this).parent().removeClass("closed");
+					        $(this).parent().addClass("open");
+					    } else {
+					    	//default to clicking the layer to move to the correct element in the UI
+					    	$(this).parent().click();
+					    }
+
+
+					} else {
+						$(e.target).parent().click();
+					}
+
+				
+				})
 
 				//$( ".search-layers" ).catcomplete("option", {source:fit()});
 

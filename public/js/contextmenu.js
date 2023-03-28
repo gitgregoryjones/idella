@@ -328,7 +328,10 @@ $(document).on("initializationComplete",function(){
             case "drop": 
                         var aTool =  whichTool($(this).attr("type"));
 
+                        
+
                         aTool = configuredTool(aTool);
+
 
                         if(aTool.is("[type=NAVIGATION]")){
                             aTool.addClass("navigation-list");
