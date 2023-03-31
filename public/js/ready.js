@@ -111,7 +111,12 @@ function r_hoverOverElement(evnt){
 					
 					aTool = $(aTool);
 
+					if(aTool[0] == undefined)
+						return;
+
 					aTool.parent().append(border);
+
+
 
 					border.css({
 						width:aTool.width(),

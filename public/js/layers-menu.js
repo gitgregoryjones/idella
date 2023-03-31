@@ -57,7 +57,13 @@ function reLoadLayers(){
 
 	$("#content").find(".dropped-object").each(function(){
 
-		var theLayer = updateLayersTool(this.id);
+		var node = $(this);
+
+		if(node.parent(".dropped-object").is("#content")){
+		 	updateLayersTool(this.id);
+		} else {
+			updateLayersTool(this.id, node.parent(".dropped-object").attr("id"));
+		}
 	
 
 	})
@@ -349,44 +355,7 @@ function updateLayersTool(aToolId,aParentId){
 
 		console.log(`Expanded is A LOT ${ $("#content").attr("expanded")}`)
 
-		//$("#content").css({width:"70%",left:0});
-		/*
-
-		$(".close-window").off().on("click",function(){
-
-			var theHeight = $("#layer-menu").height() > 50 ? 50 : "100%";
-
-			//$("#content").css("left","6rem").css({transform:"scale(1)"})
-			
-			
-			if( $("#content").attr("expanded") == "true"){
-				//We closed.  Put everything back
-				console.log(`Error Expanded is NOT ${$("#content").attr("expanded")} and we are growing now`);
-
-				shrinkOrGrowParent($("#content"),false);
-				 $("#content").attr("expanded",false);
-			} else {
-				//$("#content").css("left","6rem").css({transform:"scale(.70)"}).css("transform-origin","middle")
-				var element = document.getElementById("content");
-				//element.scrollIntoView({behavior: "smooth"})
-				console.log(`Error xpanded is ${$("#content").attr("expanded")} and we are shrinking now`)
-				shrinkOrGrowParent($("#content"),true);
-				$("#content").attr("expanded",true).css("top","6em");;
-
-			}
-
-			console.log(`Expanded is did we get here`)
-
-			$("#layer-menu").animate({height:theHeight},200,"swing",function(){
-
-				if($(".close-window").hasClass("fa-minus")){
-					$(".close-window").removeClass("fa-minus").addClass("fa-plus");
-				} else {
-					$(".close-window").removeClass("fa-plus").addClass("fa-minus");
-				}
-				})
-		});*/
-
+		
 
 				var foundInMenu = false;
 				//first Add Layer Menu Div if it does not exist
@@ -794,8 +763,7 @@ function updateLayersTool(aToolId,aParentId){
 				
 				})
 
-				//$( ".search-layers" ).catcomplete("option", {source:fit()});
-
+				
 
 				return layer;
 }

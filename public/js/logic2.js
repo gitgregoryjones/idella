@@ -198,8 +198,8 @@ $(document).ready(function() {
 	    }, 250);
 	};
 
-	//window.addEventListener("resizestart",startTransitions)
-	//window.addEventListener("resizestop",stopTransitions)	
+	window.addEventListener("resizestart",startTransitions)
+	window.addEventListener("resizestop",stopTransitions)	
 
 	function startTransitions(){
 		console.log("Transitions Started!")

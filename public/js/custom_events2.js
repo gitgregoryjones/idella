@@ -3070,8 +3070,8 @@ function dropTool(aTool,dropInfo){
 
 				if(!aTool.is(".coordinate")){
 					
-					//updateLayersTool($(aTool).attr("id"),target.id);
-					reLoadLayers();
+					updateLayersTool($(aTool).attr("id"),target.id);
+					//reLoadLayers();
 				}
 
 

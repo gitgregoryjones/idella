@@ -3,6 +3,7 @@
 var currentX = 0;
 var currentY = 0;
 currentCtx = {};
+var copyIdx = 0;
 
 OVERRIDE_CTX_MENU = true;
 
@@ -328,7 +329,7 @@ $(document).on("initializationComplete",function(){
             case "drop": 
                         var aTool =  whichTool($(this).attr("type"));
 
-                        
+
 
                         aTool = configuredTool(aTool);
 
@@ -554,6 +555,8 @@ $(document).on("initializationComplete",function(){
                 break;
             case "paste": if(currentCtx.hasClass("dropped-object"))
                 { 
+
+                    
                     /*
                     if(ignoreDoublePasteEvent == CUSTOM_lastCopyElement){
                         return;
@@ -587,7 +590,7 @@ $(document).on("initializationComplete",function(){
                         log.debug(`Nubmer Part Reversed is ${backwardsNumber}`)
                         backwardsNumber = backwardsNumber + (Math.ceil(Math.random() * 10) );
                         log.debug(`Final Id is ${backwardsNumber}`)
-                        return `id="ELEM_${backwardsNumber}"`;
+                        return `id="ELEM_${backwardsNumber}_${++copyIdx}"`;
 
                     }));
 
@@ -619,6 +622,7 @@ $(document).on("initializationComplete",function(){
 
                     }
                     
+                    updateLayersTool(c[0].id,c.parent(".dropped-object")[0].id)
                    
                     //reloadLayers();
                     //CUSTOM_PXTO_VIEWPORT($(c),$(c).position().left ,$(c).position().top); 
