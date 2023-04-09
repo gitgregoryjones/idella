@@ -117,8 +117,12 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 
 		//contentCopy.css({left:0,top:0})
 		
+		undoHistory.push("marker")
 
 		shrinkOrGrowParent(contentCopy,false);
+
+		undoHistory.splice(undoHistory.indexOf("marker"),undoHistory.length)
+
 
 		offScreenSaveableParent.append(contentCopy);
 
@@ -160,7 +164,13 @@ function DRAW_SPACE_deleteWorkspaceFromBody(copyForSave){
 		
 			$("#content").css("left",0).css("top",0).css("width","100%");	
 
+			undoHistory.push("marker")
+
 			shrinkOrGrowParent($("#content"),false);
+
+			//undoHistory.splice(undoHistory.indexOf("marker"),undoHistory.length)
+			undoHistory = [];
+			redoHistory = [];
 
 			workspace = $("#workspace");
 
@@ -353,6 +363,8 @@ function getHelp(url){
 
 function DRAW_SPACE_addWorkSpaceToBody(){
 
+
+
 	NOTES_delete();
 
 	content = $("body");
@@ -364,12 +376,16 @@ function DRAW_SPACE_addWorkSpaceToBody(){
 
 	if(theHeight > 0){
 		//The menu on the edit screen is expanded. Shrink content to fit the edit window again
+		undoHistory.push("marker");
 		shrinkOrGrowParent($("#content"),true);
+		//undoHistory.splice(undoHistory.indexOf("marker"),undoHistory.length)
+		undoHistory = [];
+		redoHistory = [];
 	} else {
 		//Do nothing.  Return contents full expanded since the user is working in zoomed in mode
 	}
 	
-	$("#content").css("left","6em").css("top","6em");
+	$("#content").css("left","6em").css("top","6em").css("z-index",0);
 
 	//body.children().last().remove();
 

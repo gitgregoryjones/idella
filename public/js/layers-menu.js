@@ -248,6 +248,7 @@ function resizeOrGrowElement(content,growMe){
 	if(growMe != undefined && growMe == true ) {
 
 			content.css({width:content.oldMe.width/1.5, height:content.oldMe.height/1.5})
+			CUSTOM_TXT_RESIZE(content,{element:content})
 			//window.expanded = false;
 
 	} else {
@@ -262,6 +263,8 @@ function resizeOrGrowElement(content,growMe){
 
 			console.log(`Error Growing ${content[0].id} size will be ${content[0].offsetLeft}  divided by ${content.parent().outerWidth()} and width is ${content.oldMe.width} x 1.5`)
 			content.css({width: content.oldMe.width  * 1.5 > screen.width * 1.0 ? content.parent().outerWidth() : content.oldMe.width * 1.5 , height:content.oldMe.height * 1.5})
+
+			CUSTOM_TXT_RESIZE(content,{element:content})
 			//window.expanded = true;
 	}
 
@@ -276,6 +279,8 @@ function resizeOrGrowElement(content,growMe){
 
 	/* Set the Left and Top Offset for the Content */
 	content.css({left:newContentHeightAndWidthOffset.left, top: newContentHeightAndWidthOffset.top})
+
+
 
 	content.kids.forEach(function(child){
 

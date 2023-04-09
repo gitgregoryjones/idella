@@ -94,6 +94,8 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 
 	log.trace("Error Calling Pressed Key " + event.which)
 
+
+
 	if(event.which == 27 && $("#workspace").length == 0){
 		console.log(`Error Calling NavPreview`)
 			//defined in ready.js
@@ -120,6 +122,16 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 
 	key = event.which;
 
+
+	if(event.metaKey && key == 90){
+		undo();
+		return false;
+	} else if(event.metaKey  && key == 89){
+
+		redo();
+		return false;
+	}
+
 	
 	//Escape Key
 	if(key == 27 && !DRAW_SPACE_advancedShowing){
@@ -140,7 +152,7 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 		$(".rocket-settings").click();
 	}
 	//if Cntrl-S or CMD-S then Save
-	if( ( key == 83 && event.shiftKey ) ){
+	if( ( key == 83 && event.metaKey ) ){
 		
 		OVERLAY_deleteInstructions();
 		$(".rocket-save").click()
@@ -153,7 +165,7 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 
 
 	//Shift-V is Paste
-	if(key == 86 && event.shiftKey && $(hotObj).hasClass("dropped-object")){
+	if(key == 86 && event.metaKey && $(hotObj).hasClass("dropped-object")){
 		
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
@@ -165,7 +177,7 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 
 
 	//KEY C and Shift Key to COPY
-	}else if(key == 67 && event.shiftKey && $(hotObj).hasClass("dropped-object")){
+	}else if(key == 67 && event.metaKey && $(hotObj).hasClass("dropped-object")){
 	
 
 		$(document).trigger("contextmenu").show()
@@ -196,7 +208,7 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 		hotObj[0].scrollIntoView({ behavior: "smooth", block: "center"});
 
 	//if delete key 
-	} else if(key == 39 && event.shiftKey || key == 40 && event.shiftKey){
+	} else if(key == 39 && event.metaKey || key == 40 && event.metaKey){
 
 		$(document).trigger("contextmenu").show()
 		$(".custom-menu").css("top","-3000px")
@@ -209,7 +221,7 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 
 	//if delete key 
 	}  // Shift + DELETE Automatically delete
-		else if(key == 68 && event.shiftKey){
+		else if(key == 68 && event.metaKey){
 		NOTES_delete();
 		deleteElement(hotObj)
 		
@@ -233,7 +245,7 @@ CUSTOM_KEYDOWN_LOGIC = function keyDownLogic(event,simulatedEvent){
 		$("[data-action=preview]").click();
 		$(document).click();*/
 
-	} else if(key == 69 && event.shiftKey){
+	} else if(key == 69 && event.metaKey){
 	
 		//$("#id_toolset").find(".mastertools").find("img").click();
 		$(document).trigger("contextmenu").show()
@@ -962,10 +974,19 @@ CUSTOM_ON_QUICK_INPUT = function(evnt){
 CUSTOM_TXT_RESIZE = function(event,ui){
 	
 
+		if(ui.element.attr("type") != "T"){
+
+			return;
+		}
+
 
 		var fontSize = parseFloat(ui.element.css("font-size"));
 
-		
+		fontSize = ui.element.outerWidth()/5;
+
+		ui.element.css("font-size",fontSize);
+
+		/*
 		if(ui.element.children(".text-detail").outerWidth() > ui.element.outerWidth() + 1){
 
 			while(ui.element.children(".text-detail").outerWidth() > ui.element.outerWidth() + 1){
@@ -987,7 +1008,9 @@ CUSTOM_TXT_RESIZE = function(event,ui){
 			while(ui.element.children(".text-detail").height() > ui.element.height()){
 				ui.element.css({"font-size":--fontSize});
 			}
-		}
+		}*/
+
+
 
 
 

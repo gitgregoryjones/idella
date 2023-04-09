@@ -14,7 +14,7 @@ class TextComponent {
 
  	this.id = id;
 
-	 var str =  `<div class="outer"><div lines="1" chars="0" style="display:inline-block width:100%" contenteditable=\"false\" id="text-${id}" class="text-detail">Enter Text</div><div>`;
+	 var str =  `<div class="outer"><div lines="1" chars="0" style="width:100%;height:100%" contenteditable=\"false\" Pid="text-${id}" class="text-detail">Enter Text</div><div>`;
 
 	
 

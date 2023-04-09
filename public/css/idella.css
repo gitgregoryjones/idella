@@ -1117,7 +1117,7 @@ li.header-row:after {
     --background-image: linear-gradient(green, yellow);
     background-color: white;
     z-index:0;
-   top:0 !important;
+   --top:0 !important;
    left:0 !important;
 
   }

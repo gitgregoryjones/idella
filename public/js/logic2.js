@@ -401,6 +401,9 @@ function stopTransitions(){
 
 				CUSTOM_pressEscapeKey(); 
 
+				undoHistory = [];
+				redoHistory = [];
+
 				
 				//PREVIEW_togglePreview(false);
 

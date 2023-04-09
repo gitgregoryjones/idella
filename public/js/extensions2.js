@@ -5,7 +5,7 @@ var currentNode = {}
 
 var lastComputed = 0;
 
-var standardFields = "id:0;extends:none;alias:none;border:none;border-radius:0px;background-image:none;display:flex;src:undefined;text:none;class:none;type:none;width:0;height:0;points:0;stroke:0";
+var standardFields = "id:0;parent:content;extends:none;alias:none;border:none;border-radius:0px;background-image:none;display:flex;src:undefined;text:none;class:none;type:none;width:0;height:0;points:0;stroke:0";
 
 var simple = (CSSTEXT_HARDCODEDCSSTEXT + standardFields).split(";")
 
@@ -22,6 +22,10 @@ CONVERT_STYLE_TO_CLASS_OBJECT = function(element, includeCustomClasses){
 			//Enter Code Below
 			log("Trying to convert element")
 			log(element)
+
+	//add the parent id as attribute and to the css
+	$(element).attr("parent",element.parent(".dropped-object").attr("id"));
+
 
 	$(simple).each(function(x,str){
 
@@ -177,8 +181,7 @@ function computeDimensions(theClassObj,Query,cWidth){
   	}
 
 
-  
-
+   
 
 
   	for(field in theClassObj){
@@ -216,7 +219,7 @@ function computeDimensions(theClassObj,Query,cWidth){
   		theClassObj["line-height"] = theClassObj["font-size"];
   	}
 
-  	theClassObjParent = $("#"+theClassObj["id"]).parent();
+  	theClassObjParent = $("#"+theClassObj["id"]).parent(".dropped-object");
   	//theClassObj["line-height"] = theClassObj["type"] == "ICON" ||  theClassObj["type"] == "BTN" ? theClassObj["height"] : ( adjuster * parsePx(theClassObj["line-height"]));
   	//any last minute overrides
   	var me = $("#"+theClassObj["id"]);
@@ -267,6 +270,10 @@ function computeDimensions(theClassObj,Query,cWidth){
 			theClassObj["position"] = "relative"
 		}
 
+	//add the parent id as attribute and to the css
+
+
+
 	var outStr = "." + theClassObj.id + " {\n";
 
 	var obj = {a: 1, b: 2, c: 3};
@@ -295,6 +302,7 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
 
   var CUSTOM_PXTO_VIEWPORT = function( moveMe,X,  Y ) {
 
+  	
 
   	//$(moveMe).removeClass("debug-border-style");
   	
@@ -323,13 +331,15 @@ function EXTENSIONS_delaySaving_PXTO_VIEWPORT(moveMe,X,Y){
 
 	console.log(`theClassObj is ${JSON.stringify(theClassObj)}`)
 
+	theClassObj["-webkit-app-region"] = "toast";
+
 
 	CSS_TEXT_saveCss(moveMe, theClassObj)
 	
 	$(moveMe).addClass($(moveMe).attr("id"))
 
 	//remove inline style since we have added a class
-	$(moveMe).attr("style","");
+//	$(moveMe).attr("style","");
 
 	/*
 	if(!editing && parseInt(moveMe.css("border-width"))  0){

@@ -1,4 +1,4 @@
-var CSSTEXT_HARDCODEDCSSTEXT = "common-id:abc;common-alias:none;common-color:white;common-href:none;common-height: 1200px; common-width: 858.469px; common-top: auto; common-left: auto; common-border:border;common-border-radius:0px;common-position:relative;common-z-index: auto;api-API:www.mock.com; api-body:{};api-response:{}; api-submit:Go;  common-onhover:{}; dialog-enabled:yes;animation-delay: 0s;slider-auto-slide:false;slider-delay:0px;slider-speed:0.6s;slider-direction:none;animation-fun:none;  animation-direction: normal; animation-duration: 0s; animation-fill-mode: none; animation-iteration-count: 1; animation-name: none; animation-play-state: running; animation-timing-function: ease;background-image: enter url; background-attachment: scroll; background-blend-mode: normal; background-clip: border-box; background-color: rgb(244, 244, 244);  background-origin: padding-box; background-position: 0% 0%; background-repeat: repeat; background-size: auto;  align:left;  border-bottom-color: rgb(0, 0, 0); border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom-style: none; border-bottom-width: 0px; border-collapse: separate; border-image-outset: 0px; border-image-repeat: stretch; border-image-slice: 100%; border-image-source: none; border-image-width: 1; border-left-color: rgb(0, 0, 0); border-left-style: none; border-left-width: 0px; border-right-color: rgb(0, 0, 0); border-right-style: none; border-right-width: 0px; border-top-color: rgb(0, 0, 0); border-top-left-radius: 0px; border-top-right-radius: 0px; border-top-style: none; border-top-width: 0px; bottom: auto; box-shadow: none; box-sizing: content-box; break-after: auto; break-before: auto; break-inside: auto; caption-side: top; clear: none; clip: auto;  content: ; direction: ltr; display: block; empty-cells: show; float: none; font-family: Times; font-kerning: auto; font-size: 16px; font-stretch: normal; font-style: normal; font-variant: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-variant-numeric: normal; font-weight: normal;  image-rendering: auto; isolation: auto; letter-spacing: normal; line-height: normal; list-style-image: none; list-style-position: outside; list-style-type: disc; margin-bottom: 8px; margin-left: 8px; margin-right: 8px; margin-top: 8px; max-height: none; max-width: none; min-height: 0px; min-width: 0px; mix-blend-mode: normal; motion-offset: 0px; motion-path: none; motion-rotation: auto 0deg; object-fit: fill; object-position: 50% 50%; opacity: 1; orphans: 2; outline-color: rgb(0, 0, 0); outline-offset: 0px; outline-style: none; outline-width: 0px; overflow-wrap: normal; overflow-x: visible; overflow-y: visible; padding-bottom: 0px; padding-left: 0px; padding-right: 0px; padding-top: 0px; pointer-events: auto; resize: none; right: auto; speak: normal; table-layout: auto; tab-size: 8; text-align: start; text-align-last: auto; text-decoration: none; text-indent: 0px; text-rendering: auto; text-shadow: none; text-size-adjust: auto; text-overflow: clip; text-transform: none;  touch-action: auto; transition-cntrl-left:left; transition-cntrl-right:right;transition-duration: 0s;  transition-number-items: 1;  transition-delay: 0s;  transition-property: all; transition-timing-function: ease; unicode-bidi: normal; vertical-align: baseline; visibility: visible; white-space: normal; widows: 2; will-change: auto; word-break: normal; word-spacing: 0px; word-wrap: normal; zoom: 1; -webkit-transition-duration:0s;-webkit-appearance: none; backface-visibility: visible; -webkit-background-clip: border-box; -webkit-background-origin: padding-box; -webkit-border-horizontal-spacing: 0px; -webkit-border-image: none; -webkit-border-vertical-spacing: 0px; -webkit-box-align: stretch; -webkit-box-decoration-break: slice; -webkit-box-direction: normal; -webkit-box-flex: 0; -webkit-box-flex-group: 1; -webkit-box-lines: single; -webkit-box-ordinal-group: 1; -webkit-box-orient: horizontal; -webkit-box-pack: start; -webkit-box-reflect: none; -webkit-clip-path: none; column-count: auto; column-gap: normal; column-rule-color: rgb(0, 0, 0); column-rule-style: none; column-rule-width: 0px; column-span: none; column-width: auto; align-content: normal; align-items: stretch; align-self: stretch; flex-basis: auto; flex-grow: 0; flex-shrink: 1; flex-direction: row; flex-wrap: nowrap; justify-content: normal; -webkit-font-smoothing: auto; -webkit-highlight: none; -webkit-hyphenate-character: auto; -webkit-line-break: auto; -webkit-line-clamp: none; -webkit-locale: auto; -webkit-margin-before-collapse: collapse; -webkit-margin-after-collapse: collapse; -webkit-mask-box-image: none; -webkit-mask-box-image-outset: 0px; -webkit-mask-box-image-repeat: stretch; -webkit-mask-box-image-slice: 0 fill; -webkit-mask-box-image-source: none; -webkit-mask-box-image-width: auto; -webkit-mask-clip: border-box; -webkit-mask-composite: source-over; -webkit-mask-image: none; -webkit-mask-origin: border-box; -webkit-mask-position: 0% 0%; -webkit-mask-repeat: repeat; -webkit-mask-size: auto; order: 0; perspective: none; perspective-origin: 429.234px 600px; -webkit-print-color-adjust: economy; -webkit-rtl-ordering: logical; shape-outside: none; shape-image-threshold: 0; shape-margin: 0px; -webkit-tap-highlight-color: rgba(0, 0, 0, 0.4); -webkit-text-combine: none; -webkit-text-decorations-in-effect: none; -webkit-text-emphasis-color: rgb(0, 0, 0); -webkit-text-emphasis-position: over; -webkit-text-emphasis-style: none; -webkit-text-fill-color: rgb(0, 0, 0); -webkit-text-orientation: vertical-right; -webkit-text-security: none; -webkit-text-stroke-color: rgb(0, 0, 0); -webkit-text-stroke-width: 0px; transform: none; transform-origin: 429.234px 600px; transform-style: flat; -webkit-user-drag: auto; -webkit-user-modify: read-only; -webkit-user-select: text; -webkit-writing-mode: horizontal-tb; -webkit-app-region: no-drag; buffered-rendering: auto; clip-path: none; clip-rule: nonzero; mask: none; filter: none; flood-color: rgb(0, 0, 0); flood-opacity: 1; lighting-color: rgb(255, 255, 255); stop-color: rgb(0, 0, 0); stop-opacity: 1; color-interpolation: sRGB; color-interpolation-filters: linearRGB; color-rendering: auto; fill: rgb(0, 0, 0); fill-opacity: 1; fill-rule: nonzero; marker-end: none; marker-mid: none; marker-start: none; mask-type: luminance; shape-rendering: auto; stroke: none; stroke-dasharray: none; stroke-dashoffset: 0px; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-opacity: 1; stroke-width: 1px; alignment-baseline: auto; baseline-shift: 0px; dominant-baseline: auto;text-orientation:horizontal; text-anchor: start; writing-mode: horizontal-tb; vector-effect: none; paint-order: fill stroke markers; d: none; cx: 0px; cy: 0px; x: 0px; y: 0px; r: 0px; rx: auto; ry: auto;";
+var CSSTEXT_HARDCODEDCSSTEXT = "common-id:abc;common-alias:none;common-color:white;common-href:none;common-height: 1200px; common-width: 858.469px; common-top: auto; common-left: auto; common-border:border;common-border-radius:0px;common-position:relative;common-z-index: auto;api-API:www.mock.com; api-body:{};api-response:{}; api-submit:Go;  common-onhover:{}; dialog-enabled:yes;animation-delay: 0s;slider-auto-slide:false;slider-delay:0px;slider-speed:0.6s;slider-direction:none;animation-fun:none;  animation-direction: normal; animation-duration: 0s; animation-fill-mode: none; animation-iteration-count: 1; animation-name: none; animation-play-state: running; animation-timing-function: ease;background-image: enter url; background-attachment: scroll; background-blend-mode: normal; background-clip: border-box; background-color: rgb(244, 244, 244);  background-origin: padding-box; background-position: 0% 0%; background-repeat: repeat; background-size: auto;  align:left;  border-bottom-color: rgb(0, 0, 0); border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom-style: none; border-bottom-width: 0px; border-collapse: separate; border-image-outset: 0px; border-image-repeat: stretch; border-image-slice: 100%; border-image-source: none; border-image-width: 1; border-left-color: rgb(0, 0, 0); border-left-style: none; border-left-width: 0px; border-right-color: rgb(0, 0, 0); border-right-style: none; border-right-width: 0px; border-top-color: rgb(0, 0, 0); border-top-left-radius: 0px; border-top-right-radius: 0px; border-top-style: none; border-top-width: 0px; bottom: auto; box-shadow: none; box-sizing: content-box; break-after: auto; break-before: auto; break-inside: auto; caption-side: top; clear: none; clip: auto;  content: ; direction: ltr; display: block; empty-cells: show; float: none; font-family: Times; font-kerning: auto; font-size: 16px; font-stretch: normal; font-style: normal; font-variant: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-variant-numeric: normal; font-weight: normal;  image-rendering: auto; isolation: auto; letter-spacing: normal; line-height: normal; list-style-image: none; list-style-position: outside; list-style-type: disc; margin-bottom: 8px; margin-left: 8px; margin-right: 8px; margin-top: 8px; max-height: none; max-width: none; min-height: 0px; min-width: 0px; mix-blend-mode: normal; motion-offset: 0px; motion-path: none; motion-rotation: auto 0deg; object-fit: fill; object-position: 50% 50%; opacity: 1; orphans: 2; outline-color: rgb(0, 0, 0); outline-offset: 0px; outline-style: none; outline-width: 0px; overflow-wrap: normal; overflow-x: visible; overflow-y: visible; padding-bottom: 0px; padding-left: 0px; padding-right: 0px; padding-top: 0px; pointer-events: auto; resize: none; right: auto; speak: normal; table-layout: auto; tab-size: 8; text-align: start; text-align-last: auto; text-decoration: none; text-indent: 0px; text-rendering: auto; text-shadow: none; text-size-adjust: auto; text-overflow: clip; text-transform: none;  touch-action: auto; transition-cntrl-left:left; transition-cntrl-right:right;transition-duration: 0s;  transition-number-items: 1;  transition-delay: 0s;  transition-property: all; transition-timing-function: ease; unicode-bidi: normal; vertical-align: baseline; visibility: visible; white-space: normal; widows: 2; will-change: auto; word-break: normal; word-spacing: 0px; word-wrap: normal; zoom: 1; -webkit-transition-duration:0s;-webkit-appearance: none; backface-visibility: visible; -webkit-background-clip: border-box; -webkit-background-origin: padding-box; -webkit-border-horizontal-spacing: 0px; -webkit-border-image: none; -webkit-border-vertical-spacing: 0px; -webkit-box-align: stretch; -webkit-box-decoration-break: slice; -webkit-box-direction: normal; -webkit-box-flex: 0; -webkit-box-flex-group: 1; -webkit-box-lines: single; -webkit-box-ordinal-group: 1; -webkit-box-orient: horizontal; -webkit-box-pack: start; -webkit-box-reflect: none; -webkit-clip-path: none; column-count: auto; column-gap: normal; column-rule-color: rgb(0, 0, 0); column-rule-style: none; column-rule-width: 0px; column-span: none; column-width: auto; align-content: normal; align-items: stretch; align-self: stretch; flex-basis: auto; flex-grow: 0; flex-shrink: 1; flex-direction: row; flex-wrap: nowrap; justify-content: normal; -webkit-font-smoothing: auto; -webkit-highlight: none; -webkit-hyphenate-character: auto; -webkit-line-break: auto; -webkit-line-clamp: none; -webkit-locale: auto; -webkit-margin-before-collapse: collapse; -webkit-margin-after-collapse: collapse; -webkit-mask-box-image: none; -webkit-mask-box-image-outset: 0px; -webkit-mask-box-image-repeat: stretch; -webkit-mask-box-image-slice: 0 fill; -webkit-mask-box-image-source: none; -webkit-mask-box-image-width: auto; -webkit-mask-clip: border-box; -webkit-mask-composite: source-over; -webkit-mask-image: none; -webkit-mask-origin: border-box; -webkit-mask-position: 0% 0%; -webkit-mask-repeat: repeat; -webkit-mask-size: auto; order: 0; perspective: none; perspective-origin: 429.234px 600px; -webkit-print-color-adjust: economy; -webkit-rtl-ordering: logical; shape-outside: none; shape-image-threshold: 0; shape-margin: 0px; -webkit-tap-highlight-color: rgba(0, 0, 0, 0.4); -webkit-text-combine: none; -webkit-text-decorations-in-effect: none; -webkit-text-emphasis-color: rgb(0, 0, 0); -webkit-text-emphasis-position: over; -webkit-text-emphasis-style: none; -webkit-text-fill-color: rgb(0, 0, 0); -webkit-text-orientation: vertical-right; -webkit-text-security: none; -webkit-text-stroke-color: rgb(0, 0, 0); -webkit-text-stroke-width: 0px; transform: none; transform-origin: 429.234px 600px; transform-style: flat; -webkit-user-drag: auto; -webkit-user-modify: read-only; -webkit-user-select: text; -webkit-writing-mode: horizontal-tb; buffered-rendering: auto; clip-path: none; clip-rule: nonzero; mask: none; filter: none; flood-color: rgb(0, 0, 0); flood-opacity: 1; lighting-color: rgb(255, 255, 255); stop-color: rgb(0, 0, 0); stop-opacity: 1; color-interpolation: sRGB; color-interpolation-filters: linearRGB; color-rendering: auto; fill: rgb(0, 0, 0); fill-opacity: 1; fill-rule: nonzero; marker-end: none; marker-mid: none; marker-start: none; mask-type: luminance; shape-rendering: auto; stroke: none; stroke-dasharray: none; stroke-dashoffset: 0px; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-opacity: 1; stroke-width: 1px; alignment-baseline: auto; baseline-shift: 0px; dominant-baseline: auto;text-orientation:horizontal; text-anchor: start; writing-mode: horizontal-tb; vector-effect: none; paint-order: fill stroke markers; d: none; cx: 0px; cy: 0px; x: 0px; y: 0px; r: 0px; rx: auto; ry: auto;";
 //misc-class:none;misc-position: static;misc-loop:loop;misc-autoplay:true;misc-cursor: auto;border:none; common-src:none;border-border: none;
 
 var CSSTEXT_validStyles = {}; 
@@ -10,6 +10,9 @@ CSSTEXT_HARDCODEDCSSTEXT.split(";").forEach(function(style){
 	}
 })
 
+
+var redoHistory = [];
+var undoHistory = [];
 
 
 function writeClassToBreakPointCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExists){
@@ -215,10 +218,109 @@ function addIdellaClassToElement(styleSheetName,selector, element,styleSheetSour
 }
 
 
+String.prototype.hashCode = function() {
+  var hash = 0,
+    i, chr;
+  if (this.length === 0) return hash;
+  for (i = 0; i < this.length; i++) {
+    chr = this.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}
+
+
+function attachToCorrectParent(childParentDelimited){
+
+	var childElem = childParentDelimited.split("|")[0];
+
+	var parentElem = childParentDelimited.split("|")[1];
+
+	var object = {};
+
+	var re = new RegExp(`.${childParentDelimited.split("|")[0]}\\s+\\{([^}])+\\}`,'img')
+
+	scope = $("#pageStyles").html().match(re)
+
+	raw = scope[0].substr(scope[0].indexOf("\t")+1)
+
+	pairs = raw.split(";")
+	
+	pairs.forEach(function(e){
+	    pair = e.split(":")
+	  	object[pair[0].trim()] = pair[1]  
+	})
+
+	if(object.parent != parentElem){
+
+		$(`#${childElem}`).appendTo(`#${object.parent}`);
+
+		$("html").attr("last-element",`${childElem}|${parentElem}`);
+
+
+	}
+
+
+}
+
+
+function redo(){
+
+	if(redoHistory.length > 0){
+
+		var version = redoHistory.pop();
+
+		//if(version.editing != editing){
+		//	redoHistory.push(version);
+		//	console.log(`Short circuit undo because we do not have a matching redoHistory for the screen size`)
+		//	return;
+		//}
+
+		undoHistory.push({css:$("#pageStyles").html(),element:$("html").attr("last-element"),editing:editing})
+
+		
+
+		$("#pageStyles").html(version.css)
+
+		attachToCorrectParent(version.element)
+	}
+}
+
+
+function undo(skipRedo){
+
+	if(undoHistory.length > 0){
+
+		var version = undoHistory.pop();
+
+		//Compare the edit mode when we saved the CSS to the current edit mode (ie. screen size)
+		//if(version.editing != editing){
+		//	undoHistory.push(version);
+		//	console.log(`Short circuit undo because we do not have a matching undoHistory for the screen size`)
+		//	return;
+		//}
+
+		redoHistory.push({css:$("#pageStyles").html(),element:$("html").attr("last-element"),editing:editing})
+
+	
+		
+		$("#pageStyles").html(version.css)
+
+		attachToCorrectParent(version.element)
+
+
+		
+	}
+}
 
 
 
 function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExists,pageNode){
+
+	if(div.attr("id") == "greybox")	{
+		return;
+	}
 
 
 
@@ -240,8 +342,23 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExi
 	styleCss = thescript.html();
 	//test to see if style is not found, add it.  If found, replace it
 	if(!thescript.html().match(re)){
+
+		//write previous css to history
+		
+		//write previous css to history
+		$("html").attr("last-element",`${div.attr("id")}|${div.parent(".dropped-object").attr("id")}`);
+		
+		undoHistory.push({css:thescript.html(),element:div.attr("id"), editing: editing == true ? true : false});
+
 		log.debug("Error CSSTEXT.js: Appending RULE for " + myCSSLookupKey + " and rule " + theClassObj.cssRule)
+
 		thescript.append(theClassObj.cssRule + "\n");
+
+
+
+
+
+
 	}else {
 		if(justTestIfExists){
 			exists = true;
@@ -250,7 +367,33 @@ function writeClassToMasterCSSFile(div, myCSSLookupKey,theClassObj,justTestIfExi
 		log.info("CSSTEXT.js: I found  RULE for " + myCSSLookupKey )
 		log.info(`CSSTEXT.js: Replacing with ${theClassObj.cssRule}`)
 
+		console.log(`HashCode for previous CSS is ${thescript.html().hashCode()}`)
+
+		var found = false;
+
+		//write previous css to history
+		
+		//write previous css to history
+
+
+		
+		undoHistory.push({css:thescript.html(),element:div.attr("id"), editing: editing == true ? true : false});
+
+		$("html").attr("last-element",`${div.attr("id")}|${div.parent(".dropped-object").attr("id")}`);
+
 		thescript.html(thescript.html().replace(re,theClassObj.cssRule))
+
+		if(undoHistory[undoHistory.length-1].css.hashCode() == thescript.html().hashCode() ){
+			undoHistory.pop();
+		}
+
+
+		console.log(`HashCode for new CSS is ${thescript.html().hashCode()}`)
+
+		
+		
+
+
 	}
 
 
