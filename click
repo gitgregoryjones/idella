@@ -13,7 +13,7 @@
         }
 
         canvas {
-            background-color: rgba(0,0,0,.1);
+            --background-color: rgba(0,0,0,.1);
             display: block; /* Remove spacing below the canvas */
             position:absolute;
             top:0;
@@ -39,7 +39,8 @@
 
         .close {
             color: white;
-            background-color: red;
+            
+            background-color: white;
             font-size: 1rem;
             font-weight: bold;
             padding: 1rem;
@@ -50,6 +51,29 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            content:'x';
+            
+            border:4px dashed silver;
+            opacity:1;
+            transform: all .3s ease-in-out;
+        }
+        
+        .close::before {
+            content: '\1F512';
+        }
+        
+        .unlock {
+            background-color:;
+            display:block;
+             border:4px solid black;
+             font-size:50px;
+             opacity:1;
+        }
+        
+        .close.unlock::before{
+            content:'\1F58C';
+        
+            
         }
 
         .hide {
@@ -60,7 +84,7 @@
         .bounding-box-info {
             position: absolute;
             top: 10px;
-            right: 10px;
+            left:50%;
             background-color: rgba(255, 255, 255, 0.8);
             padding: 10px;
             border: 1px solid black;
@@ -85,20 +109,21 @@
         .drop {
             padding: 1rem;
         }
+        
     </style>
 </head>
 <body>
 
     <nav>
         <div class="rectangle">Rectangle</div>
-        <div class="text">Text Goes Here</div>
+        <div class="text shape">Text Goes Here</div>
         <input type="color" class="color">
     </nav>
     <content class="canvas">
     </content>
 
-    <canvas id="myCanvas"></canvas>
-    <button class="close">X</button>
+    <canvas class="hide" id="myCanvas"></canvas>
+    <button class="close"></button>
     <div class="bounding-box-info hide" id="boundingBoxInfo">
         <strong>Bounding Box:</strong>
         <p id="boxDetails"></p>
@@ -199,38 +224,30 @@
         highlightElementsInBoundingBox();
     }
 
-    // Function to highlight elements within the bounding box
-    function highlightElementsInBoundingBox() {
-        const elements = document.querySelectorAll('.canvas .rectangle'); // Select elements inside the .canvas container
+   // Function to highlight elements within the bounding box
+function highlightElementsInBoundingBox() {
+    const elements = document.querySelectorAll('.canvas .shape'); // Select elements inside the .canvas container
 
-        elements.forEach(element => {
-            const rect = element.getBoundingClientRect();
-            const canvasRect = canvas.getBoundingClientRect(); // Get canvas bounds
+    elements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const canvasRect = canvas.getBoundingClientRect(); // Get canvas bounds
 
-            // Calculate the element's position relative to the canvas
-            const elementX = rect.offsetLeft;
-            const elementY = rect.offsetTop;
-            const elementWidth = rect.width;
-            const elementHeight = rect.height;
+        // Check if the element is fully inside the bounding box (top-left and bottom-right corners)
+        if (
+            rect.left >= minX && rect.right <= maxX && // Check horizontal bounds
+            rect.top >= minY && rect.bottom <= maxY    // Check vertical bounds
+        ) {
+            element.classList.add('highlight');
+        } else {
+            element.classList.remove('highlight');
+            
+        }
 
-            // Check if the element is fully inside the bounding box
-            if (
-                elementX >= minX &&
-                elementX + elementWidth <= maxX - minX &&
-                elementY >= minY &&
-                elementY + elementHeight <= maxY - minY
-            ) {
-                // If the element is inside the bounding box, add the highlight class
-                element.classList.add('highlight');
-                alert('bounded')
-            } else {
-                // Otherwise, remove the highlight class
-                var cr = element.getBoundingClientRect();
-                element.textContent = `X: ${cr.left}, Y: ${cr.top}, Width: ${cr.width}, Height: ${cr.height}`;
-                element.classList.remove('highlight');
-            }
-        });
-    }
+        // Optionally, display element dimensions for debugging
+       // element.textContent = `X: ${rect.left}, Y: ${rect.top}, Width: ${rect.width}, Height: ${rect.height}`;
+    });
+}
+
 
     // Event listeners for drawing
     canvas.addEventListener('mousedown', startDraw);
@@ -246,6 +263,7 @@
     
     document.querySelector('.close').addEventListener('click',()=>{
         canvas.classList.toggle('hide');
+        document.querySelector(".close").classList.toggle('unlock');
     });
 </script>
 <script>
@@ -282,7 +300,7 @@
                 clone.textContent = "";
                 clone.style.flex = 1;
                 node.append(clone);
-                node.classList.remove("shape");
+                //node.classList.remove("shape");
 
                 node.style.display = "flex";
                 node.style.flexWrap = "wrap";
@@ -290,7 +308,8 @@
                 clone.style.flexWrap = "wrap";
                 clone.style.padding = "1rem";
                 clone.style.display="flex";
-                clone.innerHTML = ``;
+                clone.classList.add("shape");
+                
                 
                 setUp(clone);
                 var cr = clone.getBoundingClientRect();
