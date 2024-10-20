@@ -76,8 +76,19 @@
             
         }
 
-        .hide {
+        .hide, .color {
             display: none;
+        }
+        
+        .color {
+            position:absolute;
+            
+            top:3rem;
+            right:3rem;
+        }
+        
+        .show {
+            display:block;
         }
 
         /* Bounding box info */
@@ -89,12 +100,14 @@
             padding: 10px;
             border: 1px solid black;
             font-family: Arial, sans-serif;
+            display:none;
         }
 
         /* Style for elements inside the bounding box */
         .highlight {
-            border: 8px solid orange;
-            background-color:limegreen;
+            border: 4px dashed limegreen !important;
+            --background-color:limegreen !important;
+            --transform:scale(1.2);
         }
 
         content {
@@ -108,6 +121,11 @@
 
         .drop {
             padding: 1rem;
+            z-index:0;
+            
+            .karen {
+                background-color:true;
+            }
         }
         
     </style>
@@ -117,17 +135,18 @@
     <nav>
         <div class="rectangle">Rectangle</div>
         <div class="text shape">Text Goes Here</div>
-        <input type="color" class="color">
+        
     </nav>
     <content class="canvas">
     </content>
 
     <canvas class="hide" id="myCanvas"></canvas>
     <button class="close"></button>
-    <div class="bounding-box-info hide" id="boundingBoxInfo">
+    <div class="bounding-box-info hide " id="boundingBoxInfo">
         <strong>Bounding Box:</strong>
         <p id="boxDetails"></p>
     </div>
+    <input type="color" class="color">
 
 <script>
     const canvas = document.getElementById('myCanvas');
@@ -147,6 +166,35 @@
     ctx.strokeStyle = 'red';
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
+
+
+    function higlightAtClick(event){
+        
+        pts = getPosition(event);
+        
+        var point = {x:pts[0],y:pts[1]};
+        
+        var found = false;
+        
+        shapes = Array.from(document.querySelectorAll('.shape')).reverse();
+                
+                shapes.forEach((shape,index) => {
+            box = shape.getBoundingClientRect();
+            if(point.x > box.x && point.x < box.x + box.width && point.y > box.y && point.y && point.y < box.y + box.height){
+                if(!found){
+                    //shape.style.color = "red";
+                    shape.classList.add('highlight')
+                    found=true;
+                }
+            } else {
+                //shape.style.color = "initial";
+                shape.classList.remove('highlight')
+            }
+        })
+
+    }
+    
+    
 
     // Function to set canvas size to the entire viewport
     function resizeCanvas() {
@@ -178,9 +226,12 @@
             ];
         }
     }
+    
+    let pointsDrawn = 0;
 
     function startDraw(event) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pointsDrawn = 0;
         isDrawing = true;
         [startX, startY] = getPosition(event); // Store the initial position
         [lastX, lastY] = [startX, startY]; // Initialize lastX and lastY
@@ -207,9 +258,11 @@
         ctx.stroke();
 
         [lastX, lastY] = [x, y]; // Update the last position
+        
+        pointsDrawn++;
     }
 
-    function stopDrawing() {
+    function stopDrawing(event) {
         isDrawing = false;
 
         // Bounding box calculations
@@ -221,7 +274,12 @@
         boxDetails.textContent = `X: ${minX}, Y: ${minY}, Width: ${boundingWidth}, Height: ${boundingHeight}`;
 
         // Highlight any elements in canvas-container and canvas that are within the bounding box
-        highlightElementsInBoundingBox();
+        if(pointsDrawn > 1) {
+            highlightElementsInBoundingBox();
+        }else {
+            console.log('I only see one click')
+            higlightAtClick(event);
+        }
     }
 
    // Function to highlight elements within the bounding box
@@ -258,12 +316,15 @@ function highlightElementsInBoundingBox() {
 
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('touchend', stopDrawing);
+    //canvas.addEventListener('click',higlightAtClick);
 
-    canvas.addEventListener('mouseout', stopDrawing);
+   // canvas.addEventListener('mouseout', stopDrawing);
     
     document.querySelector('.close').addEventListener('click',()=>{
         canvas.classList.toggle('hide');
         document.querySelector(".close").classList.toggle('unlock');
+         document.querySelector(".color").classList.toggle('show');
+         document.querySelector("nav").classList.toggle('hide');
     });
 </script>
 <script>
@@ -275,6 +336,21 @@ function highlightElementsInBoundingBox() {
             cType = control.getAttribute("class");
         });
     });
+   
+    var colorCntrl = document.querySelector(".color");
+    
+    ["mouseenter","mouseover"].forEach((event)=>{
+           colorCntrl.addEventListener(event,(e)=> e.stopPropagation())
+    })
+    
+    colorCntrl.addEventListener('input',()=>{
+        var chosenElements = document.querySelectorAll('.highlight');
+        
+        chosenElements.forEach((el)=>{
+            el.style.backgroundColor = colorCntrl.value;    
+        });
+        
+    })
     
     droppables = document.querySelectorAll(".canvas, .shape");
     
