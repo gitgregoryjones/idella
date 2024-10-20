@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw and Detect Line Type</title>
+    <style>
+        #drawingCanvas {
+            border: 2px solid #000;
+            background-color: #f0f0f0;
+        }
+        #controls {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="drawingCanvas" width="400" height="400"></canvas>
+<div id="controls">
+    <button id="calculateAngleButton">Detect Line Type</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let points = [];  // To store the drawing points
+
+    // Start drawing
+    canvas.addEventListener('mousedown', (e) => {
+        drawing = true;
+        points = []; // Reset points for a new drawing
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas for a fresh start
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+        points.push({ x: e.offsetX, y: e.offsetY }); // Store the first point (center)
+    });
+
+    // Continue drawing
+    canvas.addEventListener('mousemove', (e) => {
+        if (drawing) {
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            points.push({ x: e.offsetX, y: e.offsetY }); // Capture the subsequent points
+        }
+    });
+
+    // Stop drawing
+    canvas.addEventListener('mouseup', () => {
+        drawing = false;
+        ctx.closePath();
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+        drawing = false;
+        ctx.closePath();
+    });
+
+    // Button click event to detect the line type
+    document.getElementById('calculateAngleButton').addEventListener('click', () => {
+        if (points.length < 2) {
+            alert('Please draw a line or shape first.');
+            return;
+        }
+
+        const center = points[0]; // First point is the center
+        const endPoint = points[points.length - 1]; // Last point drawn
+
+        // Calculate the angle in radians using atan2
+        const angleRadians = Math.atan2(endPoint.y - center.y, endPoint.x - center.x);
+
+        // Convert to degrees
+        let angleDegrees = angleRadians * (180 / Math.PI);
+
+        // Adjust the angle to be between 0 and 360 degrees
+        if (angleDegrees < 0) {
+            angleDegrees += 360;
+        }
+
+        // Determine the type of line based on the angle range
+        let lineType = '';
+
+        if (angleDegrees >= 350 || angleDegrees <= 15) {
+            lineType = 'Right Arrow';
+        } else if (angleDegrees >= 175 && angleDegrees <= 190) {
+            lineType = 'Left Arrow';
+        } else if (angleDegrees > 190 && angleDegrees <= 254) {
+            lineType = 'Left Diagonal Top Arrow';
+        } else if (angleDegrees > 15 && angleDegrees <= 70) {
+            lineType = 'Right Diagonal Bottom Arrow'; // Flipped from Left to Right
+        } else if (angleDegrees >= 254 && angleDegrees <= 285) {
+            lineType = 'Top Arrow';
+        } else if (angleDegrees > 70 && angleDegrees < 110) {
+            lineType = 'Bottom Arrow';
+        } else if (angleDegrees > 285 && angleDegrees < 350) {
+            lineType = 'Right Diagonal Top Arrow';
+        } else if (angleDegrees >= 110 && angleDegrees < 175) {
+            lineType = 'Left Diagonal Bottom Arrow'; // Flipped from Right to Left
+        } else {
+            lineType = 'Unknown';
+        }
+
+        alert(`The angle is: ${angleDegrees.toFixed(2)}°. Detected line type: ${lineType}`);
+    });
+
+</script>
+
+</body>
+</html>
