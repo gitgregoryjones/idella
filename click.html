@@ -1030,29 +1030,43 @@ body {
     ctx.lineCap = 'round';
 
 
-    function higlightAtClick(event){
+    function getElementAtPoint(point){
+        alert('got em')
+         var elem;
         
-        pts = getPosition(event);
-        
-        var point = {x:pts[0],y:pts[1]};
-        
-        var found = false;
-        
-        shapes = Array.from(document.querySelectorAll('.canvas *')).reverse();
+         shapes = Array.from(document.querySelectorAll('.canvas *')).reverse();
                 
                 shapes.forEach((shape,index) => {
             box = shape.getBoundingClientRect();
             if(point.x > box.x && point.x < box.x + box.width && point.y > box.y && point.y && point.y < box.y + box.height){
                 if(!found){
                     //shape.style.color = "red";
-                    shape.classList.add('highlight')
-                    found=true;
+                   // shape.classList.add('highlight')
+                    elem = shape;
                 }
-            } else {
-                //shape.style.color = "initial";
-                shape.classList.remove('highlight')
             }
         })
+        
+        return elem;
+        
+    }
+
+    function highlightAtClick(event){
+        
+        pts = getPosition(event);
+        
+        var point = {x:pts[0],y:pts[1]};
+        
+        
+        var selectedElement = getElementAtPoint(point);
+                    //shape.style.color = "red";
+        
+        Array.from(document.querySelectorAll('.canvas *')).forEach(el=> el.classList.remove('highlight'))
+        
+        if(selectedElement)
+            selectedElement.classList.add('highlight')
+               
+        
 
     }
     
@@ -1123,8 +1137,31 @@ body {
         
         pointsDrawn++;
     }
-
+    
     function stopDrawing(event) {
+    isDrawing = false;
+
+    // Bounding box calculations
+    const boundingWidth = maxX - minX;
+    const boundingHeight = maxY - minY;
+
+    // Show the bounding box information
+    boundingBoxInfo.classList.remove('hide');
+    boxDetails.textContent = `X: ${minX}, Y: ${minY}, Width: ${boundingWidth}, Height: ${boundingHeight}`;
+
+    
+    // Highlight any elements in canvas-container and canvas that are within the bounding box
+    if(pointsDrawn > 1) {
+        highlightElementsInBoundingBox();
+    } else {
+        alert('clik')
+        console.log('I only see one click');
+        highlightAtClick(event);
+    }
+}
+
+
+    function stopDrawing2(event) {
         isDrawing = false;
 
         // Bounding box calculations
@@ -1134,13 +1171,16 @@ body {
         // Show the bounding box information
         boundingBoxInfo.classList.remove('hide');
         boxDetails.textContent = `X: ${minX}, Y: ${minY}, Width: ${boundingWidth}, Height: ${boundingHeight}`;
+        
+        
+        
 
         // Highlight any elements in canvas-container and canvas that are within the bounding box
         if(pointsDrawn > 1) {
             highlightElementsInBoundingBox();
         }else {
             console.log('I only see one click')
-            higlightAtClick(event);
+            highlightAtClick(event);
         }
     }
 
@@ -1184,6 +1224,8 @@ function highlightElementsInBoundingBox() {
       let currentScrollY = 0;
     window.addEventListener('wheel', (event) => {
       event.preventDefault(); // Prevent default scrolling
+      //if(drawing)
+      //return;
      
       currentScrollY += event.deltaY; // Update scroll position
       if(currentScrollY > 0) {
