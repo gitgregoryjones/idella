@@ -13,7 +13,7 @@
         }
 
         canvas {
-            --background-color: rgba(0,0,0,.1);
+            background-color: rgba(0,0,0,.1);
             display: block; /* Remove spacing below the canvas */
             position:absolute;
             top:0;
@@ -128,6 +128,12 @@
             }
         }
         
+        .pink {
+            width:500px;
+            height:2500px;
+            background-color:pink;
+        }
+        
     </style>
 </head>
 <body>
@@ -137,7 +143,863 @@
         <div class="text shape">Text Goes Here</div>
         
     </nav>
-    <content class="canvas">
+    <content class="canvas" id="content">
+        <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Watch Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+   <style>
+
+:root {
+    --primary-color: #F6FFF8; /* Soft, light green for background */
+    --secondary-color: #6B9080; /* Muted green for main elements */
+    --tertiary-color: #A4C3B2; /* Light, fresh green for accents */
+    --quaternary-color: #CCE3DE; /* Very light green for highlights */
+    --accent-color: #EAF4F4; /* Soft, light cyan for emphasis */
+    --background-gradient-start:rgba(107, 144, 128, 0.7); ; /* Light background gradient start */
+    --background-gradient-end: rgba(0, 0, 0, 0.6); /* Light background gradient end */
+    --card-background: rgba(107, 144, 128, 0.7); /* Frosted muted green */
+    --text-color: white; /* Muted green for text */
+    --hover-color: #A4C3B2; /* Light fresh green for hover */
+    --icon-color: #6B9080; /* Matches muted green for icons */
+    --icon-hover-color: #CCE3DE; /* Very light green for icon hover */
+    --toggle-container-dark-gradient: linear-gradient(to left, var(--primary-color), var(--tertiary-color));
+}
+
+
+
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: var(--primary-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: var(--text-color);
+    background: linear-gradient(to bottom, var(--background-gradient-start), var(--background-gradient-end)),
+        url('https://gitgregoryjones.github.io/WaterWatchPro/Crew.jpeg') no-repeat center center/cover;
+}
+
+  /* RAPIDRAIN Promo Banner */
+        .upsell-banner {
+            background-color: #ffb703;
+            color: black;
+            padding: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+        }
+
+        .upsell-banner p {
+            margin: 0;
+            text-align: center;
+        }
+
+        .upsell-banner button {
+            background-color: #219ebc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .upsell-banner button:hover {
+            background-color: #023047;
+        }
+
+        .close-banner {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: black;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+        }
+
+        .close-banner:hover {
+            color: #333;
+        }
+
+       
+
+        /* Rest of the styles omitted for brevity */
+    
+
+/* Top Navigation */
+.top-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 15px;
+    margin: 2rem;
+    padding: 15px 30px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.logo img {
+    height: 30px;
+}
+
+/* Hamburger Menu */
+.hamburger-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.hamburger-icon {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    min-width: 200px;
+    right: 0;
+    background-color: var(--secondary-color);
+    background-color:black;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 1000;
+     backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+}
+
+.dropdown-menu.active {
+    display: block;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: var(--text-color);
+}
+
+.menu-item i {
+    margin-right: 10px;
+}
+
+.menu-item:hover {
+    background-color: var(--hover-color);
+}
+
+/* Dropdown icons */
+.user-icon { color: var(--icon-color); }
+.location-icon { color: var(--tertiary-color); }
+.report-icon { color: var(--accent-color); }
+.profile-icon { color: var(--icon-color); }
+.logout-icon { color: #FF6B6B; }
+
+.dashboard {
+    --display: flex;
+    --height: 80%;
+    padding: 20px;
+    justify-content: center;
+    border: 1px solid var(--text-color);
+    /* margin-left: 10rem; */
+    /* margin-right: 10rem; */
+    margin: auto;
+    border-radius: 1.5rem;
+    /* height: 2000px; */
+}
+
+.user-info, .location-header {
+    align-self: end;
+    margin: 2rem;
+    display:flex;
+    gap:1rem;
+    justify-content:center;
+    align-items:center;
+}
+
+
+
+.user-info img {
+    border-radius:50%;
+}
+
+/* Right Content Area */
+.right-content {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Blurred card (frosted glass effect) */
+.card {
+    background-color: var(--card-background);
+    /* padding: 20px; */
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex: 1;
+    padding: 1rem;
+    min-width: 20rem;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--text-color);
+}
+
+.card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-around;
+}
+
+/* Toggle Container */
+.toggle-container {
+    display: flex;
+    justify-content: space-between;
+    background: var(--toggle-container-dark-gradient);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 5px;
+}
+
+.toggle-button {
+    background-color: transparent;
+    border: 2px solid transparent;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    color: black;
+}
+
+.toggle-button.active {
+    background-color: var(--hover-color);
+    color: white;
+    font-weight: bold;
+}
+
+.toggle-button:hover {
+    background-color: var(--hover-color);
+    color:white;
+}
+
+
+/* Mini Forecast Cards */
+.mini-card-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.mini-card {
+    background-color: var(--secondary-color);
+    border-radius: 15px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 130px;
+    min-height: 150px;
+    color:var(--primary-color);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all .3s ease;
+}
+
+.mini-card i {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.mini-card:hover {
+    --transform:scale(1.1);
+    background-color:var(--primary-color);
+    color:var(--secondary-color);
+}
+
+.mini-card p {
+    margin: 5px 0;
+    color: white
+    font-size: 0.9rem;
+}
+
+
+
+        /* Scrollable Contacts Area */
+        .contacts-scroll {
+            max-height: 250px; /* Set the height of the scrollable area */
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.1); /* Match the chart background */
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .contact-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--secondary-color);/* Same background color */
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s, color 0.3s;
+            color: var(--primary-color);
+            font-size:.9rem;
+        }
+        
+       
+         .contact-row:hover {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+          
+        }
+
+        .contact-info img {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+        }
+
+        .contact-info p {
+            margin: 0;
+           
+        }
+
+        .contact-actions i {
+            margin-left: 10px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .contact-actions i:hover {
+            color: #84A98C;
+        }
+          .info-badge,.alarm, .headeralarm {
+        background-color: #52796F; /* You can adjust this color to fit your theme */
+        color: white;
+        padding: 5px 5px;
+        border-radius: 20px; /* Creates a pill-shaped badge */
+        font-size: 0.8rem;
+        margin-left: 0px;
+        top:-1rem;
+        position:relative;
+        /* Adds spacing between text and badge */
+        font-weight: bold;
+    }
+    
+           /* Scrollable Alarms Area */
+        .alarms-scroll {
+            max-height: 250px; /* Set the height of the scrollable area */
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.1); /* Match the chart background */
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .alarm-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1); /* Same background color */
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .alarm-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+        }
+
+        .alarm-info i {
+            color: #FFC107; /* Yellow color for alarm icon */
+        }
+
+        .alarm-info p {
+            margin: 0;
+            color: white;
+        }
+    
+    .alarm {
+        background-color:#FFC107;
+        background-color:white;
+        border:2px solid black;
+        color:black;
+       
+    }
+    
+     .headeralarm {
+        background-color:#FFC107;
+        padding:5px 10px;
+        text-decoration:none;
+        top:0;
+        color:black;
+        background-color:white;
+        border:1px solid black;
+    }
+    
+    .card-actions {
+        position: absolute; /* Make the container for the plus sign absolute */
+        top: 1rem;          /* Position it near the top */
+        right: 1.5rem;        /* Align it to the right */
+    }
+    .location-header, .subtitle {
+        color: var(--card-background);
+        font-size:1rem;
+        font-weight:bold;
+        text-shadow: 1px 1px whitesmoke;
+    }
+    .subtitle {
+        color:cyan;
+        font-weight:normal;
+        text-decoration:none;
+        font-size:16px;
+        
+    }
+    .subheader {
+        margin-top:.5rem;
+        display:none;
+    }
+    /* Search Container */
+.search-container {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+    padding: 5px 15px;
+    border-radius: 20px; /* Rounded edges */
+    width: 300px; /* Adjust the width as needed */
+    position: relative;
+    margin: 0 20px; /* Space between logo and search */
+}
+
+.search-container input {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    padding: 10px;
+}
+
+.search-container .search-icon {
+    color: #CAD2C5; /* Icon color */
+    position: absolute;
+    right: 10px;
+    font-size: 1.2rem;
+}
+/* Notification Banner */
+.notification-banner {
+    background-color: #FFC107; /* Warning color */
+    color: black;
+    text-align: center;
+    padding: 10px;
+    font-size: 1rem;
+    position: relative;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Ensure it stays above other elements */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add some shadow for depth */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* Close Button for Banner */
+.close-banner {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: black;
+    position: absolute;
+    right: 20px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.close-banner:hover {
+    color: #333;
+}
+
+.location-header {
+    font-size:2rem;
+    align-self:center;
+}
+
+   .spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #84A98C; /* Adjusted to match button color */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            top:50%;
+            left:50%;
+            z-index:1000;
+            
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    /* Stack top info area */
+    .top-info {
+        flex-direction: column;
+        align-items: flex-end;
+        --width: 100%;
+        --padding: 15px;
+        margin: 0;
+        --position:absolute;
+       
+    }
+    
+    .upsell-banner  {
+        display:none;
+    }
+    
+    .user-info {
+        align-self:center;
+        margin:0;
+        flex-direction:row;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:10px;
+        border:1px solid white;
+        border-radius:1rem;
+    }
+    .user-info img {
+        border-radius:50%;
+        
+    }
+
+    .logo {
+        margin-bottom: 10px;
+        align-self:start;
+    }
+
+    .search-container {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .hamburger-menu {
+        margin-top: 10px;
+        align-self:end;
+    }
+
+    /* Stack dashboard content */
+    .dashboard {
+        
+        
+        padding: 10px;
+        border: none;
+    }
+
+    .right-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 20px;
+    }
+
+    /* Adjust card styles for mobile */
+    .card {
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .card h3 {
+        font-size: 1.2rem;
+        background-image: linear-gradient(to left, var(--primary-color), var(--text-color));
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+    }
+
+    .mini-card-container {
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .mini-card {
+        width: 100px;
+    }
+
+    .contacts-scroll, .alarms-scroll {
+        max-height: 200px;
+    }
+
+    .search-container {
+        width: 100%;
+        padding: 5px 10px;
+    }
+
+    .location-banner {
+        margin: 10px 0;
+        text-align: center;
+        
+    }
+
+    /* Adjust font sizes */
+    .location-banner h1 {
+        font-size: 1.5rem;
+        color:var(--secondary-color);
+        background:  var(--toggle-container-dark-gradient);
+    }
+    
+    .location-header {
+        align-self: center;
+        margin: 2rem;
+        display:flex;
+        gap:1rem;
+        justify-content:center;
+        align-items:center;
+        font-size:2rem;
+    }
+
+    .card-footer {
+        flex-direction: row;
+        align-items: flex-start;
+    
+    }
+
+    .card-footer .status,
+    .card-footer .actions {
+        margin-top: 10px;
+    }
+}
+
+
+    </style>
+    <style>
+    .add-location-btn {
+        background-color: #52796F; /* Theme color for background */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 30px; /* Rounded edges for a smooth button */
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px; /* Spacing between the icon and text */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Light shadow for depth */
+        transition: background-color 0.3s, box-shadow 0.3s; /* Smooth hover effects */
+    }
+
+    .add-location-btn i {
+        font-size: 1.2rem;
+    }
+
+    .add-location-btn:hover {
+        background-color: #84A98C; /* Lighter shade for hover effect */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+    }
+
+    .add-location-btn:active {
+        background-color: #354F52; /* Darker shade when button is clicked */
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Reduce shadow when clicked */
+    }
+    
+    .gold-star {
+        color:gold;
+    }
+    
+    .location-name {
+        text-shadow 1px 1px black;
+    }
+    /* Location Name Banner */
+.location-banner {
+    --background-color: #52796F; /* Match the theme */
+    color: white;
+    text-align: right;
+    padding: 15px;
+    margin: 10px; /* Add some space below the top-info section */
+    margin-right:8.25rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+}
+
+.location-banner h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.map {
+ background-image:url(https://gitgregoryjones.github.io/WaterWatchPro/Brookhaven.png);
+ min-height:300px;
+ width:100%;
+ background-size:100%;
+ border-radius:1rem;
+ transition: all 0.5s ease-in-out;
+  &:hover {
+      background-size:150%;
+  }
+  
+  
+}
+
+ .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 200px;
+            border: 1px solid black;
+            border-top: none;
+            background-color: white;
+            overflow-y: auto;
+            z-index: 1000;
+            color:black;
+            margin-top:1rem;
+            border-radius:1rem;
+        }
+
+        .autocomplete-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .autocomplete-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+       
+</style>
+
+</head>
+    <header class="top-info">
+            <div class="logo">
+                <img src="https://img1.wsimg.com/isteam/ip/88056157-8118-4fa6-a40b-afa381a48cd5/Eye%20Words.png/:/rs=h:30" alt="Logo">
+            </div>
+             <!-- Location Search Field -->
+    <div class="search-container">
+        <input type="text" id="locationSearch" placeholder="Search locations...">
+        <div id="autocompleteList" class="autocomplete-list"></div>
+        <i class="fas fa-search search-icon"></i>
+    </div>
+     <div class="user-info">
+                <img src="https://i.pravatar.cc/50" alt="Profile Picture">
+                <p class="user-name">Foreman James</p>
+            </div>
+           
+<div class="hamburger-menu">
+                <i class="fas fa-bars hamburger-icon"></i> <!-- Hamburger icon -->
+
+                <!-- Dropdown Menu -->
+                <div class="dropdown-menu">
+                    <div class="menu-item">
+                        <i class="fas fa-user-group user-icon"></i>
+                        <span>Add Contact</span>
+                    </div>
+                    <div class="menu-item location-icon">
+                        <i class="fas fa-map-marker-alt location-icon"></i>
+                        <span>Add Location</span>
+                    </div>
+                    <div class="menu-item">
+                        <i class="fas fa-file-alt report-icon"></i>
+                        <span>Reports</span>
+                    </div>
+                    <div class="menu-item">
+                        <i class="fas fa-edit user-icon"></i>
+                        <span>My Profile</span>
+                    </div>
+                    <div class="menu-item logout-icon">
+                        <i class="fas fa-sign-out-alt logout-icon"></i>
+                        <span>Logout</span>
+                    </div>
+                    <p>Themes</p>
+                    <hr>
+                    <div class="menu-item" onclick="handleThemeChange('blue')">
+                        
+                        <span>Blue</span>
+                    </div>
+                    <div class="menu-item" onclick="handleThemeChange('green')">
+                        
+                        <span>Green</span>
+                    </div>
+                    <div class="menu-item" onclick="handleThemeChange('muted')">
+                        
+                        <span>Muted</span>
+                    </div>
+                    
+                    <div class="menu-item" onclick="handleThemeChange('summer')">
+                        
+                        <span>Fall</span>
+                    </div>
+                    <div class="menu-item" onclick="handleThemeChange('dark')">
+                        
+                        <span>Dark</span>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            
+        </header>
+        <div class="pink shape"></div>
     </content>
 
     <canvas class="hide" id="myCanvas"></canvas>
@@ -176,7 +1038,7 @@
         
         var found = false;
         
-        shapes = Array.from(document.querySelectorAll('.shape')).reverse();
+        shapes = Array.from(document.querySelectorAll('.canvas *')).reverse();
                 
                 shapes.forEach((shape,index) => {
             box = shape.getBoundingClientRect();
@@ -284,7 +1146,7 @@
 
    // Function to highlight elements within the bounding box
 function highlightElementsInBoundingBox() {
-    const elements = document.querySelectorAll('.canvas .shape'); // Select elements inside the .canvas container
+    const elements = document.querySelectorAll('.canvas *'); // Select elements inside the .canvas container
 
     elements.forEach(element => {
         const rect = element.getBoundingClientRect();
@@ -317,6 +1179,19 @@ function highlightElementsInBoundingBox() {
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('touchend', stopDrawing);
     //canvas.addEventListener('click',higlightAtClick);
+
+
+      let currentScrollY = 0;
+    window.addEventListener('wheel', (event) => {
+      event.preventDefault(); // Prevent default scrolling
+     
+      currentScrollY += event.deltaY; // Update scroll position
+      if(currentScrollY > 0) {
+        document.getElementById("content").style.transform = `translateY(${-currentScrollY}px)`; // Move the first div
+      } else {
+          currentScrollY -= event.deltaY;
+      }
+    });
 
    // canvas.addEventListener('mouseout', stopDrawing);
     
